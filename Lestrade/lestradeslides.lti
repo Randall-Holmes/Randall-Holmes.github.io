@@ -1,0 +1,1036 @@
+
+>> Inspector Lestrade says:  
+>> Welcome to the Lestrade Type Inspector,
+>>  
+>> User entered lambda terms (arguments)
+>> and function sorts (in declare)!
+>> literate programming with LaTeX comments in ML source
+>> version of  7/24/2019
+>>  12:30 pm Boise time
+
+
+%% examples related to the discussion on the slides
+%% declare the postulateions of 
+%% the cartesian product in 
+% Church's simple type theory
+
+
+declare alpha type
+
+>> alpha: type {move 1}
+
+
+
+declare beta type
+
+>> beta: type {move 1}
+
+
+
+postulate X alpha beta : type
+
+>> X: [(alpha_1:type),(beta_1:type) => (---:
+>>      type)]
+>>   {move 0}
+
+
+
+declare x in alpha
+
+>> x: in alpha {move 1}
+
+
+
+declare y in beta
+
+>> y: in beta {move 1}
+
+
+
+postulate pair x y : in alpha X beta
+
+>> pair: [(.alpha_1:type),(x_1:in .alpha_1),
+>>      (.beta_1:type),(y_1:in .beta_1) => (---:
+>>      in (.alpha_1 X .beta_1))]
+>>   {move 0}
+
+
+
+declare z in alpha X beta
+
+>> z: in (alpha X beta) {move 1}
+
+
+
+postulate pi1 z : in alpha
+
+>> pi1: [(.alpha_1:type),(.beta_1:type),(z_1:
+>>      in (.alpha_1 X .beta_1)) => (---:in .alpha_1)]
+>>   {move 0}
+
+
+
+postulate pi2 z : in beta
+
+>> pi2: [(.alpha_1:type),(.beta_1:type),(z_1:
+>>      in (.alpha_1 X .beta_1)) => (---:in .beta_1)]
+>>   {move 0}
+
+
+%% notice that the pair and projection operators are polymorphic
+%% as they were in the discussion above:  they have the types as implicit
+%% additional arguments, deducible from the types of the explicit arguments
+% supplied.
+
+%% this is not a complete discussion because one needs to assert
+% some equations.
+
+
+declare y2 in alpha
+
+>> y2: in alpha {move 1}
+
+
+
+postulate = x y2 : prop
+
+>> =: [(.alpha_1:type),(x_1:in .alpha_1),(y2_1:
+>>      in .alpha_1) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate Refleq x : that x = x
+
+>> Refleq: [(.alpha_1:type),(x_1:in .alpha_1)
+>>      => (---:that (x_1 = x_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare u in alpha
+
+>>    u: in alpha {move 2}
+
+
+
+   postulate P u : prop
+
+>>    P: [(u_1:in alpha) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+declare w in alpha
+
+>> w: in alpha {move 1}
+
+
+
+declare predev that P x
+
+>> predev: that P(x) {move 1}
+
+
+
+declare eqev that x = w
+
+>> eqev: that (x = w) {move 1}
+
+
+
+postulate Subs P, predev eqev : that P w
+
+
+>> Subs: [(.alpha_1:type),(P_1:[(u_2:in .alpha_1)
+>>         => (---:prop)]),
+>>      (.x_1:in .alpha_1),(predev_1:that P_1(.x_1)),
+>>      (.w_1:in .alpha_1),(eqev_1:that (.x_1
+>>      = .w_1)) => (---:that P_1(.w_1))]
+>>   {move 0}
+
+
+%% an example of the use of equality rules, prove symmetry of equality
+%% (that is, provide a function which witnesses it -- we do not have
+% implication yet).
+
+
+open
+
+   declare u in alpha
+
+>>    u: in alpha {move 2}
+
+
+
+   define equalsx u : u = x
+
+>>    equalsx: [(u_1:in alpha) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+define Eqsymm eqev : Subs equalsx, Refleq \
+   x, eqev
+
+>> Eqsymm: [(.alpha_1:type),(.x_1:in .alpha_1),
+>>      (.w_1:in .alpha_1),(eqev_1:that (.x_1
+>>      = .w_1)) => (Subs([(u_2:in .alpha_1) =>
+>>         ((u_2 = .x_1):prop)]
+>>      ,Refleq(.x_1),eqev_1):that (.w_1 = .x_1))]
+>>   {move 0}
+
+
+% finish specification of the product type
+
+
+postulate Proj1 x y : that pi1 (x pair y) \
+   = x
+
+>> Proj1: [(.alpha_1:type),(x_1:in .alpha_1),
+>>      (.beta_1:type),(y_1:in .beta_1) => (---:
+>>      that (pi1((x_1 pair y_1)) = x_1))]
+>>   {move 0}
+
+
+
+postulate Proj2 x y : that pi2 (x pair y) \
+   = y
+
+>> Proj2: [(.alpha_1:type),(x_1:in .alpha_1),
+>>      (.beta_1:type),(y_1:in .beta_1) => (---:
+>>      that (pi2((x_1 pair y_1)) = y_1))]
+>>   {move 0}
+
+
+
+postulate Proj3 z : that z = (pi1 z) pair \
+   pi2 z
+
+>> Proj3: [(.alpha_1:type),(.beta_1:type),(z_1:
+>>      in (.alpha_1 X .beta_1)) => (---:that
+>>      (z_1 = (pi1(z_1) pair pi2(z_1))))]
+>>   {move 0}
+
+
+% the implementation of the logical operation of implication
+
+
+declare p prop
+
+>> p: prop {move 1}
+
+
+
+declare q prop
+
+>> q: prop {move 1}
+
+
+
+postulate -> p q : prop
+
+>> ->: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+declare pp that p
+
+>> pp: that p {move 1}
+
+
+
+declare rr that p -> q
+
+>> rr: that (p -> q) {move 1}
+
+
+% the rule of modus ponens
+
+
+postulate Mp pp rr : that q
+
+>> Mp: [(.p_1:prop),(pp_1:that .p_1),(.q_1:prop),
+>>      (rr_1:that (.p_1 -> .q_1)) => (---:that
+>>      .q_1)]
+>>   {move 0}
+
+
+% the deduction theorem
+
+
+open
+
+   declare pp1 that p
+
+>>    pp1: that p {move 2}
+
+
+
+   postulate deduce pp1 : that q
+
+>>    deduce: [(pp1_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Deduction deduce : that p -> q
+
+
+>> Deduction: [(.p_1:prop),(.q_1:prop),(deduce_1:
+>>      [(pp1_2:that .p_1) => (---:that .q_1)])
+>>      => (---:that (.p_1 -> .q_1))]
+>>   {move 0}
+
+
+% an example
+
+
+open
+
+   declare pp1 that p
+
+>>    pp1: that p {move 2}
+
+
+
+   define selfimp pp1 : pp1
+
+>>    selfimp: [(pp1_1:that p) => (---:that
+>>         p)]
+>>      {move 1}
+
+
+
+   close
+
+define Selfimp p : Deduction selfimp
+
+>> Selfimp: [(p_1:prop) => (Deduction([(pp1_2:
+>>         that p_1) => (pp1_2:that p_1)])
+>>      :that (p_1 -> p_1))]
+>>   {move 0}
+
+
+% complete proof of symmetry of equality
+
+
+open
+
+   declare eqev2 that x = w
+
+>>    eqev2: that (x = w) {move 2}
+
+
+
+   define symm2 eqev2 : Eqsymm eqev2
+
+>>    symm2: [(eqev2_1:that (x = w)) => (---:
+>>         that (w = x))]
+>>      {move 1}
+
+
+
+   close
+
+define Eqsymmprop x w : Deduction symm2
+
+>> Eqsymmprop: [(.alpha_1:type),(x_1:in .alpha_1),
+>>      (w_1:in .alpha_1) => (Deduction([(eqev2_2:
+>>         that (x_1 = w_1)) => (Eqsymm(eqev2_2):
+>>         that (w_1 = x_1))])
+>>      :that ((x_1 = w_1) -> (w_1 = x_1)))]
+>>   {move 0}
+
+
+% the universal quantifier
+
+
+declare tau type
+
+>> tau: type {move 1}
+
+
+
+open
+
+   declare xx in tau
+
+>>    xx: in tau {move 2}
+
+
+
+   postulate Pred xx : prop
+
+>>    Pred: [(xx_1:in tau) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Forall Pred : prop
+
+>> Forall: [(.tau_1:type),(Pred_1:[(xx_2:in
+>>         .tau_1) => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+% the rule of universal instantiation
+
+
+declare univev that Forall Pred
+
+>> univev: that Forall(Pred) {move 1}
+
+
+
+declare t in tau
+
+>> t: in tau {move 1}
+
+
+
+postulate Ui univev t : that Pred t
+
+>> Ui: [(.tau_1:type),(.Pred_1:[(xx_2:in .tau_1)
+>>         => (---:prop)]),
+>>      (univev_1:that Forall(.Pred_1)),(t_1:in
+>>      .tau_1) => (---:that .Pred_1(t_1))]
+>>   {move 0}
+
+
+% the rule of universal generalization
+
+
+open
+
+   declare t2 in tau
+
+>>    t2: in tau {move 2}
+
+
+
+   postulate generalize t2 : that Pred t2
+
+
+>>    generalize: [(t2_1:in tau) => (---:that
+>>         Pred(t2_1))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Ug generalize : that Forall Pred
+
+
+>> Ug: [(.tau_1:type),(.Pred_1:[(xx_2:in .tau_1)
+>>         => (---:prop)]),
+>>      (generalize_1:[(t2_3:in .tau_1) => (---:
+>>         that .Pred_1(t2_3))])
+>>      => (---:that Forall(.Pred_1))]
+>>   {move 0}
+
+
+% universalize symmetry of equality
+
+
+open
+
+   declare x5 in alpha
+
+>>    x5: in alpha {move 2}
+
+
+
+   define line1 x5 : Ug (Eqsymmprop (x5))
+
+
+>>    line1: [(x5_1:in alpha) => (---:that Forall([(w_4:
+>>            in alpha) => (((x5_1 = w_4) -> (w_4
+>>            = x5_1)):prop)]))
+>>         ]
+>>      {move 1}
+
+
+
+   close
+
+define Eqsymmprop2 alpha : Ug line1
+
+>> Eqsymmprop2: [(alpha_1:type) => (Ug([(x5_4:
+>>         in alpha_1) => (Ug([(w_6:in alpha_1)
+>>            => ((x5_4 Eqsymmprop w_6):that ((x5_4
+>>            = w_6) -> (w_6 = x5_4)))])
+>>         :that Forall([(w_7:in alpha_1) => (((x5_4
+>>            = w_7) -> (w_7 = x5_4)):prop)]))
+>>         ])
+>>      :that Forall([(x5_8:in alpha_1) => (Forall([(w_9:
+>>            in alpha_1) => (((x5_8 = w_9) ->
+>>            (w_9 = x5_8)):prop)])
+>>         :prop)]))
+>>      ]
+>>   {move 0}
+
+
+% conjunction
+
+
+postulate & p q : prop
+
+>> &: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+declare qq that q
+
+>> qq: that q {move 1}
+
+
+
+postulate Conj pp qq : that p & q
+
+>> Conj: [(.p_1:prop),(pp_1:that .p_1),(.q_1:
+>>      prop),(qq_1:that .q_1) => (---:that (.p_1
+>>      & .q_1))]
+>>   {move 0}
+
+
+
+declare cc that p & q
+
+>> cc: that (p & q) {move 1}
+
+
+
+postulate Simp1 cc : that p
+
+>> Simp1: [(.p_1:prop),(.q_1:prop),(cc_1:that
+>>      (.p_1 & .q_1)) => (---:that .p_1)]
+>>   {move 0}
+
+
+
+postulate Simp2 cc : that q
+
+>> Simp2: [(.p_1:prop),(.q_1:prop),(cc_1:that
+>>      (.p_1 & .q_1)) => (---:that .q_1)]
+>>   {move 0}
+
+
+%% the second logic example
+%% we do it in type alpha from above, recall that we already have
+% P a predicate over type alpha
+
+
+open
+
+   declare u in alpha
+
+>>    u: in alpha {move 2}
+
+
+
+   postulate Q u : prop
+
+>>    Q: [(u_1:in alpha) => (---:prop)]
+>>      {move 1}
+
+
+
+   postulate R u : prop
+
+>>    R: [(u_1:in alpha) => (---:prop)]
+>>      {move 1}
+
+
+
+   define Pq u : (P u) -> Q u
+
+>>    Pq: [(u_1:in alpha) => (---:prop)]
+>>      {move 1}
+
+
+
+   define Qr u : (Q u) -> R u
+
+>>    Qr: [(u_1:in alpha) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+open
+
+   declare hyp that (Forall Pq) & Forall \
+      Qr
+
+>>    hyp: that (Forall(Pq) & Forall(Qr)) {move
+>>      2}
+
+
+
+   open
+
+      declare v in alpha
+
+>>       v: in alpha {move 3}
+
+
+
+      open
+
+         declare pp2 that P v
+
+>>          pp2: that P(v) {move 4}
+
+
+
+         define line2 pp2 : Ui (Simp1 hyp, \
+            v)
+
+>>          line2: [(pp2_1:that P(v)) => (---:
+>>               that Pq(v))]
+>>            {move 3}
+
+
+
+         define line3 pp2 : Mp (pp2, line2 \
+            pp2)
+
+>>          line3: [(pp2_1:that P(v)) => (---:
+>>               that Q(v))]
+>>            {move 3}
+
+
+
+         define line4 pp2 : Ui (Simp2 hyp, \
+            v)
+
+>>          line4: [(pp2_1:that P(v)) => (---:
+>>               that Qr(v))]
+>>            {move 3}
+
+
+
+         define line5 pp2 : Mp(line3 pp2, \
+            line4 pp2)
+
+>>          line5: [(pp2_1:that P(v)) => (---:
+>>               that R(v))]
+>>            {move 3}
+
+
+
+         close
+
+      define line6 v : Deduction line5
+
+>>       line6: [(v_1:in alpha) => (---:that
+>>            (P(v_1) -> R(v_1)))]
+>>         {move 2}
+
+
+
+      close
+
+   define line7 hyp : Ug line6
+
+>>    line7: [(hyp_1:that (Forall(Pq) & Forall(Qr)))
+>>         => (---:that Forall([(v_5:in alpha)
+>>            => ((P(v_5) -> R(v_5)):prop)]))
+>>         ]
+>>      {move 1}
+
+
+
+   close
+
+define line8 P, Q, R: Deduction line7
+
+>> line8: [(.alpha_1:type),(P_1:[(u_2:in .alpha_1)
+>>         => (---:prop)]),
+>>      (Q_1:[(u_3:in .alpha_1) => (---:prop)]),
+>>      (R_1:[(u_4:in .alpha_1) => (---:prop)])
+>>      => (Deduction([(hyp_8:that (Forall([(u_9:
+>>            in .alpha_1) => ((P_1(u_9) -> Q_1(u_9)):
+>>            prop)])
+>>         & Forall([(u_10:in .alpha_1) => ((Q_1(u_10)
+>>            -> R_1(u_10)):prop)]))
+>>         ) => (Ug([(v_12:in .alpha_1) => (Deduction([(pp2_13:
+>>               that P_1(v_12)) => (((pp2_13
+>>               Mp (Simp1(hyp_8) Ui v_12)) Mp
+>>               (Simp2(hyp_8) Ui v_12)):that
+>>               R_1(v_12))])
+>>            :that (P_1(v_12) -> R_1(v_12)))])
+>>         :that Forall([(v_20:in .alpha_1) =>
+>>            ((P_1(v_20) -> R_1(v_20)):prop)]))
+>>         ])
+>>      :that ((Forall([(u_21:in .alpha_1) =>
+>>         ((P_1(u_21) -> Q_1(u_21)):prop)])
+>>      & Forall([(u_22:in .alpha_1) => ((Q_1(u_22)
+>>         -> R_1(u_22)):prop)]))
+>>      -> Forall([(v_23:in .alpha_1) => ((P_1(v_23)
+>>         -> R_1(v_23)):prop)]))
+>>      )]
+>>   {move 0}
+
+
+% relative constants which are variables in ordinary algebra
+
+
+postulate Nat type
+
+>> Nat: type {move 0}
+
+
+
+declare a in Nat
+
+>> a: in Nat {move 1}
+
+
+
+declare b in Nat
+
+>> b: in Nat {move 1}
+
+
+
+postulate + a b : in Nat
+
+>> +: [(a_1:in Nat),(b_1:in Nat) => (---:in
+>>      Nat)]
+>>   {move 0}
+
+
+
+postulate * a b : in Nat
+
+>> *: [(a_1:in Nat),(b_1:in Nat) => (---:in
+>>      Nat)]
+>>   {move 0}
+
+
+
+open
+
+   declare x2 in Nat
+
+>>    x2: in Nat {move 2}
+
+
+
+   declare y3 in Nat
+
+>>    y3: in Nat {move 2}
+
+
+
+   define g x2 y3 : (a * x2) + b * y3
+
+>>    g: [(x2_1:in Nat),(y3_1:in Nat) => (---:
+>>         in Nat)]
+>>      {move 1}
+
+
+
+   close
+%% we introduce a type of objects correlated with functions
+% of two natural number arguments and present g as an object
+
+%% this packaging of functions would be involved in implementing
+% the arrow types of simple type theory as object sorts
+
+
+postulate Natfun2 type
+
+>> Natfun2: type {move 0}
+
+
+
+open
+
+   declare m in Nat
+
+>>    m: in Nat {move 2}
+
+
+
+   declare n in Nat
+
+>>    n: in Nat {move 2}
+
+
+
+   postulate F2 m n : in Nat
+
+>>    F2: [(m_1:in Nat),(n_1:in Nat) => (---:
+>>         in Nat)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Packfun F2 : in Natfun2
+
+>> Packfun: [(F2_1:[(m_2:in Nat),(n_2:in Nat)
+>>         => (---:in Nat)])
+>>      => (---:in Natfun2)]
+>>   {move 0}
+
+
+
+define G a b : Packfun g
+
+>> G: [(a_1:in Nat),(b_1:in Nat) => (Packfun([(x2_2:
+>>         in Nat),(y3_2:in Nat) => (((a_1 * x2_2)
+>>         + (b_1 * y3_2)):in Nat)])
+>>      :in Natfun2)]
+>>   {move 0}
+
+
+% test of latest implicit function upgrade
+
+
+open
+
+   open
+
+      declare x16 in Nat
+
+>>       x16: in Nat {move 3}
+
+
+
+      postulate Prop16 x16 : prop
+
+>>       Prop16: [(x16_1:in Nat) => (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   postulate secondorder Prop16 : prop
+
+>>    secondorder: [(Prop16_1:[(x16_2:in Nat)
+>>            => (---:prop)])
+>>         => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+open
+
+   declare x17 in Nat
+
+>>    x17: in Nat {move 2}
+
+
+
+   postulate Prop17 x17 : prop
+
+>>    Prop17: [(x17_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate 0 in Nat
+
+>> 0: in Nat {move 0}
+
+
+
+declare example that Prop17 0
+
+>> example: that Prop17(0) {move 1}
+
+
+
+define extracttest a example : Prop17 a
+
+>> extracttest: [(a_1:in Nat),(.Prop17_1:[(x17_2:
+>>         in Nat) => (---:prop)]),
+>>      (example_1:that .Prop17_1(0)) => (.Prop17_1(a_1):
+>>      prop)]
+>>   {move 0}
+
+
+
+declare existsev2 that secondorder Prop17
+
+
+>> existsev2: that secondorder(Prop17) {move
+>>   1}
+
+
+
+postulate Exists2 secondorder : prop
+
+>> Exists2: [(secondorder_1:[(Prop16_2:[(x16_3:
+>>            in Nat) => (---:prop)])
+>>         => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+
+postulate Ei2 Prop17, existsev2 that Exists2 \
+   secondorder
+
+>> Ei2: [(Prop17_1:[(x17_2:in Nat) => (---:prop)]),
+>>      (.secondorder_1:[(Prop16_3:[(x16_4:in
+>>            Nat) => (---:prop)])
+>>         => (---:prop)]),
+>>      (existsev2_1:that .secondorder_1(Prop17_1))
+>>      => (---:that Exists2(.secondorder_1))]
+>>   {move 0}
+
+
+
+define Ei3 example existsev2 : Ei2 Prop17, \
+   existsev2
+
+>> Ei3: [(.Prop17_1:[(x17_2:in Nat) => (---:
+>>         prop)]),
+>>      (example_1:that .Prop17_1(0)),(.secondorder_1:
+>>      [(Prop16_3:[(x16_4:in Nat) => (---:prop)])
+>>         => (---:prop)]),
+>>      (existsev2_1:that .secondorder_1(.Prop17_1))
+>>      => (Ei2(.Prop17_1,existsev2_1):that Exists2(.secondorder_1))]
+>>   {move 0}
+
+
+
+postulate Succ a : in Nat
+
+>> Succ: [(a_1:in Nat) => (---:in Nat)]
+>>   {move 0}
+
+
+
+open
+
+   declare y17 in Nat
+
+>>    y17: in Nat {move 2}
+
+
+
+   define ind17 y17: (Prop17 y17) -> Prop17(Succ \
+      y17)
+
+>>    ind17: [(y17_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   define ind18 y17: y17 = Succ y17
+
+>>    ind18: [(y17_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   define ind19 y17: ((ind18 y17) -> ind18(Succ \
+      y17))
+
+>>    ind19: [(y17_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+declare zzz that Forall ind17
+
+>> zzz: that Forall(ind17) {move 1}
+
+
+
+postulate www that Forall ind19
+
+>> www: that Forall([(y17_1:in Nat) => (((y17_1
+>>      = Succ(y17_1)) -> (Succ(y17_1) = Succ(Succ(y17_1)))):
+>>      prop)])
+>>   {move 0}
+
+
+
+define Newtest Prop17, zzz: Ei2 Prop17, zzz
+
+
+>> Newtest: [(Prop17_1:[(x17_2:in Nat) => (---:
+>>         prop)]),
+>>      (zzz_1:that Forall([(y17_3:in Nat) =>
+>>         ((Prop17_1(y17_3) -> Prop17_1(Succ(y17_3))):
+>>         prop)]))
+>>      => (Ei2(Prop17_1,zzz_1):that Exists2([(Prop16_7:
+>>         [(x16_8:in Nat) => (---:prop)])
+>>         => (Forall([(y17_9:in Nat) => ((Prop16_7(y17_9)
+>>            -> Prop16_7(Succ(y17_9))):prop)])
+>>         :prop)]))
+>>      ]
+>>   {move 0}
+
+
+
+define Newtest2 : Ei2 ind18, www
+
+>> Newtest2: [(Ei2([(y17_1:in Nat) => ((y17_1
+>>         = Succ(y17_1)):prop)]
+>>      ,www):that Exists2([(Prop16_5:[(x16_6:
+>>            in Nat) => (---:prop)])
+>>         => (Forall([(y17_7:in Nat) => ((Prop16_5(y17_7)
+>>            -> Prop16_5(Succ(y17_7))):prop)])
+>>         :prop)]))
+>>      ]
+>>   {move 0}
+
+
+
+declare testing that 0 = Succ 0
+
+>> testing: that (0 = Succ(0)) {move 1}
+
+
+
+define Newtest3 testing : Ei3 testing www
+
+
+>> Newtest3: [(testing_1:that (0 = Succ(0)))
+>>      => ((testing_1 Ei3 www):that Exists2([(Prop16_6:
+>>         [(x16_7:in Nat) => (---:prop)])
+>>         => (Forall([(y17_8:in Nat) => ((Prop16_6(y17_8)
+>>            -> Prop16_6(Succ(y17_8))):prop)])
+>>         :prop)]))
+>>      ]
+>>   {move 0}
+
+
+
+>> Inspector Lestrade says:  Done reading scratch to lestradeslides:
+>>  type lines or type quit to exit interface
+
+quit
+
+

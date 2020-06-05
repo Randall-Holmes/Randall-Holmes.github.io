@@ -1,0 +1,298 @@
+
+>> Inspector Lestrade says:  
+>> Welcome to the Lestrade Type Inspector,
+>>  
+>> User entered lambda terms (arguments)
+>> and function sorts (in declare)!
+>> literate programming with LaTeX comments in ML source
+>> version of  7/24/2019
+>>  12:30 pm Boise time
+
+
+% restricted quantifiers
+
+
+declare x obj
+
+>> x: obj {move 1}
+
+
+
+declare y obj
+
+>> y: obj {move 1}
+
+
+
+postulate E x y prop
+
+>> E: [(x_1:obj),(y_1:obj) => (---:prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare x1 obj
+
+>>    x1: obj {move 2}
+
+
+
+   declare ev0 that x1 E y
+
+>>    ev0: that (x1 E y) {move 2}
+
+
+
+   postulate P ev0 prop
+
+>>    P: [(.x1_1:obj),(ev0_1:that (.x1_1 E y))
+>>         => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+declare ev that x E y
+
+>> ev: that (x E y) {move 1}
+
+
+
+postulate Forall y P: prop
+
+>> Forall: [(y_1:obj),(P_1:[(.x1_2:obj),(ev0_2:
+>>         that (.x1_2 E y_1)) => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare x1 obj
+
+>>    x1: obj {move 2}
+
+
+
+   declare ev1 that x1 E y
+
+>>    ev1: that (x1 E y) {move 2}
+
+
+
+   postulate evui ev1 that P ev1
+
+>>    evui: [(.x1_1:obj),(ev1_1:that (.x1_1
+>>         E y)) => (---:that P(ev1_1))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Ui evui: that Forall y P
+
+>> Ui: [(.y_1:obj),(.P_1:[(.x1_2:obj),(ev0_2:
+>>         that (.x1_2 E .y_1)) => (---:prop)]),
+>>      (evui_1:[(.x1_3:obj),(ev1_3:that (.x1_3
+>>         E .y_1)) => (---:that (.x1_3 .P_1 ev1_3))])
+>>      => (---:that (.y_1 Forall .P_1))]
+>>   {move 0}
+
+
+
+postulate = x y prop
+
+>> =: [(x_1:obj),(y_1:obj) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate Refl x that x = x
+
+>> Refl: [(x_1:obj) => (---:that (x_1 = x_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare x1 obj
+
+>>    x1: obj {move 2}
+
+
+
+   declare ev1 that x1 E y
+
+>>    ev1: that (x1 E y) {move 2}
+
+
+
+   define refltest ev1 : Refl x1
+
+>>    refltest: [(.x1_1:obj),(ev1_1:that (.x1_1
+>>         E y)) => (---:that (.x1_1 = .x1_1))]
+>>      {move 1}
+
+
+
+   close
+
+define Utest y : Ui refltest
+
+>> Utest: [(y_1:obj) => (Ui([(.x1_3:obj),(ev1_3:
+>>         that (.x1_3 E y_1)) => (Refl(.x1_3):
+>>         that (.x1_3 = .x1_3))])
+>>      :that (y_1 Forall [(.x1_4:obj),(ev1_4:
+>>         that (.x1_4 E y_1)) => ((.x1_4 = .x1_4):
+>>         prop)]))
+>>      ]
+>>   {move 0}
+
+
+
+open
+
+   declare x1 type
+
+>>    x1: type {move 2}
+
+
+
+   declare y1 in x1
+
+>>    y1: in x1 {move 2}
+
+
+
+   postulate R x1 y1:prop
+
+>>    R: [(x1_1:type),(y1_1:in x1_1) => (---:
+>>         prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Forall2 R: prop
+
+>> Forall2: [(R_1:[(x1_2:type),(y1_2:in x1_2)
+>>         => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare x1 type
+
+>>    x1: type {move 2}
+
+
+
+   declare y1 in x1
+
+>>    y1: in x1 {move 2}
+
+
+
+   postulate univ2 x1 y1 that x1 R y1
+
+>>    univ2: [(x1_1:type),(y1_1:in x1_1) =>
+>>         (---:that (x1_1 R y1_1))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Ug2 univ2: that Forall2 R
+
+>> Ug2: [(.R_1:[(x1_2:type),(y1_2:in x1_2) =>
+>>         (---:prop)]),
+>>      (univ2_1:[(x1_3:type),(y1_3:in x1_3) =>
+>>         (---:that (x1_3 .R_1 y1_3))])
+>>      => (---:that Forall2(.R_1))]
+>>   {move 0}
+
+
+
+declare p prop
+
+>> p: prop {move 1}
+
+
+
+declare q prop
+
+>> q: prop {move 1}
+
+
+
+postulate -> p q prop
+
+>> ->: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate Taut p: that p -> p
+
+>> Taut: [(p_1:prop) => (---:that (p_1 -> p_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare x1 type
+
+>>    x1: type {move 2}
+
+
+
+   declare x2 in x1
+
+>>    x2: in x1 {move 2}
+
+
+
+   define zorch x1 x2 : Taut (x1 R x2)
+
+>>    zorch: [(x1_1:type),(x2_1:in x1_1) =>
+>>         (---:that ((x1_1 R x2_1) -> (x1_1 R
+>>         x2_1)))]
+>>      {move 1}
+
+
+
+   close
+
+define Testthm R : Ug2 zorch
+
+>> Testthm: [(R_1:[(x1_2:type),(y1_2:in x1_2)
+>>         => (---:prop)])
+>>      => (Ug2([(x1_4:type),(x2_4:in x1_4) =>
+>>         (Taut((x1_4 R_1 x2_4)):that ((x1_4
+>>         R_1 x2_4) -> (x1_4 R_1 x2_4)))])
+>>      :that Forall2([(x1_5:type),(x2_5:in x1_5)
+>>         => (((x1_5 R_1 x2_5) -> (x1_5 R_1 x2_5)):
+>>         prop)]))
+>>      ]
+>>   {move 0}
+
+
+
+>> Inspector Lestrade says:  Done reading scratch to implicittest:
+>>  type lines or type quit to exit interface
+
+quit
+
+

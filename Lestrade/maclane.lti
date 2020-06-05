@@ -1,0 +1,748 @@
+
+>> Inspector Lestrade says:  
+>> Welcome to the Lestrade Type Inspector,
+>>  
+>> User entered lambda terms (arguments)
+>> and function sorts (in declare)!
+>> literate programming with LaTeX comments in ML source
+>> version of  7/24/2019
+>>  12:30 pm Boise time
+
+
+% development of MacLane set theory.
+
+% may be extended to Zermelo, ZFC, Kelley-Morse.
+
+% start with logic.
+
+
+declare p prop
+
+>> p: prop {move 1}
+
+
+
+declare q prop
+
+>> q: prop {move 1}
+
+
+
+postulate & p q : prop
+
+>> &: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate ?? : prop
+
+>> ??: prop {move 0}
+
+
+
+declare pp that p
+
+>> pp: that p {move 1}
+
+
+
+declare qq that q
+
+>> qq: that q {move 1}
+
+
+
+declare pq that p & q
+
+>> pq: that (p & q) {move 1}
+
+
+
+postulate Andi pp qq : that p & q
+
+>> Andi: [(.p_1:prop),(pp_1:that .p_1),(.q_1:
+>>      prop),(qq_1:that .q_1) => (---:that (.p_1
+>>      & .q_1))]
+>>   {move 0}
+
+
+
+postulate Ande1 pq : that p
+
+>> Ande1: [(.p_1:prop),(.q_1:prop),(pq_1:that
+>>      (.p_1 & .q_1)) => (---:that .p_1)]
+>>   {move 0}
+
+
+
+postulate Ande2 pq : that q
+
+>> Ande2: [(.p_1:prop),(.q_1:prop),(pq_1:that
+>>      (.p_1 & .q_1)) => (---:that .q_1)]
+>>   {move 0}
+
+
+
+postulate ~ p :prop
+
+>> ~: [(p_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate neg pp2 that ??
+
+>>    neg: [(pp2_1:that p) => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Negproof neg : that ~ p
+
+>> Negproof: [(.p_1:prop),(neg_1:[(pp2_2:that
+>>         .p_1) => (---:that ??)])
+>>      => (---:that ~(.p_1))]
+>>   {move 0}
+
+
+
+declare np that ~ p
+
+>> np: that ~(p) {move 1}
+
+
+
+postulate Contra pp np : that ??
+
+>> Contra: [(.p_1:prop),(pp_1:that .p_1),(np_1:
+>>      that ~(.p_1)) => (---:that ??)]
+>>   {move 0}
+
+
+
+declare maybe that ~ ~ p
+
+>> maybe: that ~(~(p)) {move 1}
+
+
+
+postulate Dneg maybe : that p
+
+>> Dneg: [(.p_1:prop),(maybe_1:that ~(~(.p_1)))
+>>      => (---:that .p_1)]
+>>   {move 0}
+
+
+
+postulate Dnegfull p maybe : that p
+
+>> Dnegfull: [(p_1:prop),(maybe_1:that ~(~(p_1)))
+>>      => (---:that p_1)]
+>>   {move 0}
+
+
+%% To demonstrate that I have enough
+%% logical primitives I demonstrate the
+% basic properties of implication.
+
+
+define -> p q : ~ (p & ~q)
+
+>> ->: [(p_1:prop),(q_1:prop) => (~((p_1 & ~(q_1))):
+>>      prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate Ded pp2 that q
+
+>>    Ded: [(pp2_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   close
+
+open
+
+   declare hyp that p & ~ q
+
+>>    hyp: that (p & ~(q)) {move 2}
+
+
+
+   define weird hyp : Contra (Ded (Ande1 \
+      hyp),Ande2 hyp)
+
+>>    weird: [(hyp_1:that (p & ~(q))) => (---:
+>>         that ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Impi1 Ded: Negproof weird
+
+>> Impi1: [(.p_1:prop),(.q_1:prop),(Ded_1:[(pp2_2:
+>>         that .p_1) => (---:that .q_1)])
+>>      => (Negproof([(hyp_3:that (.p_1 & ~(.q_1)))
+>>         => ((Ded_1(Ande1(hyp_3)) Contra Ande2(hyp_3)):
+>>         that ??)])
+>>      :that ~((.p_1 & ~(.q_1))))]
+>>   {move 0}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   open
+
+      declare nn2 that ~ p
+
+>>       nn2: that ~(p) {move 3}
+
+
+
+      define dneg nn2 : Contra pp2 nn2
+
+>>       dneg: [(nn2_1:that ~(p)) => (---:that
+>>            ??)]
+>>         {move 2}
+
+
+
+      close
+
+   define dneg2 pp2 : Negproof dneg
+
+>>    dneg2: [(pp2_1:that p) => (---:that ~(~(p)))]
+>>      {move 1}
+
+
+
+   close
+
+define Dneg2 pp: dneg2 pp
+
+>> Dneg2: [(.p_1:prop),(pp_1:that .p_1) => (Negproof([(nn2_2:
+>>         that ~(.p_1)) => ((pp_1 Contra nn2_2):
+>>         that ??)])
+>>      :that ~(~(.p_1)))]
+>>   {move 0}
+
+
+
+define Impi Ded: Dnegfull (p -> q, Dneg2 \
+   (Impi1 Ded))
+
+>> Impi: [(.p_1:prop),(.q_1:prop),(Ded_1:[(pp2_2:
+>>         that .p_1) => (---:that .q_1)])
+>>      => (((.p_1 -> .q_1) Dnegfull Dneg2(Impi1(Ded_1))):
+>>      that (.p_1 -> .q_1))]
+>>   {move 0}
+
+
+
+declare piq that p -> q
+
+>> piq: that (p -> q) {move 1}
+
+
+
+open
+
+   declare nq that ~ q
+
+>>    nq: that ~(q) {move 2}
+
+
+
+   define mp nq : Contra (Andi (pp, nq),piq)
+
+
+>>    mp: [(nq_1:that ~(q)) => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Mp pp piq : Dneg (Negproof mp)
+
+>> Mp: [(.p_1:prop),(pp_1:that .p_1),(.q_1:prop),
+>>      (piq_1:that (.p_1 -> .q_1)) => (Dneg(Negproof([(nq_2:
+>>         that ~(.q_1)) => (((pp_1 Andi nq_2)
+>>         Contra piq_1):that ??)]))
+>>      :that .q_1)]
+>>   {move 0}
+
+
+
+define v p q : ~ p -> q
+
+>> v: [(p_1:prop),(q_1:prop) => ((~(p_1) ->
+>>      q_1):prop)]
+>>   {move 0}
+
+
+
+define <-> p q : (p -> q) & (q -> p)
+
+>> <->: [(p_1:prop),(q_1:prop) => (((p_1 ->
+>>      q_1) & (q_1 -> p_1)):prop)]
+>>   {move 0}
+
+
+% equality
+
+
+declare x obj
+
+>> x: obj {move 1}
+
+
+
+declare y obj
+
+>> y: obj {move 1}
+
+
+
+postulate = x y : prop
+
+>> =: [(x_1:obj),(y_1:obj) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate Refl x : that x = x
+
+>> Refl: [(x_1:obj) => (---:that (x_1 = x_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare x2 obj
+
+>>    x2: obj {move 2}
+
+
+
+   postulate P x2 : prop
+
+>>    P: [(x2_1:obj) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+declare Px that P x
+
+>> Px: that P(x) {move 1}
+
+
+
+declare eq that x = y
+
+>> eq: that (x = y) {move 1}
+
+
+
+postulate Subs P, Px eq : that P y
+
+>> Subs: [(P_1:[(x2_2:obj) => (---:prop)]),
+>>      (.x_1:obj),(Px_1:that P_1(.x_1)),(.y_1:
+>>      obj),(eq_1:that (.x_1 = .y_1)) => (---:
+>>      that P_1(.y_1))]
+>>   {move 0}
+
+
+%% Our approach to implementing MacLane's restrictions
+%% on comprehension is to restrict the formation of 
+%%  quantified propositions
+% so that no bad sets can be defined.
+
+
+postulate E x y : prop
+
+>> E: [(x_1:obj),(y_1:obj) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate Setof x P : obj
+
+>> Setof: [(x_1:obj),(P_1:[(x2_2:obj) => (---:
+>>         prop)])
+>>      => (---:obj)]
+>>   {move 0}
+
+
+
+declare ev2 that x E Setof y P
+
+>> ev2: that (x E (y Setof P)) {move 1}
+
+
+
+postulate comp1 ev2 : that (x E y) & P x
+
+
+>> comp1: [(.x_1:obj),(.y_1:obj),(.P_1:[(x2_2:
+>>         obj) => (---:prop)]),
+>>      (ev2_1:that (.x_1 E (.y_1 Setof .P_1)))
+>>      => (---:that ((.x_1 E .y_1) & .P_1(.x_1)))]
+>>   {move 0}
+
+
+
+declare ev3 that x E y
+
+>> ev3: that (x E y) {move 1}
+
+
+
+declare ev4 that P x
+
+>> ev4: that P(x) {move 1}
+
+
+
+postulate comp2 ev3 ev4 : that x E (Setof \
+   y P)
+
+>> comp2: [(.x_1:obj),(.y_1:obj),(ev3_1:that
+>>      (.x_1 E .y_1)),(.P_1:[(x2_2:obj) => (---:
+>>         prop)]),
+>>      (ev4_1:that .P_1(.x_1)) => (---:that (.x_1
+>>      E (.y_1 Setof .P_1)))]
+>>   {move 0}
+
+
+
+postulate C x y : prop
+
+>> C: [(x_1:obj),(y_1:obj) => (---:prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare z obj
+
+>>    z: obj {move 2}
+
+
+
+   declare ev5 that z E x
+
+>>    ev5: that (z E x) {move 2}
+
+
+
+   postulate subset ev5 that z E y
+
+>>    subset: [(.z_1:obj),(ev5_1:that (.z_1
+>>         E x)) => (---:that (.z_1 E y))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Subset subset : that x C y
+
+>> Subset: [(.x_1:obj),(.y_1:obj),(subset_1:
+>>      [(.z_2:obj),(ev5_2:that (.z_2 E .x_1))
+>>         => (---:that (.z_2 E .y_1))])
+>>      => (---:that (.x_1 C .y_1))]
+>>   {move 0}
+
+
+
+declare ev6 that x C y
+
+>> ev6: that (x C y) {move 1}
+
+
+
+declare eva7 that y C x
+
+>> eva7: that (y C x) {move 1}
+
+
+
+postulate Ext ev6 eva7 that x = y
+
+>> Ext: [(.x_1:obj),(.y_1:obj),(ev6_1:that (.x_1
+>>      C .y_1)),(eva7_1:that (.y_1 C .x_1)) =>
+>>      (---:that (.x_1 = .y_1))]
+>>   {move 0}
+
+
+
+declare z obj
+
+>> z: obj {move 1}
+
+
+
+declare evs1 that x E y
+
+>> evs1: that (x E y) {move 1}
+
+
+
+declare evs2 that y C z
+
+>> evs2: that (y C z) {move 1}
+
+
+
+postulate Incl evs1 evs2 that x E z
+
+>> Incl: [(.x_1:obj),(.y_1:obj),(evs1_1:that
+>>      (.x_1 E .y_1)),(.z_1:obj),(evs2_1:that
+>>      (.y_1 C .z_1)) => (---:that (.x_1 E .z_1))]
+>>   {move 0}
+
+
+% definition of the bounded universal quantifier
+
+
+define Forall x P : x C Setof x P
+
+>> Forall: [(x_1:obj),(P_1:[(x2_2:obj) => (---:
+>>         prop)])
+>>      => ((x_1 C (x_1 Setof P_1)):prop)]
+>>   {move 0}
+
+
+
+declare univev1 that y E x
+
+>> univev1: that (y E x) {move 1}
+
+
+
+declare univev2 that Forall x P
+
+>> univev2: that (x Forall P) {move 1}
+
+
+
+define Ui univev1 univev2 : Ande2(comp1 (Incl \
+   univev1 univev2))
+
+>> Ui: [(.y_1:obj),(.x_1:obj),(univev1_1:that
+>>      (.y_1 E .x_1)),(.P_1:[(x2_2:obj) => (---:
+>>         prop)]),
+>>      (univev2_1:that (.x_1 Forall .P_1)) =>
+>>      (Ande2(comp1((univev1_1 Incl univev2_1))):
+>>      that .P_1(.y_1))]
+>>   {move 0}
+
+
+
+postulate Pow x : obj
+
+>> Pow: [(x_1:obj) => (---:obj)]
+>>   {move 0}
+
+
+
+declare ev7 that x C y
+
+>> ev7: that (x C y) {move 1}
+
+
+
+postulate Pow1 ev7 that x E Pow y
+
+>> Pow1: [(.x_1:obj),(.y_1:obj),(ev7_1:that
+>>      (.x_1 C .y_1)) => (---:that (.x_1 E Pow(.y_1)))]
+>>   {move 0}
+
+
+
+declare ev8 that x E Pow y
+
+>> ev8: that (x E Pow(y)) {move 1}
+
+
+
+postulate Pow2 ev8 that x C y
+
+>> Pow2: [(.x_1:obj),(.y_1:obj),(ev8_1:that
+>>      (.x_1 E Pow(.y_1))) => (---:that (.x_1
+>>      C .y_1))]
+>>   {move 0}
+
+
+%% get the rest of the axioms by defining
+% ranks
+
+
+postulate Rank x : prop
+
+>> Rank: [(x_1:obj) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate rankof x: obj
+
+>> rankof: [(x_1:obj) => (---:obj)]
+>>   {move 0}
+
+
+
+postulate isrank x : that Rank (rankof x)
+
+
+>> isrank: [(x_1:obj) => (---:that Rank(rankof(x_1)))]
+>>   {move 0}
+
+
+
+postulate inrank x : that x E rankof x
+
+>> inrank: [(x_1:obj) => (---:that (x_1 E rankof(x_1)))]
+>>   {move 0}
+
+
+
+declare ev90 that Rank x
+
+>> ev90: that Rank(x) {move 1}
+
+
+
+postulate nextrank ev90 : that Rank (Pow \
+   x)
+
+>> nextrank: [(.x_1:obj),(ev90_1:that Rank(.x_1))
+>>      => (---:that Rank(Pow(.x_1)))]
+>>   {move 0}
+
+
+
+declare ev10 that Rank y
+
+>> ev10: that Rank(y) {move 1}
+
+
+
+declare ev11 that ~ (y C x)
+
+>> ev11: that ~((y C x)) {move 1}
+
+
+
+postulate maxrank x y : obj
+
+>> maxrank: [(x_1:obj),(y_1:obj) => (---:obj)]
+>>   {move 0}
+
+
+
+postulate rankorder ev90 ev10 ev11 that x \
+   C y
+
+>> rankorder: [(.x_1:obj),(ev90_1:that Rank(.x_1)),
+>>      (.y_1:obj),(ev10_1:that Rank(.y_1)),(ev11_1:
+>>      that ~((.y_1 C .x_1))) => (---:that (.x_1
+>>      C .y_1))]
+>>   {move 0}
+
+
+
+postulate rankorder2 ev90 ev10 ev11 that \
+   y = maxrank x y
+
+>> rankorder2: [(.x_1:obj),(ev90_1:that Rank(.x_1)),
+>>      (.y_1:obj),(ev10_1:that Rank(.y_1)),(ev11_1:
+>>      that ~((.y_1 C .x_1))) => (---:that (.y_1
+>>      = (.x_1 maxrank .y_1)))]
+>>   {move 0}
+
+
+
+postulate limit obj
+
+>> limit: obj {move 0}
+
+
+
+postulate limitisrank that Rank limit
+
+>> limitisrank: that Rank(limit) {move 0}
+
+
+
+postulate limitelt obj
+
+>> limitelt: obj {move 0}
+
+
+
+postulate limithaselt that limitelt E limit
+
+
+>> limithaselt: that (limitelt E limit) {move
+>>   0}
+
+
+
+declare ev12 that x E limit
+
+>> ev12: that (x E limit) {move 1}
+
+
+
+postulate limitislimit ev12 that Pow (rankof \
+   x) C limit
+
+>> limitislimit: [(.x_1:obj),(ev12_1:that (.x_1
+>>      E limit)) => (---:that (Pow(rankof(.x_1))
+>>      C limit))]
+>>   {move 0}
+
+
+
+>> Inspector Lestrade says:  Done reading scratch to maclane:
+>>  type lines or type quit to exit interface
+
+quit
+
+

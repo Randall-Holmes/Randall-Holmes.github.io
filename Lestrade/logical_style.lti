@@ -1,0 +1,763 @@
+
+>> Inspector Lestrade says:  
+>> Welcome to the Lestrade Type Inspector,
+>>  
+>> User entered lambda terms (arguments)
+>> and function sorts (in declare)!
+>> literate programming with LaTeX comments in ML source
+>> version of  7/24/2019
+>>  12:30 pm Boise time
+
+
+comment  The treatment of logic in my style manual
+
+
+declare p prop
+
+>> p: prop {move 1}
+
+
+
+declare q prop
+
+>> q: prop {move 1}
+
+
+comment   conjunction/and
+
+
+postulate & p q:prop
+
+>> &: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+declare pp that p
+
+>> pp: that p {move 1}
+
+
+
+declare qq that q
+
+>> qq: that q {move 1}
+
+
+
+postulate Andproof p q pp qq:that p & q
+
+>> Andproof: [(p_1:prop),(q_1:prop),(pp_1:that
+>>      p_1),(qq_1:that q_1) => (---:that (p_1
+>>      & q_1))]
+>>   {move 0}
+
+
+
+declare rr that p & q
+
+>> rr: that (p & q) {move 1}
+
+
+
+postulate Andelim1 p q rr:that p
+
+>> Andelim1: [(p_1:prop),(q_1:prop),(rr_1:that
+>>      (p_1 & q_1)) => (---:that p_1)]
+>>   {move 0}
+
+
+
+postulate Andelim2 p q rr: that q
+
+>> Andelim2: [(p_1:prop),(q_1:prop),(rr_1:that
+>>      (p_1 & q_1)) => (---:that q_1)]
+>>   {move 0}
+
+
+comment implication/if...then...
+
+
+postulate -> p q:prop
+
+>> ->: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate Ded pp2:that q
+
+>>    Ded: [(pp2_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Ifproof p q Ded:that p -> q
+
+>> Ifproof: [(p_1:prop),(q_1:prop),(Ded_1:[(pp2_2:
+>>         that p_1) => (---:that q_1)])
+>>      => (---:that (p_1 -> q_1))]
+>>   {move 0}
+
+
+
+declare ss that p -> q
+
+>> ss: that (p -> q) {move 1}
+
+
+
+postulate Mp p q pp ss:that q
+
+>> Mp: [(p_1:prop),(q_1:prop),(pp_1:that p_1),
+>>      (ss_1:that (p_1 -> q_1)) => (---:that
+>>      q_1)]
+>>   {move 0}
+
+
+comment negation (not defining it this time)
+
+
+postulate ~ p:prop
+
+>> ~: [(p_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate ??:prop
+
+>> ??: prop {move 0}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate contra pp2:that ??
+
+>>    contra: [(pp2_1:that p) => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Negproof p contra:that ~p
+
+>> Negproof: [(p_1:prop),(contra_1:[(pp2_2:that
+>>         p_1) => (---:that ??)])
+>>      => (---:that ~(p_1))]
+>>   {move 0}
+
+
+
+declare tt that ~p
+
+>> tt: that ~(p) {move 1}
+
+
+
+postulate Contradiction p pp tt:that ??
+
+>> Contradiction: [(p_1:prop),(pp_1:that p_1),
+>>      (tt_1:that ~(p_1)) => (---:that ??)]
+>>   {move 0}
+
+
+
+declare absurd that ??
+
+>> absurd: that ?? {move 1}
+
+
+
+postulate Panic p absurd:that p
+
+>> Panic: [(p_1:prop),(absurd_1:that ??) =>
+>>      (---:that p_1)]
+>>   {move 0}
+
+
+
+declare maybe that ~ ~p
+
+>> maybe: that ~(~(p)) {move 1}
+
+
+
+postulate Dneg p maybe:that p
+
+>> Dneg: [(p_1:prop),(maybe_1:that ~(~(p_1)))
+>>      => (---:that p_1)]
+>>   {move 0}
+
+
+comment basic rules for disjunction
+
+
+postulate v p q:prop
+
+>> v: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate Addition1 p q pp:that p v q
+
+>> Addition1: [(p_1:prop),(q_1:prop),(pp_1:that
+>>      p_1) => (---:that (p_1 v q_1))]
+>>   {move 0}
+
+
+
+postulate Addition2 p q qq:that p v q
+
+>> Addition2: [(p_1:prop),(q_1:prop),(qq_1:that
+>>      q_1) => (---:that (p_1 v q_1))]
+>>   {move 0}
+
+
+comment prepare for proof by cases
+
+
+declare uu that p v q
+
+>> uu: that (p v q) {move 1}
+
+
+
+declare r prop
+
+>> r: prop {move 1}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate case1 pp2:that r
+
+>>    case1: [(pp2_1:that p) => (---:that r)]
+>>      {move 1}
+
+
+
+   close
+
+open
+
+   declare qq2 that q
+
+>>    qq2: that q {move 2}
+
+
+
+   postulate case2 qq2:that r
+
+>>    case2: [(qq2_1:that q) => (---:that r)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Cases p,q,uu,r,case1,case2:that \
+   r
+
+>> Cases: [(p_1:prop),(q_1:prop),(uu_1:that
+>>      (p_1 v q_1)),(r_1:prop),(case1_1:[(pp2_2:
+>>         that p_1) => (---:that r_1)]),
+>>      (case2_1:[(qq2_3:that q_1) => (---:that
+>>         r_1)])
+>>      => (---:that r_1)]
+>>   {move 0}
+
+
+comment derived rules for implication
+
+
+open
+
+   declare notq that ~q
+
+>>    notq: that ~(q) {move 2}
+
+
+
+   postulate Ded2 notq:that ~p
+
+>>    Ded2: [(notq_1:that ~(q)) => (---:that
+>>         ~(p))]
+>>      {move 1}
+
+
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   open
+
+      declare notq2 that ~q
+
+>>       notq2: that ~(q) {move 3}
+
+
+
+      define hah notq2:Contradiction p pp2, \
+         Ded2 notq2
+
+>>       hah: [(notq2_1:that ~(q)) => (---:that
+>>            ??)]
+>>         {move 2}
+
+
+
+      close
+
+   define hah2 pp2:Negproof ~q hah
+
+>>    hah2: [(pp2_1:that p) => (---:that ~(~(q)))]
+>>      {move 1}
+
+
+
+   define hah3 pp2:Dneg q hah2 pp2
+
+>>    hah3: [(pp2_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   close
+
+define Indirect p q Ded2:Ifproof p q hah3
+
+
+>> Indirect: [(p_1:prop),(q_1:prop),(Ded2_1:
+>>      [(notq_2:that ~(q_1)) => (---:that ~(p_1))])
+>>      => (Ifproof(p_1,q_1,[(pp2_3:that p_1)
+>>         => ((q_1 Dneg (~(q_1) Negproof [(notq2_4:
+>>            that ~(q_1)) => (Contradiction(p_1,
+>>            pp2_3,Ded2_1(notq2_4)):that ??)]))
+>>         :that q_1)])
+>>      :that (p_1 -> q_1))]
+>>   {move 0}
+
+
+
+declare vv that ~q
+
+>> vv: that ~(q) {move 1}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   define hmmm pp2:Mp p q pp2 ss
+
+>>    hmmm: [(pp2_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   define hmmm2 pp2:Contradiction q hmmm \
+      pp2 vv
+
+>>    hmmm2: [(pp2_1:that p) => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Mt p q ss vv:Negproof p hmmm2
+
+>> Mt: [(p_1:prop),(q_1:prop),(ss_1:that (p_1
+>>      -> q_1)),(vv_1:that ~(q_1)) => ((p_1 Negproof
+>>      [(pp2_2:that p_1) => (Contradiction(q_1,
+>>         Mp(p_1,q_1,pp2_2,ss_1),vv_1):that ??)])
+>>      :that ~(p_1))]
+>>   {move 0}
+
+
+comment derived rules for disjunction
+
+
+open
+
+   declare notq that ~q
+
+>>    notq: that ~(q) {move 2}
+
+
+
+   postulate ruleout notq:that p
+
+>>    ruleout: [(notq_1:that ~(q)) => (---:that
+>>         p)]
+>>      {move 1}
+
+
+
+   declare neither that ~(p v q)
+
+>>    neither: that ~((p v q)) {move 2}
+
+
+
+   open
+
+      declare notq2 that ~q
+
+>>       notq2: that ~(q) {move 3}
+
+
+
+      define problem notq2:Addition1 p q \
+         ruleout notq2
+
+>>       problem: [(notq2_1:that ~(q)) => (---:
+>>            that (p v q))]
+>>         {move 2}
+
+
+
+      define problem2 notq2: Contradiction \
+         p v q, problem notq2, neither
+
+>>       problem2: [(notq2_1:that ~(q)) => (---:
+>>            that ??)]
+>>         {move 2}
+
+
+
+      close
+
+   define problem3 neither:Negproof ~q, problem2
+
+
+>>    problem3: [(neither_1:that ~((p v q)))
+>>         => (---:that ~(~(q)))]
+>>      {move 1}
+
+
+
+   define problem4 neither:Dneg q problem3 \
+      neither
+
+>>    problem4: [(neither_1:that ~((p v q)))
+>>         => (---:that q)]
+>>      {move 1}
+
+
+
+   define problem5 neither: Addition2 p q \
+      problem4 neither
+
+>>    problem5: [(neither_1:that ~((p v q)))
+>>         => (---:that (p v q))]
+>>      {move 1}
+
+
+
+   define disaster neither:Contradiction \
+      p v q, problem5 neither, neither
+
+>>    disaster: [(neither_1:that ~((p v q)))
+>>         => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Orproof p q ruleout:Dneg p v q, Negproof \
+   ~(p v q), disaster
+
+>> Orproof: [(p_1:prop),(q_1:prop),(ruleout_1:
+>>      [(notq_2:that ~(q_1)) => (---:that p_1)])
+>>      => (((p_1 v q_1) Dneg (~((p_1 v q_1))
+>>      Negproof [(neither_3:that ~((p_1 v q_1)))
+>>         => (Contradiction((p_1 v q_1),Addition2(p_1,
+>>         q_1,(q_1 Dneg (~(q_1) Negproof [(notq2_4:
+>>            that ~(q_1)) => (Contradiction((p_1
+>>            v q_1),Addition1(p_1,q_1,ruleout_1(notq2_4)),
+>>            neither_3):that ??)]))
+>>         ),neither_3):that ??)]))
+>>      :that (p_1 v q_1))]
+>>   {move 0}
+
+
+comment rules of disjunctive syllogism
+
+
+declare notp that ~p
+
+>> notp: that ~(p) {move 1}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   define qfollows pp2:Panic q, Contradiction \
+      p pp2 notp
+
+>>    qfollows: [(pp2_1:that p) => (---:that
+>>         q)]
+>>      {move 1}
+
+
+
+   declare qq2 that q
+
+>>    qq2: that q {move 2}
+
+
+
+   define qfollow2 qq2:qq2
+
+>>    qfollow2: [(qq2_1:that q) => (---:that
+>>         q)]
+>>      {move 1}
+
+
+
+   close
+
+define Ds1 p q uu notp:Cases p q uu q, qfollows, \
+   qfollow2
+
+>> Ds1: [(p_1:prop),(q_1:prop),(uu_1:that (p_1
+>>      v q_1)),(notp_1:that ~(p_1)) => (Cases(p_1,
+>>      q_1,uu_1,q_1,[(pp2_2:that p_1) => ((q_1
+>>         Panic Contradiction(p_1,pp2_2,notp_1)):
+>>         that q_1)]
+>>      ,[(qq2_3:that q_1) => (qq2_3:that q_1)])
+>>      :that q_1)]
+>>   {move 0}
+
+
+
+declare notq that ~q
+
+>> notq: that ~(q) {move 1}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   define notqcase1 pp2:pp2
+
+>>    notqcase1: [(pp2_1:that p) => (---:that
+>>         p)]
+>>      {move 1}
+
+
+
+   declare qq2 that q
+
+>>    qq2: that q {move 2}
+
+
+
+   define notqcase2 qq2: Panic p, Contradiction \
+      q qq2 notq
+
+>>    notqcase2: [(qq2_1:that q) => (---:that
+>>         p)]
+>>      {move 1}
+
+
+
+   close
+
+define Ds2 p q uu notq:Cases p q uu p, notqcase1, \
+   notqcase2
+
+>> Ds2: [(p_1:prop),(q_1:prop),(uu_1:that (p_1
+>>      v q_1)),(notq_1:that ~(q_1)) => (Cases(p_1,
+>>      q_1,uu_1,p_1,[(pp2_2:that p_1) => (pp2_2:
+>>         that p_1)]
+>>      ,[(qq2_3:that q_1) => ((p_1 Panic Contradiction(q_1,
+>>         qq2_3,notq_1)):that p_1)])
+>>      :that p_1)]
+>>   {move 0}
+
+
+comment delayed Orproof2 needed
+
+
+open
+
+   declare notp2 that ~p
+
+>>    notp2: that ~(p) {move 2}
+
+
+
+   postulate ruleout2 notp2:that q
+
+>>    ruleout2: [(notp2_1:that ~(p)) => (---:
+>>         that q)]
+>>      {move 1}
+
+
+
+   declare neither that ~(p v q)
+
+>>    neither: that ~((p v q)) {move 2}
+
+
+
+   open
+
+      declare notp3 that ~p
+
+>>       notp3: that ~(p) {move 3}
+
+
+
+      define problem notp3:Addition2 p q, \
+         ruleout2 notp3
+
+>>       problem: [(notp3_1:that ~(p)) => (---:
+>>            that (p v q))]
+>>         {move 2}
+
+
+
+      define problem2 notp3:Contradiction \
+         p v q,problem notp3, neither
+
+>>       problem2: [(notp3_1:that ~(p)) => (---:
+>>            that ??)]
+>>         {move 2}
+
+
+
+      close
+
+   define problema3 neither:Dneg p, Negproof \
+      ~p problem2
+
+>>    problema3: [(neither_1:that ~((p v q)))
+>>         => (---:that p)]
+>>      {move 1}
+
+
+
+   define problema4 neither:Addition1 p q, \
+      problema3 neither
+
+>>    problema4: [(neither_1:that ~((p v q)))
+>>         => (---:that (p v q))]
+>>      {move 1}
+
+
+
+   define problema5 neither:Contradiction \
+      p v q, problema4 neither, neither
+
+>>    problema5: [(neither_1:that ~((p v q)))
+>>         => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Orproof2 p q ruleout2:Dneg p v q, \
+   Negproof ~(p v q), problema5
+
+>> Orproof2: [(p_1:prop),(q_1:prop),(ruleout2_1:
+>>      [(notp2_2:that ~(p_1)) => (---:that q_1)])
+>>      => (((p_1 v q_1) Dneg (~((p_1 v q_1))
+>>      Negproof [(neither_3:that ~((p_1 v q_1)))
+>>         => (Contradiction((p_1 v q_1),Addition1(p_1,
+>>         q_1,(p_1 Dneg (~(p_1) Negproof [(notp3_4:
+>>            that ~(p_1)) => (Contradiction((p_1
+>>            v q_1),Addition2(p_1,q_1,ruleout2_1(notp3_4)),
+>>            neither_3):that ??)]))
+>>         ),neither_3):that ??)]))
+>>      :that (p_1 v q_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare notp2 that ~p
+
+>>    notp2: that ~(p) {move 2}
+
+
+
+   define samenotp notp2:notp2
+
+>>    samenotp: [(notp2_1:that ~(p)) => (---:
+>>         that ~(p))]
+>>      {move 1}
+
+
+
+   close
+
+define Excmid p:Orproof2 p, ~p, samenotp
+
+
+>> Excmid: [(p_1:prop) => (Orproof2(p_1,~(p_1),
+>>      [(notp2_2:that ~(p_1)) => (notp2_2:that
+>>         ~(p_1))])
+>>      :that (p_1 v ~(p_1)))]
+>>   {move 0}
+
+
+
+>> Inspector Lestrade says:  Done reading scratch to logical_style:
+>>  type lines or type quit to exit interface
+
+quit
+
+

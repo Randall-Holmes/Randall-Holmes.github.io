@@ -1,0 +1,2573 @@
+
+>> Inspector Lestrade says:  
+>> Welcome to the Lestrade Type Inspector,
+>>  
+>> User entered lambda terms (arguments)
+>> and function sorts (in declare)!
+>> literate programming with LaTeX comments in ML source
+>> version of  8/6/2019
+>>  10:30 am Boise time
+
+
+%% a logic package treating all the basic operations as primitive
+% but proving various reductions using double negation.
+
+% This is intended to be imported into other files.
+
+
+declare p prop
+
+>> p: prop {move 1}
+
+
+
+declare q prop
+
+>> q: prop {move 1}
+
+
+
+save q
+
+postulate & p q prop
+
+>> &: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate -> p q prop
+
+>> ->: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate v p q prop
+
+>> v: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate ?? prop
+
+>> ??: prop {move 0}
+
+
+
+define ~ p : p -> ??
+
+>> ~: [(p_1:prop) => ((p_1 -> ??):prop)]
+>>   {move 0}
+
+
+
+define <-> p q: (p->q) & q->p
+
+>> <->: [(p_1:prop),(q_1:prop) => (((p_1 ->
+>>      q_1) & (q_1 -> p_1)):prop)]
+>>   {move 0}
+
+
+% rules of inference for conjunction
+
+
+declare pp that p
+
+>> pp: that p {move 1:q}
+
+
+
+declare qq that q
+
+>> qq: that q {move 1:q}
+
+
+
+declare rr that p & q
+
+>> rr: that (p & q) {move 1:q}
+
+
+
+postulate Conjunction pp qq : that p & q
+
+
+>> Conjunction: [(.p_1:prop),(pp_1:that .p_1),
+>>      (.q_1:prop),(qq_1:that .q_1) => (---:that
+>>      (.p_1 & .q_1))]
+>>   {move 0}
+
+
+
+postulate Simplification1 rr : that p
+
+>> Simplification1: [(.p_1:prop),(.q_1:prop),
+>>      (rr_1:that (.p_1 & .q_1)) => (---:that
+>>      .p_1)]
+>>   {move 0}
+
+
+
+postulate Simplification2 rr : that q
+
+>> Simplification2: [(.p_1:prop),(.q_1:prop),
+>>      (rr_1:that (.p_1 & .q_1)) => (---:that
+>>      .q_1)]
+>>   {move 0}
+
+
+% primitive rules of inference for implication
+
+clearcurrent q
+
+
+declare pp that p
+
+>> pp: that p {move 1:q}
+
+
+
+declare ii that p->q
+
+>> ii: that (p -> q) {move 1:q}
+
+
+
+postulate Mp pp ii : that q
+
+>> Mp: [(.p_1:prop),(pp_1:that .p_1),(.q_1:prop),
+>>      (ii_1:that (.p_1 -> .q_1)) => (---:that
+>>      .q_1)]
+>>   {move 0}
+
+
+
+open
+
+   .... declare pp1 that p
+
+>>    pp1: that p {move 2}
+
+
+
+   .... postulate Ded pp1 that q
+
+>>    Ded: [(pp1_1:that p) => (---:that q)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+postulate Deduction Ded : that p -> q
+
+>> Deduction: [(.p_1:prop),(.q_1:prop),(Ded_1:
+>>      [(pp1_2:that .p_1) => (---:that .q_1)])
+>>      => (---:that (.p_1 -> .q_1))]
+>>   {move 0}
+
+
+% primitive rules of inference for disjunction
+
+clearcurrent q
+
+
+declare pp that p
+
+>> pp: that p {move 1:q}
+
+
+
+declare qq that q
+
+>> qq: that q {move 1:q}
+
+
+
+postulate Addition1 q pp : that p v q
+
+>> Addition1: [(q_1:prop),(.p_1:prop),(pp_1:
+>>      that .p_1) => (---:that (.p_1 v q_1))]
+>>   {move 0}
+
+
+
+postulate Addition2 p qq : that p v q
+
+>> Addition2: [(p_1:prop),(.q_1:prop),(qq_1:
+>>      that .q_1) => (---:that (p_1 v .q_1))]
+>>   {move 0}
+
+
+
+declare r prop
+
+>> r: prop {move 1:q}
+
+
+
+declare aa that p v q
+
+>> aa: that (p v q) {move 1:q}
+
+
+
+open
+
+   .... declare pp1 that p
+
+>>    pp1: that p {move 2}
+
+
+
+   .... declare qq1 that q
+
+>>    qq1: that q {move 2}
+
+
+
+   .... postulate Case1 pp1 : that r
+
+>>    Case1: [(pp1_1:that p) => (---:that r)]
+>>      {move 1:q}
+
+
+
+   .... postulate Case2 qq1 : that r
+
+>>    Case2: [(qq1_1:that q) => (---:that r)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+postulate Cases r aa Case1, Case2 : that \
+   r
+
+>> Cases: [(r_1:prop),(.p_1:prop),(.q_1:prop),
+>>      (aa_1:that (.p_1 v .q_1)),(Case1_1:[(pp1_2:
+>>         that .p_1) => (---:that r_1)]),
+>>      (Case2_1:[(qq1_3:that .q_1) => (---:that
+>>         r_1)])
+>>      => (---:that r_1)]
+>>   {move 0}
+
+
+% intuitionistic and classical rules for negation
+
+clearcurrent q
+
+
+declare absurd that ??
+
+>> absurd: that ?? {move 1:q}
+
+
+% constructively valid, anything follows from a contradiction
+
+
+postulate Panic p absurd : that p
+
+>> Panic: [(p_1:prop),(absurd_1:that ??) =>
+>>      (---:that p_1)]
+>>   {move 0}
+
+
+
+declare maybe that ~ ~ p
+
+>> maybe: that ~(~(p)) {move 1:q}
+
+
+% the characteristic additional rule of classical logic, for us
+
+
+postulate Dneg maybe that p
+
+>> Dneg: [(.p_1:prop),(maybe_1:that ~(~(.p_1)))
+>>      => (---:that .p_1)]
+>>   {move 0}
+
+
+% rules for defined connectives
+
+clearcurrent q
+
+
+declare pp that p
+
+>> pp: that p {move 1:q}
+
+
+%% the function fixprop coerces form of output to use
+% a defined operation, or have desired specific form in some other way.
+
+
+define fixprop p pp : pp
+
+>> fixprop: [(p_1:prop),(pp_1:that p_1) => (pp_1:
+>>      that p_1)]
+>>   {move 0}
+
+
+
+declare notp that ~p
+
+>> notp: that ~(p) {move 1:q}
+
+
+
+define Contradiction pp notp : Mp pp notp
+
+
+>> Contradiction: [(.p_1:prop),(pp_1:that .p_1),
+>>      (notp_1:that ~(.p_1)) => ((pp_1 Mp notp_1):
+>>      that ??)]
+>>   {move 0}
+
+
+
+open
+
+   .... declare pp1 that p
+
+>>    pp1: that p {move 2}
+
+
+
+   .... postulate Bad pp1 that ??
+
+>>    Bad: [(pp1_1:that p) => (---:that ??)]
+>>      {move 1:q}
+
+
+
+   .... close
+% the constructive rule of negation introduction
+
+
+define Negintro Bad : fixprop (~ p, Deduction \
+   Bad)
+
+>> Negintro: [(.p_1:prop),(Bad_1:[(pp1_2:that
+>>         .p_1) => (---:that ??)])
+>>      => ((~(.p_1) fixprop Deduction(Bad_1)):
+>>      that ~(.p_1))]
+>>   {move 0}
+
+
+
+open
+
+   .... declare notp1 that ~p
+
+>>    notp1: that ~(p) {move 2}
+
+
+
+   .... postulate Red notp1 : that ??
+
+>>    Red: [(notp1_1:that ~(p)) => (---:that
+>>         ??)]
+>>      {move 1:q}
+
+
+
+   .... close
+% the classical technique of reductio ad absurdum
+
+
+define Reductio Red : Dneg Deduction Red
+
+
+>> Reductio: [(.p_1:prop),(Red_1:[(notp1_2:that
+>>         ~(.p_1)) => (---:that ??)])
+>>      => (Dneg(Deduction(Red_1)):that .p_1)]
+>>   {move 0}
+
+
+% other multiple negations
+
+clearcurrent q
+
+
+declare pp that p
+
+>> pp: that p {move 1:q}
+
+
+
+open
+
+   .... declare notp1 that ~p
+
+>>    notp1: that ~(p) {move 2}
+
+
+
+   .... define eep notp1 : Contradiction \
+      pp notp1
+
+>>    eep: [(notp1_1:that ~(p)) => (---:that
+>>         ??)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Dneg2 pp : Negintro eep
+
+>> Dneg2: [(.p_1:prop),(pp_1:that .p_1) => (Negintro([(notp1_2:
+>>         that ~(.p_1)) => ((pp_1 Contradiction
+>>         notp1_2):that ??)])
+>>      :that ~(~(.p_1)))]
+>>   {move 0}
+
+
+
+declare notp3 that ~ ~ ~ p
+
+>> notp3: that ~(~(~(p))) {move 1:q}
+
+
+
+open
+
+   .... declare pp1 that p
+
+>>    pp1: that p {move 2}
+
+
+
+   .... define eep2 pp1 : Contradiction (Dneg2 \
+      pp1,notp3)
+
+>>    eep2: [(pp1_1:that p) => (---:that ??)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Threeneg notp3 : Negintro eep2
+
+>> Threeneg: [(.p_1:prop),(notp3_1:that ~(~(~(.p_1))))
+>>      => (Negintro([(pp1_2:that .p_1) => ((Dneg2(pp1_2)
+>>         Contradiction notp3_1):that ??)])
+>>      :that ~(.p_1))]
+>>   {move 0}
+
+
+% mp for biconditionals
+
+clearcurrent q
+
+
+declare pp that p
+
+>> pp: that p {move 1:q}
+
+
+
+declare qq that q
+
+>> qq: that q {move 1:q}
+
+
+
+declare ee that p <-> q
+
+>> ee: that (p <-> q) {move 1:q}
+
+
+
+define Mp1 pp ee : Mp pp Simplification1 \
+   ee
+
+>> Mp1: [(.p_1:prop),(pp_1:that .p_1),(.q_1:
+>>      prop),(ee_1:that (.p_1 <-> .q_1)) => ((pp_1
+>>      Mp Simplification1(ee_1)):that .q_1)]
+>>   {move 0}
+
+
+
+define Mp2 qq ee : Mp qq Simplification2 \
+   ee
+
+>> Mp2: [(.q_1:prop),(qq_1:that .q_1),(.p_1:
+>>      prop),(ee_1:that (.p_1 <-> .q_1)) => ((qq_1
+>>      Mp Simplification2(ee_1)):that .p_1)]
+>>   {move 0}
+
+
+
+open
+
+   .... declare pp1 that p
+
+>>    pp1: that p {move 2}
+
+
+
+   .... declare qq1 that q
+
+>>    qq1: that q {move 2}
+
+
+
+   .... postulate Partone pp1 : that q
+
+>>    Partone: [(pp1_1:that p) => (---:that
+>>         q)]
+>>      {move 1:q}
+
+
+
+   .... postulate Parttwo qq1 : that p
+
+>>    Parttwo: [(qq1_1:that q) => (---:that
+>>         p)]
+>>      {move 1:q}
+
+
+
+   .... close
+% the standard technique of proving a biconditional
+
+
+define Biconditional Partone, Parttwo : fixprop \
+   p <-> q (Deduction Partone) Conjunction \
+   Deduction Parttwo
+
+>> Biconditional: [(.p_1:prop),(.q_1:prop),(Partone_1:
+>>      [(pp1_2:that .p_1) => (---:that .q_1)]),
+>>      (Parttwo_1:[(qq1_3:that .q_1) => (---:
+>>         that .p_1)])
+>>      => (((.p_1 <-> .q_1) fixprop (Deduction(Partone_1)
+>>      Conjunction Deduction(Parttwo_1))):that
+>>      (.p_1 <-> .q_1))]
+>>   {move 0}
+
+
+%  rules combining implication and negation
+
+clearcurrent q
+
+
+declare ii that p->q
+
+>> ii: that (p -> q) {move 1:q}
+
+
+
+declare notq that ~ q
+
+>> notq: that ~(q) {move 1:q}
+
+
+
+open
+
+   .... declare pp1 that p
+
+>>    pp1: that p {move 2}
+
+
+
+   .... define line1 pp1 : Mp pp1 ii
+
+>>    line1: [(pp1_1:that p) => (---:that q)]
+>>      {move 1:q}
+
+
+
+   .... define line2 pp1 : Mp line1 pp1 notq
+
+
+>>    line2: [(pp1_1:that p) => (---:that ??)]
+>>      {move 1:q}
+
+
+
+   .... close
+% the rule of modus tollens
+
+
+define Mt ii notq : Negintro line2
+
+>> Mt: [(.p_1:prop),(.q_1:prop),(ii_1:that (.p_1
+>>      -> .q_1)),(notq_1:that ~(.q_1)) => (Negintro([(pp1_2:
+>>         that .p_1) => (((pp1_2 Mp ii_1) Mp
+>>         notq_1):that ??)])
+>>      :that ~(.p_1))]
+>>   {move 0}
+
+
+% environment developing proof by contrapositive
+
+
+open
+
+   .... declare notq1 that ~ q
+
+>>    notq1: that ~(q) {move 2}
+
+
+
+   .... postulate indirect notq1 that ~ p
+
+
+>>    indirect: [(notq1_1:that ~(q)) => (---:
+>>         that ~(p))]
+>>      {move 1:q}
+
+
+
+   .... declare pp1 that p
+
+>>    pp1: that p {move 2}
+
+
+
+   .... open
+
+      .... .... declare notq2 that ~q
+
+>>       notq2: that ~(q) {move 3}
+
+
+
+      .... .... define notso notq2 : Contradiction \
+         pp1 indirect notq2
+
+>>       notso: [(notq2_1:that ~(q)) => (---:
+>>            that ??)]
+>>         {move 2}
+
+
+
+      .... .... close
+
+   .... define yesq pp1 : Reductio notso
+
+
+>>    yesq: [(pp1_1:that p) => (---:that q)]
+>>      {move 1:q}
+
+
+
+   .... close
+%% indirect proof, or proof by contrapositive 
+% (classical, note the use of Reductio)
+
+
+define Contrapositive indirect : Deduction \
+   yesq
+
+>> Contrapositive: [(.q_1:prop),(.p_1:prop),
+>>      (indirect_1:[(notq1_2:that ~(.q_1)) =>
+>>         (---:that ~(.p_1))])
+>>      => (Deduction([(pp1_3:that .p_1) => (Reductio([(notq2_4:
+>>            that ~(.q_1)) => ((pp1_3 Contradiction
+>>            indirect_1(notq2_4)):that ??)])
+>>         :that .q_1)])
+>>      :that (.p_1 -> .q_1))]
+>>   {move 0}
+
+
+% rules combining disjunction and negation
+
+% develop the four forms of disjunctive syllogism
+
+clearcurrent q
+
+
+declare aa that p v q
+
+>> aa: that (p v q) {move 1:q}
+
+
+
+declare notq that ~q
+
+>> notq: that ~(q) {move 1:q}
+
+
+
+open
+
+   .... declare pp1 that p
+
+>>    pp1: that p {move 2}
+
+
+
+   .... declare qq1 that q
+
+>>    qq1: that q {move 2}
+
+
+
+   .... define dsyll1 pp1 : pp1
+
+>>    dsyll1: [(pp1_1:that p) => (---:that p)]
+>>      {move 1:q}
+
+
+
+   .... define dsyll2 qq1 : Panic p, Contradiction \
+      qq1 notq
+
+>>    dsyll2: [(qq1_1:that q) => (---:that p)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Dsyll1 aa notq : Cases p aa dsyll1, \
+   dsyll2
+
+>> Dsyll1: [(.p_1:prop),(.q_1:prop),(aa_1:that
+>>      (.p_1 v .q_1)),(notq_1:that ~(.q_1)) =>
+>>      (Cases(.p_1,aa_1,[(pp1_2:that .p_1) =>
+>>         (pp1_2:that .p_1)]
+>>      ,[(qq1_3:that .q_1) => ((.p_1 Panic (qq1_3
+>>         Contradiction notq_1)):that .p_1)])
+>>      :that .p_1)]
+>>   {move 0}
+
+
+clearcurrent q
+
+
+declare aa that p v q
+
+>> aa: that (p v q) {move 1:q}
+
+
+
+declare notp that ~p
+
+>> notp: that ~(p) {move 1:q}
+
+
+
+open
+
+   .... declare pp1 that p
+
+>>    pp1: that p {move 2}
+
+
+
+   .... declare qq1 that q
+
+>>    qq1: that q {move 2}
+
+
+
+   .... define dsyll1 pp1 : Panic q, Contradiction \
+      pp1 notp
+
+>>    dsyll1: [(pp1_1:that p) => (---:that q)]
+>>      {move 1:q}
+
+
+
+   .... define dsyll2 qq1 : qq1
+
+>>    dsyll2: [(qq1_1:that q) => (---:that q)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Dsyll2 aa notp : Cases q aa dsyll1, \
+   dsyll2
+
+>> Dsyll2: [(.p_1:prop),(.q_1:prop),(aa_1:that
+>>      (.p_1 v .q_1)),(notp_1:that ~(.p_1)) =>
+>>      (Cases(.q_1,aa_1,[(pp1_2:that .p_1) =>
+>>         ((.q_1 Panic (pp1_2 Contradiction notp_1)):
+>>         that .q_1)]
+>>      ,[(qq1_3:that .q_1) => (qq1_3:that .q_1)])
+>>      :that .q_1)]
+>>   {move 0}
+
+
+clearcurrent q
+
+
+declare aa that p v ~q
+
+>> aa: that (p v ~(q)) {move 1:q}
+
+
+
+declare qq that q
+
+>> qq: that q {move 1:q}
+
+
+
+open
+
+   .... declare pp1 that p
+
+>>    pp1: that p {move 2}
+
+
+
+   .... declare notq1 that ~q
+
+>>    notq1: that ~(q) {move 2}
+
+
+
+   .... define dsyll1 pp1 : pp1
+
+>>    dsyll1: [(pp1_1:that p) => (---:that p)]
+>>      {move 1:q}
+
+
+
+   .... define dsyll2 notq1 : Panic p, Contradiction \
+      qq notq1
+
+>>    dsyll2: [(notq1_1:that ~(q)) => (---:that
+>>         p)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Dsyll3 aa qq : Cases p aa dsyll1, \
+   dsyll2
+
+>> Dsyll3: [(.p_1:prop),(.q_1:prop),(aa_1:that
+>>      (.p_1 v ~(.q_1))),(qq_1:that .q_1) =>
+>>      (Cases(.p_1,aa_1,[(pp1_2:that .p_1) =>
+>>         (pp1_2:that .p_1)]
+>>      ,[(notq1_3:that ~(.q_1)) => ((.p_1 Panic
+>>         (qq_1 Contradiction notq1_3)):that
+>>         .p_1)])
+>>      :that .p_1)]
+>>   {move 0}
+
+
+% introduce my classical disjunction introduction rules (alternative elimination)
+
+clearcurrent q
+
+
+declare aa that ~p v q
+
+>> aa: that (~(p) v q) {move 1:q}
+
+
+
+declare pp that p
+
+>> pp: that p {move 1:q}
+
+
+
+open
+
+   .... declare notp1 that ~p
+
+>>    notp1: that ~(p) {move 2}
+
+
+
+   .... declare qq1 that q
+
+>>    qq1: that q {move 2}
+
+
+
+   .... define dsyll1 notp1 : Panic q, Contradiction \
+      pp notp1
+
+>>    dsyll1: [(notp1_1:that ~(p)) => (---:that
+>>         q)]
+>>      {move 1:q}
+
+
+
+   .... define dsyll2 qq1 : qq1
+
+>>    dsyll2: [(qq1_1:that q) => (---:that q)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Dsyll4 aa pp : Cases q aa dsyll1, \
+   dsyll2
+
+>> Dsyll4: [(.p_1:prop),(.q_1:prop),(aa_1:that
+>>      (~(.p_1) v .q_1)),(pp_1:that .p_1) =>
+>>      (Cases(.q_1,aa_1,[(notp1_2:that ~(.p_1))
+>>         => ((.q_1 Panic (pp_1 Contradiction
+>>         notp1_2)):that .q_1)]
+>>      ,[(qq1_3:that .q_1) => (qq1_3:that .q_1)])
+>>      :that .q_1)]
+>>   {move 0}
+
+
+clearcurrent q
+
+
+open
+
+   .... declare notq that ~q
+
+>>    notq: that ~(q) {move 2}
+
+
+
+   .... postulate altelim notq that p
+
+>>    altelim: [(notq_1:that ~(q)) => (---:that
+>>         p)]
+>>      {move 1:q}
+
+
+
+   .... declare notor that ~(p v q)
+
+>>    notor: that ~((p v q)) {move 2}
+
+
+
+   .... open
+
+      .... .... declare qq1 that q
+
+>>       qq1: that q {move 3}
+
+
+
+      .... .... define line1 qq1 : Contradiction \
+         Addition2 p qq1 notor
+
+>>       line1: [(qq1_1:that q) => (---:that
+>>            ??)]
+>>         {move 2}
+
+
+
+      .... .... close
+
+   .... define line2 notor : Contradiction \
+      (Addition1 q altelim Negintro line1,notor)
+
+
+>>    line2: [(notor_1:that ~((p v q))) => (---:
+>>         that ??)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Altelim1 altelim : Dneg Deduction \
+   line2
+
+>> Altelim1: [(.q_1:prop),(.p_1:prop),(altelim_1:
+>>      [(notq_2:that ~(.q_1)) => (---:that .p_1)])
+>>      => (Dneg(Deduction([(notor_3:that ~((.p_1
+>>         v .q_1))) => (((.q_1 Addition1 altelim_1(Negintro([(qq1_4:
+>>            that .q_1) => (((.p_1 Addition2
+>>            qq1_4) Contradiction notor_3):that
+>>            ??)]))
+>>         ) Contradiction notor_3):that ??)]))
+>>      :that (.p_1 v .q_1))]
+>>   {move 0}
+
+
+clearcurrent q
+
+
+open
+
+   .... declare notp that ~p
+
+>>    notp: that ~(p) {move 2}
+
+
+
+   .... postulate altelim notp that q
+
+>>    altelim: [(notp_1:that ~(p)) => (---:that
+>>         q)]
+>>      {move 1:q}
+
+
+
+   .... declare notor that ~(p v q)
+
+>>    notor: that ~((p v q)) {move 2}
+
+
+
+   .... open
+
+      .... .... declare pp1 that p
+
+>>       pp1: that p {move 3}
+
+
+
+      .... .... define line1 pp1 : Contradiction \
+         Addition1 q pp1 notor
+
+>>       line1: [(pp1_1:that p) => (---:that
+>>            ??)]
+>>         {move 2}
+
+
+
+      .... .... close
+
+   .... define line2 notor : Contradiction \
+      (Addition2 p altelim Negintro line1,notor)
+
+
+>>    line2: [(notor_1:that ~((p v q))) => (---:
+>>         that ??)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Altelim2 altelim : Dneg Deduction \
+   line2
+
+>> Altelim2: [(.p_1:prop),(.q_1:prop),(altelim_1:
+>>      [(notp_2:that ~(.p_1)) => (---:that .q_1)])
+>>      => (Dneg(Deduction([(notor_3:that ~((.p_1
+>>         v .q_1))) => (((.p_1 Addition2 altelim_1(Negintro([(pp1_4:
+>>            that .p_1) => (((.q_1 Addition1
+>>            pp1_4) Contradiction notor_3):that
+>>            ??)]))
+>>         ) Contradiction notor_3):that ??)]))
+>>      :that (.p_1 v .q_1))]
+>>   {move 0}
+
+
+
+open
+
+   .... declare notp1 that ~ p
+
+>>    notp1: that ~(p) {move 2}
+
+
+
+   .... define notpid notp1 : notp1
+
+>>    notpid: [(notp1_1:that ~(p)) => (---:that
+>>         ~(p))]
+>>      {move 1:q}
+
+
+
+   .... close
+% the law of excluded middle
+
+
+define Excmid p : Altelim2 notpid
+
+>> Excmid: [(p_1:prop) => (Altelim2([(notp1_2:
+>>         that ~(p_1)) => (notp1_2:that ~(p_1))])
+>>      :that (p_1 v ~(p_1)))]
+>>   {move 0}
+
+
+% the substitution rule for biconditionals
+
+clearcurrent q
+
+
+open
+
+   .... declare p1 prop
+
+>>    p1: prop {move 2}
+
+
+
+   .... postulate context p1 : prop
+
+>>    context: [(p1_1:prop) => (---:prop)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+declare substarget that context p
+
+>> substarget: that context(p) {move 1:q}
+
+
+
+declare ee that p <-> q
+
+>> ee: that (p <-> q) {move 1:q}
+
+
+
+postulate Bisubs context, substarget ee : \
+   that context q
+
+>> Bisubs: [(context_1:[(p1_2:prop) => (---:
+>>         prop)]),
+>>      (.p_1:prop),(substarget_1:that context_1(.p_1)),
+>>      (.q_1:prop),(ee_1:that (.p_1 <-> .q_1))
+>>      => (---:that context_1(.q_1))]
+>>   {move 0}
+
+
+
+open
+
+   .... declare qq1 that q
+
+>>    qq1: that q {move 2}
+
+
+
+   .... define qid qq1 : qq1
+
+>>    qid: [(qq1_1:that q) => (---:that q)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Selfbi q : Biconditional qid, qid
+
+
+>> Selfbi: [(q_1:prop) => (Biconditional([(qq1_2:
+>>         that q_1) => (qq1_2:that q_1)]
+>>      ,[(qq1_3:that q_1) => (qq1_3:that q_1)])
+>>      :that (q_1 <-> q_1))]
+>>   {move 0}
+
+
+
+open
+
+   .... declare p1 prop
+
+>>    p1: prop {move 2}
+
+
+
+   .... define impliesp p1: p1 <-> p
+
+>>    impliesp: [(p1_1:prop) => (---:prop)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Revbi ee : Bisubs (impliesp, Selfbi \
+   p, ee)
+
+>> Revbi: [(.p_1:prop),(.q_1:prop),(ee_1:that
+>>      (.p_1 <-> .q_1)) => (Bisubs([(p1_2:prop)
+>>         => ((p1_2 <-> .p_1):prop)]
+>>      ,Selfbi(.p_1),ee_1):that (.q_1 <-> .p_1))]
+>>   {move 0}
+
+
+
+declare ee2 that q <-> p
+
+>> ee2: that (q <-> p) {move 1:q}
+
+
+
+define Bisubs2 context, substarget ee2 : \
+   Bisubs context, substarget Revbi ee2
+
+>> Bisubs2: [(context_1:[(p1_2:prop) => (---:
+>>         prop)]),
+>>      (.p_1:prop),(substarget_1:that context_1(.p_1)),
+>>      (.q_1:prop),(ee2_1:that (.q_1 <-> .p_1))
+>>      => (Bisubs(context_1,substarget_1,Revbi(ee2_1)):
+>>      that context_1(.q_1))]
+>>   {move 0}
+
+
+clearcurrent q
+
+
+declare ev1 that ~(p -> q)
+
+>> ev1: that ~((p -> q)) {move 1:q}
+
+
+
+open
+
+   .... declare pp1 that ~p
+
+>>    pp1: that ~(p) {move 2}
+
+
+
+   .... open
+
+      .... .... declare pp2 that p
+
+>>       pp2: that p {move 3}
+
+
+
+      .... .... define wow pp2 : Panic q, \
+         Contradiction pp2 pp1
+
+>>       wow: [(pp2_1:that p) => (---:that q)]
+>>         {move 2}
+
+
+
+      .... .... close
+
+   .... define wow2 pp1 : Contradiction (Deduction \
+      wow,ev1)
+
+>>    wow2: [(pp1_1:that ~(p)) => (---:that
+>>         ??)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Negimpsimp1 ev1 : Reductio wow2
+
+>> Negimpsimp1: [(.p_1:prop),(.q_1:prop),(ev1_1:
+>>      that ~((.p_1 -> .q_1))) => (Reductio([(pp1_2:
+>>         that ~(.p_1)) => ((Deduction([(pp2_3:
+>>            that .p_1) => ((.q_1 Panic (pp2_3
+>>            Contradiction pp1_2)):that .q_1)])
+>>         Contradiction ev1_1):that ??)])
+>>      :that .p_1)]
+>>   {move 0}
+
+
+
+open
+
+   .... declare qq1 that q
+
+>>    qq1: that q {move 2}
+
+
+
+   .... open
+
+      .... .... declare pp1 that p
+
+>>       pp1: that p {move 3}
+
+
+
+      .... .... define trivimp pp1 : qq1
+
+
+>>       trivimp: [(pp1_1:that p) => (---:that
+>>            q)]
+>>         {move 2}
+
+
+
+      .... .... close
+
+   .... define wow qq1 : Contradiction (Deduction \
+      trivimp, ev1)
+
+>>    wow: [(qq1_1:that q) => (---:that ??)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Negimpsimp2 ev1 : Negintro wow
+
+>> Negimpsimp2: [(.p_1:prop),(.q_1:prop),(ev1_1:
+>>      that ~((.p_1 -> .q_1))) => (Negintro([(qq1_2:
+>>         that .q_1) => ((Deduction([(pp1_3:that
+>>            .p_1) => (qq1_2:that .q_1)])
+>>         Contradiction ev1_1):that ??)])
+>>      :that ~(.q_1))]
+>>   {move 0}
+
+
+clearcurrent q
+
+
+declare pp that p
+
+>> pp: that p {move 1:q}
+
+
+
+declare notq that ~q
+
+>> notq: that ~(q) {move 1:q}
+
+
+
+open
+
+   .... declare imp that p -> q
+
+>>    imp: that (p -> q) {move 2}
+
+
+
+   .... define line1 imp : Mp pp imp
+
+>>    line1: [(imp_1:that (p -> q)) => (---:
+>>         that q)]
+>>      {move 1:q}
+
+
+
+   .... define line2 imp : Contradiction \
+      (line1 imp,notq)
+
+>>    line2: [(imp_1:that (p -> q)) => (---:
+>>         that ??)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Negimpintro pp notq : Negintro line2
+
+
+>> Negimpintro: [(.p_1:prop),(pp_1:that .p_1),
+>>      (.q_1:prop),(notq_1:that ~(.q_1)) => (Negintro([(imp_2:
+>>         that (.p_1 -> .q_1)) => (((pp_1 Mp
+>>         imp_2) Contradiction notq_1):that ??)])
+>>      :that ~((.p_1 -> .q_1)))]
+>>   {move 0}
+
+
+clearcurrent q
+
+
+declare notand1 that ~(p & q)
+
+>> notand1: that ~((p & q)) {move 1:q}
+
+
+
+declare pp that p
+
+>> pp: that p {move 1:q}
+
+
+
+declare qq that q
+
+>> qq: that q {move 1:q}
+
+
+
+open
+
+   .... declare qq1 that q
+
+>>    qq1: that q {move 2}
+
+
+
+   .... declare pp1 that p
+
+>>    pp1: that p {move 2}
+
+
+
+   .... define line1 qq1 : Conjunction pp \
+      qq1
+
+>>    line1: [(qq1_1:that q) => (---:that (p
+>>         & q))]
+>>      {move 1:q}
+
+
+
+   .... define lineb1 pp1 : Conjunction pp1 \
+      qq
+
+>>    lineb1: [(pp1_1:that p) => (---:that (p
+>>         & q))]
+>>      {move 1:q}
+
+
+
+   .... define line2 qq1 : Contradiction \
+      line1 qq1 notand1
+
+>>    line2: [(qq1_1:that q) => (---:that ??)]
+>>      {move 1:q}
+
+
+
+   .... define lineb2 pp1 : Contradiction \
+      lineb1 pp1 notand1
+
+>>    lineb2: [(pp1_1:that p) => (---:that ??)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Notandsyll1 notand1 pp : Negintro \
+   line2
+
+>> Notandsyll1: [(.p_1:prop),(.q_1:prop),(notand1_1:
+>>      that ~((.p_1 & .q_1))),(pp_1:that .p_1)
+>>      => (Negintro([(qq1_2:that .q_1) => (((pp_1
+>>         Conjunction qq1_2) Contradiction notand1_1):
+>>         that ??)])
+>>      :that ~(.q_1))]
+>>   {move 0}
+
+
+
+define Notandsyll2 notand1 qq : Negintro \
+   lineb2
+
+>> Notandsyll2: [(.p_1:prop),(.q_1:prop),(notand1_1:
+>>      that ~((.p_1 & .q_1))),(qq_1:that .q_1)
+>>      => (Negintro([(pp1_2:that .p_1) => (((pp1_2
+>>         Conjunction qq_1) Contradiction notand1_1):
+>>         that ??)])
+>>      :that ~(.p_1))]
+>>   {move 0}
+
+
+clearcurrent q
+
+
+declare notp that ~p
+
+>> notp: that ~(p) {move 1:q}
+
+
+
+declare notq that ~q
+
+>> notq: that ~(q) {move 1:q}
+
+
+
+open
+
+   .... declare pandq that p & q
+
+>>    pandq: that (p & q) {move 2}
+
+
+
+   .... define notsofastp pandq : Contradiction \
+      (Simplification1 pandq,notp)
+
+>>    notsofastp: [(pandq_1:that (p & q)) =>
+>>         (---:that ??)]
+>>      {move 1:q}
+
+
+
+   .... define notsofastq pandq : Contradiction \
+      (Simplification2 pandq notq)
+
+>>    notsofastq: [(pandq_1:that (p & q)) =>
+>>         (---:that ??)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Notandintro1 q notp : Negintro notsofastp
+
+
+>> Notandintro1: [(q_1:prop),(.p_1:prop),(notp_1:
+>>      that ~(.p_1)) => (Negintro([(pandq_2:that
+>>         (.p_1 & q_1)) => ((Simplification1(pandq_2)
+>>         Contradiction notp_1):that ??)])
+>>      :that ~((.p_1 & q_1)))]
+>>   {move 0}
+
+
+
+define Notandintro2 p notq : Negintro notsofastq
+
+
+>> Notandintro2: [(p_1:prop),(.q_1:prop),(notq_1:
+>>      that ~(.q_1)) => (Negintro([(pandq_2:that
+>>         (p_1 & .q_1)) => ((Simplification2(pandq_2)
+>>         Contradiction notq_1):that ??)])
+>>      :that ~((p_1 & .q_1)))]
+>>   {move 0}
+
+
+clearcurrent q
+
+
+declare alt1 that p v q
+
+>> alt1: that (p v q) {move 1:q}
+
+
+
+declare alt2 that ~(~p & ~q)
+
+>> alt2: that ~((~(p) & ~(q))) {move 1:q}
+
+
+
+open
+
+   .... declare noalt1 that ~p & ~q
+
+>>    noalt1: that (~(p) & ~(q)) {move 2}
+
+
+
+   .... open
+
+      .... .... declare pp1 that p
+
+>>       pp1: that p {move 3}
+
+
+
+      .... .... declare qq1 that q
+
+>>       qq1: that q {move 3}
+
+
+
+      .... .... define case1 pp1 : Contradiction \
+         pp1 Simplification1 noalt1
+
+>>       case1: [(pp1_1:that p) => (---:that
+>>            ??)]
+>>         {move 2}
+
+
+
+      .... .... define case2 qq1 : Contradiction \
+         qq1 Simplification2 noalt1
+
+>>       case2: [(qq1_1:that q) => (---:that
+>>            ??)]
+>>         {move 2}
+
+
+
+      .... .... close
+
+   .... define clinch noalt1 : Cases ?? alt1 \
+      case1, case2
+
+>>    clinch: [(noalt1_1:that (~(p) & ~(q)))
+>>         => (---:that ??)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Demorgana1 alt1 : Negintro clinch
+
+
+>> Demorgana1: [(.p_1:prop),(.q_1:prop),(alt1_1:
+>>      that (.p_1 v .q_1)) => (Negintro([(noalt1_2:
+>>         that (~(.p_1) & ~(.q_1))) => (Cases(??,
+>>         alt1_1,[(pp1_3:that .p_1) => ((pp1_3
+>>            Contradiction Simplification1(noalt1_2)):
+>>            that ??)]
+>>         ,[(qq1_4:that .q_1) => ((qq1_4 Contradiction
+>>            Simplification2(noalt1_2)):that
+>>            ??)])
+>>         :that ??)])
+>>      :that ~((~(.p_1) & ~(.q_1))))]
+>>   {move 0}
+
+
+
+open
+
+   .... declare notq1 that ~q
+
+>>    notq1: that ~(q) {move 2}
+
+
+
+   .... define line1 notq1 : Notandsyll2 \
+      alt2 notq1
+
+>>    line1: [(notq1_1:that ~(q)) => (---:that
+>>         ~(~(p)))]
+>>      {move 1:q}
+
+
+
+   .... define line2 notq1 : Dneg line1 notq1
+
+
+>>    line2: [(notq1_1:that ~(q)) => (---:that
+>>         p)]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Demorgana2 alt2 : Altelim1 line2
+
+>> Demorgana2: [(.p_1:prop),(.q_1:prop),(alt2_1:
+>>      that ~((~(.p_1) & ~(.q_1)))) => (Altelim1([(notq1_2:
+>>         that ~(.q_1)) => (Dneg((alt2_1 Notandsyll2
+>>         notq1_2)):that .p_1)])
+>>      :that (.p_1 v .q_1))]
+>>   {move 0}
+
+
+
+open
+
+   .... declare dem1 that p v q
+
+>>    dem1: that (p v q) {move 2}
+
+
+
+   .... declare dem2 that ~(~p & ~q)
+
+>>    dem2: that ~((~(p) & ~(q))) {move 2}
+
+
+
+   .... define dir1 dem1: Demorgana1 dem1
+
+
+>>    dir1: [(dem1_1:that (p v q)) => (---:that
+>>         ~((~(p) & ~(q))))]
+>>      {move 1:q}
+
+
+
+   .... define dir2 dem2: Demorgana2 dem2
+
+
+>>    dir2: [(dem2_1:that ~((~(p) & ~(q))))
+>>         => (---:that (p v q))]
+>>      {move 1:q}
+
+
+
+   .... close
+
+define Demorgana p q : Biconditional dir1, \
+   dir2
+
+>> Demorgana: [(p_1:prop),(q_1:prop) => (Biconditional([(dem1_2:
+>>         that (p_1 v q_1)) => (Demorgana1(dem1_2):
+>>         that ~((~(p_1) & ~(q_1))))]
+>>      ,[(dem2_3:that ~((~(p_1) & ~(q_1)))) =>
+>>         (Demorgana2(dem2_3):that (p_1 v q_1))])
+>>      :that ((p_1 v q_1) <-> ~((~(p_1) & ~(q_1)))))]
+>>   {move 0}
+
+
+% logic of equality
+
+clearcurrent
+
+
+declare x obj
+
+>> x: obj {move 1}
+
+
+
+declare y obj
+
+>> y: obj {move 1}
+
+
+
+postulate == x y prop
+
+>> ==: [(x_1:obj),(y_1:obj) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate Refl0 x that x == x
+
+>> Refl0: [(x_1:obj) => (---:that (x_1 == x_1))]
+>>   {move 0}
+
+
+
+declare eqev that x == y
+
+>> eqev: that (x == y) {move 1}
+
+
+
+open
+
+   .... declare x1 obj
+
+>>    x1: obj {move 2}
+
+
+
+   .... postulate Pred0 x1 prop
+
+>>    Pred0: [(x1_1:obj) => (---:prop)]
+>>      {move 1}
+
+
+
+   .... close
+
+save Pred0
+
+declare subsev that Pred0 x
+
+>> subsev: that Pred0(x) {move 1:Pred0}
+
+
+
+postulate Subs0 eqev Pred0, subsev that Pred0 \
+   y
+
+>> Subs0: [(.x_1:obj),(.y_1:obj),(eqev_1:that
+>>      (.x_1 == .y_1)),(Pred0_1:[(x1_2:obj) =>
+>>         (---:prop)]),
+>>      (subsev_1:that Pred0_1(.x_1)) => (---:
+>>      that Pred0_1(.y_1))]
+>>   {move 0}
+
+
+
+define Subsb0 eqev subsev : Subs0 eqev Pred0, \
+   subsev
+
+>> Subsb0: [(.x_1:obj),(.y_1:obj),(eqev_1:that
+>>      (.x_1 == .y_1)),(.Pred0_1:[(x1_2:obj)
+>>         => (---:prop)]),
+>>      (subsev_1:that .Pred0_1(.x_1)) => (Subs0(eqev_1,
+>>      .Pred0_1,subsev_1):that .Pred0_1(.y_1))]
+>>   {move 0}
+
+
+clearcurrent
+
+
+declare tau type
+
+>> tau: type {move 1}
+
+
+
+declare x in tau
+
+>> x: in tau {move 1}
+
+
+
+declare y in tau
+
+>> y: in tau {move 1}
+
+
+
+postulate = x y prop
+
+>> =: [(.tau_1:type),(x_1:in .tau_1),(y_1:in
+>>      .tau_1) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate Refl x that x=x
+
+>> Refl: [(.tau_1:type),(x_1:in .tau_1) => (---:
+>>      that (x_1 = x_1))]
+>>   {move 0}
+
+
+
+declare eqev that x = y
+
+>> eqev: that (x = y) {move 1}
+
+
+
+open
+
+   .... declare x1 in tau
+
+>>    x1: in tau {move 2}
+
+
+
+   .... postulate Pred x1 prop
+
+>>    Pred: [(x1_1:in tau) => (---:prop)]
+>>      {move 1}
+
+
+
+   .... close
+
+save Pred
+
+declare subsev that Pred x
+
+>> subsev: that Pred(x) {move 1:Pred}
+
+
+
+postulate Subs eqev Pred, subsev that Pred \
+   y
+
+>> Subs: [(.tau_1:type),(.x_1:in .tau_1),(.y_1:
+>>      in .tau_1),(eqev_1:that (.x_1 = .y_1)),
+>>      (Pred_1:[(x1_2:in .tau_1) => (---:prop)]),
+>>      (subsev_1:that Pred_1(.x_1)) => (---:that
+>>      Pred_1(.y_1))]
+>>   {move 0}
+
+
+
+define Subsb eqev subsev : Subs eqev Pred, \
+   subsev
+
+>> Subsb: [(.tau_1:type),(.x_1:in .tau_1),(.y_1:
+>>      in .tau_1),(eqev_1:that (.x_1 = .y_1)),
+>>      (.Pred_1:[(x1_2:in .tau_1) => (---:prop)]),
+>>      (subsev_1:that .Pred_1(.x_1)) => (Subs(eqev_1,
+>>      .Pred_1,subsev_1):that .Pred_1(.y_1))]
+>>   {move 0}
+
+
+%% quantification, again for untyped and typed 
+% objects separately.
+
+clearcurrent Pred0
+
+
+postulate Forall0 Pred0 prop
+
+>> Forall0: [(Pred0_1:[(x1_2:obj) => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+
+postulate Exists0 Pred0 prop
+
+>> Exists0: [(Pred0_1:[(x1_2:obj) => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+% universal instantiation
+
+
+declare univev that Forall0 Pred0
+
+>> univev: that Forall0(Pred0) {move 1:Pred0}
+
+
+
+postulate Ui0 x univev that Pred0 x
+
+>> Ui0: [(x_1:obj),(.Pred0_1:[(x1_2:obj) =>
+>>         (---:prop)]),
+>>      (univev_1:that Forall0(.Pred0_1)) => (---:
+>>      that .Pred0_1(x_1))]
+>>   {move 0}
+
+
+% universal generalization
+
+
+open
+
+   .... declare x1 obj
+
+>>    x1: obj {move 2}
+
+
+
+   .... postulate gen x1 : that Pred0 x1
+
+
+>>    gen: [(x1_1:obj) => (---:that Pred0(x1_1))]
+>>      {move 1:Pred0}
+
+
+
+   .... close
+
+postulate Ug0 gen : that Forall0 Pred0
+
+>> Ug0: [(.Pred0_1:[(x1_2:obj) => (---:prop)]),
+>>      (gen_1:[(x1_3:obj) => (---:that .Pred0_1(x1_3))])
+>>      => (---:that Forall0(.Pred0_1))]
+>>   {move 0}
+
+
+% existential generalization
+
+
+declare existsev that Pred0 x
+
+>> existsev: that Pred0(x) {move 1:Pred0}
+
+
+
+postulate Eg0 Pred0, existsev that Exists0 \
+   Pred0
+
+>> Eg0: [(Pred0_1:[(x1_2:obj) => (---:prop)]),
+>>      (.x_1:obj),(existsev_1:that Pred0_1(.x_1))
+>>      => (---:that Exists0(Pred0_1))]
+>>   {move 0}
+
+
+
+define Egb0 x existsev : Eg0 Pred0, existsev
+
+
+>> Egb0: [(x_1:obj),(.Pred0_1:[(x1_2:obj) =>
+>>         (---:prop)]),
+>>      (existsev_1:that .Pred0_1(x_1)) => (Eg0(.Pred0_1,
+>>      existsev_1):that Exists0(.Pred0_1))]
+>>   {move 0}
+
+
+% existential instantiation
+
+
+declare p prop
+
+>> p: prop {move 1:Pred0}
+
+
+
+declare exhyp that Exists0 Pred0
+
+>> exhyp: that Exists0(Pred0) {move 1:Pred0}
+
+
+
+open
+
+   .... declare x1 obj
+
+>>    x1: obj {move 2}
+
+
+
+   .... declare whyp that Pred0 x1
+
+>>    whyp: that Pred0(x1) {move 2}
+
+
+
+   .... postulate usewitness whyp that p
+
+
+>>    usewitness: [(.x1_1:obj),(whyp_1:that
+>>         Pred0(.x1_1)) => (---:that p)]
+>>      {move 1:Pred0}
+
+
+
+   .... close
+
+postulate Ei0 exhyp usewitness : that p
+
+>> Ei0: [(.Pred0_1:[(x1_2:obj) => (---:prop)]),
+>>      (exhyp_1:that Exists0(.Pred0_1)),(.p_1:
+>>      prop),(usewitness_1:[(.x1_3:obj),(whyp_3:
+>>         that .Pred0_1(.x1_3)) => (---:that
+>>         .p_1)])
+>>      => (---:that .p_1)]
+>>   {move 0}
+
+
+
+open
+
+   .... declare u1 obj
+
+>>    u1: obj {move 2}
+
+
+
+   .... postulate Pred1 u1 prop
+
+>>    Pred1: [(u1_1:obj) => (---:prop)]
+>>      {move 1:Pred0}
+
+
+
+   .... postulate Pred2 u1 prop
+
+>>    Pred2: [(u1_1:obj) => (---:prop)]
+>>      {move 1:Pred0}
+
+
+
+   .... define Pred3 u1 : (Pred1 u1) -> Pred2 \
+      u1
+
+>>    Pred3: [(u1_1:obj) => (---:prop)]
+>>      {move 1:Pred0}
+
+
+
+   .... close
+
+declare test1 that Exists0 Pred1
+
+>> test1: that Exists0(Pred1) {move 1:Pred0}
+
+
+
+declare test2 that Forall0 Pred3
+
+>> test2: that Forall0(Pred3) {move 1:Pred0}
+
+
+
+open
+
+   .... declare w1 obj
+
+>>    w1: obj {move 2}
+
+
+
+   .... declare whyp1 that Pred1 w1
+
+>>    whyp1: that Pred1(w1) {move 2}
+
+
+
+   .... define line1 w1 : Ui0 w1 test2
+
+>>    line1: [(w1_1:obj) => (---:that Pred3(w1_1))]
+>>      {move 1:Pred0}
+
+
+
+   .... define line2 whyp1 : Mp whyp1 line1 \
+      w1
+
+>>    line2: [(.w1_1:obj),(whyp1_1:that Pred1(.w1_1))
+>>         => (---:that Pred2(.w1_1))]
+>>      {move 1:Pred0}
+
+
+
+   .... define line3 whyp1 : Egb0 w1 line2 \
+      whyp1
+
+>>    line3: [(.w1_1:obj),(whyp1_1:that Pred1(.w1_1))
+>>         => (---:that Exists0(Pred2))]
+>>      {move 1:Pred0}
+
+
+
+   .... close
+
+define Quanttest test1 test2 : Ei0 (test1, \
+   line3)
+
+>> Quanttest: [(.Pred1_1:[(u1_2:obj) => (---:
+>>         prop)]),
+>>      (test1_1:that Exists0(.Pred1_1)),(.Pred2_1:
+>>      [(u1_3:obj) => (---:prop)]),
+>>      (test2_1:that Forall0([(u1_4:obj) => ((.Pred1_1(u1_4)
+>>         -> .Pred2_1(u1_4)):prop)]))
+>>      => ((test1_1 Ei0 [(.w1_5:obj),(whyp1_5:
+>>         that .Pred1_1(.w1_5)) => ((.w1_5 Egb0
+>>         (whyp1_5 Mp (.w1_5 Ui0 test2_1))):that
+>>         Exists0(.Pred2_1))])
+>>      :that Exists0(.Pred2_1))]
+>>   {move 0}
+
+
+%% quantification over types
+% note the precise parallelism.
+
+clearcurrent Pred
+
+
+postulate Forall Pred prop
+
+>> Forall: [(.tau_1:type),(Pred_1:[(x1_2:in
+>>         .tau_1) => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+
+postulate Exists Pred prop
+
+>> Exists: [(.tau_1:type),(Pred_1:[(x1_2:in
+>>         .tau_1) => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+% universal instantiation
+
+
+declare univev that Forall Pred
+
+>> univev: that Forall(Pred) {move 1:Pred}
+
+
+
+postulate Ui x univev that Pred x
+
+>> Ui: [(.tau_1:type),(x_1:in .tau_1),(.Pred_1:
+>>      [(x1_2:in .tau_1) => (---:prop)]),
+>>      (univev_1:that Forall(.Pred_1)) => (---:
+>>      that .Pred_1(x_1))]
+>>   {move 0}
+
+
+% universal generalization
+
+
+open
+
+   .... declare x1 in tau
+
+>>    x1: in tau {move 2}
+
+
+
+   .... postulate gen x1 : that Pred x1
+
+>>    gen: [(x1_1:in tau) => (---:that Pred(x1_1))]
+>>      {move 1:Pred}
+
+
+
+   .... close
+
+postulate Ug gen : that Forall Pred
+
+>> Ug: [(.tau_1:type),(.Pred_1:[(x1_2:in .tau_1)
+>>         => (---:prop)]),
+>>      (gen_1:[(x1_3:in .tau_1) => (---:that
+>>         .Pred_1(x1_3))])
+>>      => (---:that Forall(.Pred_1))]
+>>   {move 0}
+
+
+% existential generalization
+
+
+declare existsev that Pred x
+
+>> existsev: that Pred(x) {move 1:Pred}
+
+
+
+postulate Eg Pred, existsev that Exists Pred
+
+
+>> Eg: [(.tau_1:type),(Pred_1:[(x1_2:in .tau_1)
+>>         => (---:prop)]),
+>>      (.x_1:in .tau_1),(existsev_1:that Pred_1(.x_1))
+>>      => (---:that Exists(Pred_1))]
+>>   {move 0}
+
+
+
+define Egb x existsev : Eg Pred, existsev
+
+
+>> Egb: [(.tau_1:type),(x_1:in .tau_1),(.Pred_1:
+>>      [(x1_2:in .tau_1) => (---:prop)]),
+>>      (existsev_1:that .Pred_1(x_1)) => (Eg(.Pred_1,
+>>      existsev_1):that Exists(.Pred_1))]
+>>   {move 0}
+
+
+% existential instantiation
+
+
+declare p prop
+
+>> p: prop {move 1:Pred}
+
+
+
+declare exhyp that Exists Pred
+
+>> exhyp: that Exists(Pred) {move 1:Pred}
+
+
+
+open
+
+   .... declare x1 in tau
+
+>>    x1: in tau {move 2}
+
+
+
+   .... declare whyp that Pred x1
+
+>>    whyp: that Pred(x1) {move 2}
+
+
+
+   .... postulate usewitness whyp that p
+
+
+>>    usewitness: [(.x1_1:in tau),(whyp_1:that
+>>         Pred(.x1_1)) => (---:that p)]
+>>      {move 1:Pred}
+
+
+
+   .... close
+
+postulate Ei exhyp usewitness : that p
+
+>> Ei: [(.tau_1:type),(.Pred_1:[(x1_2:in .tau_1)
+>>         => (---:prop)]),
+>>      (exhyp_1:that Exists(.Pred_1)),(.p_1:prop),
+>>      (usewitness_1:[(.x1_3:in .tau_1),(whyp_3:
+>>         that .Pred_1(.x1_3)) => (---:that .p_1)])
+>>      => (---:that .p_1)]
+>>   {move 0}
+
+
+% another test : prove one of the deMorgan laws for quantifiers.
+
+
+open
+
+   .... declare u1 in tau
+
+>>    u1: in tau {move 2}
+
+
+
+   .... postulate Pred1 u1 prop
+
+>>    Pred1: [(u1_1:in tau) => (---:prop)]
+>>      {move 1:Pred}
+
+
+
+   .... define Pred2 u1 : ~ Pred1 u1
+
+>>    Pred2: [(u1_1:in tau) => (---:prop)]
+>>      {move 1:Pred}
+
+
+
+   .... close
+
+declare notforall that ~ Forall Pred1
+
+>> notforall: that ~(Forall(Pred1)) {move 1:
+>>   Pred}
+
+
+
+declare forsomenot that Exists Pred2
+
+>> forsomenot: that Exists(Pred2) {move 1:Pred}
+
+
+
+open
+
+   .... declare notforsomenot that ~ Exists \
+      Pred2
+
+>>    notforsomenot: that ~(Exists(Pred2)) {move
+>>      2}
+
+
+
+   .... open
+
+      .... .... declare x1 in tau
+
+>>       x1: in tau {move 3}
+
+
+
+      .... .... open
+
+         .... .... .... declare line1 that \
+            ~ Pred1 x1
+
+>>          line1: that ~(Pred1(x1)) {move 4}
+
+
+
+         .... .... .... define line2 line1 \
+            : Egb x1 line1
+
+>>          line2: [(line1_1:that ~(Pred1(x1)))
+>>               => (---:that Exists([(x1_3:in
+>>                  tau) => (~(Pred1(x1_3)):prop)]))
+>>               ]
+>>            {move 3}
+
+
+
+         .... .... .... define line3 line1 \
+            : Contradiction line2 line1 notforsomenot
+
+
+>>          line3: [(line1_1:that ~(Pred1(x1)))
+>>               => (---:that ??)]
+>>            {move 3}
+
+
+
+         .... .... .... close
+
+      .... .... define line4 x1 : Reductio \
+         line3
+
+>>       line4: [(x1_1:in tau) => (---:that
+>>            Pred1(x1_1))]
+>>         {move 2}
+
+
+
+      .... .... close
+
+   .... define line5 notforsomenot : Ug line4
+
+
+>>    line5: [(notforsomenot_1:that ~(Exists(Pred2)))
+>>         => (---:that Forall(Pred1))]
+>>      {move 1:Pred}
+
+
+
+   .... define line6 notforsomenot : Contradiction \
+      line5 notforsomenot notforall
+
+>>    line6: [(notforsomenot_1:that ~(Exists(Pred2)))
+>>         => (---:that ??)]
+>>      {move 1:Pred}
+
+
+
+   .... close
+
+define Notforall notforall : Reductio line6
+
+
+>> Notforall: [(.tau_1:type),(.Pred1_1:[(u1_2:
+>>         in .tau_1) => (---:prop)]),
+>>      (notforall_1:that ~(Forall(.Pred1_1)))
+>>      => (Reductio([(notforsomenot_4:that ~(Exists([(u1_5:
+>>            in .tau_1) => (~(.Pred1_1(u1_5)):
+>>            prop)]))
+>>         ) => ((Ug([(x1_6:in .tau_1) => (Reductio([(line1_7:
+>>               that ~(.Pred1_1(x1_6))) => (((x1_6
+>>               Egb line1_7) Contradiction notforsomenot_4):
+>>               that ??)])
+>>            :that .Pred1_1(x1_6))])
+>>         Contradiction notforall_1):that ??)])
+>>      :that Exists([(u1_10:in .tau_1) => (~(.Pred1_1(u1_10)):
+>>         prop)]))
+>>      ]
+>>   {move 0}
+
+
+
+open
+
+   .... declare y1 in tau
+
+>>    y1: in tau {move 2}
+
+
+
+   .... declare whyp1 that ~ Pred1 y1
+
+>>    whyp1: that ~(Pred1(y1)) {move 2}
+
+
+
+   .... open
+
+      .... .... declare forallev that Forall \
+         Pred1
+
+>>       forallev: that Forall(Pred1) {move
+>>         3}
+
+
+
+      .... .... define line7 forallev : Ui \
+         y1 forallev
+
+>>       line7: [(forallev_1:that Forall(Pred1))
+>>            => (---:that Pred1(y1))]
+>>         {move 2}
+
+
+
+      .... .... define line8 forallev : Contradiction \
+         line7 forallev whyp1
+
+>>       line8: [(forallev_1:that Forall(Pred1))
+>>            => (---:that ??)]
+>>         {move 2}
+
+
+
+      .... .... close
+
+   .... define line9 whyp1 : Negintro line8
+
+
+>>    line9: [(.y1_1:in tau),(whyp1_1:that ~(Pred1(.y1_1)))
+>>         => (---:that ~(Forall(Pred1)))]
+>>      {move 1:Pred}
+
+
+
+   .... close
+
+define Forsomenot forsomenot : Ei (forsomenot, \
+   line9)
+
+>> Forsomenot: [(.tau_1:type),(.Pred1_1:[(u1_2:
+>>         in .tau_1) => (---:prop)]),
+>>      (forsomenot_1:that Exists([(u1_3:in .tau_1)
+>>         => (~(.Pred1_1(u1_3)):prop)]))
+>>      => ((forsomenot_1 Ei [(.y1_5:in .tau_1),
+>>         (whyp1_5:that ~(.Pred1_1(.y1_5))) =>
+>>         (Negintro([(forallev_6:that Forall(.Pred1_1))
+>>            => (((.y1_5 Ui forallev_6) Contradiction
+>>            whyp1_5):that ??)])
+>>         :that ~(Forall(.Pred1_1)))])
+>>      :that ~(Forall(.Pred1_1)))]
+>>   {move 0}
+
+
+
+open
+
+   .... declare notforall1 that ~Forall Pred1
+
+
+>>    notforall1: that ~(Forall(Pred1)) {move
+>>      2}
+
+
+
+   .... declare forsomenot1 that Exists Pred2
+
+
+>>    forsomenot1: that Exists(Pred2) {move
+>>      2}
+
+
+
+   .... define partone1 notforall1 : Notforall \
+      notforall1
+
+>>    partone1: [(notforall1_1:that ~(Forall(Pred1)))
+>>         => (---:that Exists([(u1_2:in tau)
+>>            => (~(Pred1(u1_2)):prop)]))
+>>         ]
+>>      {move 1:Pred}
+
+
+
+   .... define parttwo1 forsomenot1 : Forsomenot \
+      forsomenot1
+
+>>    parttwo1: [(forsomenot1_1:that Exists(Pred2))
+>>         => (---:that ~(Forall(Pred1)))]
+>>      {move 1:Pred}
+
+
+
+   .... close
+
+define Qdemorgana Pred1 : Biconditional partone1, \
+   parttwo1
+
+>> Qdemorgana: [(.tau_1:type),(Pred1_1:[(u1_2:
+>>         in .tau_1) => (---:prop)])
+>>      => (Biconditional([(notforall1_4:that
+>>         ~(Forall(Pred1_1))) => (Notforall(notforall1_4):
+>>         that Exists([(u1_5:in .tau_1) => (~(Pred1_1(u1_5)):
+>>            prop)]))
+>>         ]
+>>      ,[(forsomenot1_6:that Exists([(u1_7:in
+>>            .tau_1) => (~(Pred1_1(u1_7)):prop)]))
+>>         => (Forsomenot(forsomenot1_6):that
+>>         ~(Forall(Pred1_1)))])
+>>      :that (~(Forall(Pred1_1)) <-> Exists([(u1_8:
+>>         in .tau_1) => (~(Pred1_1(u1_8)):prop)]))
+>>      )]
+>>   {move 0}
+
+
+
+>> Inspector Lestrade says:  Done reading scratch to logicpackage:
+>>  type lines or type quit to exit interface
+
+quit
+
+
+quit
