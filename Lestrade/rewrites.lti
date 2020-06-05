@@ -1,0 +1,394 @@
+
+>> Inspector Lestrade says:  
+>> Welcome to the Lestrade Type Inspector,
+>>  
+>> User entered lambda terms (arguments)
+>> and function sorts (in declare)!
+>> literate programming with LaTeX comments in ML source
+>> version of  7/24/2019
+>>  12:30 pm Boise time
+
+
+
+declare x obj
+
+>> x: obj {move 1}
+
+
+
+declare y obj
+
+>> y: obj {move 1}
+
+
+
+postulate pair x y obj
+
+>> pair: [(x_1:obj),(y_1:obj) => (---:obj)]
+>>   {move 0}
+
+
+
+postulate p1 x obj
+
+>> p1: [(x_1:obj) => (---:obj)]
+>>   {move 0}
+
+
+
+postulate p2 x obj
+
+>> p2: [(x_1:obj) => (---:obj)]
+>>   {move 0}
+
+
+
+rewritep First x y p1 pair x y, x
+
+>> First'': [(First'''_1:obj) => (---:prop)]
+>>   {move 1}
+
+
+
+>> First': that First''(p1((x pair y))) {move
+>>   1}
+
+
+
+>> First: [(x_1:obj),(y_1:obj),(First''_1:[(First'''_2:
+>>         obj) => (---:prop)]),
+>>      (First'_1:that First''_1(p1((x_1 pair
+>>      y_1)))) => (---:that First''_1(x_1))]
+>>   {move 0}
+
+
+
+rewritep Second x y p2 pair x y, y
+
+>> Second'': [(Second'''_1:obj) => (---:prop)]
+>>   {move 1}
+
+
+
+>> Second': that Second''(p2((x pair y))) {move
+>>   1}
+
+
+
+>> Second: [(x_1:obj),(y_1:obj),(Second''_1:
+>>      [(Second'''_2:obj) => (---:prop)]),
+>>      (Second'_1:that Second''_1(p2((x_1 pair
+>>      y_1)))) => (---:that Second''_1(y_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare x1 obj
+
+>>    x1: obj {move 2}
+
+
+
+   declare y1 obj
+
+>>    y1: obj {move 2}
+
+
+
+   define reverse x1 : pair (p2 x1, p1 x1)
+
+
+>>    reverse: [(x1_1:obj) => (---:obj)]
+>>      {move 1}
+
+
+
+   define reversetest x1 y1 : reverse (pair \
+      x1 y1)
+
+>>    reversetest: [(x1_1:obj),(y1_1:obj) =>
+>>         (---:obj)]
+>>      {move 1}
+
+
+
+   close
+% notice that Lestrade executes the pair reversal!
+
+
+define testing x y: reversetest x y
+
+>> testing: [(x_1:obj),(y_1:obj) => ((y_1 pair
+>>      x_1):obj)]
+>>   {move 0}
+
+
+clearcurrent
+
+% associative law simplication
+
+% I believe I have implemented almost the full power of the Watson
+
+% rewrite rule programming scheme.  The interlock between matching and
+
+% rewriting should make it possible to implement its control structures
+
+% without extra primitives.
+
+
+postulate Nat type
+
+>> Nat: type {move 0}
+
+
+
+declare m in Nat
+
+>> m: in Nat {move 1}
+
+
+
+declare n in Nat
+
+>> n: in Nat {move 1}
+
+
+
+declare p in Nat
+
+>> p: in Nat {move 1}
+
+
+
+postulate + m n in Nat
+
+>> +: [(m_1:in Nat),(n_1:in Nat) => (---:in
+>>      Nat)]
+>>   {move 0}
+
+
+
+postulate assoc m in Nat
+
+>> assoc: [(m_1:in Nat) => (---:in Nat)]
+>>   {move 0}
+
+
+
+postulate assocs m in Nat
+
+>> assocs: [(m_1:in Nat) => (---:in Nat)]
+>>   {move 0}
+
+
+
+rewritep Assocfails m assoc m, m
+
+>> Assocfails'': [(Assocfails'''_1:in Nat) =>
+>>      (---:prop)]
+>>   {move 1}
+
+
+
+>> Assocfails': that Assocfails''(assoc(m))
+>>   {move 1}
+
+
+
+>> Assocfails: [(m_1:in Nat),(Assocfails''_1:
+>>      [(Assocfails'''_2:in Nat) => (---:prop)]),
+>>      (Assocfails'_1:that Assocfails''_1(assoc(m_1)))
+>>      => (---:that Assocfails''_1(m_1))]
+>>   {move 0}
+
+
+
+rewritep Assocsfails m assocs m, m
+
+>> Assocsfails'': [(Assocsfails'''_1:in Nat)
+>>      => (---:prop)]
+>>   {move 1}
+
+
+
+>> Assocsfails': that Assocsfails''(assocs(m))
+>>   {move 1}
+
+
+
+>> Assocsfails: [(m_1:in Nat),(Assocsfails''_1:
+>>      [(Assocsfails'''_2:in Nat) => (---:prop)]),
+>>      (Assocsfails'_1:that Assocsfails''_1(assocs(m_1)))
+>>      => (---:that Assocsfails''_1(m_1))]
+>>   {move 0}
+
+
+
+rewritep Assocrule m n p (m + n) + p, m + \
+   (n + p)
+
+>> Assocrule'': [(Assocrule'''_1:in Nat) =>
+>>      (---:prop)]
+>>   {move 1}
+
+
+
+>> Assocrule': that Assocrule''(((m + n) + p))
+>>   {move 1}
+
+
+
+>> Assocrule: [(m_1:in Nat),(n_1:in Nat),(p_1:
+>>      in Nat),(Assocrule''_1:[(Assocrule'''_2:
+>>         in Nat) => (---:prop)]),
+>>      (Assocrule'_1:that Assocrule''_1(((m_1
+>>      + n_1) + p_1))) => (---:that Assocrule''_1((m_1
+>>      + (n_1 + p_1))))]
+>>   {move 0}
+
+
+
+rewritep Assocsrule m n p (m + n) + p, assocs(assoc(m \
+   + (assocs (n+p))))
+
+>> Assocsrule'': [(Assocsrule'''_1:in Nat) =>
+>>      (---:prop)]
+>>   {move 1}
+
+
+
+>> Assocsrule': that Assocsrule''(((m + n) +
+>>   p)) {move 1}
+
+
+
+>> Assocsrule: [(m_1:in Nat),(n_1:in Nat),(p_1:
+>>      in Nat),(Assocsrule''_1:[(Assocsrule'''_2:
+>>         in Nat) => (---:prop)]),
+>>      (Assocsrule'_1:that Assocsrule''_1(((m_1
+>>      + n_1) + p_1))) => (---:that Assocsrule''_1(assocs(assoc((m_1
+>>      + assocs((n_1 + p_1)))))))]
+>>   {move 0}
+
+
+
+declare q in Nat
+
+>> q: in Nat {move 1}
+
+
+
+define test m n p q:(m+n)+(p+q)
+
+>> test: [(m_1:in Nat),(n_1:in Nat),(p_1:in
+>>      Nat),(q_1:in Nat) => ((m_1 + (n_1 + (p_1
+>>      + q_1))):in Nat)]
+>>   {move 0}
+
+
+
+declare r in Nat
+
+>> r: in Nat {move 1}
+
+
+
+declare s in Nat
+
+>> s: in Nat {move 1}
+
+
+
+define test2 m n p q r s:((m+n)+p)+((q+r)+s)
+
+
+>> test2: [(m_1:in Nat),(n_1:in Nat),(p_1:in
+>>      Nat),(q_1:in Nat),(r_1:in Nat),(s_1:in
+>>      Nat) => ((m_1 + (n_1 + (p_1 + (q_1 + (r_1
+>>      + s_1))))):in Nat)]
+>>   {move 0}
+
+
+clearcurrent
+
+
+declare x in Nat
+
+>> x: in Nat {move 1}
+
+
+
+declare y in Nat
+
+>> y: in Nat {move 1}
+
+
+
+postulate * x y : in Nat
+
+>> *: [(x_1:in Nat),(y_1:in Nat) => (---:in
+>>      Nat)]
+>>   {move 0}
+
+
+
+postulate 2 : in Nat
+
+>> 2: in Nat {move 0}
+
+
+
+rewritep Double x x+x, 2*x
+
+>> Double'': [(Double'''_1:in Nat) => (---:prop)]
+>>   {move 1}
+
+
+
+>> Double': that Double''((x + x)) {move 1}
+
+
+
+>> Double: [(x_1:in Nat),(Double''_1:[(Double'''_2:
+>>         in Nat) => (---:prop)]),
+>>      (Double'_1:that Double''_1((x_1 + x_1)))
+>>      => (---:that Double''_1((2 * x_1)))]
+>>   {move 0}
+
+
+
+postulate 1 in Nat
+
+>> 1: in Nat {move 0}
+
+
+
+define 3:1+2
+
+>> 3: [((1 + 2):in Nat)]
+>>   {move 0}
+
+
+
+define 6: 3+(1+2)
+
+>> 6: [((2 * 3):in Nat)]
+>>   {move 0}
+
+
+
+define six:(1+2)+3
+
+>> six: [((2 * (1 + 2)):in Nat)]
+>>   {move 0}
+
+
+
+>> Inspector Lestrade says:  Done reading scratch to rewrites:
+>>  type lines or type quit to exit interface
+
+quit
+
+

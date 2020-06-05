@@ -1,0 +1,263 @@
+
+>> Inspector Lestrade says:  
+>> Welcome to the Lestrade Type Inspector,
+>>  
+>> User entered lambda terms (arguments)
+>> and function sorts (in declare)!
+>> literate programming with LaTeX comments in ML source
+>> version of  7/24/2019
+>>  12:30 pm Boise time
+
+
+
+open
+
+   declare x obj
+
+>>    x: obj {move 2}
+
+
+
+   postulate P x:prop
+
+>>    P: [(x_1:obj) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate set P:obj
+
+>> set: [(P_1:[(x_2:obj) => (---:prop)])
+>>      => (---:obj)]
+>>   {move 0}
+
+
+
+declare x obj
+
+>> x: obj {move 1}
+
+
+
+declare y obj
+
+>> y: obj {move 1}
+
+
+
+postulate E x y:prop
+
+>> E: [(x_1:obj),(y_1:obj) => (---:prop)]
+>>   {move 0}
+
+
+
+declare x1 that P x
+
+>> x1: that P(x) {move 1}
+
+
+
+postulate comp P, x x1:that E x set P
+
+>> comp: [(P_1:[(x_2:obj) => (---:prop)]),
+>>      (x_1:obj),(x1_1:that P_1(x_1)) => (---:
+>>      that (x_1 E set(P_1)))]
+>>   {move 0}
+
+
+
+declare x2 that E x set P
+
+>> x2: that (x E set(P)) {move 1}
+
+
+
+postulate comp2 P, x x2: that P x
+
+>> comp2: [(P_1:[(x_2:obj) => (---:prop)]),
+>>      (x_1:obj),(x2_1:that (x_1 E set(P_1)))
+>>      => (---:that P_1(x_1))]
+>>   {move 0}
+
+
+
+declare p prop
+
+>> p: prop {move 1}
+
+
+
+declare q prop
+
+>> q: prop {move 1}
+
+
+
+postulate Implies p q:prop
+
+>> Implies: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate False:prop
+
+>> False: prop {move 0}
+
+
+
+declare pp that p
+
+>> pp: that p {move 1}
+
+
+
+declare rr that Implies p q
+
+>> rr: that (p Implies q) {move 1}
+
+
+
+postulate Mp p q pp rr:that q
+
+>> Mp: [(p_1:prop),(q_1:prop),(pp_1:that p_1),
+>>      (rr_1:that (p_1 Implies q_1)) => (---:
+>>      that q_1)]
+>>   {move 0}
+
+
+
+declare absurd that False
+
+>> absurd: that False {move 1}
+
+
+
+postulate Panic p absurd: that p
+
+>> Panic: [(p_1:prop),(absurd_1:that False)
+>>      => (---:that p_1)]
+>>   {move 0}
+
+
+
+define Not p:Implies p False
+
+>> Not: [(p_1:prop) => ((p_1 Implies False):
+>>      prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate Ded pp2:that q
+
+>>    Ded: [(pp2_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Impliesproof p q Ded:that Implies \
+   p q
+
+>> Impliesproof: [(p_1:prop),(q_1:prop),(Ded_1:
+>>      [(pp2_2:that p_1) => (---:that q_1)])
+>>      => (---:that (p_1 Implies q_1))]
+>>   {move 0}
+
+
+
+define Russell x:Not E x x
+
+>> Russell: [(x_1:obj) => (Not((x_1 E x_1)):
+>>      prop)]
+>>   {move 0}
+
+
+
+define R: set Russell
+
+>> R: [(set(Russell):obj)]
+>>   {move 0}
+
+
+
+open
+
+   declare R1 that E set Russell, set Russell
+
+
+>>    R1: that (set(Russell) E set(Russell))
+>>      {move 2}
+
+
+
+   define R2 R1:comp2 Russell, set Russell, \
+      R1
+
+>>    R2: [(R1_1:that (set(Russell) E set(Russell)))
+>>         => (---:that Russell(set(Russell)))]
+>>      {move 1}
+
+
+
+   define R3 R1:Mp E set Russell, set Russell, \
+      False R1 R2 R1
+
+>>    R3: [(R1_1:that (set(Russell) E set(Russell)))
+>>         => (---:that False)]
+>>      {move 1}
+
+
+
+   close
+
+define R4:Impliesproof E set Russell, set \
+   Russell, False R3
+
+>> R4: [(Impliesproof((set(Russell) E set(Russell)),
+>>      False,[(R1_1:that (set(Russell) E set(Russell)))
+>>         => (Mp((set(Russell) E set(Russell)),
+>>         False,R1_1,comp2(Russell,set(Russell),
+>>         R1_1)):that False)])
+>>      :that ((set(Russell) E set(Russell)) Implies
+>>      False))]
+>>   {move 0}
+
+
+
+define R5:comp Russell, set Russell, R4
+
+>> R5: [(comp(Russell,set(Russell),R4):that
+>>      (set(Russell) E set(Russell)))]
+>>   {move 0}
+
+
+
+define R6: Mp E set Russell, set Russell, \
+   False R5 R4
+
+>> R6: [(Mp((set(Russell) E set(Russell)),False,
+>>      R5,R4):that False)]
+>>   {move 0}
+
+
+
+>> Inspector Lestrade says:  Done reading scratch to russell:
+>>  type lines or type quit to exit interface
+
+quit
+
+
