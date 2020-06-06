@@ -1,0 +1,901 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb}
+
+\title{Notes on foundations of mathematics in typed set theory}
+
+\author{M. Randall Holmes}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Metatheory and starting point}
+
+We will discuss foundations of mathematics in typed set theory.  To keep intellectual unity, our metatheory will itself be a theory in the family of theories we are discussing.
+
+\subsection{Our initial theory, which is also our metatheory}
+
+Our metatheory is a first-order theory with sorts indexed by the natural numbers.  Its primitive relations are equality and membership and there is a primitive predicate of sethood.   In brief, the theory we present will be the typed theory of sets with atoms permitted in each positive type, which we usually called TSTU when considering it as an object theory.
+
+For each variable $x$, the notation ${\tt type}(x)$ denotes its natural number sort index.  A variable $x$ (or any term $T$) of sort indexed by $i$ may be written $x^{\bf i}$ (resp, $T^{\bf i}$) but this will be done only when needed type relationships cannot be deduced from the context.  $x=y$ is well-formed iff ${\tt type}(x) = {\tt type}(y)$.  $x \in y$ is well-formed iff
+${\tt type}(x)+1 = {\tt type}(y)$.  ${\tt set}(x)$ is well-formed iff ${\tt type}(x)$ is positive.
+
+The axiom of sethood asserts that anything with an element is a set.  $$y \in x \rightarrow {\tt set}(x).$$
+
+The axiom scheme of extensionality asserts that sets with the same elements are equal.  $$(\forall xy:{\tt set}(x) \wedge {\tt set}(y) \wedge (\forall z:z \in x \leftrightarrow z \in y) \rightarrow x=y).$$
+
+The axiom scheme of comprehension asserts that every condition on objects of a given type determines a set in the next type:  $$(\exists A:{\tt set}(A) \wedge (\forall x:x \in A \leftrightarrow \phi)),$$  where $A$ does not occur in the formula $\phi$.  The notation $\{x :\phi\}$ is used for the witness to this axiom, which is unique by extensionality and whose type is one higher than that of $x$.  The notation $\emptyset$ for $\{x:x \neq x\}$ should be noted [we also use the notation $V=\{x:x=x\}$].  Notice that $\emptyset$ (along with similar notations) is polymorphic:  it will only be adorned with a type superscript where needed type relationships cannot be deduced from the form of an expression.  Note that empty sets of different types cannot be said to be equal (or for that matter to be unequal).
+
+All of these schemes include all propositions of these forms with all possible type assignments.
+
+It is worth noting that instead of having a sethood primitive, one could postulate an empty set $\emptyset^{\bf i+1}$ in each positive type, provide an axiom to the effect that $x^{\bf i} \not\in \emptyset^{\bf i+1}$, and
+define ${\tt set}(x^{\bf i+1})$ as $x^{\bf i+1} = \emptyset^{\bf i+1} \vee (\exists y^{\bf i}:y^{\bf i} \in x^{\bf i+1})$.
+
+This really is our metatheory.  We are not appealing at any level to the usual set theory ZFC (which is much stronger).  There are practical advantages to working with a metatheory with closer formal relationships to the set theories NFU and NF which are our ultimate objects of study.  We also believe that there are reasons why TSTU recommends itself as the ultimate foundation, apart from its intimate relation to the theory NFU which is a favorite object of study for us.
+
+Additional axoms such as Infinity and Choice may be added.
+
+\section{Mathematics in type theory}
+
+\subsection{Development of finite sets, pairs, functions and relations, cardinality}
+
+All concepts in this section (and generally in this work) are polymorphic, applicable to all types (or all high enough types) where specific types are not mentioned.
+
+The notations $\{x\}$ for $\{y:y=x\}$, $x \cup y$ for $\{z:z \in x \vee z \in y\}$, $\{x,y\}$ for $\{x\} \cup \{y\}$ and $\{x_1,\ldots,x_n\}$ for $\{x_1,\ldots,x_{n-1}\} \cup \{x_n\}$ are noted.
+
+
+We complete our Boolean algebra notation by introducing $$a^c = \{x:x \not\in a\},$$ $a \cap b$ for $\{x:x \in a \wedge x \in b\}$ and $a - b$ or $a \setminus b$ for $a \cap b^c$.
+
+The notation $\left<x,y\right>_2$ denotes the Kuratowski ordered pair $\{\{x\},\{x,y\}\}$.  The reason for the subscript 2 is that ${\tt type}(\left<x,y\right>)={\tt type}(x)+2 = {\tt type}(y)+2$ expresses the well-formedness conditions for the Kuratowski pair:  the type of the pair is two higher than the common type of its projections.  We prefer for the moment to take an abstract approach and introduce a pair $\left<x,y\right>$ (which we may sometimes write lazily as $(x,y)$) with conditions  ${\tt type}(\left<x,y\right>)={\tt type}(x)+p = {\tt type}(y)+p$ , where the value of $p$ is left up in the air.  The abstract pair of course satisfies $\left<x,y\right> = \left<z,w\right>  \rightarrow x=z \,\wedge\, y=w$, and that this is a theorem for the concretely given Kuratowski pair is well known.
+
+We say that $f$ is a function iff all elements of $f$ are ordered pairs and for all $u,v,w$, $\left<u,v\right> \in f \wedge \left<u,w\right> \in f \rightarrow v=w$.
+
+The notation $f(x)$ denotes the unique object $y$ such that $f$ is a function and  $\left<x,y\right> \in f$ and $\emptyset$ if there is no such $y$.  Note that the type of $f$ is $p+1$  higher than the type of $f(x)$.
+
+
+
+We define ${\tt dom}(R)$ as $\{x:(\exists y:\left<x,y\right> \in R)\}$ for any set $R$ of pairs.  We define ${\tt inv}(R)$ or $R^{-1}$ as $\{\left<y,x\right>:\left<x,y\right> \in f\}$  and ${\tt rng}(f)$ as ${\tt dom}({\tt inv}(f))$.  These notions are defined only for sets of  pairs, which may be called relations.  We write $f:A \rightarrow B$ to
+say that $f$ is a function, ${\tt dom}(f) = A$, and ${\tt rng}(f) \subseteq B$.
+
+For any relation, we define ${\tt fld}(R)$, the field of $R$, as ${\tt dom}(R) \cup {\tt rng}(R)$.
+
+We say that $A \sim B$ iff there is a  function $f$ such that ${\tt dom}(f) = A$, ${\tt rng}(f) = B$, and ${\tt inv}(f)$ is a function.  Such a function is called a bijection
+from $A$ to $B$:  we write $f:A \leftrightarrow B$ to say $f$ is a bijection from $A$ to $B$.   It is straightforward to prove that $\sim$ is an equivalence relation (on any type).  We define $|A|$, the cardinality of $A$, as $\{B:B \sim A\}$.  Note that $|A|$ is one type higher than $A$.  We can define the set {\tt Card} of cardinal numbers as $\{\kappa:(\forall AB \in \kappa:A \sim B) \wedge(\forall A \in \kappa:(\forall B:A\sim B \rightarrow B \in \kappa))\}$ (this does allow $\emptyset$ as an error cardinal which nothing actually has, which is useful when operations on cardinals would otherwise be partial).
+
+We define basic operations of cardinal arithmetic.  We first note that there is a natural association of cardinals in each type with cardinals in each higher type.  We define $\iota(x)$ as $\{x\}$ and define $\iota``A$ as $\{\{a\}:a \in A\}$.  We define $T(|A|)$ as $|\iota``A|$:  note that the image of a cardinal number under $T$ does not depend on the choice of a representative element of the cardinal:  the definition can also be given in the form $T(\kappa) = \{B:(\exists A:A \in \kappa\wedge \iota``A \sim B)\}$.  We define $T^{-1}(|A|)$ as $\{B:\iota``B \sim A\}$, which is either a cardinal whose image under the $T$ operation is $|A|$, or the empty set (in this latter case we may say $T^{-1}(|A|)$ is undefined, though we still assign it the value $\emptyset$.)
+
+Now, for disjoint sets $A$ and $B$, we define $|A| + |B|$ as $|A \cup B|$.  We note that the definition of cardinal addition does not depend on the choice of the representative sets $A$ and $B$:  $\kappa + \lambda = \{A \cup B:A \in \kappa \wedge B \in \lambda \wedge A \cap B = \emptyset\}$.  We define 0 as $\{\emptyset\}$.
+
+We define $\kappa \cdot \lambda$ as {\tiny $$\{\bigcup A: A \in T(\kappa) \wedge (\forall B \in A:|B|=\lambda) \wedge (\forall BC \in A:B=C \vee B \cap C = \emptyset)\wedge (\exists F:(\forall BC \in A:(\exists! f : f\in F  \wedge f:A \leftrightarrow B)))\}.$$} We define 1 as $\{\{x\}:x=x\}$.
+
+Showing the equivalence of our definition of $\kappa \cdot \lambda$ with the apparently obvious  $$\{\bigcup A: A \in T(\kappa) \wedge (\forall B \in A:|B|=\lambda) \wedge (\forall BC \in A:B=C \vee B \cap C = \emptyset)\}$$ requires an application of the axiom of choice.
+
+\subsection{Possibly inconvenient set constructions}
+
+We define $A \times B$ as $\{\left<a,b\right>:a \in A \, \wedge\,  b \in B\}$.  The cartesian product is possibly inconvenient because it is $p$ types higher than the common type of $A$ and $B$.  This makes the definition of multiplication using the cartesian product a bit complicated:  $\kappa \cdot \lambda = T^{-p}(|A \times B|)$ looks a bit technical.
+
+We can also define $\kappa+\lambda$ as $T^{-p}(|(A \times \{0\}) \cup (B \times \{1\})|)$.
+
+We can define $B^A$ as $\{f:(f:A \rightarrow B)\}$, which is $p+1$ types higher than the common type of $A$ and $B$, and define $|B|^{|A|}$ as $T^{-(p+1)}(|B^A|)$.
+
+The common inconvenience that these definitions share is the need to mention the type displacement $p$  between the ordered pair and its projections.  The definition of function application also shares this inconvenient feature.
+
+\subsection{Finite sets and natural numbers:  the axiom of infinity}
+
+The collection $\mathbb F$ of finite sets is defined as the intersection of all sets of sets which contain $\emptyset$ and contain $A \cup \{x\}$ if they contain $A$, for any $A$ and $x$.  The Axiom of Infinity is the assertion $V \neq {\mathbb F}$ (it should be noted that because we allow urelements, it is possible that this statement might be false at a low type and become true at higher types:  but if it is true at any type it is true at all higher types).
+
+The collection $\mathbb N$ is defined as the intersection of all sets of cardinals which contain 0 and contain $n+1$ of they contain $n$, for any cardinal $n$.  That $\mathbb N$ is also the collection of all cardinals of finite sets we leave as an exercise.
+
+Note that if a type is finite, and $V$ is the set of all objects of that type, then $|V|$ is a natural number and $|V|+1 = \emptyset$ (the apparent possibility $|V|+1 = |V|$ can be shown in standard ways to imply that $V$ is not finite).  The assertion that $\emptyset \not\in \mathbb N$ is thus a form of the axiom of infinity.  We would also have $|V|+1 = \emptyset +1 = \emptyset$ in this case, whence we see that Peano axiom 4 (the successor map is injective) is also a form of the axiom of infinity.
+
+Once Infinity is assumed, arithmetic has an entirely standard implementation in our theory, and all the operations on cardinals defined above are inherited by the natural numbers as the expected arithmetic operations.  One thing to note is that the use of the $T$ operation to translate between natural numbers of different types remains necessary, but this operation is an isomorphism in the presence of Infinity.
+
+If Infinity is not assumed, $T$ embeds natural numbers in lower types into natural numbers in higher types as usual , but the sequence of natural numbers in higher types will be longer ($|V^{\bf i+1}| \geq T(2^{|V^{\bf i}|})$:  the inequality can be strict due to urelements).  
+
+\subsection{Cantor's theorem and partiality of exponentiation}
+
+We prove the classic theorem of Cantor that the power set of a set $A$ is larger than $A$.
+
+We define $|A| \leq |B|$ as holding when there is a bijection from $A$ to a subset of $B$.  We define $|A| < |B|$ as holding when $|A| \leq |B|$ and $|A| \neq |B|$.
+
+Clearly $T(|A|) \leq |{\cal P}(A)|$, as the identity map from $\iota``A$ into ${\cal P}(A)$ serves as a witness.  Notice that we are not proving $|A| < |{\cal P}(A)|$ because this actually doesn't make sense:  we have to use the $T$ operation to state this inequality in a well-typed way.
+
+Suppose for the sake of a contradiction that $T(|A|) = |{\cal P}(A)|$.  Then there is a bijection $f$ from $\iota``A$ to ${\cal P}(A)$.  Consider the set $$R = \{a \in A:a \not\in f(\{a\})\}.$$   For some $r \in A$, $f^{-1}(R) = \{r\}$:
+now $r \in R$ iff $r \not\in f(\{r\}) = R$, a contradiction.
+
+So we have completed the proof that $T(|A|) < |{\cal P}(A)|$.
+
+It follows that $|A| < 2^{|A|}$ if both cardinals are defined:  this is $|A| < T^{-(p+1)}(|\{0,1\}^A|) = T^{-1}(|{\cal P}(A)|)$ (here appealing to the natural relationship between sets and characteristic functions), and application of $T$ to both sides preserves the truth value of the inequality (given that $T^{-1}(|{\cal P}(A)|)$ is nonempty).
+
+It is convenient to introduce the name $\exp$ for $(\kappa \mapsto 2^{\kappa})$.
+
+We also conclude that the exponential operation is partial (and so is the exponential map just defined)  or, equivalently, takes the value $\emptyset$ at an input which is not $\emptyset$:  $T(|V|) < |{\cal P}(V)| \leq |V|$ implies that $T^{-1}(|{\cal P}(V)|) = 2^{|V|}$ is undefined.  It is worth repeating these assertions with type indices to make it clear that what is said involves a sort of pun between analogous objects at different type levels:
+
+$$T(|V^{\bf i+1}|) < |{\cal P}(V^{\bf i+1})| \leq |V^{\bf i+2}| \rightarrow T^{-1}(|{\cal P}(V^{\bf i+1})|) = 2^{|V^{\bf i+1}|} \mathrm{\, is \, undefined}$$ 
+
+Obviously $T^{-1}(|V^{\bf i+2}|)$ is also undefined. 
+
+We have the idea that $T(|A|)$ is essentially the same cardinal as $A$, because $A$ and $\iota``A$ are the same size.  If you feel uncomfortable that we just
+showed $T(|V|) < |V|$, note that the two occurrences of $V$ refer to different objects, for which we use the same notation because they are analogous objects at different type levels:
+$T(|V^{\bf i+1}|) < |V^{\bf i+2}|$, and certainly type $i+1$ ($V^{\bf i+2}$) is larger as a set than type $i$ ($V^{\bf i+1}$).
+
+\subsection{The axiom of choice}
+
+This takes the usual form officially:  we say that a set $P$ is a partition iff each element of $P$ is nonempty and any two distinct elements of $P$ are disjoint.  We say that $C$ (one type lower than $P$) is a choice set for $P$
+iff each element of $P$ has intersection with $C$ having exactly one element.  The axiom of choice asserts as usual that each partition has a choice set.  This is polymorphic, again as usual, being asserted in each type.
+
+Usual consequence of the axiom of choice follow:  for example, if choice holds every set has a well-ordering.
+
+Forms of choice familiar from other set theories may need to be adapted to type correctly:  for example, we cannot have a choice function $f$ sending nonempty subsets $a$ of a set $A$ to $f(a) \in a$, elements of $a$, but we can have
+a choice function sending nonempty subsets $a$ of $A$ to $f(a) = \{y\}$ where $y \in a$, to singleton subsets of $a$.
+
+We do not adopt Choice unequivocally as an axiom of TSTU, but we often use it, and when we do it is incumbent on us to say that we are assuming it.
+
+\subsection{Skew pairs and lateral relations}
+
+A general relation $x \,R\, y$ in which $x,y$ are of the same type is represented by the set $\{\left<x,y\right>:x \, R\, y\}$ (letting our pair be abstract).  Inhomogeneous relations, say between type ${\bf i}$ and type ${\bf j}$, can also be represented systematically by sets.  A relation $x^{\bf i} \, R \, y^{\bf j}$ can be represented by one of
+$\{\left< \iota^{\bf j - i}(x^{\bf i}),y^{\bf j}\right>:x^{\bf  i} \,R\, y^{\bf j}\}$ or $\{\left< x^{\bf i},\iota^{\bf i-j}(y^{\bf j})\right>:x^{\bf  i} \,R\, y^{\bf j}\}$, depending on which type is higher.  These may be called lateral relations, and their elements skew pairs.  The idea is that $\left<\iota^n(x),y\right>$ and $\left<x,\iota^n(y)\right>$ may be thought of as skew pairs of $x$ and $y$ with a fixed nonzero differential between their types:  such pairs can then be collected to represent relations with such type differentials.
+
+
+
+\subsection{Isomorphism types and ordinal numbers}
+
+A set relation is a set of ordered pairs (as opposed to a logical relation, which is simply a transitive verb).  We can equivocate between a set relation $R$ on a type and the corresponding logical relation
+by the observation that $x \, R\, y$ is to be read $\left<x,y\right> \in \{\left<u,v\right>:u \, R \, v\}$, and we set $[R] = \{\left<u,v\right>:u \, R \, v\}$ as the set implementation of the logical relation.  When $R$ is
+a polymorphic notation which can be used with amy type, and which is type level, the notation $[R]$ can still be used but of course must be specialized to a particular (usually unstated) type:  the sets $[=]$, $[\subseteq]$ in particular types are a thing.  A notation such as $[\in]$ built from a stratified but inhomogeneous relation is not likely to be used, though it does have a possible interpretation as a lateral relation.
+
+We define isomorphism of set relations:  $[R] \approx [S]$ iff there is a bijection from ${\tt fld}(R)$ to ${\tt fld}(S)$ such that for all $x,y$, $x \, R\, y \leftrightarrow f(x) \, S \, f(y)$.  Isomorphism is an equivalence relation
+and of course allows formation of equivalence classes.
+
+For us, a well-ordering is a reflexive, antisymmetric, transitive relation.  For any well-ordering $\leq$, we define ${\tt ot}(\leq)$, the order type of $\leq$, as $[[\leq]]_{\approx}$, the equivalence class of $\leq$ under isomorphism, which is
+one type higher than $\leq$, and $2+p$ types higher than the type of the elements of the domain of $\leq$.  A set which is the order type of a well-ordering is called an ordinal number, and the set of ordinal numbers is called ${\tt Ord}$.
+
+For any two well-orderings, exactly one of three things is true:  they are isomorphic, the first is isomorphic to a proper initial segment of the second, oir the second is isomorphic to a proper initial segment of the first.  This determines
+a linear order on the ordinal numbers, which is a well-ordering, which of course has an order type $\Omega$.  The Burali-Forti paradox does not ensue, because the well-ordering of the ordinal numbers of type $k$ has its order type
+$\Omega$ in type $k+2+p$.  The paradoxical conclusion that for every ordinal $\alpha$ (including $\Omega$), $\alpha<\Omega$, the uncomfortable conclusion of the Burali Forti paradox, rests on the idea that the restriction of the natural order $\leq$ on ordinals to $\{\beta:\beta <\alpha\}$ has order type $\alpha$: but it doesn't.  It has an analogous order type in a different type.  Where $R$ is a set relation, define $R^{\iota}$ as $\{\left<\{x\},\{y\}\right>:x\,R\, y\}$.
+Define $T([R]_{\approx})$ as $[R^{\iota}]_{\approx}$.  This gives us a general $T$ operation on isomorphism types of relations which can then be specialized to ordinal numbers.  The resolution of the Burali Forti ``paradox"
+is that ${\tt ot}([\leq] \cap {\tt seg}(\alpha)^2) = T^{2+p}(\alpha)$, from which we can draw the conclusion that $T^{2+p}(\alpha) < \Omega$ for every $\alpha$, and so that $T^{2+p}(\Omega) < \Omega$.  What this says is that the sequence of ordinal numbers becomes longer in higher types:  the two occurrences of $\Omega$ in this last assertion exhibit a kind of pun, which could be resolved if painful by writing $T^{2+p}(\Omega^{\bf i+2+p}) < \Omega^{\bf i+4+2p}$.
+
+\subsection{The type level ordered pair}
+
+We will often but not always suppose that our abstract pair is type-level, that is, that $p=0$.  We will often write $(x,y)$ for the pair when we take it to be type-level.  Note that this removes the inconviences of, for example, definitions of cardinal addition and multiplication using the cartesian product:  moreover these operations are immediately seen to be total if a type level pair is available.
+
+A certain independence of choice of pair should be noticed:  for any abstract pairs $\left<x,y\right>$ and $\left<x,y\right>'$ with type displacements $p, p'$, for any set $f$
+of pairs of the first kind, the set $f' = \{\left<x,y\right>':\left<x,y\right> \in f\}$ exists.  The two different notions of pair are not going to lead to different notions of what functions and relations or cardinalities there are.
+
+Existence of a type-level ordered pair does have specific mathematical consequences (as existence of a pair with $p \geq 2$) does not).  The existence of such a pair implies Infinity.  The axiom of Infinity does not imply existence of a type-level ordered pair, though Infinity and Choice together do.  Our theory with Infinity, though it does not prove the existence of a type level ordered pair, does support an interpretation of our theory with a type level ordered pair, something we will present in detail at some point.
+
+The assertion that there is a type-level pair is equivalent to $|V| \cdot |V| = |V|$, and we have seen above that this can be expressed in various ways in terms of the Kuratowski pair or an abstract pair with unknown displacement.
+
+Define $(x_1,\ldots,x_n)$ as $(x_1,(x_2,\ldots,x_n))$ for $n>2$.  It is harder to define the $n$-tuple when $p >0$.
+
+\subsection{The cumulative hierarchy of isomorphism types of well-founded relations with top (set pictures)}
+
+A relation $R$ is well-founded iff for every subset $A$ of the field of $R$ there is $x \in A$ such that for no $y \in A$ do we have $y \,R\,x$.
+
+A well-founded relation $R$ has {\em top\/} $t$ iff the smallest set containing $t$ and closed under preimage under $R$ contains all elements of the field of $R$.  Note that the empty relation is well-founded and has
+any $t$ as top, while any well-founded relation $R$ with nonempty field and a top has a unique top.
+
+A relation $R$ is extensional iff the preimage under $R$ of any element of the field of $R$ uniquely determines the element (this means that $R$ can be interpreted as a sort of membership relation, under which there is a unique empty set if there is any).
+
+We now consider $\cal Z$, the set of isomorphism types of well-founded extensional relations.
+
+We define the relation $\cal E$ on $\cal Z$ so that $[R] {\cal E} [S]$ holds iff $R$ is isomorphic to the restriction of $S$ to the closure under $S^{-1}$ of the singleton of a preimage of the top of $S$.
+
+We observe that this structure looks like a model of a set theory.  In fact $\cal E$ itself is a well-founded extensional relation (this result, which we leave for the moment as an exercise, establishes that we have extensionality together with the assumption that everything is a set in $({\cal Z},{\cal E}))$.
+
+A $T$ operation is defined on $\cal Z$, since it is a class of isomorphism types.  We argue that for any subset $S$ of $T``{\cal Z}$ there is an element $s$ of $\cal Z$ such that ${\cal E}^{-1}(s) = S$.  This is constructed
+by taking each $[R]$ with $T([R]) \in S$, constructing $R'$ such that $(\{x\},R)\, R' \,(\{y\},R)$ iff $x \,R\,y$ [note the use of type level ordered pairs;  without a type level pair, a similar result can be achieved for $T^{1+p}$], and these are all the pairs in $R'$.  Each $R'$ belongs to $T([R])$ and the union of the disjoint $R'$'s with an additional object added as top related to the tops of the relations $R'$ gives the desired $s$.
+
+The elements of $\cal Z$ have ordinal rank in an obvious sense, the rank of an element being the supremum of the ranks of its preimages under $\cal E$.  We refer to a rank as {\em complete\/} iff all subsets of that rank are implemented
+as preimages under $\cal E$ of elements of the next rank.  The image under $T$ of a rank is a rank, and all such ranks are complete by the result of the previous paragraph, but there must be complete ranks which are not images under
+$T$.  The first incomplete rank ${\cal Z}_0$ equipped with $\cal E$ as membership is an initial segment of the usual Zermelo hierarchy (assuming that our type theory is honest).
+
+An important application of these methods is to support the construction of initial segments of G\"odel's constructible universe $L$, which can be used to show relative consistency of Choice with our theory TSTU.
+
+It should be noted that in higher types, the structures $\cal Z$ and ${\cal Z}_0$ get larger:  our interpreted comprehension axiom implies this.  Because many  urelements may be added, these structures may get much larger at each type step:  there is no reason to suppose that just a single new rank is added.
+
+We will call the elements of $\cal Z$ {\em set pictures\/}, because they are formal representations of (some of) the sets in the usual Zermelo-style approach.
+
+This section is philosophically important.  It indicates how we can understand the usual foundations in the style of Zermelo in terms of our approach.  There is no hidden intellectual dependence of our work on ZFC (though there is manifest and happily acknowledged dependence on the general strategies for implementation of mathematics in set theory carried out in ZFC as well as in other theories in the course of the development of the subject!)
+
+\subsection{The Hartogs operation;  sequences of cardinals}
+
+With any set $A$ we can associate an ordinal, the smallest ordinal $\Omega(|A|)$ which is not the order type of a well-ordering of a subset of $A$ (of course this might be undefined, if $|A|=|V|$ for example).  This ordinal
+can be defined as the image under $T^{-(2+p)}$ of the order type of the natural order on the ordinals restricted to well-orderings of subsets of $A$.  The cardinality of the domain of a well-ordering of order type
+$\Omega(|A|)$ can be written $|A|^+$ or $\aleph(|A|)$.  In the presence of the axiom of choice, $\aleph(|A|)$ is the successor of $|A|$ if $|A|$ is infinite;  in the absence of choice, at any rate $\aleph(|A|) \not\leq |A|$.
+
+If $\leq$ is a well-ordering, we can define $\leq_{\alpha}$ as the $x$ in the domain of $\leq$ such that the restriction of $\leq$ to items before $x$ has order type $\alpha$.  It should be noted that the type of the index
+is $p+2$ higher than the type of $x$, and for example if $\leq$ is the natural order on the ordinals we discover that $\leq_{\alpha}$ is $T^{-2}(\alpha)$.
+
+Define $\aleph$ as the restriction of the natural order on cardinals to the set of cardinals of infinite well-ordered sets  and we have defined the sequence of cardinals $\aleph_\alpha$.
+
+In the presence of choice, we can define $\beth$ as the restriction of the natural order on cardinals to the smallest set of cardinals containing $|\mathbb N|$, closed under exp, and closed under suprema of its initial segments,
+and thus define the sequence of cardinals $\beth_\alpha$.  In the absence of choice, a more devious definition seems to be required:  we can define $\beth$ as the well-ordering on the cardinalities of infinite complete ranks in well-founded extensional relations.
+
+\subsection{TSTU vs. TST?  A speculative digression.}
+
+If we add to our theory TSTU the assumption that everything is a set, we obtain the theory TST.
+
+Equivalently, we can drop the sethood notion from our primitives and drop all mention of it from the axioms:  in particular, the axiom of extensionality then takes the strong form that objects of a positive type which have the same elements
+are equal.
+
+Historically, TST is the original theory of this kind.   To our knowledge, TSTU  is first attested in connection with Jensen's proof of the consistency of NFU.
+
+Nonetheless, for one reason and another, we think TSTU recommends itself as a general framework for mathematics more than TST.
+
+The first point, which does go back to the beginnings of set theory, is that it is rather odd to maintain that everything is a set.  Of course, there are objects in TST which we do not say are sets, namely the objects of type 0.  But we do not say that they are not sets, either:  their extensions cannot be discussed.
+
+If we think of the single type constructor of TST as simply building sets, of course it is natural for all the objects of positive types to be sets.  But it is quite reasonable to suppose that there are other mathematical constructions going on at the same time.
+As an example, we present a way of reconciling the type differentials of functions (three types between $f$ and the types of $y$ and $f(x)$ in $y=f(x)$ if we use the Kuratowski pair) and sets (one type between $A$ and $x$ in $x \in A$).  We suggest fixing this by using the natural correspondence between sets and characteristic functions, where we define $\chi_A$ so that $\chi_A(x) = V$ if $x \in A$ and $\emptyset$ otherwise.  We then propose to let $\chi_A$ represent the set $A$, redefining
+$x \in A$ as $A(x) = V \wedge (\forall y:A(y) = V \vee A(y) = \emptyset)$.  We are encodng sets into a higher type (and causing things which are not characteristic functions to be treated as urelements).  We now restrict our attention to types
+$1+3i$, relabelling these types as type $i$, and treating $V, \emptyset$ as primitive notions {\bf t}, {\bf f} and the notion of function application, set membership being defined in terms of function application as above.  We then have the same type displacement of 1 for the notions of function application and membership, at the cost of some urelements (and some non-functions:  we define $f(x) = {\bf f}$ where $f$ is not a Kuratowski functon).  Here the membership relation satisfies TSTU and the function application is an additional mathematical construction supported by this version of TSTU.  There are more sophisticated examples of relative consistency arguments in TST(U) (or in NF(U)) which have the effect of introducing more urelements.
+The type level ordered pair in TSTU is another example of adding an additional construction which generates urelements (though this does not add urelements to TST, as TST charmingly actually defines a type level pair if Infinity holds).
+
+A second point has to do with operations on cardinals.  Consider an operation like $\exp^{\omega}(\kappa) = {\tt sup}\{\exp^n(\kappa)\}$.  In the absence of urelements, this operation cannot be defined on the cardinality of a type.  Nor (a related issue) can there be a natural model of TSTU whose base type has the actual cardinality of a type.  Both of these things can happen if there are enough urelements.  This can be viewed as a further example of the idea that quite complex mathematical constructions, outrunning the simple power set, might be wanted in the next type.
+
+The third  point has to do with the symmetry of the theory (either TST or TSTU).  It is striking that TST(U) formally treats the types 0,1,2$\ldots$ and 1,2,3$\ldots$ in exactly the same way, and one project in the history of this kind of theory (which we spend a lot of time on in this document) is the project of seeing whether this formal ambiguity can be reflected in an actual closer analogy (or even isomorphism) between the structure consisting of all the types and the structure consisting of the positive types.  In TST,  if $\kappa_i$ is the cardinality of type $i$ it must be expressible as $\exp^i(T^i(\kappa_0))$ where $\kappa_0$ is the cardinality of type 0.  So we can consider all cardinals $\lambda$ such that $\exp^i(\lambda) = \kappa$ as candidates for the image under $T^i$ of the cardinality of type $j-i$, if $\kappa$ is taken to be the cardinality of a type $j$ (where we suppose that we do not know what $j$ is...).  Now if the axiom of choice holds, there is a smallest such type candidate cardinal $\mu$ with $\exp^m(\mu) = \kappa$.  Every cardinal $\lambda$ which is a type candidate cardinal will
+have $\exp^n(\lambda) \geq \exp^n(\mu)$ [if defined] and so the $n$ for which $\exp^n(\lambda) = \kappa$ will be less than or equal to $m$.  The natural number $m$ is a hard upper bound on what type $\kappa$ can be the cardinality of.
+Now observe that $\exp(T(\kappa))$ will of course be the cardinality of the next type:  what hard bound does it see on what type it may be?  If it sees $T(\kappa)$ as the cardinality of the next type down (as it must for example if GCH holds), it sees $\mu$ as the cardinality of the lowest possible type, and it sees itself as type at most $T(m)+1$.   The parity of this hard upper bound changes as we move up one type (on our local apparently reasonable assumption of GCH [or of any way to identify the next type down from a given type]; we will see below that if we take a more general approach to measuring type depth, AC alone is enough to break the symmetry), so the symmetry of the types fails in an observable way.  If we have urelements, we do not on the face of it have any way to compute what type we are in, so this failure of symmetry seems not to be replicable.  We will revisit this phenomenon, which is the most esoteric reason we have for favoring urelements in our primitive framework.
+
+It is possible in the discussion above that $\exp(T((\kappa))$ may see itself as a type of even higher possible index, because $\exp(T(\kappa))$ is $\exp^M(\mu')$ for some $\mu'<T(\mu)$, for which we will not have $T(\kappa)$ an iterated
+image of $\mu'$  under exp, but we will have $T(\kappa)$ dominated by an iterated image of $\mu'$ under exp.  To capture such lateral type candidate cadinals (which we do not see as candidate type cardinals at a given type, but which
+become candidate type cardinals at higher types) we consider as the set of lateral type candidate cardinals associated with a type cardinal $\kappa$ the set of all cardinals $\lambda$ such that for some $j$ we have $\exp^j(T(\lambda)) > T(\kappa)$ for some $j$.  For the smallest such cardinal $\lambda$, which we call $\mu$, we consider the smallest index which makes this true.  Now observe that if $\exp^{T(j)}(T^2(\lambda)) > T^2(\kappa)$ we also have $\exp^{T(j)+i}(T^2(\lambda)) > T(\exp(T(\kappa)))$ with $i$ either 1 or 2, so the smallest lateral type candidate from the standpoint of $\exp(T(\kappa))$ is $\leq T(\mu)$, and so is of the form $T(\nu)$:   $\exp^{T(j)}(T^2(\nu)) > T(\exp(T(\kappa)))$ , with $\nu \leq T(\mu)$, implies that $\exp^{T(j)}(T^2(\nu)) > T^2(\kappa)$, so in fact $T(\nu) = T(\mu)$.  Now we see that the parity mod 3 of the index $j$ of the first iterated power of the minimal lateral type cardinal candidate which overshoots the target type changes when we go up a type, meaning that AC by itself is enough to break the apparent symmetry of the type system if urelements are excluded.  Our view is that the axiom of choice has a lot of merit as a mathematical assumption, and the assumption that everything is a set has some but not much merit, so we would go with the urelements.
+
+\section{A type free presentation}
+
+This section uses an idea of Thomas Forster to present our metatheory in a simpler (?) form.
+
+The modified theory is a first order unsorted theory with equality, membership, and a sethood predicate.
+
+We define the relation $x \sim_{\tau} y$ by $(\exists z:x \in z \wedge y \in z)$:  things which belong to the same set are of the same type.
+
+The axiom of sethood asserts that anything with an element is a set, and any set is of the same type as something with an element:  $(\forall xy:(x \in y \rightarrow {\tt set}(y)) \wedge ({\tt set}(y) \rightarrow (\exists uv: u \in v \wedge v \sim_{\tau}y))$.
+
+The axiom scheme of extensionality asserts that sets of the same type  with the same elements are equal.  $$(\forall xy:{\tt set}(x) \wedge {\tt set}(y) \wedge x \sim_{\tau} y \wedge (\forall z:z \in x \leftrightarrow z \in y) \rightarrow x=y).$$  Note that this allows distinct empty sets of different types.
+
+The axiom of elementhood asserts $(\forall x:(\exists y:x \in y))$:  every object is an element.
+
+The axiom scheme of comprehension asserts that $$(\forall a:(\exists A:{\tt set}(A) \wedge (\forall x:x \in A \leftrightarrow x \sim_{\tau} a \wedge \phi)))$$ foreach  formula $\phi$ in which $A$ does not occur free.
+We can denote the witness to this axiom (unique by extensionality) by $\{x \sim_{\tau} a:\phi\}$.  Once we have defined $\tau(a)$ as $\{x \sim_{\tau} a:x=x\}$ we can further
+write the general witness as $\{x \in \tau(a):\phi\}$.  Note that comprehension implies the existence of an empty set $\emptyset_{\tau(a)} = \{x \in \tau(a):x \neq x\}$ for each $a$:  these empty sets
+are distinct for $a$'s with distinct types.
+
+The axioms of elementhood and comprehension could be replaced with an axiom of types asserting that $\tau(a) =\{x:x \sim_{\tau}a\}$ exists for each $a$ and the axiom scheme of separation, $(\forall a:(\exists A:{\tt set}(A) \wedge (\forall x:x \in A \leftrightarrow x \in A \wedge \phi)))$ for any formula $\phi$ in which $A$ is not free.
+
+The axiom of union asserts that $$(\forall a:(\exists A:(\forall x:x \in A \leftrightarrow (\exists y:x \in y \wedge y \in A)))).$$  The witness is denoted by $\bigcup a$ as usual.  It is interesting to note that the axiom of binary union ($a \cup b$ exists if $a \sim_{\tau} b$) is equivalent in this context:  binary union is sufficient to show that all elements of a set union are of the same type, so can be collected by comprehension.
+
+We prove that $\sim_{\tau}$ is an equivalence relation.
+
+That $x \sim_{\tau} x$ follows from the axiom of elementhood: there is $y$ such that $x \in y$, so $x \in y \vee x \in y$, so $x \sim_{\tau} x$.
+
+That $x \sim_{\tau} y \rightarrow y \sim_{\tau} x$ is a theorem of first order logic.
+
+Suppose $x \sim_{\tau} y$ and $y \sim_{\tau} z$.  Then we have $x \in \tau(y)$ and $z \in \tau(y)$, whence $x \sim_{\tau} z$.
+
+We define $x \subseteq y$ as $x \sim_{\tau} y  \wedge {\tt set}(x)\wedge {\tt set}(y) \wedge (\forall z:z \in x \rightarrow z \in y)$.  We define ${\cal P}(x)$ as $\{y \in \tau(x):y \subseteq x\}$.
+
+We argue that ${\cal P}(\tau(x))$ is the collection of all sets in $\tau^2(x)$.  $\tau(x)$ is an element of both sets, so they are of the same type.  If $y \in {\cal P}(\tau(x))$ then $y \sim_{\tau} \tau(x)$, so
+$y \in \tau^2(x)$.  If $y \in \tau^2(x)$, and $z \in y$, then $z \in \bigcup \tau^2(x)$ and of course $x \in \tau(x) \in \tau^2(x)$ is also in $\bigcup \tau^2(x)$, so $x \sim_{\tau} z$, so
+$z \in \tau(x)$, whence $y \in {\cal P}(\tau(x))$ (certainly $y \sim_{\tau} \tau(x)$).  If $y \in \tau^2(x)$ and $y$ is an empty set then $y \sim_{\tau} \tau(x)$ is obvious and again
+$y \subseteq \tau(x)$ so $y \in {\cal P}(\tau(x))$.
+
+Now it is straightforward to see that we can interpret $\tau^{n+1}(x)$ as type $n$ in our metatheory for any $x$ (preferring that $\tau(x)$ be infinite).  Since it is straightforward to show that there is a set
+in ${\cal P}^n(A)$ for any concrete $n$ which does not belong to $A$ (consider $\{\iota^{n-1}(x):x \in A \wedge \iota^{n-1}(x) \not\in x\}$), we can show that all the interpreted types are distinct and therefore disjoint since they are equivalence classes
+under $\sim_{\tau}$.
+
+This presentation is a bit foggier (in creatively useful ways) because there may be other types and the relationships between them are interestingly unclear.  It is interesting that the system of this section is a useful untyped set theory in which Pairing is false ($\{x,y\}$ exists iff $x$ and $y$ are of the same type).
+
+\section{Semantics}
+
+\subsection{The general framework of formalized syntax and semantics}
+
+One can use arithmetic to code bits of mathematical language, or do it more abstractly with the assistance of the type level pair.
+
+An atomic sentence can be represented in the form $(0,k,n,t_1,\ldots,t_n)$ where $k$ is a key (numerical?) representing the predicate, $n$ is its arity and the $t_i$ are formal terms (for the moment, just formal variables as described below):  in text, $P_k(t_1,\ldots t_n)$.  There might be further rules on the formation of formalized sentences, notably involving the types of the $t_i$'s.
+
+Propositional logic can be neatly packaged by coding ``neither $\phi$ or $\psi$" by $(1,P,Q)$ where $P$ codes $\phi$ and $Q$ codes $\psi$.  One could add primitives for other propositional connectives, but it is well-known that this one can handle everything.
+
+We provide formal terms $(2,\tau,n)$ for the $n$th variable of type $\tau$ ($x^{\tau}_n$).
+
+We provide quantification:  if $v$ codes $x$ and $P$ codes $\phi$, $(3,v,P)$ codes $(\exists x:\phi)$.
+
+Observe that all syntax in a given theory (collection of formalized sentences) should be of the same type.  But also notice that if all nomenclature is numerical or otherwise type raisable by a suitable $T$ operation, we can define a type raising operation acting on syntax which will raise the type of a syntactical item as much as desired (and lower it if this is possible for all components, as it is for numerals in the presence of Infinity).
+
+We now explain how we represent and assign meanings to syntax.  We suppose we have sets $D_{\tau}$ associated with each type label we allow in variables.
+An environment is then a function $E$ sending each formal variable $(2,\tau,n)$ to an element of $D_{\tau}$.  Notice that all the $D_{\tau}$'s are then of the same type
+in the metatheory, one type higher than that of items of syntax, and the environment functions are then  either of that same type or displaced above it by $p$ if we are not using a type level pair.
+
+The meaning associated with a formalized sentence is the set of environments which make it true (two or $2+p$ types higher than items of syntax and the objects of various internal types that they represent).  We indicate how we define this.
+
+The set of environments making $(0,k,n,t_1,\ldots,t_n)$ true is the set of $E$ such that $R_k(E(t_1),\ldots,E(t_n))$ (in our current formalization, the $t_n$'s are all simply formal variables).  We need of course to know what relation $R_k$ on elements of our model we associate with the key $k$.
+
+The set of environments making $(1,P,Q)$ true is the set of environments making neither $\phi$ (represented by $P$) nor $\psi$ (represented by $Q$) true.
+
+The set of environments making $(3,v,P)$ true is the set of environments $E$ such that there is an environment $E'$ differing from $E$ only in its value at $v$ which makes
+$\phi$ true (where $v$ represents $x$ and $P$ represents $\phi$).
+
+Everything here is definable by suitable inductions on the structure of terms in our metatheory.
+
+Entirely standard results of semantics such as Completeness, Compactness, and Lowenheim-Skolem can be proved here in the usual ways.
+
+\subsection{Introspection of type theory on itself}
+
+We can construct syntax for our entire language, as above with formal variables $(2,m,n)$ for $x^{\bf m}_n$ and predicates $E$ of arity 2, $=$ of arity 2, and ${\tt set}$ of arity 1.
+Note that we have imposed arity as a formal feature of predicates, but not type restrictions:  we allow sentences $(0,0,(2,m,p),(2,m+1,q))$ (membership), $(0,1,(2,m,p),(2,m,q))$ (equality) and $(0,2,(2,m+1,p))$, and these additional conditions on allowed formal sentences are readily expressed (stricty speaking we may also want relations $\pi_1$ and $\pi_2$ corresponding to the projections of the type-level ordered pair).
+
+We cannot construct semantics for it in any obvious way, though, because the objects we want to slot in naively are not all of the same type!
+
+We can however provide an interpretation for the first $n$ types for any concrete $n$.  The domain $D_i$ representing type $i$ is $(\iota^{n-i}``V^{\bf i+1})\times \{i\}$, so all $D_i$'s are subsets
+of $D_n$ inhabited by suitably iterated singletons tagged with a numeral to avoid overlapping types.  The interpretation of $(0,0,(2,m,p),(2,m+1,q))$ is
+$\bigcup^{n-m}\pi_1(E((2,m,p))) \in \bigcup^{n-(m+1)}\pi_1(E((2,m+1,q)))$:  this can be defined piecewise on the $D_i$'s as defined above only because a concrete
+finite number of types are involved.  The interpretation of equality is the obvious one.  The interpretation of sethood is the assertion of sethood for a suitably iterated
+union of the first projection of the argument.
+
+This interpretation is an honest interpretation of the actual state of affairs in the first $n$ types.  Notice that there is no way to talk about these interpretations uniformly as $n$ varies:  the domain used for the interpretation must be included in a progressively higher type.
+
+We can produce a model of type theory which is natural in a suitable sense if we have large enough sets in a fixed type.  Suppose that we have a sequence of sets
+$X_i$ such that $|X_{i+1}| \geq 2^{|X_i|}$ for each $i$, this being witnessed by actual injective maps $f_i$ from ${\cal P}(X_i)$ into $\iota``X_{i+1}$ for each $i$.
+We could then let $D_i = X_i \times \{i\}$ for each $i$ and define $(x,i) E (y,i+1)$ as $x \in f_i^{-1}(y)$ (this being taken to be false when $y$ is not in the range of $f_i$).
+
+Notice that such a model is ``natural" in the sense that every subset of the domain representing type $i$ is implemented in the domain representing type $i+1$.  Notice also that since all the ``types" $X_i$ of this model are included in a single type of the metatheory, this model is much smaller than the domain of the metatheory.  All of the ``types" of such a model are of exactly the same type in the sense of the metatheory.
+
+We {\em can\/} for example talk about the fact that any such model contains a semantic representation for its first $n$ types in which each $X_i$ for $i \leq n$ is represented by
+the internal representation of $(\iota^{n-1}(X_i)) \times \{i\}$:  we are able to describe all of this uniformly in the parameter $n$ in the metatheory, since everything is actually happening in a fixed type from that standpoint.
+
+We cannot talk about all models of type theory in our metatheory:  we can only talk about all models in a particular type (and notice that models of this or any theory in
+a given type can be moved upward one type).  We {\em can\/} for example talk about all countable models of a given theory:  since these can be translated in type downward as well as upward.
+
+\subsection{Trying to identify the sequence of types}
+
+In type $k+2$ of the metatheory, there is a sequence $X_i = (\iota^{k-i}``(V^{\bf i+1})) \times \{i\}$ ($0 \leq i \leq k$) which is a natural model of the types with index $\leq k$.  One can recognize such a sequence of $X_i$'s using facts about just types $k$ and up (the lowest type that need be considered is that of elements of the $X_i$'s, and one of the $X_i$'s is $V^{\bf k+1}$, of type $k+1$).  [Note that there is a choice of conventions here:  I am here saying that $V^{\bf i}$ is the universal set of type $i$, which is actually type $i-1$  considered as a set, but there is an alternative view that it ought to be the universe of type $i$ objects, which is itself of type $i+1$].  One cannot of course tell that such a sequence of $X_i$'s is the actual sequence of types, without making use of lower type indices.
+
+So, any natural model of the first $k+1$ types whose last element is $V^{\bf k+1}$ can be viewed as a candidate to be the sequence of types (or rather, images of the lower types under application of the singleton operation...since we are not referring to any types below $k$, we do not actually know whether the elements of each $X_i$ are suitably iterated singletons.  We might want to require that the $X_i$'s have first projections nested, to preserve the illusion that they might be such iterated images).
+
+It is also worth noting that any natural model is actually specified up to isomorphism exactly by the sequence of cardinalities of its elements, so we could concern ourselves just with that.
+
+So, if we are working with types $k$ and up, making no reference to lower types, each natural model, a finite sequence of sets
+$X_i$ such that $|X_{i+1}| \geq 2^{|X_i|}$ for each $i$, this being witnessed by actual injective maps $f_i$ from ${\cal P}(X_i)$ into $\iota``X_{i+1}$ for each $i$, in which some
+$X_n = V^{\bf k+1}$ [and $X_i \subseteq X_j$ for $i \leq j$] is a candidate to be the sequence of images under suitably iterations of the singleton map of lower types.  We can actually reverse engineer from any such sequence a fake version of the lower types which really does accord with this picture.
+
+It is provable using a result of Sierpinski that there can be no sequence $Y_i$ such that for every $k$ the finite sequence $Y_{k-i}$ is a candidate type sequence in this sense:
+our theory can tell for internal reasons that a downward sequence of types if indefinitely extended downward will eventually be forced to terminate:  the basic idea is that
+if we define $\Omega(\kappa)$ as the first ordinal not the order type of any well-ordering of a subset of a set of cardinality $\kappa$, that $\Omega(2^{2^{2^\kappa}})>\Omega(\kappa)$.
+This is evident because well-orderings of subsets of a set can be coded by their sets of initial segments, in the double power set of the set, so the order types themselves are coded in the triple power set.  Then we observe that the $\Omega$ operation  is clearly monotone in general, so we can see that if we had an infinite descending sequence of (cardinalities of) candidate types, we would have an infinite descending sequence of ordinals.
+
+Our metatheory cannot necessarily deduce what the types below $k-1$ look like, but it does know that they cannot go down forever, as it were.  This should make our next heading confusing!
+
+\section{Mutating the type system}
+
+\subsection{Types going down forever}
+
+Modify our metatheory to allow integer types (and remove the restriction on formulas ${\tt set}(x)$ that $x$ have positive type).  The resulting theory is consistent by an easy compactness argument.  Suppose that we could prove a contradiction in the theory TZTU thus obtained.  The proof would mention a smallest type $k$.  If $k \geq 0$ we have a contradiction in our metatheory, which we are convinced cannot happen.  If $k<0$, modify the argument by subtracting $k$ from every type index appearing in the argument and we again have a contradiction in the metatheory, which is absurd.  So the metatheory modified to allow integer types is consistent.
+
+This seems to conflict with the last paragraph of the previous section:  we know that there cannot be a downward sequence of candidate types presented as a natural model in
+any type $k-1$ which proceeds downward indefinitely.
+
+This isn't a contradiction:  the conclusion to be drawn is that the sequence $X_i = \iota^{k-i}``V^{\bf i}$ cannot be defined as a set in a model of TZTU.  There is no obvious way to define it, so this is not in itself terribly surprising.  This does firmly verify that there is no hidden way to define the types in a model of TSTU without actually referring to all of them.  But it should suggest that TZTU is a seriously dishonest set theory, since there is a {\em countable\/} subcollection of any type which cannot be realized by a set in the next higher type.
+
+One can see more rapidly that there are countable proper classes in TZTU by considering the inequalities $\Omega > T^{2+p}(\Omega) > T^{4+2p}(\Omega) > \dots$, which of course continue as far as desired.
+
+This is very interesting to us, because we actually think that TZTU is an actual candidate for a foundational system.  TSTU is historically attested as a such a system (without the urelements).  In TSTU, everything is a set, except those individuals at type 0 which we have not explained.  What are they?  It seems quite reasonable to decide that type 0
+is actually the type of sets of type $-1$ objects, and continue downward.  Turtles all the way down!  So, this is a conceivable foundational system for mathematics which is consistent but fundamentally dishonest!
+
+It is worth noting a real pathology here.  TZTU can be refined to TZT by stipulating that everything is a set.  Under TZT we can then observe that any candidate for type
+$k-n$ has a cardinality such that $\exp^n(\kappa)= |V^{\bf k}|$ (where $\exp (\mu) = 2^\mu$).  Now assume the axiom of choice.  Choose for each $n$ a candidate $\kappa_n$ for
+the cardinality of type $k-n$.    So we are given $\exp^m(\kappa_m) = \exp^n(\kappa_n)$.   It cannot be true that $\kappa_{n-4} \leq \exp^3(\kappa_n)$ holds:  applying $\exp$ $n-3$ times gives an absurd inequality.  This means that $\beth(\kappa_{n-4}) > \beth(\kappa_n)$ by the Sierpinski result cited above and Choice in the form of trichotomy of cardinal order,
+so the sequence $\beth(\kappa_{4n})$ must be a strictly decreasing sequence of ordinals, which is absurd.  So TZT with choice proves that there is an upper bound on the length
+of candidate downward type sequences, which cannot be standard because it also proves the existence of such sequences of each concrete finite length.  This means that an $\omega$-model of TZT cannot satisfy Choice, which is simply bizarre.  This can be viewed as the first intimation of the pathology evidenced in the Specker disproof of Choice.
+
+
+
+All of this makes TZTU look more like a candidate object theory than an alternative version of our metatheory.  It seems natural when using a type theory as the metatheory to suppose that given a type, the next type contains all subcollections of the first given type, and TZTU refutes this.
+
+\subsection{Ambiguity}
+
+We used the symmetry of our type system usually called ``typical ambiguity" just above in the proof that TZTU is consistent (assuming that TSTU is consistent).
+
+We review the situation.  Provide a bijection from variables to variables of positive type (or to all variables if integer types are used) sending each $x$ to $x^+$ with ${\tt type}(x^+) = {\tt type}(x)+1$.  For any formula
+$\phi$, let $\phi^+$ be the result of replacing every variable $x$ with $x^+$.  
+
+Now it is straightforward to see that if $\phi$ is a theorem, so is $\phi^+$:  a type-raised version of an axiom is an axiom, and the type-raising procedure commutes with all rules of inference.
+
+A stronger position to take would be to adopt the axiom scheme of Ambiguity, $\phi \leftrightarrow \phi^+$ for each closed formula $\phi$.  The ambiguity scheme has a simpler presentation in the type-free version of our metatheory:  $\phi(\tau(x)) \leftrightarrow \phi(\tau(y))$ for any formula $\phi$ containing no free variables other than those shown.
+
+The motivation is clear enough:  anything we can show about types 0,1,2$\ldots$ can be shown about types 1,2,3$\ldots$, and it is tempting to consider the possibility that whatever is {\em true} (not merely provable) about one type sequence is true about the other.
+
+A countermotivation has been given already, if the reader has been attentive.  It is a consequence of Ambiguity combined with strong extensionality that for each concretely given $n$ there is $\kappa_n$ such that ${\tt exp}^n(\kappa_n)=|V|$ (for any typed version of $V$:  each of these statements is true for all sufficiently high types, and under the hypothesis of ambiguity true for all types).  And we have already shown that $(\forall n \in {\mathbb N}:(\exists \kappa:{\tt exp}^n(\kappa) = |V|))$ is inconsistent with the axiom of choice, so we must either have urelements, nonstandard natural numbers or failure of choice.  It isn't a bad thing to have urelements (indeed we will present arguments that it is a positive good) but it seems odd to be forced to have them in this way.
+
+The argument can be refined to show that strong extensionality refutes choice directly in TSTU with the ambiguity scheme.  Let $\mu^{k+2}$ be the smallest cardinal such that $(\exists n \in {\mathbb N}:{\tt exp}^n(\mu) =\emptyset)$  We have a last
+$N^{k+2}$ such that $T(|V|)<{\tt exp}^N(\mu) \neq \emptyset)$.  Now observe that we also have $(\mu')^{k+1}$ one type lower defined in the same way and a last $(N')^{k+1}$ such that ${\tt exp}^{N'}(\mu') \neq \emptyset$.  We now observe that
+$T^2(|V|)<{\tt exp}^{T(N')}(T(\mu')) \leq T(|V|)$, so ${\tt exp}^{T(N')+1}(T(\mu')) \neq \emptyset$ is certain and ${\tt exp}^{T(N')+2}(T(\mu')) \neq \emptyset$ is possible, but  ${\tt exp}^{T(N')+3}(T(\mu')) = \emptyset$ is certain, at the same type level as $\mu$  (this is where extensionality is used:  we might otherwise have ${\tt exp}(T(|V|) = |{\cal P}(V)| < |V|)$.  Now
+$N'$ and both $T(N')+1$ and $T(N')+2$ are distinct, because $N$ and $N'$ must have the same remainder on division by 3 by ambiguity, and $N$ and $T(N')$ have the same remainder on division by 3 for obvious reasons.  Thus we must have $T(\mu') > \mu$ and we must have $T(N')+1$ or $T(N')+2  \leq N$, so $T(N')< N$.  Now consider
+$(\mu^*)^{k+3}$ defined in the same way and $N^*$.  Ambiguity tells us that $T(\mu) > \mu^*$, because we know that $T(\mu')>\mu$.    We have $T(|V|)<{\tt exp}^{N^*}(\mu^*) \neq \emptyset$.
+So we have $T^2(|V|)<{\tt exp}^{N^*-1}(\mu^*) \neq \emptyset$.  We know that we can apply $T^{-1}$ here.  Thus we have $T(|V|) < {\tt exp}^{T^{-1}(N^*)-1}(T^{-1}(\mu^*)) \neq \emptyset$, and application of $\exp$ two times more must give $\emptyset$, whence we must have $T^{-1}(\mu^*) \geq  \mu$:  but by ambiguity we have $T^{-1}(\mu^*)<\mu'$, because we have $T(\mu') > \mu$.  Thus choice cannot hold if extensionality holds.
+
+The Specker argument is fit here into the project of attempting to discern the downward extension of the sequence of types, which we have already seen is fraught.  The point is that choice gives us too much information
+about preimages under the exponential map for successive types to be exactly power sets if the types are bottomless, as they must be at least potentially in an ambiguous theory.
+
+\subsection{Tangled type theory and a consistency proof for ambiguity}
+
+Modify the language of our type theory to allow $x \in y$ to be well-formed iff ${\tt type}(x) < {\tt type}(y)$.  We note that this makes it possible to use any linearly ordered set with no maximum element
+as the set of types.
+
+For any strictly increasing sequence $s$ of types, provide a map $(x\mapsto x^s)$ from variables in the language of TSTU to variables in our modified language  whose restriction to variables of type $i$ (a natural number) is a bijection to variables of type $s(i)$.  Let $\phi^s$ be
+the result of replacing each variable $x$ in $\phi$ (a formula of the language of TSTU) with $x^s$.
+
+The axioms of the modified theory are the assertions $\phi^s$ where $\phi$ is an axiom of TSTU.  We call the modified theory TTTU (tangled type theory with urelements).
+
+We argue from the existence of a model of TTTU to the existence of a model of TSTU with Ambiguity.
+
+Let $\Sigma$ be a finite set of sentences in the language of TSTU.  Let $n$ be a natural number strictly bounding the types mentioned in $\Sigma$ above.  We observe that truth values of sentences in $\Sigma$ determine a partition of the $n$-element sets of types of TTTU with no more than $2^{|\Sigma|}$ compartments:  the compartment in which a set $A$ is placed is determined by the truth values of the sentences $\phi^s$ for each $\phi$ in $\Sigma$  for $s$ such that $s``\{0,\ldots,n-1\}=A$.  By the Ramsey theorem, there is an infinite homogeneous set for this partition, which must contain the range of an infinite strictly increasing sequence $h$ in the types.  The theory of the model
+of TSTU in which type $i$ is interpreted as type $h(i)$ in our model of TTTU satisfies $\phi \leftrightarrow \phi^+$ for $\phi \in \Sigma$.  Now by compactness, the full Ambiguity scheme is consistent with TSTU.
+
+It only remains to observe that it is straightforward to get a model of TTTU with natural number types from a model of TSTU.  Interpret $x \in y$, where ${\tt type}(x) < {\tt type}(y)$ as $\iota^{{\tt type}(y)-{\tt type}(x)-1}(x) \in y \wedge y \in \iota^{{\tt type}(y)-{\tt type}(x)-1}``V^{\bf {\tt type}(x)+1}$.  A clear effect of this is that the model of TTTU obtained can be expected to contain urelements:  when a type $j$ set is interpreted as a collection of type $i$ objects
+with $i<j-1$, everything which is not a set of $j-i-1$-fold singletons is interpreted as an urelement.   This also works on the metatheoretical level:  we can interpret TTTU language in terms of the language of our TSTU metatheory without assuming the existence of a set model.
+
+Internally to a type in our metatheory,  any sequence of sets $X_i$ with indices $i$ taken from an unbounded  linearly ordered set $I$ and injective maps $f_{i,j}:{\cal P}(X_i) \rightarrow \iota``X_j$ for each $i<j$ will give a model of TTTU with types indexed by $I$.  Notice that the axiom of choice together with $i <y \rightarrow |X_i| < 2^{|X_j|}$ is sufficient, and the axiom of choice is not necessary, merely some uniform way of choosing embeddings:  $X_i \subseteq X_j$ for $i<j$ would serve as well.
+
+We note that if the axiom of choice holds in the base theory, it will continue to hold in the sorts of models of TTTU constructed here.  This does mean that if we construct a model of TTTU with strong extensionality, it cannot satisfy choice, because the resulting model of TSTU + Ambiguity would still satisfy Choice, which is impossible.  So, contrariwise, when we construct a model of TSTU + Ambiguity by these methods starting in a context in which choice holds, we will create urelements, even if they did not exist in the initial model of TSTU.
+
+It is also important to notice that we do {\em not\/} directly find an increasing sequence of types which models Ambiguity within the given models of TTTU by either of the methods described here.  We find increasing sequences of types which model ambiguity for each concretely given finite set of sentences.   It is a question in my mind as to how strong it is to suppose (in our metatheory with Choice) that there is a sequence of sets $X_i$ (the sequence itself being a set), which we may suppose nested,
+with $2^{|X_i|} \leq |X_j|$, which determines a model of TSTU + Ambiguity.  There are assumptions of very high consistency strength under which this can happen, but I do not know the strength of this weaker (?)  assumption.
+
+\subsection{Collapsing the types:  NFU (initially with choice)}
+
+We begin with a model of TSTU + Ambiguity with integer types in which the axiom of choice holds.
+
+Let $\leq^{k+1+p}$ be a well-ordering of $V^{\bf k+1}$ for each $k$;  we will use the notation $\leq$ polymorphically.  Define $\{\theta x:\phi\}$ for any $\phi$ as the $\leq$-least $x$ such that $\phi$, or as $\emptyset$ in case
+$(\forall x:\neg \phi)$.
+
+This gives us a Hilbert symbol.  It is then a standard move to cut down our model of TSTU + Ambiguity to one consisting entirely of closed terms and satisfying exactly the same sentences.
+
+We can then identify each term $\{\theta x:\phi\}$ with $\{\theta x^+:\phi^+\}$, without introducing any difficulties with evaluation of atomic sentences (because Ambiguity holds) and so obtain a model in which
+all the types are exactly the same domain.  Integer types are needed here so that each term is identified with a term one type lower as well as a term one type higher.
+
+The theory NFU (+ $\leq$) satisfied by this structure is a first order unsorted theory with equality, sethood, membership (and $\leq$) as primitives, and the type level pair if desired (it can be defined in terms of $\leq$ if it is present).
+
+We present the precise axioms of NFU:  it should be clear that these hold in the structure described (along with the assertion that $\leq$ is a well-ordering of the universe, which we do not include in the definition).
+
+\begin{description}
+
+\item[sethood:]  $(\forall xy:x \in y \rightarrow {\tt set}(y))$
+
+\item[extensionality:] $(\forall xy: {\tt set}(x) \wedge {\tt set}(y) \wedge(\forall z:z \in x \leftrightarrow z \in y) \rightarrow x=y)$
+
+\end{description}
+
+To articulate its axiom of comprehension efficiently, we refine our language by providing countably many  superscripted variables with each natural number (or integer) superscript.  We write ${\tt type}(x)$ for the superscript on $x$ (but recall that this theory is unsorted).  We also provide countably many unsuperscripted variables.  We say that
+an atomic formula is correctly typed if some variable in it is unsuperscripted or if it is an equation $x=y$ or an assertion $x \leq y$  and ${\tt type}(x)={\tt type}(y)$ or if it is a membership statement $x \in y$ and ${\tt type}(x)+1={\tt type}(y)$.
+We say that a formula is well-typed iff all of its atomic subformulas are well-typed:  please note that non-well-typed formulas are well-formed!  We then provide that $\{x:\phi\}$ exists if the variable $x$ and all variables bound in $\phi$ are superscripted and $\phi$ is well-typed.  Note that our theory is actually unsorted, so sensible renamings of bound variables preserve axiomhood of these instances of comprehension.   Also note that we allow parameters (free variables in $\phi$ which may be unsuperscripted).   A formula $\phi(x)$ in which $x$ is superscripted and which can be converted by sensible renamings of  all its bound variables to superscripted variables  into a well-typed formula is called a ``weakly stratified" formula in $x$:  a formula which can be converted by renaming of all bound variables to superscripted formulas to a well-typed formula containing only superscripted variables is called a ``stratified" formula.  
+
+\begin{description}
+
+\item[comprehension:]  $(\exists A:{\tt set}(A) \wedge (\forall x:x \in A \wedge \phi))$ is an axiom  when $x$ is superscripted, $\phi$ is a well-typed formula in which $A$ does not occur, and each variable bound in $\phi$ is superscripted.
+
+\end{description}
+
+What is really happening, of course, is that each instance of comprehension which can be turned into an instance of the comprehension of TSTU by assignment of types to variables is true.
+
+Note further that ill-typed assertions in the language of NFU now have semantics.  $V \in V$, for example, is simply true and $\emptyset \in \emptyset$ is simply false.
+
+It is important to notice that NFU with choice is conservative over TSTU + Ambiguity with choice:  anything provable in NFU with choice which is expressible in the language of TSTU is provable in TSTU + Ambiguity + choice:  if it were not, we could construct
+a model of TSTU + Ambiguity + choice refuting the assertion, then construct a model of NFU + choice refuting the assertion as shown here.  Further, any theorem of TSTU + Ambiguity is a consequence of TSTU with finitely many instances of Ambiguity,
+and so in fact can be proved in TSTU (appealing to only finitely many types!) with appeals to finitely many instances of Ambiguity.  All of this has been shown so far only with choice, but in fact the same conservativity results will be seen to hold for NF vis-a-vis TST with Ambiguity.
+
+The point that this makes about mathematics in NFU with choice  is that nothing new is going on.  Everything we prove in NFU which makes sense in type theory can in fact be proved by the methods of type theory, mod finitely many instances of the ambiguity axioms, and the methods of proof above should suggest that in the presence of urelements and choice, the ambiguity axioms have no interesting mathematical content:  we coerce the ambiguity axioms into holding simply by padding types with enough additional urelements.
+
+I have presented this development of NFU with choice (and infinity) elsewhere as propaganda for NFU as the metatheory:  one can bootstrap from belief in TSTU as the metatheory (and so in consistency of TSTU and existence of models of TSTU) to belief in the consistency of NFU and so perhaps adoption of NFU as one's metatheory.  But notice that I have cast doubt on the wisdom of using TZTU as a metatheory which applies every bit as much to NFU.  The factor which might make NFU more appealing as a foundational theory than TZTU is that its metaphysical baggage is apparently less:  the types collapse to a single domain (though the type scheme still seems to appear in the formulaton of the comprehension axiom).  But does this compensate for the existence of countable proper classes?
+
+\subsection{Restriction of types and axiom sets}
+
+\subsubsection{Finite axiomatization}
+
+NFU is finitely axiomatizable.  The schemes of sethood and extensionality in TSTU collapse to single axioms in NFU:  what remains is to reduce the comprehension axiom to a finite set of its instances.
+The comprehension axiom of TSTU itself reduces in the same way to a finite collection of polymorphic schemes of axioms.
+
+We indicate how to do this in a way which does not depend on the type level ordered pair.   We use environments, functions from the set of all natural numbers to the universe, to assign values to all variables.  We call the set of environments $E$.  $E(i)$ is $1+p$ types higher than $i$.  Depending on whether Infinity holds, elements of $E$ may be infinite sequences or finite sequences of length determined by the largest natural number $|V|$.
+
+We are interested for any formula $\phi(a_0,\ldots,a_{n-1})$ with the given free variables in constructing the set $\{x:\phi(x,a_0,\ldots,a_{n-1})\}$, where we suppose that the formula is well-typed.  Ro this end we first construct the set of environments $\{t\in E:\phi(\bigcup^{\tau_{0}}(t(0),\bigcup^{\tau_1}(t(1)),\ldots,\bigcup^{\tau_{n}}(t(n)))\}$, where the fudge factors $\tau_i$ are dictated by relative types:  we understand that $t(i)$ is a $\tau_i$-iterated singleton for each relevant $i$: setting the value of a variable $x^i$ of relative type $i$  is represented by making $t(i)=\iota^{M-i}(x^i)$ in an environment $t$, where $M$ is a constant dictated by the context.
+
+ We do this by induction on the structure of $\phi$.   Negation and conjunction correspond to complements relative to the set of environments and binary intersection.  Quantification
+over a variable $x_i$ of relative type $k$ corresponds to constructing a set of enviroments $$\{t\in E:t(i) \in B \wedge(\exists t'\in E :(\forall j \in {\mathbb N}: t(j) = t'(j) \vee (i=j \wedge t'(j) \in B) \wedge t' \in A)\}$$ for each  natural number $i$, set of environments $A$, and set $B$ ($B$ is actually to be taken to be $\iota^{M-k}``V$, but we cannot quantify over $k$ here).
+
+For each $i,j$ we want to be able to represent $\{t\in E:t(i) \subseteq t(j)\}$ and $\{t\in E:t(i) = t(j)\}$.  For each set $A$ of environments we provide the set $A^+= \{t^{\iota}\in E:t \in A\}$, where $t^{\iota}(T(i)) = \{t(i)\}$. 
+
+The combination of the last two clauses allows representation of membership at any concretely given type between any concretely given pair of variables:  membership of type $M-1$ in type $M$ is represented by inclusion,
+and application of $^+$ pushes the sentence represented to lower types.
+
+To handle parameters, we want sets $\{t \in E:t(i) = a\}$ for each natural number $i$.  We also need the construction of singletons for packaging parameters at appropriate types.
+
+Finally, we provide the construction $\{x:(\exists t \in E: t \in A \wedge t(0)=x)\}$, to convert sets of environments down simply to sets:  we can now construct $\{\iota^n(x):\phi\}$ for any $\phi$, where $n$ is an indication of type,
+and get the desired set as $\bigcup^n(\{\iota^n(x):\phi\})$.
+
+This is not a maximally economical finite axiomatization, it is simply an indication of the logical reason that finite axiomatization is possible.
+
+We provide a finite list of comprehension axioms supporting the constructions above.  It does not seem to be necessary to use natural numbers as keys for variables:  it appears to be sufficient to use general objects as keys for variables and require
+that the key used for a variable of relative type $M-n$ be an $n$-fold singleton (this is necessary because of the way I define $A^{+}$ below).
+
+\begin{description}
+
+\item[pairing:]  We assert the existence of $\{x,y\}$ for each $x,y$.  Note that this provides $\{x\}$ and also provides Kuratowski pairs.
+
+\item[the set of environments:]  We assert the existence of the set $V^{V}$ of functions of universal domain (using the Kuratowski pair).
+
+\item[complement and intersection:]  We assert the existence of $\{x : x \not\in A\}$ and $\{x:x \in A \wedge x \in B\}$ for each $A,B$.  The universe is a Booloan algebra.
+
+\item[singleton image:]  We assert the existence of $\iota``A = \{\{a\}:a \in A\}$ for each $A$.  This is needed to ensure the existence of coded types $\iota^{M-k}``V$.
+
+ \item[quantification:]   $$\{t\in V^V:t(i) \in B \wedge (\exists t'\in V^V :(\forall j :t(j) = t'(j) \vee (i=j \wedge t'(j) \in B) \wedge t' \in A)\}$$ exists, for each  $i,A,B$.
+
+\item [atomic sentences:]  $\{t\in V^V:t(i) \subseteq t(j)\}$ and $\{t\in V^V:t(i) = t(j)\}$ exist for each $i,j$.
+
+\item[type lowering:]  For each $t \in V^V$, $t^{\iota}$ such that $t^{\iota}(\{x\}) = \{t(x)\}$ and $t^{\iota}(y) = y$ if $y$ is not a singleton exists.  We assert the existence of $t^{\iota}$ for each $t \in V^V$
+and of $A^+ = \{t^{\iota}:t \in A\}$ for each $A \subseteq V^V$.  Note that this is used for translating atomic sentences downward  in type, and has the effect that an object used as key for a variable of relative type $M-n$ should be an $n$-fold singleton.
+
+\item[parameter setting:]  $\{t \in V^V:t(i)=a\}$ exists for each $i,a$.
+
+\item[ranges:]  $\{x:(\exists t \in A:t(i)=x\}$ exists for each $i$ and each $A \subseteq V^V$.
+
+\item[set union:]  $\bigcup A$ exists for each set $A$.
+
+\end{description}
+
+No special considerations about sethood are needed in the axiomatization, because sethood is definable in NFU:  ${\tt set}(x)$ is equivalent to $x = \emptyset \vee (\exists y:y \in x\}$.  All we need to be able to do is identify the empty set.
+
+These axioms use six types.  If the type-level pair is also assumed, so that fewer types are involved in the definition of functions, they use four types (the type lowering axiom uses the full complement of four types).  One would then want additional atomic sentences associated with the projections of the type level pair ($x=\pi_1(y), x = \pi_2(y)$) which would be associated with additional axoms analogous to those for subset and inclusion.
+
+The relationship between the finite axiomatizability and our semantic machinery is of course not a coincidence at all.
+
+\subsubsection{Reducing the number of types}
+
+Our master theory TSTU has restricted versions TSTU$_n$ in which the language and the axioms are restricted to types $i$ with $0 \leq i <n$.
+
+The theory NFU$_n$ is defined as NFU but with the restriction that superscripts used in instances of the comprehension axiom are restricted to $i$ with $0 \leq i <n$.
+
+
+
+Reductions of the number of types used are of interest.  We describe a precise technique for eliminating consideration of type 0.  First, lower all type indices by 1, so that the lowest type, formerly type 0, is now type $-1$.
+Let each element $a^{\bf -1}$ be coded by $\{a\}^{\bf 0}$.  All mention of type $-1$ constants $c^{\bf -1}$ is then replaced by mention of their singletons which we might write $c_+^{\bf 0}$.  All variables $x^{\bf -1}$ can be replaced by variables $x_+^{0}$ restricted to
+the set $S^{\bf 1}$ (formerly the set $1^{\bf 2}$).  The set $S^{\bf 1}$ is now a primitive, since its explanation as the set of singletons of type $-1$ objects can no longer be expressed.  Any quantifiers over type $-1$ are converted to quantifiers over type 0 restricted to this set.  Finally, the relation $x^{\bf -1} \in y^{\bf 0}$ is replaced
+by the assertion $\{x_+^0,y^0\} \in E^{\bf 2}$, where $E^{\bf 2}$ was formerly the set $\{\{\{x\},y\}:x \in y\}^{\bf 3}$.  Note that this process can then be iterated as long as three types remain.  (One should further 
+preserve the notation $\emptyset_+^{\bf 0}$ for the former empty set in the new type 0, so that the notion of sethood can be recovered.)
+
+In this way we can see that NFU is equivalent to NFU$_3$ + existence of $E = \{\{\{x\},y\}:x \in y\}$ (existence of $E$ is an axiom of NFU$_4$).  Of course, this also means that NFU is equivalent to NFU$_4$.  What is really happening here is that the use of as many types as desired is hidden by the use of $S$ and $E$ as parameters in definitions using only 3 types, but with their types shifted so their internal variables do the work of lower types.
+
+Elimination of types in TSTU$_n$ will only give an equivalent theory if axioms are added to ensure that $S$ and $E$ have the correct behavior.  What is needed is the assertion that for each $x^{\bf 1} \subseteq S^{\bf 1}$ which is
+nonempty there is exactly one $X^{\bf 0}$ such that for any $y^{\bf 0}$, $y^{\bf 0} \in x^{\bf 1}$ iff $\{y^{\bf 0},X^{\bf 0}\} \in E^{\bf 2}$ (and if $x^{\bf 1}$ is a singleton, $X^{\bf 0}$ is its sole element, and for any $y^{\bf 0}$, $\{y^{\bf 0},\emptyset^{\bf 0}_+\} \not\in E^{\bf 2}$). 
+
+In TSTU$_n$ + Ambiguity with $n \geq 4$, one can pass to $n-1$ types by introducing $S$ and $E$ satisfying the given additional statement, then use Ambiguity to show that the existential assertion that there is such an $S$ and $E$  is true of the bottom $n-1$ types,
+so in fact there is a description of an even lower type.  This process can be repeated, because the description of any concrete sequence of lower types can be reduced to a proposition about the top $n-1$ types, then shown to
+be true in the bottom $n-1$ types, allowing a description of a yet longer sequence of types below the officially given ones (the longer sequence is not to be expected to be an extension of the shorter one).  So TSTU$_n$  + Ambiguity for $n \geq 4$ is at least as strong as TSTU itself, in the sense that it can interpret as many types as desired.
+
+It is useful to be aware that  TSTU$_4$ + Ambiguity does {\em not\/} prove that the models of TSTU$_n$ that it sees are ambiguous -- if it did, that would get us in trouble with G\"odel's theorems.  The main line of defense here is that one cannot show that the natural numbers of a model of TSTU$_4$ + Ambiguity are the same as the natural numbers of the metatheory:  note that
+we already know that requiring natural numbers to be standard in a model with downward type sequences of arbitrarily great concrete length is fraught, as it refutes choice.  A model of  TSTU$_4$ + Ambiguity which denies the consistency of TSTU$_4$ + Ambiguity (or simply denies the existence of natural models of TSTU$_4$ + Ambiguity) will fail to see any natural models of ambiguity for some finite set of ``formulas" including some with nonstandard G\"odel numbers:  because  TSTU$_4$ + Ambiguity quite directly proves the existence of models of TSTU$_4$ with ambiguity restricted to any fixed concrete finite set of formulas.  This does further imply that an $\omega$-model of
+TSTU$_4$ + Ambiguity does see  models of TSTU$_4$ + Ambiguity.
+
+
+NF$_3$ (extending NFU$_3$ with the assertion that everything is a set) is consistent.   Take any infinite model of TST$_3$ (infinite in the sense of the metatheory).   Construct a countable model with the same theory which has the splitting property (each set in the model which is infinite in the sense of the metatheory has a partition into two infinite subsets).  By a back and forth construction, an isomorphism can be constructed between types 0 and 1 on the one hand and types 1 and 2 on the other.  Identify
+objects with their images under the isomorphism to collapse the types, obtaining a model of NF$_3$ which satisfies the same typed statements as the original model of TST$_3$.  This is very different from the situation with 
+NF:  without having expressly discussed NF, we already know that there are models of TST$_4$ which cannot be collapsed to models of NF$_4$ with the same theory, e.g. any model satisfying Choice.  Note that we have outlined the reasons
+that all externally infinite models of TST$_3$ satisfy Ambiguity.
+
+\subsection{Collapsing types using ambiguity without choice}
+
+Our technique for collapsing a model of TSTU + Ambiguity to a model of NFU with the same theory given above depended on using the axiom of choice to provide a Hilbert symbol.  With some care, we can show that
+the Hilbert symbol can be introduced into the logic of TSTU + Ambiguity without making the additional assumption of choice, so the types can be collapsed in the choice-free case.
+
+Assume that we have a model of TSTU + Ambiguity.  Our aim is to take its complete theory and augment it with a consistent complete theory with a Hilbert symbol $(\theta x:\phi)$ and all of its type
+variants $(\theta x^{+^n}:\phi^{+^n})$ which still satisfies Ambiguity.  If we can do this for one Hilbert symbol, we can do it for all of them.
+
+We begin by taking the complete theory of the model and extending it to a theory in TSTU + Ambiguity + integer types.   Any contradiction would involve finitely many sentences, so a lowest type, and so could be raised in type
+to produce a contradiction in the theory of the original model.
+
+Choose a formula $\phi(x)$:  our aim is to extend the theory of the original model to an ambiguous theory including all sentences about the objects $a_n = (\theta x^{+^n}:\phi(x^{+^n}))$ for $n \in \mathbb Z$.  To begin with,
+if $(\forall x:\neg(\phi(x))$ is in the theory, then we identify each $a_n$ with the empty set in the appropriate type, and we are done.
+
+Otherwise, we begin by adding $\phi(a^n)$ to the theory for each $n$.  This is consistent, because there are witnesses to $(\exists x:\phi(x))$ in each type.
+
+We construct the complete theory of assertions $\psi(a_n)$ (resolving them in some predetermined order).  Each $\psi(a_n)$, if not decided by sentences already added to the theory, will be set to be true if
+$(\exists x:\psi(x))$ is consistent with each finite set of the sentences whose values have already been set.  The values of all $\psi(a_n)$ for all $n$ are set at the same time to preserve ambiguity of the theory.
+
+Now suppose that all values of sentences $\psi(a_1,\ldots,a_k)$ have been determined consistently and ambiguously.  We consider all formulas $\psi(a_1,\ldots,a_{k+1})$ in some predetermined order.  If the next formula
+$\psi(a_1,\ldots,a_{k+1})$ cannot be decided on the basis of formulas already admitted to the theory, it will be the case that $(\exists x:\psi(a_1,\ldots,a_k,x) \wedge \Phi(a_2,\ldots,a_k,x)$ is a consequence of the theory as
+defined so far where $\Phi$ is any finite conjunction of sentences which the theory believes of $(a_2,\ldots,a_{k+1})$.  Thus works because the indicated formula shows that it is consistent to suppose $a_1,\dots,a_k$ extended
+to as long a sequence as one wishes in which blocks of $k$ satisfy as much of the description of the block $(a_i,\ldots,a_{i+k})$ as desired and blocks of $k+1$ satisfy $\psi$ (this being arranged by causing versions of the indicated formula to be included in descriptions of previous $k$-blocks; blocks of $k+1$ also satisfy previously processed statements), and in the limit this is simply the result of adding $\psi$ to the ambiguous description of the sequence of $a_i$'s.  I believe that this version makes the point, but one could adapt the indicated formula to choose a candidate for $a_0$ as well as a candidate for $a_{k+1}$, so that it extended both upward and downward at each step.
+
+If one can add a single Hilbert symbol, one can add all Hilbert symbols.  One can then collapse a model of TSTU + Ambiguity + Hilbert symbol whose theory extends that of  the original TSTU + Ambiguity to a model of
+NFU whose well-typed theory is the same as that of the original TSTU + Ambiguity, without assuming the axiom of choice.
+
+We argue for the same result for TSTU$_n$ + Ambiguity.  The apparent problem is that some formulas and so some Hilbert symbols do not admit a type shift, because they use all $n$ types.  The solution is to convert such propositions
+to propositions in the top $n-1$ types using $E$ and $S$ (if necessary shifting reference to a type 0 object to reference to its singleton), while stipulating identification of $E$ and $S$ with some Hilbert symbols using only the type
+$n-1$ types so that they can be type-shifted downward (of course, witnesses to any partial description of the actual $E$ and $S$ are found in the lower types by ambiguity, so identification of $E$ and $S$ with Hilbert symbols which can consistently be they and which are clearly distinguishable from one another cannot cause difficulties).  Once these arrangements are made, the same procedure (miniaturized) allows addition of Hilbert symbols to proceed much as above.
+
+From this it follows that from a model of  TSTU$_n$ + Ambiguity we can obtain a model of NFU$_n$  with the same well-typed theory (which will be a model of NFU if $n \geq 4$).
+
+\section{Mathematics in NFU}
+
+In this section we will usually suppose Infinity (and so can suppose the type level pair for convenience) and sometimes Choice (which we are free to assume).  At some point we should indicate (here we will simply mention)
+that the proof of relative consistency of choice in TSTU can be carried out using an initial segment of  G\"odel's constructible universe (emulated in the isomorphism classes of well-founded extensional relations).  But here we simply take Choice to be a reasonable principle.
+
+Our first remark is that to a very great extent there is nothing to say about mathematics in NFU which has not already been said.  TSTU with Infinity and Choice (and with stronger axioms of infinity as needed) is a quite adequate framework for mathematics by itself, and mathematics conducted in TSTU can be imported into NFU.
+
+The dangers and opportunities afforded by NFU have the same cause:  because the types are collapsed together we have a richer language.  This can delude us:  we can get the false impression that we can do things we cannot do.
+It can also give extra power:  there are reasonable seeming (and in fact reasonable) ill-typed assertions which can be adjoined to NFU as axioms, which are generally unreasonably effective mathematically!
+
+\subsection{There are no paradoxes:  cantorian and strongly cantorian sets, cardinals, and ordinals introduced}
+
+The so-called paradoxes of set theory are mistakes.  You will note that we have never been in any danger of encountering them in the framework of TSTU, though we have encountered related mathematical issues.
+
+NFU is an untyped set theory, so it is useful to review the reasons why the paradoxes do not afflict it.
+
+The paradox of Russell can be given short shrift.  There can be no set $\{x : x \not\in x\}$:  this is a theorem of first order logic.  The comprehension axiom of NFU does not assert the existence of such a set, because
+$x \in x$ cannot be made well-typed no matter how variables in it are superscripted.
+
+The paradox of Cantor requires a little more attention.  It is often presented as saying that $|V|$, the cardinality of the universal set, is an impossible object (it is sometimes called the paradox of the largest cardinal number).  But in fact $|V|$ exists in NFU and is the largest cardinal number.  The form of the paradox
+is that $|A| < |{\cal P}(A)|$, by the argument given earlier for this theorem, so in the case $A=V$ we get $|V| < |{\cal P}(V)| \leq |V|$ which is absurd.  The solution has already been given above:  in fact, it was forced on us
+by our type scheme.  We did not prove $|A| < |{\cal P}(A)|$, because this is ill-formed in the language of TSTU:  we proved $T(|A|) < |{\cal P}(A)|$, so $T(|V|) < |{\cal P}(V)| \leq |V|$ is a theorem of NFU.
+
+This is disconcerting, if not a paradox.  This is a direct proof that the obvious bijection $(x \mapsto \{x\})$ from $V$ to $\iota``V$ (recalling that $T(|V|) = |\iota``V|$) is not a set and in fact there can be no set bijection
+from the universal set to the set of singletons.  But the air of paradox should be disturbed if not dispelled by the thought that these statements are entirely reasonable in the original context of type theory from which they are imported.  The definition of the singleton map is of course quite impossible to type in TSTU terms.
+
+The paradox of Burali-Forti, the paradox of the largest ordinal number, also has a very interesting resolution.  The form of the paradox is that the sequence of ordinal numbers (order types of well-orderings) supports a natural well-ordering, which of course itself has an order type $\Omega$.  The order type of the ordinals below any ordinal $\alpha$ is of course $\alpha$, so the order type of the ordinals below $\Omega$ is $\Omega$, and of course a well-ordering cannot be isomorphic to one of its proper initial segments.  The solution, again, has already been stated.  In TSTU, the order type of the natural order on the ordinals restricted to ordinals below $\alpha$ is not $\alpha$, but $T^{2+p}(\alpha)$:  in type theory it is not even of the same type as $\alpha$.  In NFU we get the theorem that $T^{2+p}(\Omega) < \Omega$.  This has the disconcerting consequence that we get $$\Omega > T^{2+p}(\Omega) > T^{4+2p}(\Omega) > \ldots > T^{i(2+p)}(\Omega) > \ldots,$$ a horror which we have already encountered in the discussion of TZTU.   This ``descending sequence" in the ordinals is not a set (and clearly $T$ is not a function on ordinals):  this is not a paradox.  Here we have the curious resolution that the object $\Omega$, the order type of the natural order on the ordinals, exists (it is not an impossible object) but it is not the largest ordinal.  (There {\em can\/} be a largest ordinal number in NFU, but only if Infinity does not hold).
+
+The relationship between $T^2(\Omega)$ and $\Omega$ in type theory is entirely reasonable in the original context of type theory from which it has been imported, and the infinite descending sequence can be dispelled by considering that there is no occasion in type theory to suppose that there are infinitely many types below the current type.
+
+It can be noted here that if a set $A$ satisfies $|A| = |\iota``A|$ (such a set is said to be {\em cantorian\/}) then the Cantor theorem $|A| < |{\cal P}(A)|$ in its ill-typed form can be proved.  A set $A$ satisfying the stronger condition
+that $\iota\lceil A = (x \mapsto \{x\})\lceil A$ is a set is said to be {\em strongly cantorian\/} or simply s.c.  NFU proves that each concrete finite set is strongly cantorian and that $\aleph_0$ and many other familiar cardinals are cantorian.  These interesting predicates are not well-typed, and any mathematics using them is properly native to NFU.
+
+We define a (strongly) cantorian cardinal as the cardinal of a (strongly) cantorian set and a (strongly) cantorian ordinal as the order type of a well-ordering of a (strongly) cantorian set.  The order type of the ordinals
+below a cantorian ordinal $\alpha$ is $\alpha$.  An ordinal is strongly cantorian iff it is cantorian and each smaller ordinal is cantorian.
+
+Note that the predicates ``cantorian" and ``strongly cantorian", being ill-typed, cannot be used in the definition of a set.
+
+Note too that a variable $x$ known to be restricted to a fixed strongly cantorian set $A$ may be freely raised and lowered in type, by replacing $x$ with the equivalent $\bigcup (\iota\lceil A)(x)$ in which it is of higher type
+or the equivalent $(\iota \lceil A)^{-1}(\{x\})$ in which it is of lower type (strictly speaking we need the convention here that we always take $\bigcup(\{x\})$ to denote $x$, even when $x$ is an urelement;  to the same purpose, we could introduce notation $\theta(\{x\}) = x$).  Thus we may regard a bound variable restricted to an s.c. set as untyped for purposes of well-typedness.
+
+\subsection{There are no semantic paradoxes.  NFU does not see models of itself.}
+
+NFU does not see a model $(V,\in)$ of itself, because $\in$ is not a relation.
+
+NFU cannot see a model of itself using skew relations either.  There is a skew relation coding $\in$ (the restriction $e = \{\left<\{x\},y\right>:x \in y\}$ of the inclusion relation to $1 \times V$, which one might call ``atomic inclusion").  This allows us to represent membership of objects understood as being type $-1$ (singletons) in objects understood as being of type 0.
+To discuss membership of objects in type $-1$ objects, we need to introduce the relation $e^{\iota}$ (where in general $R^{\iota} = \{(\{x\},\{y\}):x \, R\, y\}$) to represent membership of type $-2$ objects (general objects coded as double singletons) in type $-1$ objects.  A model of TSTU$_{n}$ is obtained using $\iota^i``V$ as type $-i$ for $0 \leq i \leq n$ and using relations $e^{\iota^i}$ to represent membership of type $-i-1$ in type $-i$.  This procedure cannot be described in a well-typed way uniform in $n$ (we cannot expect to be able to describe the sequence of coded membership relations!), so there is no way to show consistency of TSTU as a whole, and no hint of a model of NFU.  For reasons we will discuss below, it is not even the case that NFU necessarily sees
+these models of TSTU$_n$ as ambiguous, though it will certainly see them as ambiguous for any concretely given formula.  If NFU could prove that its internal model of TSTU$_4$ was ambiguous, then it could prove consistency of NFU in the way outlined above, so in fact this is not a theorem, and if this fails it must fail due to the presence of formulas with nonstandard G\"odel numbers, as it were.  NFU with all natural numbers standard proves the consistency of NFU (here is a place where there seems to be distinct danger of paradox, but it is evaded).  An interesting corollary is that the ambiguity scheme for TSTU$_4$ cannot be finitely axiomatized.
+
+The reader should recognize this procedure as the translation into this context of the method we described above for a model of TSTU to introspect on its first $n$ types.
+
+There is a general remark to be made about skew relations.  Any use of a skew relation between $A$ and $B$ can be understood as use of a type-level relation between $\iota^n``A$ and $B$ or between $A$ and $\iota^n``B$.
+Because the context of any mathematical reasoning in NFU which leads to definition of a set is ultimately well-typed, we will expect the type displacement between domains $A$ and $B$ everywhere in the argument to be the same
+$n$ or $-n$, at least where the same objects related by the given skew relation are concerned.  And this means that nothing is actually gained by using skew relations (other than convenience):  we can systematically
+replace either $A$ or $B$ with its image under $\iota^n$ and reason in a well-typed way, coding elements of one of the sets by their $n$-fold singletons.  It is another of the illusions I allude to above to suppose that skew relations will allow more competent semantics:  in fact TSTU has very effective semantics, inherited by NFU, but it has the usual limitations.
+
+\subsubsection{The Boffa construction of models of NFU using external automorphisms which move ranks in ${\cal Z}_0$}
+
+It is also interesting to note here that the set ${\cal Z}_0$ supports an interpretation of NFU.  The membershp ``relation" of this interpretation is $x \in_{{\cal Z}_0} y$ defined as $T(x) {\cal E} y \wedge (\forall z:z {\cal E} y \rightarrow z \in T``{{\cal Z}_0})$.  This interpretation of NFU will always have many urelements.  It happens to exactly reflect a standard construction of set models.  There is no semantic issue here because the ``membership relation" here is not a set.
+
+Construct a set model of a suitable TSTU$_n$ with an automorphism $j$  moving a rank in a well-founded extensional relation (and thus the corresponding rank in ${\cal Z}_0$) and its ordinal index $\alpha$, without loss of generality downward.  Of course $\alpha$ is not a standard ordinal.
+We introduce the notatiion ${\cal Z}_{\alpha}$ for rank $\alpha$ (letting $\cal Z$ stand for the natural well-ordering of the complete ranks).  Now we obtain a set model of NFU whose domain is ${\cal Z}_{\alpha}$ and whose membership relation
+$\in_j$ is defined thus: $x \in_j y$ iff $j(x)\, {\cal E}\, y \wedge y \in {\cal Z}_{j(\alpha)+1}$.  All notions in the definition of the model (except $j$) are of course the internal notions of the set model of a suitable TSTU$_n$ with an automorphism,
+This construction is due to Maurice Boffa.  We note two things about it:  we have succeeded in carrying it out entirely in terms of our own metatheory (there is no appeal to ZFC here, though we do presuppose some work on model theory in our framework to develop the model with automorphism), and it is very much worth noting that NFU itself sees something like this construction of itself.  Both the Boffa set model construction and the internalized class Boffa construction described above in NFU create many urelements, regardly of whether there are urelements in the NFU or TSTU$_n$ in which one is working initially.
+
+\subsection{The axiom of counting}
+
+Rosser's axiom of counting is the first unstratified axiom that one encounters in NFU foundations.  Its original form is the entirely natural-seeming assertion that $\{1,\ldots,n\}$ has $n$ elements, for each positive natural number $n$.
+it has a number of interesting equivalent forms:
+
+\begin{enumerate}
+
+\item  $\mathbb N$ is strongly cantorian.
+
+\item  Every finite set is cantorian.
+
+\item $(\forall n \in {\mathbb N}:T(n) = n)$
+
+\end{enumerate}
+
+The assertion $\{1,\ldots,n\} \in n$, although it looks perfectly reasonable, is not a theorem.  The difficulty is that it is a statement one would naturally prove by mathematical induction:  the class of $n$ for which it is true contains 1
+and is closed under successor, as one can easily verify.  But its definition cannot be well-typed, so it is not necessarily a set.  $\{1,\ldots,n\} \in T^2(n)$ is well-typed and is a theorem of NFU.
+
+It follows that the axiom of counting implies and is implied by the assertion that $T^2(n) = n$, which is equivalent to $T(n) = n$ (note that ${\tt min}(n,T^2(n)) \leq T(n) \leq {\tt max}(n,T^2(n))$.  There is a function $r$ definable by recursion which sends 0 to $\{0\}$
+and sends $n+1$ to $\{\bigcup r(n)\}$:  it is a theorem of NFU that this maps $n$ to $\{T^{-1}(n)\}$, and the axiom of counting is seen to imply $r(n) = \{n\}$ and so to imply the assertion that $\mathbb N$ is strongly cantorian,
+and thus obviously that each finite set is strongly cantorian.  If $A \in n$ is cantorian, it follows that $T(n) = n$, and if this is true for every finite $A$ it follows that the axiom of counting holds.   Note that if $T^{-1}$ is total on natural numbers,
+the existence of $r$ witnesses Infinity; if $T^{-1}$ is not total on natural numbers, we observe that the predecessor of the smallest natural number $n$ for which $T(n)$ is defined must be $|V|$, so Infinity fails.
+
+Further, the Axiom of Counting implies Infinity.  If the cardinality of $V$ is a natural number $n$, the cardinality $T(n)$ of $\iota``V$ is smaller than $n$ by Cantor's theorem, so the axiom of counting does not hold
+
+If one constructs a Boffa model of NFU in which the index $\alpha$ moved by the automorphism $j$ is of the form $\omega +n$, one obtains a model of NFU in which Infinity holds but the Axiom of Counting does not.  Notice that in such a
+model we have $|V| = \beth_n$ for some natural number $n$, so $\beth_{n+1}$ does not exist.
+
+Observe that if $A$ is of cardinality $\beth_\alpha$, then ${\cal P}(A)$ is of cardinality $\beth_{T(\alpha)+1}$, so we see that if $|V| = \beth_{\alpha}$ (which it will for some $\alpha$ in any Boffa model) we must have $T(\alpha)<T(\alpha)+1 <\alpha$.
+Thus if $V = \beth_n$, we have $T(n)<T(n)+1<n$, so counting does not hold.  The axiom of counting implies the existence of $\beth_n$ for each $n$.  The existence of $\beth_\omega$ follows.
+
+In fact the axiom of counting implies the existence of a lot of beth numbers:  it is quite a bit stronger than one might expect.  The first incomplete rank ${\cal Z}_0$ does not have cantorian index, as $T``{\cal Z}_0$ is a complete rank and so has smaller index.  Thus $\beth_\alpha$ exists for any strongly cantorian $\alpha$, because a strongly cantorian ordinal cannot dominate any noncantorian ordinal.  For any set $A$, if $A$ is strongly cantorian, so is ${\cal P}(A)$.  So $\beth_0$ is strongly
+cantorian, and so is $\beth_n$ for each concrete $n$, because $\beth_{n+1}$ is the cardinality of the power set of a set of cardinal $\beth_n$ (but notice that we cannot carry out an induction on this unstratified argument).  This means
+that each ordinal $\beth_{{\tt init}(\beth_n)}$ exists, for $n$ a standard natural number (where ${\tt init}(A)$ is the order type of the smallest well-ordering of $A$;  we are assuming choice here).  This happens to be exactly what can be shown, though we must argue in a different way to show that we can get a model of NFU with the axiom of counting in which there is a nonstandard natural number for which $\beth_{{\tt init}(\beth_n)}$ does not exist.  The exact way in which this happens
+is that, while each $\beth_n$ must be cantorian under the axiom of counting, as $T(\beth_n) = \beth_{T(n)}$ is a theorem, there may be a nonstandard $\beth_n$ which is not strongly cantorian, and a noncantorian $\kappa$ between
+the cantorian $\beth_n$ and $\beth_{n+1}$ for which $T({\tt init}(\kappa)) < T(\kappa)$ is possible.
+
+The axiom of counting is generally extremely useful.  Under the axiom of counting, natural number variables may be permitted to be unsuperscripted in instances of comprehension, because their types can be manipulated as discussed above.  This is even stronger than one might suppose, since the assertion that $\mathbb N$ is strongly cantorian implies at the very least that each concrete  iterated power set of $\mathbb N$ is strongly cantorian, and so that all the types of object considered in  classical mathematics outside of set theory are of strongly cantorian size.  One has to be careful in making this kind of statement:  the natural number 17 is not itself an s.c. set, but it belongs to a kind implemented as an s.c set $\mathbb N$, under the assumption of the axiom of counting.
+
+\subsection{Orey's theorem:  NFU + the axiom of counting proves Con(NFU+Infinity)}
+
+We have observed above that TSTU provides natural semantics for each TSTU$_n$, and so in particular for TSTU$_4$, so NFU provides an interpretation of TSTU$_4$.  Type $3-i$ in this model is $\iota^i``V$; the membership relation
+of type $2-i$ in type $3-i$ is interpreted by the intersection of $[\subseteq]^{\iota^i}$ with $\iota^{i+1}``V \times \iota^i``V$.
+
+We can define satisfaction of sentences by models as discussed above.  Types 0-2 of the indicated model are obtained by an application of the singleton map to types 1-3 in a way which makes it evident that types 1-3 satisfy an assertion $\phi^+$ iff
+types 0-2 satisfy $T(\phi)$ [here the T operation might literally be the T operation on cardinals if formulas are taken to be coded by numbers, but it could also be defined inductively on more abstract representations of formulas].
+The axiom of counting implies that $T(\phi) = \phi$ (even if we use a more abstract representation, but we do rely on the set of formulas being countable), and so we find that the natural model of TSTU$_4$ in our model of NFU + counting is a model of TSTU$_4$ + Ambiguity, and we have
+seen already that from a model of TSTU$_4$ + Ambiguity we can obtain a model of NFU with the same well-typed theory [there is no reason to think that the ill-typed assertion of the axiom of counting would be preserved by that construction].  Further, this model will certainly satisfy Infinity, as the embedded model of TSTU$_4$ clearly satisfies Infinity.
+
+It can be noted that exactly the same argument shows that NF with the axiom of counting proves the consistency of NF (noting that NF proves Infinity, since it disproves Choice).
+
+\subsection{The axiom of cantorian sets}
+
+The axiom of cantorian sets is the assertion that every cantorian set is strongly cantorian.  It was originally proposed by C. Ward Henson as an axiom to adjoin to NF.
+
+The theory we will concern ourselves with is NFU + Infinity + Cantorian Sets + Choice, which we call NFUA.
+
+This theory is intimately related to the existence of certain sorts of cardinals.
+
+\subsubsection{NFUA proves the existence of $n$-Mahlos for concrete $n$}
+
+A cardinal number $\kappa$ is {\em regular\/} iff it cannot be expressed as the union of $<T(\kappa)$ sets each of cardinality $<\kappa$.
+
+A cardinal $\kappa$ is {\em strong limit\/} iff for each cardinal $\mu<\kappa$ we also have $2^{\mu} < \kappa$.
+
+A closed unbounded set in a well-ordering is a subset of the domain of the well-ordering which is closed under suprema and not bounded above.
+
+For any set $X$ of cardinal numbers, define $M(X)$ as the set of cardinals $\kappa$ with the property that any club in the natural order on cardinals $<\kappa$ contains an element of $X$.
+
+If $I$ is the set of inaccessible cardinals, we say for each natural number $n$ that a cardinal is $n$-Mahlo if it belongs to $M^n(I)$ , and $\omega$-Mahlo if it belongs to $\bigcap_{n \in {\mathbb N}} M^n(I)$.
+
+We work in NFUA.
+
+We define a function $C$ sending each singleton of a strong limit cardinal $\kappa$ to a club in the natural order on cardinals $<\kappa$ of the smallest possible order type, further requiring that $C(\{\kappa\})$ will for each $n$ only include any $n$-Mahlos
+if $\kappa$ is $(n+1)$-Mahlo (so that it must include $n$-Mahlos).
+
+We define the function $C^{\iota}$ sending each $\{T(\kappa)\}$ to $T``C(\{\kappa\})$.  We consider the function $C_1$ which is defined to agree with $C$ and $C^{\iota}$ on the longest initial segment of the cardinals on which they agree.
+Notice that the domain of $C_1$ includes all cantorian = s.c. strong limit cardinals, and since it is a set it will certainly include noncantorian strong limit cardinals:  this is a signature sort of application of the axiom of cantorian sets.
+
+We define a partial function $D$ acting on pairs of cardinals in the domain of $C_1$.  We can write $C(\kappa)$ for $C_1(\kappa)$ if the latter is defined.
+
+\begin{enumerate}
+
+\item  If $\kappa,\lambda$ are distinct and not strong limit, $D(\kappa,\lambda)$ is defined as $(\kappa',\lambda')$, where $\kappa'$ is the smallest cardinal such that $2^{\kappa'}\geq \kappa$ and $\lambda'$ is the smallest cardinal such that $2^{\lambda'}\geq \lambda$.
+
+\item  If $\kappa,\lambda$ are distinct, strong limit, not regular, and have different cofinalities, define $D(\kappa,\lambda)=({\tt cf}(\kappa),{\tt cf}(\lambda))$ [note that ${\tt cf}(\kappa) = T^{-1}(|C(\{\kappa\})|)$.]
+
+\item If $\kappa,\lambda$ are distinct, strong limit, not regular, and have the same cofinality, define $D(\kappa,\lambda)$ as $(\kappa'',\lambda'')$ where $\kappa''$ and $\lambda''$ are the first corresponding elements in the natural
+orders on $C(\{\kappa\})$ and $C(\{\lambda\})$ which differ.  There will clearly be such elements.
+
+\item If $\kappa,\lambda$ are distinct, strong limit, and regular and both belong to $M^n(I)\setminus M^{n+1}(I)$ for the same $n$, define $D(\kappa,\lambda)$ as $(\kappa'',\lambda'')$ where $\kappa''$ and $\lambda''$ are the first corresponding elements in the natural
+orders on $C(\{\kappa\})$ and $C(\{\lambda\})$ which differ.  There will be such elements:  if there are not, the smaller of $\kappa$ and $\lambda$ will belong to the image under $C$ of the singleton of the other, which is impossible under the stated conditions.
+
+\item  In all other cases, $D(\kappa,\lambda)$ is undefined.
+
+\end{enumerate}
+
+Note that for any pair of cardinals $\kappa,\lambda$, the sequence of pairs $D^n(\kappa,\lambda)$ is finite, since $\pi_1(D(\kappa,\lambda)<\kappa, \pi_2(D(\kappa,\lambda)<\lambda$ will always hold when $D(\kappa,\lambda)$ is defined.
+
+We now consider cardinals $T^2(\kappa) < T(\kappa) < \kappa$ or $T^2(\kappa) > T(\kappa) > \kappa$ in the domain of $C_1$.
+
+We are interested in the sequences $(\kappa_i,\lambda_i) = D^i(T^2(\kappa),T(\kappa))$ and $(\mu_i,\nu_i) = D^i(T(\kappa,\kappa)$.
+
+We aim to show by mathematical induction that $\kappa_i = T(\lambda_i) = T(\mu_i) = T^2(\nu_i) \wedge \kappa_i \neq \lambda_i = \mu_i \neq \nu_1$ holds for all $i$.  This may appear to be an unstratified condition not definining a set, and therefore not a usable inductive hypothesis.  But in fact, horribly, it is a set.  The stratified condition defining these conditions is $T(D^i(T(\kappa),\kappa)) = D^{T(i)}(T^2(\kappa),T(\kappa)) \wedge \pi_1(D^i(T(\kappa),\kappa)) \neq \pi_2(D^i(T(\kappa),\kappa)) \wedge \pi_2((D^i(T^2(\kappa),T(\kappa))) = \pi_1(D^i(T(\kappa),\kappa))$.  That $D^{T(i)}(T^2(\kappa),T(\kappa))=D^i(T^2(\kappa),T(\kappa))$ follows from the axiom of counting.  We need state only one of the inequalities because the other follows from the first condition as modified by counting.
+
+So far all we have shown is that  $\kappa_i = T(\lambda_i) = T(\mu_i) = T^2(\nu_i) \wedge \kappa_i \neq \lambda_i = \mu_i \neq \nu_1$ defines a set.  We now need to demonstrate that this set includes all the indices for which any of the sequences
+are defined, by mathematical induction.
+
+Note that $\kappa_i = T(\lambda_i) = T(\mu_i) = T^2(\nu_i) \wedge \kappa_i \neq \lambda_i = \mu_i \neq \nu_1$ holds for $i=0$, as $\kappa_0 = T^2(\kappa)$, $\lambda_0 = \mu_0 = T(\kappa)$, $\nu_0=\kappa$.
+
+Suppose that $\kappa_i = T(\lambda_i) = T(\mu_i) = T^2(\nu_i) \wedge \kappa_i \neq \lambda_i = \mu_i \neq \nu_1$.
+
+If $\nu_i$ is not strong limit, then all of $\kappa_i, \lambda_i, \mu_i, \nu_i$ are not strong limit, being iterated images under $T$ of $\nu_i$, and we define $D(\kappa_i,\lambda_i)$ as $(\kappa_i',\lambda_i')$ and $D(\mu_i,\nu_i)$ as $(\mu_i',\nu_i')$,
+where $\rho'$ is defined for any $\rho$ as minimal such that $2^{\rho'}\geq \rho$.  It is then evident that $\lambda_i'=\mu_i'$ and that $\kappa_i'=T(\lambda_i')$ and $\mu_i'=T(\nu_i')$.  Further, if $\kappa_i' = \lambda_i' = T(\kappa_i')$ we would
+have $\kappa_i$ and $\lambda_i= T(\kappa_i)$ less than or equal to the same cantorian = s.c. cardinal therefore cantorian = s.c. and equal contrary to hypothesis.  So we have $\kappa_i'=T(\lambda_i') = T(\mu_i') = T^2(\nu_i')$ and $\kappa'_i \neq \lambda_i' = \mu_i' \neq \nu_i'$ and so $\kappa_{i+1}=T(\lambda_{i+1}) = T(\mu_{i+1}) = T^2(\nu_{i+1})$ and $\kappa_{i+1} \neq \lambda_{i+1}= \mu_{i+1} \neq \nu_{i+1}$.
+
+If $\nu_i$ is strong limit, and $\mu_i$ and $\nu_i$ have different cofinalities, then we have $\kappa_i$ and $\lambda_i$ distinct from each other and with different cofinalities as well, and we have $D(\kappa_i,\lambda_i) = ({\tt cf}(\kappa_i),{\tt cf}(\lambda_i))$, $D(\mu_i,\nu_i) = ({\tt cf}(\mu_i),{\tt cf}(\nu_i))$, and evidently ${\tt cf}(\kappa_i) = T({\tt cf}(\lambda_i)) = T({\tt cf}(\mu_i)) = T^2({\tt cf}(\nu_i))$ and ${\tt cf}(\kappa_i) \neq {\tt cf}(\lambda_i) = {\tt cf}(\mu_i) \neq {\tt cf}(\nu_i)$ whence $\kappa_{i+1}=T(\lambda_{i+1}) = T(\mu_{i+1}) = T^2(\nu_{i+1})$ and $\kappa_{i+1} \neq \lambda_{i+1}= \mu_{i+1} \neq \nu_{i+1}$.
+
+If $\nu_i$ is strong limit and $\mu_i$ and $\nu_i$ have the same cofinality then we have ${\tt cf}(\kappa_i) = T({\tt cf}(\lambda_i)) = T({\tt cf}(\mu_i)) = T^2({\tt cf}(\nu_i))$ cantorian = s.c.  We have $D(\mu_i,\nu_i)$ as the first pair of distinct elements $(\mu_i'',\nu_i'')$ with corresponding strongly cantorian index $\alpha$ in the natural order on cardinals in $C(\{\mu_i\}$ and $C(\{\nu_i\}$ respectively.  We have $D(\kappa_i,\lambda_i)$ as the first pair of distinct elements $(\kappa_i'',\lambda_i'')$ with corresponding strongly cantorian index $\alpha'$ in the natural order on cardinals in $C(\{\kappa_i\}$ and $C(\{\lambda_i\}$ respectively.  But in fact $\alpha_i = \alpha'_i$ and $\kappa_i''=T(\mu_i'')$ and $\lambda_i''=T(\nu_i'')$
+because all these cardinals are in the domain of $C_1$, so for any index $\alpha$ which is applicable, the item with index $\alpha = T(\alpha)$ in $C(\{\kappa_i\}) = C(\{T(\mu_i)\})$ will be the image under $T$ of the item with index $\alpha$ in $C(\{\mu_i\})$ and similarly for $\lambda$ and $\nu$.  So we have $\kappa_i''=T(\lambda_i'') = T(\mu_i'') = T^2(\nu_i'')$ and $\kappa''_i \neq \lambda_i'' = \mu_i'' \neq \nu_i''$ and so $\kappa_{i+1}=T(\lambda_{i+1}) = T(\mu_{i+1}) = T^2(\nu_{i+1})$ and $\kappa_{i+1} \neq \lambda_{i+1}= \mu_{i+1} \neq \nu_{i+1}$.
+
+If $\nu_i$ is strong limit and regular and belongs to some $M^n(I) \setminus M^{n+1}(I)$ then $\kappa_i,\lambda_i,\mu_i,\nu_i$ are all strong limit and regular and belong to the same $M^n(I) \setminus M^{n+1}(I)$.  We have $D(\mu_i,\nu_i)$ as the first pair of distinct elements $(\mu_i'',\nu_i'')$ with corresponding  index $\alpha$ in the natural order on cardinals in $C(\{\mu_i\})$ and $C(\{\nu_i\})$ respectively.  We have $D(\kappa_i,\lambda_i)$ as the first pair of distinct elements $(\kappa_i'',\lambda_i'')$ with corresponding  index $\alpha'$ in the natural order on cardinals in $C(\{\kappa_i\})$ and $C(\{\lambda_i\})$ respectively.  There must be such distinct elements:  if there are not, then the shorter of $C(\{\mu_i\})$ and $C(\{\nu_i\})$
+would be a proper initial segment of the other, and because the longer is a club, the smaller of $\mu_i$ and $\nu_i$ would be in the club associated with the other, which is impossible, because these clubs exclude $n$-Mahlos.  Further, because
+everything is in the domain of $C_1$, we have $T(\alpha) = \alpha'$ and $\kappa_i'' = T(\mu_i'')$ and $\lambda_i''=T(\nu'')$.  Now if  $\alpha = \alpha'$ we would have the desired conditions by basically the same calculations as in the previous case.
+If $\alpha \neq T(\alpha) = \alpha'$ then the induction breaks here.
+
+If $\nu_i$ is $\omega$-Mahlo of course the process terminates.
+
+So this process arrives at a pair of distinct inaccessibles which are either $\omega$-Mahlo or have chosen clubs whose elements in corresponding positions agree at all cantorian indices.   We have included a clause designed to force the $\omega$-Mahlo case (which should not be forced, given the consistency strength of the theory) in order to show how the argument fails under this stress test.
+
+We can then argue more subtly that when $\nu_i$ is strong limit and regular and belongs to some $M^n(I) \setminus M^{n+1}(I)$ {\em for concrete $n$\/} that in fact $\alpha=T(\alpha)$ and the inductive hypothesis continues to hold.
+The argument as presented so far shows that there are noncantorian inaccessibles:  in fact, it can be adapted to show that there are noncantorian inaccessibles in any closed set of cardinals which has the property that it contains ${\tt min}(T(\kappa),T^{-1}(\kappa))$ whenever it contains $\kappa$ and which has noncantorian elements:  the idea of the proof is to further refine each clause of the definition of $D$ to drop each component of the resulting pair to the largest element of the closed set which is less than or equal to the component.  Now the
+part of the club in the bad case with ordinal indices below ${\tt min}(T^{-1}(\alpha),T(\alpha))$ has the indicated property so must contain an inaccessible if it has any noncantorian element.  But by definition it contains no inaccessibles if $n=0$, so in fact $\alpha$ must be cantorian in this case.  Thus the construction
+cannot terminate with an inaccessible which is not 1-Mahlo, so there are noncantorian 1-Mahlos, and there are noncantorian 1-Mahlos in any club with the indicated property.  This argument can be repeated to show that there are 2-Mahlos, 3-Mahlo's, etc, but the induction is on the unstratified assertion that there are noncantorian $n$-Mahlos in each club with a certain unstratified property;  this cannot be made into a uniform induction.
+
+\subsubsection{Consistency of NFUA from $n$-Mahlos for each $n$}
+
+We outline the argument from a partition theorem of Schmerl that NFUA is consistent if there are $n$-Mahlos for each $n$.
+
+The Schmerl partition property $P(n,\alpha)$ asserts of a cardinal $\kappa$ that if we have a well-ordered set $X$ of order type ${\tt init}(\kappa)$ and partitions $C_{\nu}$ of $[X]^n$ each of size $<T(\kappa)$  that we have a subset $Y$ of $X$ with order type $\alpha$ such that $Y-X_{\nu}$ is homogenous with respect to $C_\nu$ for each $\nu$, where $X_\nu$ is the initial segment of $X$ of order type $\nu$.
+
+The interesting theorem is that $P(n+2,n+5)$ holds for $n$-Mahlo cardinals (in fact, it characterizes $n$-Mahlo cardinals).
+
+We use it as follows.  Let $\Sigma$ be a finite collection of formulas of the language of set theory containing $n+2$ types, in a language which includes a countable supply of anonymous constants.  Let $X$ be the collection of ordinals less than the initial ordinal
+for an $n$-Mahlo cardinal.  Let the partition $C_\nu$ be determined by the truth values of the formulas in $\Sigma$  in the models determined by the levels of the hierarchy of isomorphism types of well-founded extensional relations
+with types taken from a given finite subset of size $n+2$ of $X$, including  versions of the formulas with every assignments of  constant values of level $\leq \nu$ in the hierarchy to anonymous constants in the formulas. This partition will be of size less than the $n+2$-Mahlo in play.  It then follows by the
+Schmerl property that there is an ambiguous model for these formulas with $n+5$ types.  Note further that a cantorian ordinal determined by a term $f(x_1,\ldots,x_{n+2})$ and, because cantorian, equal to $f(x_2,\ldots,x_{n+3})$, will coerce any
+ordinal term known to be less than it to be similarly cantorian, because the set of formulas will  include a concrete assignment of a value to the $f$ term and to the $g$ term if these terms are mentioned (the assignment only operating in types with index higher than $\nu$, but that is enough to make the point).  TSTU + Ambiguity + Infinity  is thereby modelled in an infinitary language with typically ambiguous names for a lot of ordinals, and passage to NFUA will yield Cantorian Sets in addition:  a term will be cantorian in the limiting theory iff it is equal to a typically ambiguous ordinal constant.
+
+\subsubsection{Quantification over cantorian objects in NFUA:  NFUA interprets VGB class theory with the proper class ordinal ``weakly compact".}
+
+We define a precise condition under which a set $A$ of ordinals contains all cantorian ordinals:  the longest initial segment of the ordinals in $A$ is not equal to its elementwise image under $T$.  A similar condition works for set pictures:  s set $A$ contains all cantorian set pictures iff the largest rank ${\cal Z}_\alpha$ included in $A$ differs from $T``{\cal Z}_\alpha$.
+
+If a set has this property, its longest initial segment has noncantorian upper bound:  all cantorian ordinals will be less than this noncantorian ordinal (this is specifically a consequence of the axiom of cantorian sets).
+
+If a set contains all cantorian ordinals, consider the longest initial segment of the ordinals included in the set:  this segment has supremum noncantorian and the collection of elements of the set less than or equal to that supremum is downward closed and not equal to its image under $T$.
+
+This means that the universal quantifier over cantorian ordinals for stratified formulas is definable.  This quantifier is quite fluently usable if all parameters are restricted to be s.c:  it produces a stratified formula!  If there are noncantorian parameters,
+these are supplemented with references to their images under $T$, which means those particular parameters cannot subsequently be quantified over.
+
+The definition of the quantifier over cantorian objects is readily adapted to quantification over isomorphism classes of well-founded extensional relations with top:  refer to a noncantorian ordinal rank $\alpha$ bounding the objects to be considered.
+
+It then follows that the domain of cantorian objects can in effect be treated as a model of a ZFC-like theory, classes being represented by sets which are not restricted to cantorian ranks.  All axioms of ZFC without reference to classes
+are straightforwardly seen to have true interpretations.  The interesting aspect here is the ability to quantify over exactly the cantorian = s.c objects while defining collections which are certainly s.c since restricted to (hereditarily) s.c objects.  In the interpretation of ZFC, we have no need to refer to noncantorian parameters.
+
+We treat this more carefully as a transformation of a formula.  Suppose $\phi(x,a_1,\ldots,a_n)$ is a formula with exactly the free variables shown which is well-typed and has all quantifiers restricted to set pictures.  $x$ is supposed to be a set picture,
+and the $a_i$'s are supposed to be cantorian = s.c. set pictures.  Let $x \preceq y$ mean $(\forall \alpha:y \in {\cal Z}_\alpha \rightarrow x \in {\cal Z}_\alpha)$:  the rank of $x$ is less than or equal to the rank of $y$.  The assertion
+$$(\exists x:(\forall y \preceq x:\phi(y,a_1,\ldots,a_n)) \oplus (\forall y \preceq T(x):\phi(T(y),T(a_1),\ldots T(a_n))))$$ is well-typed if $\phi$ is and equivalent to the assertion that for all cantorian set pictures $x$, $\phi(x,a_1,\ldots,a_n)$ in case
+the $a_i$'s are cantorian.  We are using $\oplus$ here to stand for exclusive or.  There might be additional  parameters which do not have to be cantorian = s.c, but if they are not they may become subsequently impossible to quantify over while preserving well-typedness.  Cantorian set picture parameters can be quantified over, exactly because we have just shown how to quantify over the class of such objects in a well-typed manner.
+
+Now this means that we can interpret at least the language of the usual set theory ZFC within our theory, letting the domain be the class of cantorian set pictures.  The treatment just given, and the fact that the type of a cantorian parameter
+can be freely adjusted with $T$, shows that we can represent all propositions of the language of ZFC by well-typed formulas, even though they involve quantification over the proper class of cantorian set pictures, and the axioms of ZFC can
+be seen to hold in this interpretation.
+
+\begin{description}
+
+\item[(strong) extensionality:]  obvious.
+
+\item[pairing:]  obvious.
+
+\item[power set:]   A cantorian set picture codes a collection of cantorian set pictures, which will be coded by a set picture because it is a subset of $T``{\cal Z}$ and which will itself be a cantorian set picture because applying $T$ to it will clearly give the same picture.
+
+\item[union:]  A set picture representing a set of sets (by considering each of the elements of the set of set pictures it codes as coding a collection of set pictures itself) can be converted to a single set picture by obvious surgery on an element of the picture:  drop all the children of the top and link the top to their children.
+
+\item[infinity:]  The natural order on $\omega+1$ (in the sese of NFU) is an element of the set picture of $\omega$ (in the sense of ZFC).
+
+\item[separation:]  Obvious, by the fact that we can represent formulas possibly involving quantifiers over our proper class universe, and then by obvious surgery on a particular element of a set picture.
+
+\item[choice, foundation:]  Obvious.
+
+\item[replacement:]  If the interpreted conditions of replacement hold, then the graph of the function described by the formula in question exists as a set of pairs of set pictures (all domain and range elements cantorian), and in fact a cantorian set, by our analysis of formulas above,
+and a picture of its range, a set of cantorian set pictures, is straightforward to construct.
+
+\end{description}
+
+We can say more.  There is a reasonable way to represent proper classes in this scheme.  Define a seminatural set as a collection $A$ of set pictures with the property that if $x \in A$ and $T^i(x) \preceq x$, then $T^i(x) \in A$, for $i=\pm 1$.  For any
+collection $B$ of set pictures which contains all cantorian set pictures, the collection of elements of $B \prec$ all elements of $B \Delta T``B$ is seminatural and has the same cantorian elements.
+
+Now we can argue that the proper class ordinal $\kappa$ has the tree property.  If we have a class $T$ representing a tree with $\kappa$ elements each level in which is of cardinalty $<\kappa$, then a seminatural set representing $T$  has
+a noncantorian element which is on a branch $B$, and the seminatural set obtained from $B$ represents a branch of size $\kappa$ in $T$.
+
+This is von Neumann-Godel-Bernays class theory with the proper class ordinal weakly compact:  we do not really get a weakly compact cardinal!
+
+Seminatural sets are a nice representation of classes but strictly we can use arbitrary sets as classes, since we can implement equality of classes as having the same cantorian set picture elements.  Notice that non-cantorian set picture parameters
+can be handled in formulas in our procedure above as long as they are never quantified over (references to a single parameter may be transformed into references to many of its iterated images under $T$).  Thus our procedure above does justify VGB class theory as interpretable in NFUA.
+
+The fact that the proper class ordinal has the tree property allows us to argue that it satisfies partition properties related to regressive functions on the ordinals which show that it is $n$-Mahlo for each concrete $n$, which of course further shows
+that there are actual $n$-Mahlos for each concrete $n$ in the interpreted VGB class theory, whence there are actual $n$-Mahlos for each concrete $n$ in NFUA.  We could also demonstrate that the Schmerl partition properties discussed above hold.
+
+In turn, those partition properties related to regressive functions on the ordinals can be used to show consistency of NFUA, so the result we have here is sharp.
+
+I will fill in details here.
+
+Ali Enayat has shown already that NFUA is equiconsistent with VGB class theory with the proper class ordinal weakly compact;  the proof here I developed myself and I do not know its relation to his approach.  My purposes here are entirely expository;  some results may be mine in minor technical details but I am not concerned to lay claim to anything.
+
+
+
+\end{document}
