@@ -1,0 +1,275 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb}
+
+\title{Separating Hierarchy and Replacement}
+
+\author{Randall Holmes}
+
+\date{4/16/2017 1 pm}
+
+\begin{document}
+
+\maketitle
+
+This is a set of working notes, not a formal paper:  where I am merely sketching what I think is true (or think might be true) I hope I am saying this.
+
+\section{The cumulative hierarchy understood in Zermelo set theory}
+
+We describe an inessential extension of second-order Zermelo set theory in which we can talk about the cumulative hierarchy perfectly sensibly.  We say second-order Zermelo set theory because we allow proper classes and moreover we allow quantification over proper classes in instances of class comprehension and separation.
+
+This is a first-order theory with equality and membership.  General elements of its domain are called entities.
+
+We define ``$x$ is an object" as ``$(\exists y:x \in y)$.".  We define ${\tt object}(x)$ as meaning $(\exists y:x \in y)$.
+
+We definite ``$x$ is an class" as ``$(\exists y:y \in x)$.".  We define ${\tt class}(x)$ as meaning $(\exists y:y \in x)$.  Non-classes are called ``atoms".
+
+A class which is not an object will be called a ``proper class".  It is an odd effect of our terminology that the empty set is an atom and not a class.
+
+\begin{description}
+
+\item[Axiom of Extensionality:]  $$(\forall AB: (\exists x:x \in A) \wedge (\forall y:y \in A \leftrightarrow y \in B) \rightarrow A=B)$$  The observant reader may notice that we are allowing atoms, which agrees with the intentions of Zermelo.
+
+\item[Axiom of Class Comprehension:]  For any formula $\phi$ in which the variable $A$ does not appear, $$(\exists A:(\forall x:(\phi \leftrightarrow (x\in A \wedge {\tt object}(x)))))$$
+
+The entity $A$ is uniquely determined if it is nonempty, by the Axiom of Extensionality.   When $(\exists x:\phi \wedge {\tt object}(x))$ holds, we define $\{x \in V:\phi\}$ as the witness $A$ to the axiom above.
+
+\item[Axiom of Atoms:]  $$(\forall e:(\forall z:z \not\in e) \rightarrow {\tt object}(e))$$  Elementless entities are objects.  This isn't essential but seems to be needed for tidiness:  counterexamples would have no relation to anything else in the theory!   Note that Class Comprehension implies the existence of at least one elementless entity, and all such entities will be objects by this axiom.
+
+\item[Definitions:]  Fix one object $\emptyset$ with no elements, and define $\{x \in V:\phi\}$ as $\emptyset$ when  $(\exists x:\phi \wedge {\tt object}(x))$ does not hold.  Define $V$ as $\{x\in V:x=x\}$.  For any class $C$, define $\{x \in C:\phi\}$ as $\{x \in V:x \in C \wedge \phi\}$.
+
+\item[Axiom of Elementary Sets:]  If $x$ is an object, $\{z \in V:z=x\}$ is an object, which we write $\{x\}$.   If $x$ and $y$ are objects, $$\{z\in V:z=x \vee z=y\}$$ is an object, which we write $\{x,y\}$.  (Zermelo's version included a clause for the empty set, but we do not need it).
+
+\item[Axiom of Separation:]  For any object $A$ and formula $\phi$: $\{x \in A:\phi\}$ is an object.
+
+\item[Definition:] Define ``$x$ is a set" or ${\tt set}(x)$ as $x=\emptyset \vee (\exists yz:y \in x \wedge x \in z)$.  Define $A \subseteq B$ as ${\tt set}(A) \wedge ({\tt set}(B) \vee {\tt class}(B)) \wedge (\forall x:x \in A \rightarrow x \in B)$.
+
+\item[Axiom of Power Set:]  For any object $A$, ${\cal P}(A) = \{x\in V:x \subseteq A\}$ is an object.
+
+\item[Axiom of Union:]  For any object $A$, $\bigcup A = \{x \in V:(\exists y:x \in y \wedge y \in A\}$ is an object.
+
+\item[Axiom of Infinity:]  The class $$\mathbb N = \{n \in V:(\forall I:\emptyset \in I \wedge (\forall m:m\in I \rightarrow \{m\} \in I) \rightarrow n \in I)$$ is an object.
+
+\item[Definition:]  Define $A \cap B$ as $\{x \in V:x \in A \wedge x \in B\}$.  Say that $A$ and $B$ are disjoint iff $A \cap B = \emptyset$.  Say that $P$ is a pairwise disjoint class iff
+for any $A,B \in P$, $A$ and $B$ are either equal or disjoint.  If $P$ is a pairwise disjoint class, we say that $C$ is a choice class for $P$ iff each element of $P$ has exactly one element which is also an element of $C$.
+
+\item[Axiom of Choice:]  Any pairwise disjoint class of nonempty sets has a choice class.
+
+\end{description}
+
+Zermelo was, I believe, known to object to proper classes, but this formulation is very close to his actual second order intentions for his set theory, if one views the objects as the elements of his domain and the classes as representing properties of elements of his domain.  I have adopted a stronger form of choice, but we know now that choice is fairly harmless.  The use of proper classes or of the stronger form of choice are not essential to what I am doing here re the cumulative hierarchy:  but I think they are useful features for a satisfactory foundational scheme at this level of strength.
+
+Nothing introduced so far is entirely novel.  We now do something new (actually, I am sure it has been done before, but it is not standard axiomatics).
+
+\begin{description}
+
+\item[Definition:]  Let $<$ be a strict well-ordering of a class $W$ (we suppose the necessary preliminaries required to define a well-ordering to be interpolated).  We say that a function $F$ is a rank function along $<$ iff the $<$-first element of $W$ (if there is one) is mapped to $\emptyset$, and for each element $w \in W$ which has a predecessor $u$, $F(w) = {\cal P}(F(u))$, and for each other $w \in W$, $F(w) = \bigcup\{F(u):u < w\}$.
+
+\item[Theorem:]  For any two strict well-orderings $<_1$ and $<_2$ of classes  $W_1$ and $W_2$ respectively, with rank functions $F_1$ and $F_2$ along $<_1$ and $<_2$ respectively,
+and $\rho$ an isomorphism from $<_1$ to an initial segment of $<_2$, we will have $F_1(w) = F_2(\rho(w))$ for all $w \in W_1$.
+
+\item[Axiom of Rank:]  For every $x$ there is a rank function $F$ such that $x$ belongs to some element of the range of $F$.
+
+\item[Further observations:]  Ordinals can now be described:  for any well-ordering $\leq$ (non-strict, now), the order type of $\leq$ is the set of all $\leq'$ isomorphic to $\leq$ which belong to the minimal element of the inclusion order on the range of any (and so every) rank function which contains a well-ordering isomorphic to $\leq$.  Cardinals and other isomorphism types can be defined similarly.  This is the Scott trick.  The class of all order types is the class of all ordinals.
+
+\item[Definition:]  For any ordinal $\alpha$, $V_{\alpha}$ is the element of the range of some (and so of any) rank function $F$ such that the order type of the inclusion order on all properly smaller elements of the range of $F$ is $\alpha$.  We say that a set $x$ is of rank $\alpha$ iff $\alpha$ is the minimal ordinal
+such that $x \subseteq V_{\alpha}$.
+
+\end{description}
+
+The version of the axiom of rank which I have just stated enforces foundation and strong extensionality.  It could be modified to allow atoms by stipulating that there is a set $A$ which contains all and only the atoms, and modifying the definition of rank function to set $F(w)=A$ for the $\leq$-first element of $W$.  Zermelo set theory (or our stronger base theory) is equiconsistent with the same theory plus the Axiom of Rank.
+
+ It could be modified further to allow a proper class of atoms
+by weakening the definition of rank function to assert that $F(w)$ is {\em some\/} set of atoms for the $<$-first element of $W$:  the Theorem on identification of initial segments
+of rank functions would apply only if the rank functions started with the same set of atoms.  With a proper class of atoms, we would appear to lose the Scott trick, so we are not really interested in this modification:  if we have a global well-ordering of the atoms, we {\em can\/} have a proper class of atoms and carry out a version of the Scott trick (details not given here).
+
+Pathologies of the original form of Zermelo set theory are eliminated by this axiom.  All sets have transitive closures.  Since the set of natural numbers has a rank, and the rank of each natural number is clearly finite, $V_{\omega}$ exists, as the minimal rank containing $\mathbb N$.  The usual von Neumann natural numbers each exist (as they do in the original theory) but the von Neumann ordinal $\omega$ also exists, by applying Separation to $V_{\omega}$.  Thus we could use the more usual von Neumann definition of the natural numbers.  We do not want to use the von Neumann definition of general ordinals, however, since the existence of the von Neumann $\omega \cdot 2$ is not provable.  This is not a problem for the theory of ordinals:  the Scott ordinal $\omega \cdot 2$ certainly does exist.
+
+Following in the vein of Mac Lane and Potter, we advocate something like this as the working foundation of mathematics.   Contra Mac Lane, we think that bounded separation is an annoyingly technical axiom.  In keeping with Zermelo's original views and noting pathologies observed by Mathias, we think that second order Zermelo is better than first, and this theory is essentially second order Zermelo (it is to Zermelo as Morse Kelly is to ZF).
+
+\section{Why not Replacement? I:  Replacement is excessive.}
+
+Why do we not advocate including the axiom of replacement in our foundations?
+
+We do not deny that the axiom of replacement is powerful and useful.
+
+It is more than is needed for the usual applications.  It is often claimed that we need replacement to define the von Neumann ordinals (and define cardinals as initial ordinals).  Zermelo set theory, it is said, does not have ordinals past $\omega \cdot 2$.  In the presence of the Axiom of Rank, however, the Scott trick allows natural definitions of cardinals, ordinals, and indeed of any structural isomorphism classes at all.
+
+It can further be noted that the von Neumann ordinals and cardinals become usable if we adopt the axiom ``there is a rank function along every set strict well-ordering", which implies that $V_{\alpha}$ exists for every $\alpha$.  This is a minimal implementation of the intuition of the cumulative hierarchy, and is much weaker than Replacement.  We will see that we do advocate inclusion of this axiom in our foundations, so we are actually willing to use the von Neumann ordinals, but deny that Replacement is required to justify them.
+
+The pathologies of the original definition (failure of the existence of transitive closures or of $V_{\omega}$ and related objects) are dealt with by the Axiom of Rank.
+
+Kanamori in his essay in praise of Replacement discusses the important of the scheme $\{x_i :i \in I\}$, where $I$ is a set and $x_i$ denotes an arbitrary way to choose an $x_i$ for each index $i \in i$.   If one insists on always being able to do this, however $x_i$ is defined, and obtain a set, one is of course assuming replacement.  But one only {\em needs\/} replacement if there is a danger that the  $x_i$'s have unbounded rank as $i$ ranges over the set $I$, and this is in fact a most unlikely situation in typical mathematical applications.  If $(x \in I \mapsto x_i)$ is demonstrably a set, which is true if the rank of $x_i$ is bounded as $i$ ranges over $I$, then $\{x_i :i \in I\}$ is unproblematic.
+
+He further discusses transfinite recursion.  He claims that Potter is implicitly using replacement in his argument in his book:  this is not the case, as Potter is proving transfinite recursion only along set ordinals.   I've gone back and read Potter's argument:  I do not find an appeal to replacement, implicit or otherwise, on p. 183 of Potter.  We exhibit a more powerful result than Potter's, provable without replacement and justifying recursion along the proper class ordinal in some cases.
+
+\begin{description}
+
+\item[Transfinite Recursion Theorem (class version):]  Let $\mathbb F$ be the set of all functions whose domain is a proper initial segment of the ordinals.  Let $g$ be an increasing  class map from the ordinals to the ordinals.
+Let $G$ be a map from $\mathbb F$ to $V$ with the property that $G(f)$, has rank bounded by $g(\alpha)$, where $\alpha$ is the order type of the domain of $f$.  Then there is a class map $F$ from ordinals to $V$ such that $F(\alpha) = G(F \lceil \alpha)$.  Sethood of $F \lceil \alpha$ is ensured
+because the rank of its outputs is bounded by $g(\alpha)$.
+
+\end{description}
+
+This is a theorem of the system outlined above, which has basically no Replacement at all.
+
+Sensible mathematical constructions with motivations outside of higher set theory are not going to fail this boundedness condition.  Of course, the need to state and check the boundedness condition might be regarded as an annoyance.
+
+\section{Why not Replacement? II:  Replacement is not motivated by the cumulative hierarchy picture of the world, and {\em might\/} be dangerous}
+
+The official story behind modern set theory (on an intuitive level) is that we are working in the von Neumann (or Zermelo) cumulative hierarchy of sets.  It is commonly said that the cumulative hierarchy intuition motivates all the axioms of ZF.  In our opinion, this is not true.  Replacement is vastly more powerful than the cumulative hierarchy intuition, and less intuitively evident.  We will lay out reasons for this.
+
+The pathologies of Zermelo set theory have to do with the fact that it was {\em not\/} motivated by the cumulative hierarchy picture (though one can see its outlines darkly).  The motivation of Zermelo set theory is actually that its axioms are exactly the axioms that Zermelo needed to prove the Well-Ordering Theorem (a very respectable genealogy).
+
+Our Axiom of Rank added to Zermelo set theory ensures that its world looks like an initial segment of the cumulative hierarchy, removing pathologies re transitive closures, different definitions of the natural numbers, and existence of $V_{\omega}$.
+
+The intuition of the cumulative hierarchy certainly motivates the
+
+\begin{description}
+
+\item[Axiom of Hierarchy:]  There is a rank function along any set strict well-ordering.
+
+\end{description}
+
+We adopt this axiom forthwith.  Unlike Boolos (reference?) we do think that the cumulative hierarchy motivates more than this axiom provides.  It is worth observing that the first
+stage $V_{\alpha}$ of the cumulative hierarchy which provides a model of this axiom is indexed by the first beth fixed point:  $\beth_{\alpha}$ is defined as $|V_{\omega+\alpha}|$.
+The first beth fixed point is the limit $\Gamma_{\omega}$ of the sequence $\Gamma_i$ defined by $\Gamma_0=\beth_0;  \Gamma_{i+1} = \beth_{\Gamma_i}$.  In the universe with index
+$\Gamma_{\omega}$, the sequence $\Gamma$ is a definable countable proper class.  So Replacement fails rather badly in this model.  We repeat our remark above that if the Axiom of Hierarchy is assumed, we can use the usual von Neumann ordinals and cardinals.
+
+Now we consider limited forms of Replacement.  If $\kappa$ is a cardinal, and we consider $V^{\kappa+}$ as a model for our universe of sets (with $V^{(\kappa+) +1}$ as its universe of classes), this model will satisfy the assertion that every class such that there is a class bijection from that class to a set of size $\kappa$ is a set.  We will call this $\kappa$-Replacement.  More generally, $\kappa$-Replacement holds in any stage of the cumulative hierarchy (considered as a model for the sets of the universe) when the cofinality of the stage is greater than $\kappa$.  So if we assume Hierarchy, we can build a model of $\kappa$-Replacement (in which Hierarchy does not generally hold).  If we assume $\omega$-Replacement (which we will call Countable Replacement) and Hierarchy, we get the ability to construct a set beth fixed point above any set ordinal (by the iterative procedure described above for constructing the first beth fixed point and an application of countable replacement).
+
+We state an axiom with a parameter and a further theorem motivated by these considerations.
+
+\begin{description}
+
+\item[Convention:]  Fix an infinite regular cardinal $\kappa$ and term all sets of cardinality $\leq \kappa$ ``small".  This cardinal will be at least $\omega$.
+
+\item[Axiom of Small Replacement:]  If there is a class bijection from a small set $A$ to a class $B$, then $B$ is a set.
+
+\item[Strong Hierarchy Theorem:]  There is a set beth fixed point above any set ordinal.
+
+\end{description}
+
+One might imagine that one could iterate the process of enforcing $\kappa$-replacement, enforcing replacement for the $\alpha$th regular cardinal at stage $\alpha+1$ by extending the hierarchy to have cofinality greater than the $\alpha$th regular cardinal.  The problem is at limit stages:
+the degree of replacement enforced at a limit stage $\lambda$ is determined by ${\tt cf}(\lambda)$, and at the very end of the process, one has only enforced replacement for the cardinality of the proper class ordinal if in fact it is regular:  no evidence that it is regular is produced by this process.
+
+We present an argument justifying Replacement in terms of the cumulative hierarchy which does not work.  This will clarify our concerns.
+Suppose that we can define an object $x_i$ for every $x$ in a set $I$ (this is a definition using a formula $\phi(i,y)$:  $x_i$ is defined as the unique $y$ such that $\phi(i,y)$, for each $i \in I$).  Each object $F(i)$ for $i \in I$ has a rank $\alpha_i$.   If there is an ordinal $\alpha_{\infty}$ which is the supremum of the ordinals $\alpha_i$, then we can define $\{x_i:i \in I\}$ as $\{y \in V_{\alpha_{\infty}}:(\exists i \in I:\phi(i,y))\}$.  The only way that this can fail
+is if the sequence of ordinals $\alpha_i$ is cofinal in the entire sequence of ordinals.
+
+Now we bring in the idea that the cumulative hierarchy can always be extended further:  there is no reason for the construction of the universe to stop at stage $\alpha_{\infty}$:  suppose that we take it a step further (and further steps required to close things up under the axioms) and it would appear
+that $\{x_i:i \in I\}$ will exist at or before the new rank $V_{\alpha_{\infty}+1}$ (which certainly exists as the power set of the new rank $V_{\alpha_{\infty}}$).
+
+But this does not work.  The difficulty is that the formula $\phi(i,y)$ may in general contain quantifiers over the entire universe $V$.  When we postulate that we extend the universe by adding more ranks, we may change the values of $x_i$'s and indeed change the upper bound of their ranks.  This argument does not work unless the definition of $x_i$ by the formula $\phi(i,y)$ is suitably absolute.
+
+We will use the following absoluteness theorem.
+
+\begin{description}
+
+\item[Levy absoluteness lemma:]  If $\alpha = \beth_{\alpha} = |V_{\alpha}|$ ($\alpha$ is a beth fixed point) then $V_{\alpha}$ is absolute for $\Sigma_1$ sentences:  if $\psi$ is a bounded formula (by which we mean that every quantifier in $\psi$ is bounded in a set), $(\exists x \in V_{\alpha}:\psi(x))$ iff $(\exists x \in V:\psi(x))$ (and so of course it is also absolute for $\Pi_1$ sentences).
+
+\end{description}
+
+This lemma holds in the theory of this paper for the same model-theoretic reasons that it holds in ZFC:  it does not depend on Replacement.  The basic idea is that certainly $(\exists x \in V_{\alpha}:\psi(x))$ implies $(\exists x \in V:\psi(x))$:  now suppose that $(\exists x \in V:\psi(x))$:  build a transitive model of size $\beta<\alpha$ of the theory of $V$ where $\alpha=|V_{\alpha}|$, with no more than $\beta$ constants specified (including any parameters in $\psi$):  there will be an $x$ in this model which the model thinks satisfies $\psi(x)$, and this object actually will satisfy $\psi(x)$ because the formula $\psi(x)$ is bounded, and the model, and so this witness $x$, will be included in $V_{\alpha}$ because all sets of size hereditarily less than $\alpha$ are in $V_{\alpha}$.
+
+Now we adapt the argument above, not to motivate replacement, but to motivate $\Sigma_2$ replacement.  
+
+Suppose that $x_i$ is defined by a formula $\phi(i,y)$ such that for each $i \in I$ there is exactly one $y=x_i$ such that $\phi(i,y)$.  Further, suppose
+that $\phi(i,y)$ is of the form $(\exists u:\forall v:\psi(i,y,u,v))$ where all quantifiers in $\psi$ are bounded, that is, that $\phi$ is a $\Sigma_2$ formula.
+
+We want to establish that each assertion $y=x_i$ is absolute, in the sense that expanding $V$ suitably will not change its truth value.  This assertion 
+says that $y$ is the unique object such that $(\exists u:\forall v:\psi(i,y,u,v))$.  We tweak this a little bit, to assert that there are pairs $(y,u)$ such that $\forall v:\psi(i,y,u,v)$.
+The assertion defining the relationship between $i$ and a pair $(y,u)$ involves a single unbounded universal quantifier over $v$, so is absolute for any beth fixed point above the ranks of $i$ and $(y,u)$.   By the strong axiom of hierarchy there are such beth fixed points which are sets, and by the Levy absoluteness lemma expanding $V$ above $V_{\alpha_{\infty}}$ will not perturb the truth value of any of these statements:  no such statements about $i,y,u$ of rank below $\alpha_{\infty}$ will change either from true to false or from false to true.   If the expanded universe contained an additional $y$ of higher rank
+than $\alpha_{\infty}$ which participated in a pair $(y,u)$ making $y$ an additional candidate to be $x_i$, then the model theoretic construction above would give more than one candidate value for $x_i$ in a beth fixed point rank below $\alpha_{\infty}$ determined by the rank of $i$ and the original $(x_i,u)$, which contradicts the original assumptions.  Thus the definition of the class $\{x_i:i \in I\}$ remains stable, and the class becomes a set when the universe is expanded.  
+
+So, to the foundations we rely on we add another axiom
+
+\begin{description}
+
+\item[Scheme of $\Sigma_2$ replacement:] For each class function $f$ such that $y=f(x)$ is equivalent to a $\Sigma_2$ formula $(\exists u:\forall v:\psi(x,y,u,v))$ [where each quantifier in $\psi$ is bounded in a set], we assert the axiom that for any set $I$, $f``I$ is a set.
+\end{description}
+
+It should be noted that the quantifier over the set $I$ here makes this a very strong move:  we are not extending the universe once, but allowing it to be extended for any set $I$ we wish to consider.  Carrying out the expansion of the universe described $\kappa+$ times for an instance should work:  difficulties arise only from sets which have been constructed, and all sets constructed at a particular stage have their images under $f$ constructed at the immediately following stage.  We say $\kappa+$ times because the sequence of stages is otherwise a set by small replacement and a further stage then becomes visible.  It {\em seems\/} that all instances are being handled uniformly, but I'm not sure I have everything straight in my head:  note that each single stage needs to have its proper class ordinal a beth fixed point of cofinality $\kappa+$  above the proper class ordinal of the previous stage  in order to preserve hierarchy and small replacement for the next stage, and it {\em appears\/} that carrying this extension out $\kappa+$ times simply enforces $\Sigma_2$ replacement uniformly for every formula while preserving hierarchy and small replacement.  This may be too good to be true!
+
+So far our results are positive.  We have verified a limited form of Replacement on what seem to be reasonable intuitions, and considerably extended the foundations we regard as reliable.  However, we do not see a way to go much further toward Replacement (there are certainly further extensions which can be made).
+
+An instance of $\Pi_2$ replacement says that $f``I$ is a set if $f$ is a class function with domain $I$ such that $f(x)=y$ is equivalent to a
+formula $(\forall u:\exists v:\psi(x,y,u,v))$ [$\psi$ bounded].  Observe that the truth of this formula is in effect witnessed for each $x,y$ by the existence of a
+class function taking each $u$ of whatever rank to the nonempty set of all objects $v$ of minimal rank such that $\psi(x,y,u,v)$.  It is very hard to see how the existence of such an unbounded class function could be shown to be absolute in general:  I'm thinking about whether there is a justification using levels of the cumulative hierarchy closed under class functions with suitably bounded definitions.   Rough notes follow.   We first consider the absoluteness or lack thereof of $\Pi_2$ sentences.  A sentence $(\forall u:\exists v \psi)$, $\psi$ bounded breaks up into statements about individual
+objects $u$:  $\exists v:\psi$ is absolute for each $u$ for which it holds at beth fixed points.  $\forall v: \neg\psi$ is absolute for each $u$ for which it holds at beth fixed points.  So $(\forall u:\exists v \psi)$ can change from true to false as the universe is extended (the universe always viewed as a beth fixed point), but not vice versa:  it remains true until a $u$ not in the domain of the relation described by $\psi$  is encountered, whereupon it remains false.  Now consider a formula $(\forall x \in I:\exists! y:\forall u:\exists v:\psi)$.  As the universe is extended, it appears possible for this statement to oscillate:   for a given $x$ and any $y$ that have been encountered,
+the statement about $u$'s and $v$'s either remains true or becomes false as the universe is extended:  as soon as it is true of exactly one $y$ for the given $x$ the whole statement becomes true, but then that in turn may become false.  Addition of new $y$'s at higher ranks may cause the whole statement to go
+from false to true (if it was true of no $y$ and then became true of one) or true to false (if it was true of exactly one $y$ and then became true of more than one as new $y$'s were discovered).   The definition of a class by such an instance of Replacement is not stable in the way that we want:  when the universe is extended, the $y$ originally associated with a given $x$ may cease to be associated with it (by discovery of a $u$ such that $(\forall v: \neg\psi(x,y,u,v))$ holds) and in the course of the same extension a new $y'$ may be introduced for which $(\forall u:\exists v: \psi(x,y',u,v))$:  the extension of the class supposed to be defined by the instance of Replacement changes as the universe is changed.  It appears to us that there is a convincing argument that $\Pi_2$ Replacement cannot be justified on the basis of the cumulative hierarchy picture in the way in which we have suggested that $\Sigma_2$ Replacement can be so justified.
+
+One might say that one can simply postulate an inaccessible cardinal.  But we are expressing not actual doubt, but the position that doubt is conceivable, that there are inaccessibles or that ZFC is consistent.  And further, our claim is that postulating a regular uncountable strong limit cardinal is a strong axiom of infinity, a combinatorial principle, not motivated by the cumulative hierarchy picture:  cutting the Gordian knot of our objections by simply postulating an inaccessible makes our point that this is a separate idea from the cumulative hierarchy.
+
+We see no fundamental reason why there cannot be a definable class of ordinals cofinal in the proper class ordinals and provably of set size.  The argument above convinces us that the class map from a set $I$ to such a class of ordinals will not be defined by a $\Sigma_2$ formula, but there is no clear obstruction to the possibility that such a class can be defined.  Attempts to extend the universe to capture this class as a set will simply perturb the definition of the class so that it remains cofinal in the ordinals.   The size of the set $I$ would also vary as the size of the universe varied:  it could not be smaller than the cofinality of the proper class ordinal, which it appears can be as large as desired.
+
+On the flip side, we see no fundamental reason why there cannot be an as yet undiscovered proof that all uncountable strong limit cardinals are singular.  If such a  proof applied to class strong limit cardinals as well as sets, we would be in the same place:  ZFC would be inconsistent.
+
+Do we think that ZFC is inconsistent?  On the basis of experience, no.  But there is no convincing argument from the intuition of the cumulative hierarchy to full replacement.  We regard the reasoning in this paper up to the schemes of $\Sigma_2$ replacement and small replacement as affording convincing intuitive justification for the theory presented.  We do not see any way to proceed past this point to actually put the intuition behind ZFC on unquestionable ground.
+
+We would suggest that the chapter 0 foundations in every math book really should be something more like the base theory here, or perhaps the base theory with the Axiom of Hierarchy if one really wants the von Neumann definition of the ordinals.  This is not because we actually think that ZFC is in any danger of being shown to be inconsistent:  but it is far stronger than is necessary for any purpose outside of technical set theory.   
+
+There is a decent argument that the Scott trick should not be underrated:  it provides a general method of implementing {\em any\/} isomorphism classes (for example an abstract group is readily defined as the intersection of the isomorphism class of a concrete group $(G,*)$ with the smallest rank that it meets).  If the Scott trick is promoted as the general method for handling isomorphism classes, then Scott ordinals and cardinals become the natural choice.
+
+\section{A variation:  modified Ackermann set theory}
+
+This line of thought has suggested to us the following modification of the set theory of Ackermann.
+
+Modified Ackermann set theory is a first order theory with equality, membership, and a primitive sethood predicate.  General objects of the theory are called classes.  Note that there is no presumption that a class is a set because it is an element:  it is provable from the axioms given that there are classes with elements that are not sets.
+
+\begin{description}
+
+\item[Axiom of extensionality:]  Classes with the same elements are equal.
+
+\item[Axiom of class comprehension:]  For any formula $\phi$, $\{x:{\tt set}(x) \wedge \phi\}$ is a class.
+
+\item[Axiom of elements:]  Elements of a set are sets.
+
+\item[Axiom of subclasses:]  Subclasses of a set are sets.
+
+\item[Axiom of set comprehension:]  Let $\phi$ be a bounded formula (each quantifier is bounded in a class) in which all parameters other than $v$ are taken to represent sets and the sethood predicate is not mentioned.  If all objects $x$ such that $(\forall v:\phi)$ are sets, then $\{x:(\forall v:\phi\}$ is a set.  If all objects $x$ such that $(\exists v:\phi)$ are sets, then $\{x:(\exists v:\phi)\}$ is a set.  Of course, if all objects $x$ such that $\phi$ are sets and $v$ does not occur in $\phi$, $\{x : \phi\}$ is a set by either of the previous two clauses.
+
+\item[Axiom of foundation:]  Every class has an element from which it is disjoint.
+
+\item[Axiom of choice:]  Each nonempty class partition has a choice class.
+
+\end{description}
+
+The modification is the restriction in set comprehension to formulas with a single unbounded quantifier over classes.  The idea is that we are building a theory motivated not by the full reflection principle found in ZFC but by the limited reflection justified by Levy's lemma.  The axiom of foundation is not in Ackermann's original theory, but has been added for convenience by later workers to allow restriction to well-founded sets and classes.  Choice is not normally included in Ackermann set theory but it is important for us to include it as we want to construct beth fixed points.
+
+\begin{description}
+
+\item[Theorem:]  $\emptyset$ is a set.  This follows by set comprehension applied to the formula $x \neq x$.
+
+\item[Theorem:]  If $a$ is a set, so is $\{a\}$.  This follows by set comprehension applied to the formula $x=a$.
+
+\item[Theorem:]  If $a,b$ are sets, so is $\{a,b\}$.  This follows by set comprehension applied to the formula $x=a\vee x=b$.
+
+\item[Theorem:]  If $A$ is is a set, so is ${\cal P}(A)$.  This follows by set comprehension applied to the formula $(\forall v:v \in x \rightarrow v \in A)$.
+Note the unbounded quantifier.  Note that the axiom of subclasses tells us that any $x$ satisfying this formula is a set.
+
+\item[Theorem:]  If $A$ is a set, so is $\bigcup A$.  This follows by set comprehension applied to $(\exists y \in A:x \in y)$.   Note that the axiom of elements tells us that any $x$ satisfying this formula is a set, and this formula is bounded and has all parameters sets.
+
+\item[Theorem:]  Define 0 as $\emptyset$.  Define $n+1$ as $\{n\}$.  Define an inductive class as a class $I$ such that $(\forall n \in I:n+1 \in I)$.
+Observe that the class of sets is inductive by an earlier theorem.  The class $\mathbb N$ of all $n$ such that ``for all inductive classes $I$, $n \in I$" is thus a set.  This is by set comprehension on the formula $(\forall I:(\forall n \in I:n+1 \in I) \rightarrow x \in I)$.
+
+\item[Theorem:]  We call a class $H$ a hierarchy iff it is linearly ordered by inclusion and  every successor in the inclusion order on $H$ has all of its elements subclasses of its predecessor and every non-successor $x$ in $H$ has each of its elements  $y$ the union of all $z$ preceding $x$ in the inclusion order on $H$.   For any set well-ordering $W$, define $V_W$ as the collection of all objects such that there is a class isomorphism from $W$ to a hierarchy starting with $\emptyset$ which contains the given object in an element of its range.  A straightforward induction on $W$ shows that all elements of this collection are sets, and it is then a set by set comprehenson [``class isomorphism from $W$ to a hierarchy" has a bounded description].  We want it to be the case that if $W$ has a last element, $V_W$ is the power set of $V_{W'}$, where $W'$ is the restriction of $W$ to all non-final elements of $W$;  we already know that unions are taken at successor stages.  We can prove this by induction, since any subclass of the field of $W$ defined in any old way is actually a set:  we can inquire concerning the first $V_U$ where $U$ is an initial segment of $W$ and $V_U$ is not (if a successor) the appropriate power set.  We can further construct a beth fixed point above any stage $V_W$ in a very similar way [details to be presented carefully], by constructing a sequence of hierarchies along well-orderings of the unions of preceding hierarchies.
+
+\end{description}
+
+Here is a way to think of the world of Ackermann set theory.  The collection of all sets is the actual universe $V$.  The ``collection" of classes is a potential extension of $V$.  The axiom of elements tells us that $V$ is transitive as one would expect.  The axiom of subclasses tells us that $V$ contains all subcollections of its elements.  The axiom of class comprehension tells us that any subcollection of $V$ that we can define is a class, which we would expect to be the case since the universe of classes is a potential extension of $V$, and at the very least we would add one more stage, as it were.
+
+The set comprehension scheme has a more complicated motivation.  We expect $V$ to be a limit of beth fixed points.   If $\phi$ is a $\Pi_1$
+or $\Sigma_1$ (or bounded) formula over classes with all parameters sets, and doesn't mention the sethood predicate (which would amount to mentioning $V$),
+then we expect a stage $W$ of the cumulative hierarchy below $V$ indexed by a beth fixed point and containing all parameters to be absolute for this formula,
+and $\{x\in W:\phi\} = \{x:\phi\}$ will be a set.  Theorems above show that $V$ (the class of all sets) actually is a limit of beth fixed points as this motivation presumes.
+
+Full Ackermann set theory (without the complexity restriction on set comprehension) is similarly motivated, relying on the full reflection principle of ZF.  The weakness of its motivation is as above:  there is no obvious reason to believe that the world of potential collections (classes) has suitable absoluteness relations to the world of actual collections (sets).  The potential collections are by their nature indefinite or extensible, and their exact extent may perturb the meaning of quantifiers over all classes = potential collections.
+
+\section{Closing remark}
+
+Of course, if one is willing to postulate an inaccessible (if only a proper class inaccessible), then the axiom of replacement and the strong reflection principle are clearly satisfied in set models of our base theory, and ZFC is put on a firm footing.  But one has to postulate the inaccessible to achieve this.  An inaccessible really is a large cardinal:  there is no argument to it from below.  What is not true is that there is any clear argument from the cumulative hierarchy picture to the existence of an inaccessible (whether a set or proper class inaccessible), and that is the point we are trying to make.  The cumulative hierarchy picture (with the idea that the cumulative hierarchy is indefinitely extensible in a suitable sense) does motivate a kind of set theory, and quite a strong one, but not ZFC.
+
+
+\end{document}
