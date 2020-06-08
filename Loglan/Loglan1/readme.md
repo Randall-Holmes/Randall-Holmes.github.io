@@ -1,0 +1,1 @@
+revision of Loglan I
