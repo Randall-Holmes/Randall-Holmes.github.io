@@ -1,0 +1,538 @@
+\documentstyle{article}
+
+\title{Quine's calculus of concepts \footnote{Supported by the U. S. Army Research Office, grant no. DAAH04-94-G-0247}}
+\begin{document}
+\maketitle
+\section{Introduction}
+
+In this paper, we give a complete presentation of a system, the
+Calculus of Concepts, sketched by Quine in \cite{concepts} and
+\cite{negative}.  Quine's concern was to present
+a system with the full expressive power of first-order logic which
+made no use of bound variables.  In this he succeeded, but he did not
+equip the system with axioms or rules of inference, so the system as
+it stands can only be described as a sketch.
+
+We will refer to our full system as {\em CC\/} in the sequel.  Its
+notation and certain decisions about default values differ
+inessentially from Quine's approach.  The system is more general than
+Quine's; it will handle multi-sorted first-order logic, for example.
+
+\section{The Natural Semantics of {\em CC\/}}
+
+We follow Quine's example in first presenting {\em CC\/} via the
+originally intended interpretation.  It will turn out that the system
+has other quite natural interpretations as well.
+
+We begin by describing the language of {\em CC\/}.  {\em CC\/} is a
+strictly equational theory; sentences of {\em CC\/} are of the form $T
+= U$, where $T$ and $U$ are terms of the language of {\em CC\/}.
+
+Atomic terms of the language of {\em CC\/} are taken from a countable
+supply of free variables.  Atomic constants will be introduced as
+well.  Atomic terms of {\em CC\/} are terms of {\em CC\/}; if $T$ and
+$U$ are terms, then $T^c$, $T\times U$, $T/U$, and $\Delta T$ are
+terms.  Other operations on terms may be introduced by definition.
+All terms are built from atomic terms by the primitive operations and
+operations defined in terms of the primitive operations below.  Unary
+operations are always considered to have higher precedence than binary
+operations; no other precedence convention is adopted.
+
+We now present the intended interpretation of the notion of
+``concept''.
+\begin{description} \item[Definition:] If ${\cal D}$ is our universe
+of discourse and $n \in {\cal N}$, we define a {\em concept of degree
+$n$\/} as a pair $(S,n)$ with $S \subseteq {\cal D}^n$.  (The pairing
+with $n$ is needed because empty concepts of different degrees need to
+be distinct.)  We identify 1-tuples of elements of ${\cal D}$ with
+elements of ${\cal D\/}$ itself, and we postulate a unique 0-tuple, so
+concepts of degrees 0 and 1 make sense. \end{description}
+
+Any formula in the language of first-order logic with variables
+indexed by the positive integers can be associated in a natural way
+with a concept (actually, with a concept of each sufficiently large
+degree):
+
+\begin{description}
+
+\item[Definition:] A concept $(A,n)$ is said to represent a formula
+$\phi$ just in case $\phi$ has no free variable other than variables
+$x_i$ for $i \leq n$ and $\{(x_1,\ldots,x_n) \mid \phi\} = A$.  Notice
+that concepts of degree 0 represent sentences with no free variables
+(the two concepts of degree 0 represent the truth values).
+
+\end{description}
+
+Each term of the language of {\em CC\/} is intended to represent a
+concept.  Note that there is no explicit indication of numerical
+degree in {\em CC\/}; the explicit indications of degree are a feature
+of the interpretation being given.
+
+We now introduce the operations of CC (in their intended interpretation)
+
+We first define $x.y$, for $x \in {\cal D}^m, y \in {\cal D}^n$, as
+the element of ${\cal D}^{m+n}$ obtained by concatenating $x$ and $y$.
+
+\begin{description}
+
+\item[complement:] The {\em complement\/} of a concept $(A,n)$,
+written $(A,n)^c$ is $$({\cal D}^n-A,n).$$ (Quine would write $-(A,n)$).
+
+\item[product:] The {\em product\/} of concepts $(A,m)$ and $(B,n)$,
+written $(A,m)\times (B,n)$ is $$(\{x.y\mid x\in A \wedge y \in
+B\},m+n).$$ Quine calls this the ``Cartesian product'', but this is
+somewhat misleading, since the underlying operation is concatenation
+rather than pairing; for example, this operation is associative and
+Cartesian products properly so-called are not.
+
+\item[quotient:] The {\em quotient\/} of a concept $(A,m)$ by a
+concept $(B,n)$, written $(A,m)/(B,n)$, is $$(\{x \mid \exists y \in
+B. (x.y \in A)\},\max(m-n,0)\}).$$  Notice that the subtraction of
+degrees natural in this theory is a subtraction on natural numbers.
+Quine called this the ``image'' operation and used the double-quote
+notation for image to represent it.  The definition of quotient when
+the degree of $B$ exceeds the degree of $A$ is a ``don't care'' case,
+and in fact is different under this definition than it will be under
+our axioms.
+
+\item[diagonalization:] The {\em diagonalization\/} of a concept
+$(A,n)$, written $\Delta(A,n)$ is the concept $$(\{x.x\mid x \in
+A\},2n).$$  Quine uses $I$ as the name of this operation.
+\end{description}
+
+It is quite appealing that this set of operations has the expressive
+power of first-order logic.  The operations might be thought to have
+some of the same intuitive appeal as the basic operations of Boolean
+algebra.
+
+\section{The expressive power of {\em CC\/}}
+\begin{description}
+
+\item[Theorem (Quine):] The expressive power of the calculus of
+concepts is at least that of first-order logic with equality (if
+concepts are understood via the interpretation given above).
+
+\item[Proof:]  We use $V^1$ as the notation for the concept $({\cal D},1)$ 
+whose extension is the whole domain of the theory being interpreted.
+We can define $V^n$ for each positive $n$ as the product of $n$ copies
+of $V^1$ and $V^0$ as $V^1/V^1$; $V^0$, the universal concept of
+degree 0, is an absolute notion of the calculus, unlike the $V^i$'s
+with $i>0$.
+
+The sentence $x_i = x_j$ (for $i < j$) is represented by the concept
+$V^{i-1}\times (\Delta V^{j-i} / V^{j-i-1})\times V^k$ (for any $k$).
+
+If $A$ and $B$ are concepts of the same degree, $\Delta A / B$ is the
+intersection $A \cap B$ of $A$ and $B$.
+
+We proceed to represent a formula $\phi$ whose variables (free and
+bound) have indices $\leq n$ using a concept of degree $n$.  We
+proceed by induction on the structure of $\phi$.
+
+If $\phi$ is an atomic sentence $R[x_{a_1}\ldots x_{a_k}]$, we let $A$
+be a concept representing the formula $R[x_1,\ldots,x_k]$.  Let $E$ be the
+intersection of the predicates of degree $n+k$ representing the
+equality assertions $x_{a_i}=x_{n+i}$ for each $i \leq k$.  The
+sentence $R[x_{a_1}\ldots x_{a_k}]$ is represented by the degree $n$
+concept $((V^n \times A) \cap E)/V^{k}$
+If $\phi$ is of the form $\sim\psi$, where $\psi$ is represented by a
+concept $A$ of degree $n$, $\phi$ is represented by $A^c$.  If $\phi$
+is of the form $\psi \wedge \chi$, where $\psi$ and $\chi$ are
+represented by concepts $A$ and $B$ of degree $n$, $\phi$ is
+represented by $A \cap B$.  All propositional logic operations can be
+defined in terms of negation and conjunction.
+
+Let $\phi$ be of the form $(\exists x_i.\psi)$, where $\psi$ is
+represented by a concept $A$ of degree $n$.  Let $E$ be the
+intersection of the concepts of degree $2n$ representing the assertions
+$x_j = x_{n+j}$ for $j$ less than or equal to $n$ and not equal to
+$i$.  $\psi$ is represented by the concept $((V^n\times A)\cap E)/V^n$.
+The universal quantifier can be defined in terms of the existential
+quantifier.
+
+The proof of the theorem is complete.
+
+\end{description}
+
+\section{Rules of inference}
+
+The rules of inference of {\em CC\/} are those appropriate for any
+purely equational theory.  We present them explicitly for the sake of
+completeness.  In this section only, capital letters represent general
+terms of {\em CC\/}, while lower-case letters represent atomic terms
+of {\em CC\/} (concpet variables).
+
+Any theorem of {\em CC\/} is of the form $T = U$, where $T$ and $U$
+are terms of {\em CC\/} as defined above.  We use the notation
+$A[T/x]$ to represent the result of substituting the term $T$ for the
+variable $x$ throughout the term $A$.
+
+\begin{description}
+
+\item[(Axiom)]  
+
+Axioms of {\em CC\/} are theorems of {\em CC\/}.  (The axioms are
+enumerated below).
+
+\item[(Sub1)]  
+
+If $A = B$ is a theorem of {\em CC\/} and $C[A/x] = D[A/x]$ is a
+theorem of {\em CC\/}, then $C[B/x] = D[B/x]$ is a theorem of {\em
+CC\/}.  This rule allows substitution of equals for equals.  It also
+supports symmetry and transitivity of equality.
+
+\item[(Sub2)]
+
+If $A[y/x] = B[y/x]$ is a theorem of {\em CC\/} (note that $y$ as well
+as $x$ is a concept variable here), then $A[T/x] = B[T/x]$ is a
+theorem of {\em CC\/}, for any term $T$.  This rule supports the
+intuition that variables appearing in theorems represent arbitary
+concepts.
+
+\end{description}
+
+We introduce a single axiom in this section, to complete the
+implementation of the basic properties of equality:
+
+\begin{description}
+
+\item[(Reflex)]  $A = A$
+
+\end{description}
+
+\section{Axioms for the calculus of degree}
+
+Developing a set of axioms for {\em CC\/} turns out to be an
+interesting exercise.  The first point to observe is that, since
+uninterpreted terms of {\em CC\/} do not have explicit degree (as do
+the atomic concepts of the intended interpretation), it is necessary
+to axiomatize the properties which degree is expected to have.
+
+We rely on the intended interpretation to develop the basic approach.
+In the intended interpretation, there is a canonical object in each
+degree which we may as well use to represent that degree: this is the
+universal concept $({\cal D}^n,n)$.  In the intended interpretation,
+the universal concept of the same degree as a concept $A$ can be
+expressed as $(\Delta A/A^c)^c$; it is straightforward to check that
+this works.  In uninterpreted {\em CC\/}, we introduce the following
+
+\begin{description}
+\item[Definition:]  
+
+$V^A$, called the {\em degree of $A$\/}, is defined as $(\Delta
+A/A^c)^c$.  $\emptyset^A$ is defined as $(V^A)^c$.
+
+\end{description}
+
+The operations on degrees which are needed in the intended
+interpretation are addition and subtraction of natural numbers; our
+intention is that the degree of $A \times B$ will be the sum of the
+degrees of $A$ and $B$, while the degree of $A/B$ will be the
+difference of the degree of $A$ and the degree of $B$.  In the
+intended interpretation, we decided that the degree of $A/B$ would be
+0 when the degree of $B$ exceeded the degree of $A$; this corresponds
+to a natural decision as to how to define subtraction as a complete
+operation on the natural numbers.
+
+These are the axioms which we adopt for addition of degrees:
+
+
+\begin{description}
+
+
+\item[D1:]  $V^{V^A} = V^A$
+
+\item[D2:]  $V^{A^c} = V^A$
+
+\item[D3:]  $V^{\Delta A} = V^A \times V^A$
+
+\item[D4:]  $V^{A \times B} = V^A \times V^B$
+
+\item[D5:]  $(A \times B) \times C = A \times (B \times C)$
+\end{description}
+Axiom {\bf D5} is given in more generality than is needed for the
+calculus of degrees alone.
+\begin{description}
+
+\item[D6:]  $V^A \times V^B = V^B \times V^A$
+
+\item[D7:]  $V^{A/A} = V^{B/B}$
+
+\end{description}
+Axiom {\bf D7} motivates the following
+
+\begin{description}
+
+\item[Definition:]
+
+We define $V^0$ as $V^{A/A}$ and $\emptyset^0$ as $(V^0)^c$.
+
+\end{description}
+Degree 0 is the only degree which can be defined in absolute terms.
+In the intended interpretation, degree 0 has the two inhabitants $V^0$
+and $\emptyset^0$, which are natural representatives of the truth
+values.
+
+\begin{description}
+
+\item[D8:] $A \times V^0 = V^0 \times A = A/V^0 = A$
+
+\item[D9:]  $A \times \emptyset^0 = \emptyset^0 \times A = \emptyset^A$
+
+\end{description}
+
+A more difficult proceeding was the selection of the axioms for
+subtraction of degrees.  We recall having seen axiomatizations for
+natural number subtraction, but we were not able to discover a
+reference to such a definition while preparing this paper.  We adopted
+the following axioms:
+
+\begin{description}
+
+
+
+\item[D10:] $(V^A \times V^B)/V^B = V^A$
+
+\item[D11:]  $(V^A \times V^{B/A})/V^{A/B} = (V^A/V^{A/B})\times V^{B/A} = V^B$
+
+\item[D12:]  $(V^A/V^{A/B}) \times V^{A/B} = V^A$
+
+\item[D13:]  $A/(B\times C) = (A/C)/B$
+
+\item[D14:] $A/B = A/(B/V^{B/A})$
+
+\end{description}
+
+These axioms are motivated by the fact that $m-n = m-\min(m,n)$ under
+the definition of subtraction given above.  Note that $m-(m-n) =
+\min(m,n)$ and $m+(n-m) = \max(m,n)$ can be defined on the natural
+numbers using addition and natural number subtraction.  If the
+equations just given relating natural number subtraction to maximum
+and minimum are interpreted instead as relating a ``subtraction''
+operation on a lattice to least upper bound and greatest lower bound,
+the axioms (suitably restricted to degrees) will hold on more general
+lattices with an addition operation; this will be exploited below.
+
+Axiom {\bf D13} is stated in more generality than is needed for the
+calculus of degrees alone, just as was the case for axiom {\bf D5}.
+
+Axiom {\bf D14} implements a different approach to the problem of
+``bad quotients'' than the one adopted in the description above of the
+intended interpretation.  Above, we simply declared such quotients
+empty; the axiom given here turns out to be more convenient.
+
+\section{Boolean operations and axioms}
+
+Of the operations of Boolean algebra which we might expect to have on
+each degree, only complement is given to us as a primitive, and we
+state its axiom
+\begin{description}
+
+\item[B1:]  $(P^c)^c = P$
+
+\end{description}
+We define the other boolean operations by first defining {\em
+intersection\/} using the observation that $\Delta A/B = A \cap B$
+when $A$ and $B$ have the same degree, along with a trick.
+
+\begin{description}
+
+\item[Definition:]  $A \cap B$, the intersection of concepts $A$ and $B$, is defined as $\Delta(A \times V^{B/A})/(B\times V^{A/B})$.
+
+\end{description}
+
+The trick is observing that $A \times V^{B/A}$ and $B\times V^{A/B}$
+have the same degree.  In the intended interpretation, this will be
+the maximum of the degrees of $A$ and $B$.  From the axioms, one can
+only prove that the degree of each of the expressions will be equal to
+the least upper bound of the degrees of $A$ and $B$ in a suitable
+order (and it does happen in interpretations in many-sorted logic that
+this may be strictly ``larger'' than both $A$ and $B$).
+
+The rest of the boolean axioms follow:
+
+\begin{description}
+
+\item[B2 (a definition):]  $P \cup Q = (P^c\cap Q^c)^c$
+
+\item[B3 (a definition):]  $(V^A)^c = \emptyset^A$
+\item[B4:]  $P\cap Q = Q\cap P$
+
+\item[B5:]  $(P\cap Q)\cap R = P\cap (Q\cap R)$
+
+\item[B6:]  $P\cap (Q\cup R) = (P\cap Q) \cup (P\cap R)$
+
+\item[B7:]  $P\cap \emptyset^Q = \emptyset^{P\times(Q/P)}$
+
+\item[B8:]  $P\cap V^Q = P\times V^{Q/P}$
+
+\item[B9:]  $P\cap P^c = \emptyset^P$
+
+\item[B10:]  $P\cap P = P$
+
+\end{description}
+
+\section{Axioms of padding}
+
+The introduction of products with universal concepts (which
+corresponds to ``padding'' formulas with dummy variables in the
+intended interpretation) would obstruct such simple procedures as dualizing axioms B1-10 if it were not for these (obvious) axioms:
+
+\begin{description}
+
+\item[P1:]  $(V^A \times B \times V^C)^c = V^A \times B^c \times V^C$
+
+\item[P2:] $V^A \times (B \cap C) \times V^D = (V^A \times (B\times
+V^{C/B}) \times V^D) \cap (V^A \times (C\times V^{B/C}) \times V^D)$
+
+\item [P3:]  $A \times B$ = $(V^A \times B) \cap (A \times V^B)$
+
+\end{description}
+
+Axioms P1 and P2 tell us that ``padding'' commutes with Boolean
+operations (an earlier axiom tells us that $V^0$ is left and right
+identity for product, so we can convert P1 and P2 to forms suitable
+for considering padding on one side).
+
+Axiom P3 shows us that product reduces to padding and Boolean
+operations.
+
+\section{Axioms of quantification}
+
+Quotients by arbitrary concepts can be reduced to quotients by
+universal concepts and padding (similar to axiom P3).  The appearance
+of $V^{B/A}$ (which will be $V^0$ in all situations we care about) is
+a degree arithmetic fix for bad quotients.
+
+\begin{description}
+
+\item[Q1:]  $A / B = (A \cap ((V^{A/B} \times B)/V^{B/A}))/V^B$
+
+\end{description}
+
+\begin{description}
+
+\item[Q2:]  $(A/V^B)^c = (A/V^B)^c \cap (A^c/V^B)$
+
+\item[Q3:]  $(A\cap B)/V^C = (A\cap B)/V^C \cap ((A\times V^{B/A})/V^C)$
+
+\item[Q4:] $(A\cup B)/V^C = ((A\times V^{B/A}) /V^C)\cup ((B\times
+V^{A/B})/V^C)$
+
+\item[Q5:]  $(A \times B)/V^{B/(B/C)} = A \times (B/V^{B/(B/C)})$
+
+\item[Q6:]  $A = A \cap ((A/V^{A/(A/B)})\times V^{A/(A/B)})$
+
+\end{description}
+
+To understand the forms of axioms Q5 and Q6, note that $V^{B/(B/C)}$
+will be the minimum degree of $V^B$ and $V^C$; we are ensuring that we
+do not take a quotient by a universal concept with degree greater than
+that of $B$.
+
+\section{Axioms of equality}
+
+There now remains the diagonalization operation.  Like the padding and
+quotient operations, it can be simplified using Boolean operations.
+
+\begin{description}
+
+\item[E1:] $\Delta A = \Delta V^A \cap (A \times V^A) = \Delta V^A
+\cap (V^A \times A)$
+
+\end{description}
+
+It is an easy consequence of E1 and the distribution axioms for
+padding that diagonalization distributes over Boolean operations
+relative to $\Delta V^A$.
+
+We introduce a definition to make it easier to talk about general
+equality concepts:
+
+\begin{description}
+
+\item[Definition:] The concept Eq$(A,B,C)$ is defined as
+$V^A\times(\Delta V^{B\times C}/V^C)$.  
+
+\end{description}
+
+Note that this definition depends only on the degrees of its
+arguments.  Eq$(A,B,C)$ contains all those sequences of variables with
+an initial segment in $V^A$, a second segment in $V^B$, a third
+segment in $V^C$ and a fourth segment equal to the second
+segment. Eq$(A,B,C)$ is the general form of a concept capturing all
+those sequences with a final segment in $V^B$ equal to an earlier
+non-overlapping segment in a given position.
+We now state the further axioms of equality:
+
+\begin{description}
+
+\item[E2:] (Eq$(A,B,C) \times V^{D\times B}$) $\cap$ Eq$(A,B,C\times B
+\times D)$ $\cap$ Eq$(A\times B \times C,B,D)$ = (Eq$(A,B,C) \times
+V^{D\times B}$) $\cap$ Eq$(A,B,C\times B \times D)$ = Eq$(A,B,C\times
+B \times D)$ $\cap$ Eq$(A\times B \times C,B,D)$ = (Eq$(A,B,C) \times
+V^{D\times B}$) $\cap$ Eq$(A\times B \times C,B,D)$
+
+\item[E3:]  (Eq$(A,B,C) \cap D^c)/V^{B/(B/E)}$ = ((Eq$(A,B,C) \cap D)/V^{B/(B/E)})^c$
+
+\item[E4:]  (Eq$(A,B,C) \cap (D\cap E))/V^{B/(B/F)} =
+(($Eq$(A,B,C) \cap (D\times V^{E/D}))/V^{B/(B/F)}) \cap (($Eq$(A,B,C) \cap (E\times V^{D/E}))/V^{B/(B/F)})$
+
+\item[E5:] Eq$(A,B\times C,D) = ($Eq$(A,B,C\times D)\times V^C)\cap$
+Eq$(A\times B,C,D \times B)$
+
+\end{description}
+Axiom E2 is the transitive law of equality.  In this context, where
+``variables'' (positions in argument lists of concepts) cannot be
+permuted or duplicated (these effects are simulated using
+diagonalization), we should not expect to find analogues of the
+reflexive or symmetric properties of equality.
+
+Axioms E3 and E4 assert that existential quantification distributes
+over all Boolean operations when the variable quantified over is
+asserted to be equal to a variable which remains free.  (It also
+applies to blocks of variables).  Axiom E5 allows equality between
+blocks of variables to be analyzed into equalities between sub-blocks.
+
+\section{Why these axioms?  Showing that they work!}
+
+Reasoning in the calculus of concepts with these axioms corresponds to
+a regimented style of reasoning in which any primitive predicate
+appears applied to a consecutive block of variables (shifting blocks
+of variables causes no problems because of the degree arithmetic and
+padding axioms) and in which all quantifications are applied to the
+last free variable available (which means that we need to reason with
+labelled formulas; this is also handled by the degree and padding
+axioms and related features of the boolean axioms). These features
+together eliminate the need for bound (or any) variables.
+
+Modulo these restrictions, the boolean and quantification axioms are
+easily seen to be adequate mod adequacy of our extended boolean
+algebra.
+
+The factor which needs to be considered is the possibility of
+permuting or identifying variables.  This is handled via the expedient
+of introducing new variables, declaring them equal to earlier
+variables (using concepts Eq$(A,B,C)$), asserting desired properties
+of the sequence of variables, then quantifying them out (as we did in
+the interpretation of first-order logic in CC).  Axioms E3 and E4
+ensure that this process commutes with Boolean operations (as it
+should).  Axiom E1 allows facts about equal blocks of variables to be
+transferred from one block to another. Axiom E5 ensures that equality
+between blocks is related correctly to equality between corresponding
+sub-blocks.  Axiom E2 allows us to deduce any additional equalities
+between blocks from given equalities between blocks (where equalities
+between overlapping blocks are involved, the use of E5 may be needed).
+As noted earlier, no analogue of symmetry or reflexivity is needed (or
+possible!)
+
+\end{document}
+
+
+
+
+
+
+
+
+
