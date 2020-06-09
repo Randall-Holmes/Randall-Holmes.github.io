@@ -1,0 +1,395 @@
+\documentclass[12pt]{article}
+
+\title{Manual for CL Watson}
+  
+\author{M. Randall Holmes}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+CL Watson is a version of the Watson theorem prover.  Watson is an
+interactive equational higher-order prover whose higher-order logic is
+based on the weakly extensional version {\em NFU\/} of Quine's set
+theory ``New Foundations'', presented as a stratified lambda-calculus.
+
+CL Watson is based on combinatory logic instead of lambda-calculus.
+The intention is to implement stratified lambda-calculus without
+actually explicitly implementing either stratification or
+lambda-calculus.  Part of the intention is that all manipulations of
+terms made by the computer represent logical moves which are directly,
+locally justifiable without any appeal to such nonlocal conditions as
+stratification of terms or position in terms defined by cases.
+
+CL Watson uses variable binding notation of the usual kind, unlike
+Watson.  It uses the metaphor of navigation in terms to handle
+application of theorems (which are all understood as rewrite rules).
+Navigation is extended to include navigation to formal values as well
+as to subterms: this is how ``lambda-terms'' are implemented.  A term
+$(\lambda x.T)$ has no subterm of the form $T$: it is a combinator
+which evaluates to $T$ when applied to the variable $x$.  The display
+functions of the prover recognize the term as an ``abstraction'', and
+so display it as a $\lambda$-term, and the navigation functions allow
+one to navigate to the ``subterm'' $T$, but what actually happens when
+$T$ is rewritten involves abstraction from the rewritten form.
+
+\section{The Logic}
+
+The basic logical rules are those of equational logic which are
+assumed to be familiar.  All theorems are equations, supposed
+universally quantified over any variables present.
+
+Primitives are constants {\tt Abst}, {\tt Id}, and {\tt Eq}.  If $T$
+and $U$ are terms, then $T(U)$ is a term (the application of $T$ to
+$U$) and $|T|$ is a term (the constant function with value $T$).
+
+The combinatory logic axioms proper are
+
+\begin{description}
+
+\item[Identity:] ${\tt Id}(x)=x$
+
+\item[Constant:] $|T|(U) = T$
+
+\item[Distribution:] ${\tt Abst}(T)(U)(V) = T(|V|)(U(V))$
+
+\item[Constant Expansion:]  $|T(U)| = {\tt Abst}(|T|)(|U|)$
+
+\end{description}
+
+These axioms support a meta-theorem.
+
+\begin{description}
+
+\item[Definition:] If $A$ is a set of integers, define $A+1$ as the
+set of all successors of elements of $A$ and $A-1$ as the set of all
+predecessors of elements of $A$.  Where $U$ is a term and $T$ is a
+term, define ${\tt type}(U,T)$, a set of integers, as follows.  ${\tt
+type}(T,T)=\{0\}$.  ${\tt type}(U,T) = {\cal Z}$ (the set of all
+integers) if $T$ is atomic and $U$ is distinct from $T$.  ${\tt
+type}(U,|T|) = {\tt type}(U,T)-1$.  ${\tt type}(V,T(U)) = ({\tt
+type}(V,T)+1) \cap {\tt type}(V,U)$.  It should be clear that ${\tt
+type}(,T)$ is always either $\cal Z$ (if $U$ does not occur in $T$),
+a singleton set $\{n\}$ (in which case we say that $U$ has type $n$ in
+$T$), or $\emptyset$ (in which case we say that $U$ is ill-typed in
+$T$).
+
+\item[Abstraction Theorem:] If $0 \in {\tt type}(x,T)$, then there is
+a term $(\lambda x.T)$, not containing the variable $x$, such that
+$(\lambda x.T)(x) = T$ is a theorem.
+
+\item[Proof:] For any term $T$, we can construct a term $T'$ which
+contains no subterm of the form $|T(U)|$ by repeated rewriting using
+the Constant Expansion axiom.
+
+For any terms $T$ and $U$, we define a term $(\lambda U.T)$ as
+follows: if $T=U$, define $(\lambda U.T)$ as ${\tt Id}$.  If $T$ is an
+atomic term or constant function term distinct from $U$ define
+$(\lambda U.T)$ as $|T|$.  If $T$ is a composite term $V(W)$ define
+$(\lambda U.T)$ as ${\tt Abst}(\lambda |U|.V)(\lambda U.W)$.
+
+Induction on the structure of terms, along with the defining axioms
+for the combinators, establishes that $(\lambda U.T)(U)=T$ is a
+theorem for any $T$ and $U$.  Our further claim is that if $T'$ is
+chosen (as it always can be) such that $T=T'$ is a theorem and $T'$
+contains no subterm of the form $|V(W)|$ and if ${\tt type}(x.T)$
+contains 0, and if $U$ is either atomic or an iterated constant
+function of an a tomic term, then $(\lambda U.T')$ (which is already
+seen to satisfy $(\lambda U.T')(x) = T' = T$) will further not have
+$U$ as a subterm.
+
+We run through the induction again.  If $T'=U$, then $(\lambda
+U.T')={\tt Id}$ contains no occurrence of $U$.  If $T'$ is an atomic
+term distinct from $U$, then $(\lambda U.T')=|T'|$ contains no
+occurrence of $U$.  If $T'$ is a constant function, it must be an
+iterated constant function of an atomic term.  If this term is $U$,
+then ${\tt type}(U,T)$ is the singleton set of a negative integer, and
+so does not contain 0.  If this term is not $U$, then $(\lambda
+U.T')=|T'|$ does not contain an occurrence of $U$.  If $T'$ is of the
+form $V(W)$ then $(\lambda U.T')={\tt Abst}(\lambda |U|.V)(\lambda
+U.W)$ and we need to argue that neither $(\lambda |U|.V)$ nor
+$(\lambda U.W)$ contain $x$ if ${\tt type}(U,T)$ contains 0.  We must
+have 0 in ${\tt type}(U,W)$, so induction tells us that $(\lambda
+U.W)$ contains no occurrence of $U$.  We must have $-1$ in ${\tt
+type}(U,V)$.  Any occurrence of $U$ in $V$ must be in the context
+$|U|$, and all these occurrences of $|U|$ must have type 0 in $V$.
+From this it follows that $(\lambda |U|.V)$ contains no occurrence of
+$|U|$ by induction, and so can contain no occurrence of $U$, since any
+occurrence of $U$ in $(\lambda |U|.V)$ would need to be derived from
+an occurrence of $U$ in $V$, which would appear as part of a subterm
+$|U|$ eliminated by the abstraction algorithm.
+
+\end{description}
+
+We introduce a weak extensionality axiom.  The motivation is that we allow
+rewrites inside abstraction terms $(\lambda x.T)$.
+
+\begin{description}
+
+\item[Extension Axiom:] If $T=U$ is a theorem, so is $(\lambda x.T) =
+(\lambda x.U)$.  Further, $(\lambda x.T(x)) = T$, where $T$ is of one
+of the forms ${\tt Abst}$, ${\tt Abst(U)}$.
+
+\item[Refinement of the Abstraction Algorithm:] The abstraction
+algorithm can be modified as follows: when it happens that $(\lambda
+|U|.V) = |V|$ and $(\lambda U.W) = |W|$, define $(\lambda U.V(W))$ as
+$|V(W)|$ (this is equal to the abstraction obtained under the original
+algorithm by the axiom of Constant Expansion); define $(\lambda
+x.U(x))$ as $U$ in case $U$ is of one of the forms ${\tt Id}$, $|V|$,
+${\tt Abst}$, ${\tt Abst}(V)$ or ${\tt Abst}(V)(W)$ (justified by the
+Extension Axiom), and otherwise define it as usual.  Further, replace
+$(\lambda x.T(x)$ with $T$ in the contexts $U$, $V$ in terms ${\tt
+Abst}(U)$, ${\tt Abst}(U)(V)$ (also justified by the Extension Axiom).
+
+[Internally to CL Watson, an ``inertia operator'' is applied to $U$
+when it is chosen as $(\lambda x.U(x))$: this helps make the reduction
+algorithm inverse to the abstraction algorithm in case $U$ itself is a
+``lambda-term''.]
+
+The CL Watson logic of equality will be discussed as it is
+implemented.  The intention is that ${\tt Eq}(|||T|||)(||U||)(|V|)(W)$ (which actually can be written {\tt V \{T = U\} W} in CL Watson infix notation, though it will initially be written {\tt V \{||T|| = ||U||\} W} )
+means ``if $T=U$ then $V$ else $W$''.  The axioms are
+
+\begin{description}
+
+\item[True Equation:] $${\tt Eq}(|||X|||)(||X||)(|Y|)(Z) = Y$$
+
+\item[False Equation:] $${\tt Eq}(|||{\tt Id}|||)(|||{\tt Id}|||)(|Y|)(Z) = Z$$
+
+The nesting of constant functions obscures the fact that this axiom
+asserts that {\tt Id} and {\tt |Id|} are distinct.  This is a generic
+choice for drawing a distinction because these are in effect the
+projection operators: ${\tt Id}(|X|)(Y) = X$ and ${\tt
+|Id|}(|X|)(Y)=Y$.
+
+\item[Application Distribution:] $${\tt Eq}(|||T|||)(||U||)(|A(B)|)(C(D))$$ =
+$${\tt Eq}(|||T|||)(||U||)(|A|)(C)({\tt Eq}(|||T|||)(||U||)(|B|)(D))$$
+
+\item[Constant Function Distribution:] $${\tt Eq}(|||T|||)(||U||)(||A||)(|B|)$$ =
+$$|{\tt Eq}(|||T|||)(||U||)(A)(B)|$$
+
+\item[Substitution under Hypotheses:]  $${\tt Eq}(|||T|||)(||U||)(|T|)(B)$$=
+$${\tt Eq}(|||T|||)(||U||)(|U|)(B)$$
+
+\item[Weak Extensionality/Choice:] $${\tt Eq}(|||(\lambda x.T(x))|||)(||(\lambda x.U(x))||)(|V|)(W)$$=
+$${\tt Eq}(|||T({\tt Diff}(|T|)(U)(X))|||)(||U({\tt Diff}(|T|)(U)(X))||)(|V|)(W)$$
+
+\end{description}
+
+\end{description} 
+
+\section{The Program}
+
+\subsection{The Term Language}
+
+Constant atomic terms of the language of CL Watson are either strings
+of letters with the initial capitalized and any others lower case
+({\tt A} is a term) or strings of special characters (precise definition is
+the function {\tt isspecial} in the source).
+
+Variable atomic terms of the language of CL Watson have the letter {\tt x}
+followed by a numeral.
+
+If {\tt T} is a term and {\tt U} is a term then {\tt |T|} and {\tt T(U)}
+are terms.  These constructions correspond to the application and constant
+function constructions of the logic.
+
+CL Watson supports infix notation.  {\tt T U V} is syntactic sugar for
+{\tt U(|T|)(V)} (this resembles the usual ``currying'' used to
+implement functions of two variables in combinatory logic, but notice
+the adjustment of the type of {\tt T} so that it is the same as the
+type of {\tt U}).  If {\tt T} is an infix term, it will be enclosed in
+parentheses.  If {\tt U} is an infix term, it will be enclosed in
+braces.  If {\tt T} is an infix term in the context {\tt T(U)}, it
+will be enclosed in braces.  Redundant braces and parentheses are all
+right.  This all has the effect of enforcing APL operator precedence:
+we expect to eventually implement some sort of user-defined operator
+precedence.  CL Watson draws an internal distinction between constant
+function constructors explicitly supplied by the user and those which
+appear in the internals of infix notation, so as to avoid terms
+acquiring unexpected infix forms.
+
+CL Watson supports lambda-notation.  If {\tt x1} represents $x$ and
+{\tt T} represents {\tt T}, then {\tt [x1=>T]} represents $(\lambda x.T)$.
+Note that the internal representation of {\tt [x1=>T]} contains no variable
+analogous to {\tt x1}, and the bound variable displayed by the system when
+displaying a term may be different from the bound variable the user enters.
+
+CL Watson displays {\tt F([x1=>T])} as {\tt [F(x1)=>T]} where F is an atomic
+constant (in order to support standard notation for quantifiers and
+other binders).  This sometimes has odd effects where atoms not
+normally thought of as binders are applied to abstractions.  CL Watson
+will sometimes also display terms in a way involving infix notation
+``accidentally''.
+
+One must be careful with whitespace: spaces actually have meaning in
+the syntax of CL Watson (they separate infixes from neighboring
+terms).  In certain cases CL Watson may supply these spaces when they
+are omitted (next to special characters; never before an opening
+parenthesis).  It is safer to write them and they are always
+displayed.  Redundant spaces in locations not next to infixes should
+always be avoided.
+
+A very new feature is the presence of ``quoted'' terms {\tt "T"},
+which represent interpretations of terms in a model of the logic.
+These are intended for use in supporting unstratified quantification.
+
+\subsection{The Proof Model}
+
+The model of prover use is this: the user enters a term, applies
+theorems to it as rewrite rules until a new term is obtained, then
+records the equation of the original term and the final term as a new
+theorem usable as a rewrite rule.
+
+At any point, one views the right side of the theorem under construction,
+and a selected subterm where rewrite rules will be applied.
+
+The command
+
+{\tt Start "T"}
+
+sets up a new proof environment with the term {\tt T} as both left and
+right term in the ``theorem under construction''.  {\tt s} is an
+abbreviation for {\tt Start}.
+
+The command 
+
+{\tt Look()}
+
+allows one to see the right side of the current term.  Variants {\tt
+Look1()} and {\tt Look2()} support different term views.  View 1
+supports neither abstraction nor infix notation.  View 2 supports
+abstraction but not infix notation.  Commands {\tt view1()} and {\tt view2()}
+will reset the default view to view 1 or 2; they also change the effect
+of the navigation commands.  {\tt view3()} restores default behavior.
+
+The commands
+
+{\tt workback()}
+
+interchanges the left and right sides of the theorem under construction.
+
+The command
+
+{\tt lookback()} 
+
+allows one to look at the left side of the theorem
+under construction and return to the right side.
+
+The command
+
+{\tt startover()}
+
+sets both left and right sides of the theorem to the current left side.
+
+Now we consider navigation commands, which reset the current subterm.
+
+{\tt right()}
+
+{\tt left()}
+
+These commands are multipurpose.  They will go to the right or left
+subterm of a function application term, to the right or left subterm
+of an infix term (leaving aside the infix).  They will go to the body
+of an abstraction (that is,to a formal value of the abstraction term).
+
+{\tt middle()}
+
+{\tt function()}
+
+These commands are dedicated to infix terms.  {\tt middle()} goes to
+the infix subterm of an infix term.  {\tt function()} goes to the left
+subterm of an infix term when it is considered as a function
+application term (the subterm {\tt U(|T|)} which disappears from view
+when {\tt U(|T|)(V)} is presented as {\tt T U V}).  The use of the
+{\tt function()} command can be avoided by using {\tt toggleinfix()}
+to change the way the term is viewed.
+
+{\tt value()}
+
+This goes to the formal value of any ``abstract'' term:  it works where
+an ``abstract'' is not actually presented in abstract form (this is true
+of terms {\tt Id}, {\tt |T|}, and {\tt Abst}, and may be true of more terms
+in later forms of CL Watson).  
+
+Terms dedicated to infix terms will not work in view 2; terms dedicated to
+abstraction terms will not work in view 1.  In view 1 or 2, {\tt right()}
+and {\tt left()} will not do the same thing as in view 3.  Any movement
+command at all takes one to the interior of the quotes in a quoted term.
+
+{\tt up()}
+
+{\tt top()}
+
+The {\tt up()} command reverses the effect of the most recent movement command;
+the {\tt top()} command takes one to the top of the term.
+
+We now consider the application of theorems.
+
+If {\tt T} and {\tt U} are terms, then {\tt T :>: U} and {\tt T :<: U}
+are terms, with the same reference as {\tt U}.  The effect is to
+signal the intent to apply a rewrite represented by the term {\tt T};
+the alternative form applies the theorem in the opposite direction.
+The head of the term {\tt T} will be the name of a theorem (or
+theorem-like internal function of the prover); the rest of the term can
+supply parameters to the theorem.
+
+The command {\tt ri "T"} introduces an embedded theorem {\tt T} at the
+current selected subterm.  The command {\tt rri "T"} introduces an embedded
+theorem using the alternative infix {\tt :<:}.
+
+The command {\tt Execute()} carries out all rewrites signalled by
+embedded theorems in the selected subterm.  Rewrites are carried out in
+a depth-first manner, and new rewrites introduced by executed rewrites are
+carried out in their turn until all are eliminated.  {\tt ex()} abbreviates
+{\tt Execute()}.
+
+The command {\tt Onestep()} carries out a single step of the reduction
+process which is carried out aggressively by {\tt Execute()}.
+
+The command {\tt assign1 n "T"} implements a global substitution of
+{\tt T} for the variable {\tt xn} (n is a numeral) in both the left
+and right sides of the current theorem under construction.  The
+command {\tt assigninto n "T"} substitutes the left and right sides of
+the current term for {\tt xn} in {\tt T} to get new left and right
+sides.
+
+The command {\tt Extract "T"} converts the selected term {\tt U} to
+{\tt [T=>U](U)}, where possible.  The command {\tt Red()} is the
+reverse operation of beta-reduction.
+
+The command {\tt makeinert()} makes the selected term ``inert'' (this
+is a technicality in the reduction algorithm).  The command {\tt
+toggleinfix\/} will toggle the display of a potential infix term
+between the forms {\tt T(|U|)(V)} and {\tt U T V} (it resets the
+hidden bit in the representation of the constant function between
+user-supplied and implicit).
+
+The command {\tt prove "T"} proves a new theorem, with left side the left side
+of the current theorem under construction and right side the right side of the
+current theorem under construction.  The head of the term {\tt T} will be
+the name of the new theorem:  it may have arguments which can be used to pass
+information to the theorem.  In examples, we will see that theorems may have
+quite complex execution behavior, using built-in higher-order matching
+facilities, information passed to them in parameters, and introducing new
+embedded theorems which will in their turn be executed.
+
+The command {\tt axiom "name" "T" "U"} introduces an axiom named {\tt name}
+asserting {\tt T = U}.
+
+The command {\tt reflect "name1" "name2"} converts a theorem called
+name1 of the form {\tt "T" = "U"} to a theorem called name2 (if this name
+is free) of the form {\tt T = U}:  it allows theorems proved about the object
+model to be exported to the meta-model.  This is logically strong:  we'll
+see if it is useful.
+
+The command {\tt thmdisplay "T"} displays the theorem with name {\tt T}.
+
+Further commands analogous to those in the Watson user manual may be expected
+to appear.
+
+\section{Examples}
+
+\end{document}
