@@ -1416,6 +1416,8 @@ AND , ASSERT , BOOLDEF , CASEINTRO , EQBOOL , EQUATION
 
 *)
 
+demo();
+
 start "(wp@[?v:=?E])@[?B@((state:?1)@?v)]";
 ri "wp"; ex();
 ri "EVERYWHERE2@EVAL"; ex();
@@ -1479,9 +1481,7 @@ ri "ASSERT**BOOLDEF0"; ri "1|-|1"; ex();
 up(); ri "CSYM**CID**DRULE1"; ex();
 up(); ri "(LEFT@ALTORDEF)**TOPDOWN@UNPACK"; ex();
 ri "RIGHT_CASE@REVPIVOT"; ex();
-up();up(); 
-
-ri "EVAL"; ex();
+upto "[?P@?1]@?x"; ri "EVAL"; ex();
 downtoright "(state:?f)@?x";
 upto "(state:?f)@?x"; 
 ri "(LEFT@state)**(EVERYWHERE2@EVAL)**(EVERYWHERE2@TYPES)"; ex();
@@ -1500,9 +1500,7 @@ left(); left(); left(); rri "NRULE1"; ex();
 ri "ASSERT**BOOLDEF0"; ri "1|-|1"; ex();
 up(); ri "CSYM**CID**DRULE1"; ex();
 ri "CZER"; ex(); up(); ex();
-
-
-up();up(); ri "EVAL"; ri "EVERYWHERE2@EVAL"; ex();
+upto "[?P@?1]@?x"; ri "EVAL"; ri "EVERYWHERE2@EVAL"; ex();
 left(); right();right();left(); left(); rri "(2|-|1)@[error]"; ex();
 
 ri "(LEFT@NOT)**UNPACK"; ex();

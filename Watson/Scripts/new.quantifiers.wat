@@ -789,12 +789,258 @@ ri "?a=?a";
 left(); ri "REFLEX** $?thm";
 p "STRONG_REWRITE_WITH_EQUATION@?thm";
 
-(* is there a way to do this without the trick?  Probably not without
-addition of something like unification, or without giving ?y
-as a parameter. *)
+(* BEGIN environment for development of REWRITE_TAC *)
 
-(* design a REWRITE_TAC *)
+(* beginning of REWRITE_TAC *)
+
+(* this is designed to be analogous to REWRITE_TAC in HOL.
+It's not an efficient approach in Watson, and there is a problem
+with handling iterated quantifiers which I haven't dealt with yet. *)
+
+(* note the top-down development style *)
+
+(* annotate the term with the formula asserted by the theorem
+and with the name of the theorem *)
+
+dpt "REWRITE_ENGINE";
+
+s "?x";
+ri "(!$IGNOREFIRST)@true"; ex();
+left(); rri "?thm";
+top(); ri "(!$IGNOREFIRST)@?thm=>> $?thm";
+ri "REWRITE_ENGINE";
+p "REWRITE_TAC@?thm";
+
+(* SUB_REWRITE_TAC is used for tactics *)
+
+(* all tactics used as arguments to this are "toggles" converting
+true to some statement and converting that statement back to true *)
+
+s "?x";
+ri "(!$IGNOREFIRST)@true"; ex();
+left(); ri "?thm";
+top(); ri "(!$IGNOREFIRST)@ ?thm";
+ri "REWRITE_ENGINE";
+p "SUB_REWRITE_TAC@?thm";
+
+dpt "REWRITE_WITH_EQUATION";
+dpt "REWRITE_WITH_CONJUNCTION";
+dpt "REWRITE_WITH_UNIVERSAL_EQUATION";
+dpt "REWRITE_WITH_UNIVERSAL_CONJUNCTION";
+
+(* cases to manage iterated universals are also needed but are
+more difficult -- left for later refinement *)
+
+s "?thm.?x.?y";
+ri "REWRITE_WITH_EQUATION";
+ari "REWRITE_WITH_CONJUNCTION";
+ari "REWRITE_WITH_UNIVERSAL_EQUATION";
+ari "REWRITE_WITH_UNIVERSAL_CONJUNCTION";
+p "REWRITE_ENGINE";
+
+s "?thm.(?x=?y).?z";
+ri "IGNOREFIRST**IGNOREFIRST"; ex();
+ri "PCASEINTRO@0=0"; ex();
+left(); ri "REFLEX** ?thm";
+top(); right(); left(); ri "EVERYWHERE2@0|-|1";
+top(); ri "LEFT@?thm";
+p "REWRITE_WITH_EQUATION";
+
+dpt "LCT";
+dpt "RCT";
+
+s "?thm.(?x&?y).?z";
+ri "IGNOREFIRST**IGNOREFIRST";
+ri "SUB_REWRITE_TAC@LCT@?thm";
+ri "SUB_REWRITE_TAC@RCT@?thm";
+p "REWRITE_WITH_CONJUNCTION";
+
+dpt "UET";
+
+s "?thm.(forall@[(?P@?1)=?Q@?1]).?z";
+ri "IGNOREFIRST**IGNOREFIRST"; ex();
+ri "EVERYWHERE2@UNEVAL@[?P@?1]";
+ri "SUB_REWRITE_TAC@UET@?thm";
+ri "EVERYWHERE2@EVAL";
+p "REWRITE_WITH_UNIVERSAL_EQUATION";
+
+dpt "UCT";
+
+s "?thm.(forall@[(?P@?1)&?Q@?1]).?z";
+ri "IGNOREFIRST**IGNOREFIRST"; ex();
+ri "SUB_REWRITE_TAC@UCT@?thm";
+p "REWRITE_WITH_UNIVERSAL_CONJUNCTION";
+
+(* development of subtactics *)
+
+s "(?x&?y)||?x,?x";
+right(); left(); rri "(2|-|1)@true"; ex();
+ri "TAB_AND_2"; ex();
+right(); left(); right(); left(); rri "0|-|2"; ex();
+top(); right(); left(); ri "EVERYWHERE@ $CASEINTRO"; ex();
+p "LCT0";
 
 
+(*     ?thm:(?x&?y) rewrites to true
+	and  true rewrites to (?x&?y)
+       -------------------------------
+       LCT@?thm: ?x rewrites to true and vice versa
+     *)
+
+s "?x";
+ri "PCASEINTRO@0=0"; ex(); 
+left(); ri "REFLEX**?thm";
+top();
+ri "LCT0";
+ri "LEFT@?thm";
+p "LCT2@?thm";
+
+(* lemma to eliminate an assert from something
+known to be true *)
+
+s "|-?x";
+ri "PCASEINTRO@(|-?x)=?x";
+ri "PIVOT"; ex();
+ri "LEFT@(RIGHT@?thm)**(LEFT@(RIGHT@?thm)**AT)**REFLEX";
+p "ELIM_ASSERT@?thm";
+
+dpt "RCT2";
+
+s "true";
+ri "?thm";
+ri "RIGHT@RCT2@?thm";
+ri "CID";
+ri "ELIM_ASSERT@LCT2@?thm";
+p "LCT1@?thm";
+
+s "?x";
+ri "LCT1@?thm";
+ari "LCT2@?thm";
+p "LCT@?thm";
+
+s "?y";
+ri "PCASEINTRO@0=0"; ex(); 
+left(); ri "REFLEX**?thm";
+top();
+ri "LEFT@CSYM";
+ri "LCT0";
+ri "LEFT@CSYM";
+ri "LEFT@?thm";
+p "RCT2@?thm";
+
+s "true";
+ri "?thm";
+ri "LEFT@LCT2@?thm";
+ri "CSYM**CID";
+ri "ELIM_ASSERT@RCT2@?thm";
+p "RCT1@?thm";
+
+s "?x";
+ri "RCT1@?thm";
+ari "RCT2@?thm";
+p "RCT@?thm";
+
+(* ?thm rewrites forall@[(?P@?1)=?Q@?1] to true and vice versa
+------------------------------------------------------
+UET@?thm rewrites [?P@?1] = [?Q@?1] to true and vice versa *)
+
+s "true";
+ri "?thm";
+ri "UNIV_EQ";
+p "UET1@?thm";
+
+s "?x";
+rri "UNIV_EQ";
+ri "?thm";
+p "UET2@?thm";
+
+
+s "?x";
+ri "UET1@?thm";
+ari "UET2@?thm";
+p "UET@?thm";
+
+(* ?thm rewrites forall@[(?P@?1)&?Q@?1] to true and vice versa
+--------------------------------------------------------------
+UCT@?thm rewrites forall@[?P@?1]&forall@[?Q@?1] to true and vice versa *)
+
+s "true";
+ri "?thm";
+ri "FORALLDIST";
+p "UCT1@?thm";
+
+s "?x";
+rri "FORALLDIST";
+ri "?thm";
+p "UCT2@?thm";
+
+s "?x";
+ri "UCT1@?thm";
+ari "UCT2@?thm";
+p "UCT@?thm";
+
+(* END environment for development of REWRITE_TAC *)
+
+(* example
+
+declareconstant "p";
+declareconstant "s";
+
+statement "TA2" "((p@0)=0)&((p@s@0)=0)&forall@[(p@s@s@?1)=s@p@s@?1]";
+s "p@p@s@s@s@0";
+ri "LOOP_TAC@REWRITE_TAC@TA2"; ex();
+
+s "p@p@p@p@s@s@0";
+ri "LOOP_TAC@REWRITE_TAC@TA2"; ex();
+
+declareconstant "f";
+declareconstant "g";
+statement "TA3" "forall@[((f@g@?1)=?1)&(g@f@?1)=?1]";
+
+s "f@f@g@g@g@f@f@f@g@?x";
+ri "LOOP_TAC@REWRITE_TAC@TA3";
+
+*)
+
+s "forall @ [forall @ [bool : (?P @! ?2) @ ?1]]";
+ri "PCASEINTRO@forall@[forall@[bool:(?P@!?1)@?2]]"; ex();
+ri "LEFT@EVERYWHERE2@forall"; ex();
+right(); left(); right(); right(); ri "forall"; ex();
+left(); left(); rri "TYPES"; ex(); right(); ri "BIND@?1"; ex();
+left(); ri "PCASEINTRO@[bool : (?P @! ?2) @ ?3]=[true]"; ex();
+ri "PIVOT"; ex();
+left(); ri "BIND@?2"; ex();
+left(); ri "0|-|1"; ex();
+up(); ri "EVAL"; up(); ex();
+up(); ri "EVAL"; ex();
+up(); rri "TRUEBOOL"; ex();
+uptols "FORALLDROP"; ri "FORALLDROP**AT"; ex();
+ri "RIGHT@REFLEX"; ri "AT"; ex();
+up(); right(); ri "EVERYWHERE2@forall"; ex();
+ri "EQUATION"; ex();
+right(); left(); rri "(2|-|1)@false"; ex();
+left();left();left();left();left(); rri "TYPES"; ex(); right();
+ri "BIND@?1"; ex(); 
+left();ri "PCASEINTRO@[bool : (?P @! ?3) @ ?2]=[true]"; ex();
+ri "PIVOT"; ex();
+left(); ri "BIND@?2"; ex();
+left(); ri "0|-|2"; ex();
+up(); ri "EVAL"; up(); ex();
+up(); ri "EVAL"; ex();
+up(); rri "TRUEBOOL"; ex();
+uptols "REFLEX"; ri "REFLEX"; ex();
+uptols "REFLEX"; ri "REFLEX"; up(); ex();
+uptors "CASEINTRO"; rri "CASEINTRO"; ex();
+top(); rri "EQUATION"; ex();
+rri "forall"; ex();
+right(); right(); rri "forall"; ex();
+ri "FORALLBOOL2"; ex();
+wb();
+p "UNIV_SWITCH";
 
 quit();
+
+
+
+
+

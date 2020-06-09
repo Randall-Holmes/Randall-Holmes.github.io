@@ -254,6 +254,8 @@ p "EVERYWHERE_PREFIX@?EVERYWHERE,?thm";
  
 
 declareopaque "^+";
+makescinvar "^,";  (* used for building parameter lists to theorems
+                   instead of , when stratification might be an issue *)
 
 s "?x^+?y";
 right();
@@ -931,7 +933,6 @@ p "right_case";
 s "?x";
 ri "(LEFT_CASE@INPUTS2)**INPUT";
 p "left_case";
-
 
 s "?x";
 ri "(VALUE@INPUTS2)**INPUT";

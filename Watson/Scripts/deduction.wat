@@ -235,13 +235,15 @@ top(); right(); ri "DZER";
 top(); ri "AT";
 p "EXIST_GOAL@?x";
 
+(* 
+
 s "?x||?y,?z";
 right(); left(); ri "LEFT@0|-|1";
 p "TWIDDLE";
 
-s "(|-forall@[?P@?1])||?x,true";
+s "(|-forall@[?P@?1])||?x,?y";
 right(); left(); ri "UNEVAL@[?P@?1]";
-p "TWIDDLE2";
+p "TWIDDLE2"; 
 
 s "|-?x";
 right(); 
@@ -254,6 +256,43 @@ rri "CASEINTRO";
 ri "LEFT@ $forall2"; ri "ASRTCOND"; ri "1|-|?n";
 top(); ri "AT";
 p "UNIV_HYP@?n";
+
+*)
+
+(* How to fix this to make iterated universal quantifiers work? *)
+
+s "([?P@?1]=[true])||?x,true";
+right(); left(); ri "UNEVAL@[?P@?1]"; ri "LEFT@0|-|1"; ri "EVAL";
+rri "CASEINTRO";
+p "NEWTWIDDLE";
+
+s "|-?x";
+right(); rri "(2|-|?n)@true";
+rri "ASRTCOND"; ri "LEFT@forall";
+ri "NEWTWIDDLE";
+ri "LEFT@ $forall2"; ri "ASRTCOND"; ri "1|-|?n";
+top(); ri "AT";
+p "UNIV_HYP@?n";
+
+(* subtactic to apply a universal hypothesis 
+with arbitrarily many quantifiers, given the instantiations *)
+
+dpt "FORALLCHECK";
+
+s "(forall@[?P@?1])||?x,?y";
+ri "LEFT@forall"; ex();
+right(); left(); ri "BIND@?a"; ri "LEFT@0|-|1";
+ri "LEFT@VALUE@[PCASEINTRO@?P@?1]"; ri "LEFT@VALUE@[FORALLCHECK@?L]"; 
+ri "LEFT@VALUE@[LEFT@(BIND@?1)**(LEFT@0|-|1)**EVAL]";
+ri "EVAL";
+top(); ri "LEFT@ $forall";
+p "FORALLCHECK@?a,?L";
+
+s "|-?x";
+right(); rri "(2|-|?n)@true";
+rri "ASRTCOND"; ri "FORALLCHECK@?L"; ri "ASRTCOND"; ri "1|-|?n";
+top(); ri "AT";
+p "NESTED_UNIV_HYP@?n,?L";
 
 s "|-?x";
 rri "(2|-|?n)@true"; 
@@ -276,6 +315,31 @@ p "NOT_UNIV";
 s "|- ~forsome@[?P@?1]";
 right(); ri "FORALL_NOTFORSOME"; ex();
 p "NOT_EXIST";
+
+(* tactics for use of equations needed *)
+
+s "|-?p";
+rri "(2|-|?n)@false";
+rri "ASRTCOND";
+ri "PIVOT";
+ri "ASRTCOND";
+ri "1|-|?n";
+p "HYP_PIVOT@?n";
+
+s "|-?p";
+rri "(2|-|?n)@false";
+rri "ASRTCOND";
+ri "REVPIVOT";
+ri "ASRTCOND";
+ri "1|-|?n";
+p "HYP_REVPIVOT@?n";
+
+(* use a theorem *)
+
+s "|-?p";
+right(); ri "?thm";
+up(); ri "AT";
+p "USE_THM@?thm";
 
 (* a sample proof using the tools developed here *)
 
@@ -309,5 +373,20 @@ PREMISE@4
 
 
 quit();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
