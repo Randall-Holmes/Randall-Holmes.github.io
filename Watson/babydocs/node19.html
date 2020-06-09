@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>An example</TITLE>
+<META NAME="description" CONTENT="An example">
+<META NAME="keywords" CONTENT="babydocs">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="babydocs.css">
+<LINK REL="next" HREF="node20.html">
+<LINK REL="previous" HREF="node18.html">
+<LINK REL="up" HREF="node15.html">
+<LINK REL="next" HREF="node20.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html345"
+ HREF="node20.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html342"
+ HREF="node15.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html336"
+ HREF="node18.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html344"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html346"
+ HREF="node20.html">The tactic language introduced</A>
+<B> Up:</B> <A NAME="tex2html343"
+ HREF="node15.html">Implementing algebraic logic in</A>
+<B> Previous:</B> <A NAME="tex2html337"
+ HREF="node18.html">Navigation within terms</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00042400000000000000">
+An example</A>
+</H3>
+
+<P>
+We give an example of a simple Watson proof to flesh out the abstract
+discussion above.  Watson is implemented in SML, and its commands are
+ML function evaluations.  Commands end with semicolons; more than one
+command may be put on a line.  A command with no apparent arguments
+needs the null argument () of ML.  Most parameters passed to commands
+are strings, and so are enclosed in double quotes <TT>"</TT>.  Comments
+may be enclosed in decorated parentheses <TT>(* *)</TT> (in what follows
+we take the liberty of commenting not only code but also the term
+displays, in a way which would not happen in real Watson output).  The
+prover normally displays additional prompts, which are suppressed here
+for compactness of presentation.  The prompt at which an ML command to
+the prover is entered is <TT>-</TT>.
+
+<P>
+<PRE>
+(* some declarations needed for setup *)
+
+- declareinfix "+";
+- axiom "COMM" "?x+?y" "?y+?x";
+- axiom "ASSOC" "(?x+?y)+?z" "?x+?y+?z";
+
+(* We begin the proof of a simple theorem.  "s" is an 
+abbreviation for "start", the full name of the command 
+which starts a proof. *)
+
+- s "?x+?y+?z";
+
+{?x + ?y + ?z}             (* the resulting display *)
+?x + ?y + ?z
+
+(* We demonstrate navigation commands. *)
+
+- left();  	
+{?x} + ?y + ?z             (* the resulting display *)
+?x
+
+- up();                    (* returns to previous 
+                           position; display omitted *)
+
+(* We start the proof. *)
+
+- ri "COMM"; ex();         (* introduce a rewrite rule 
+                           (ri abbreviates ruleintro);
+                           invoke tactic interpreter *)
+{COMM =&gt; ?x + ?y + ?z}     (* display after ri *)
+COMM =&gt; ?x + ?y + ?z
+
+{(?y + ?z) + ?x}           (* display after execution *)
+(?y + ?z) + ?x
+
+- left(); ri "COMM"; ex(); (* move to left subterm, 
+                           introduce rewrite rule, 
+                           invoke tactic interpreter *)
+{?y + ?z} + ?x             (* display after left *)
+?y + ?z
+
+{COMM =&gt; ?y + ?z} + ?x     (* display after
+COMM =&gt; ?y + ?z            introducing rewrite *)
+
+{?z + ?y} + ?x             (* display after executing 
+?z + ?y                    tactic interpreter *)
+
+- up(); ri "ASSOC"; ex();  (* move up, introduce rewrite
+                           (associativity)
+                           then use tactic interpreter *)
+{(?z + ?y) + ?x}           (* display after moving up *)
+(?z + ?y) + ?x
+
+{ASSOC =&gt; (?z + ?y) + ?x}  (* display after 
+ASSOC =&gt; (?z + ?y) + ?x    introducing rewrite rule *)
+
+{?z + ?y + ?x}             (* display after executing 
+?z + ?y + ?x               tactic interpreter *)
+
+- p "REVERSE";             (* prove new theorem REVERSE *)
+
+REVERSE:                   (* resulting theorem display *)
+?x + ?y + ?z  =  
+?z + ?y + ?x
+ASSOC , COMM , 0           (* dependencies on axioms *)
+
+- s "?a+?b+?c+?d";         (* test new theorem *)
+{?a + ?b + ?c + ?d}        (* display *)
+?a + ?b + ?c + ?d
+
+- ri "REVERSE"; ex();      (* introduce rewrite rule 
+                           and use tactic interpreter *)
+{REVERSE =&gt; ?a + ?b + ?c + ?d}
+REVERSE =&gt; ?a + ?b + ?c + ?d
+
+{(?c + ?d) + ?b + ?a}      (* display of final result *)
+(?c + ?d) + ?b + ?a
+</PRE>
+<P>
+
+<P>
+A particular feature to which we wish to call the attention of the
+reader is the two-step handling of rewrite rules (introduction of a
+reference to the rewrite rule to be applied into the term, followed by
+invocation of the ``tactic interpreter'' <TT>execute</TT> (abbreviated
+<TT>ex</TT>)), which might seem odd.  The reason for this should become
+evident in the next subsubsection.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html345"
+ HREF="node20.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html342"
+ HREF="node15.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html336"
+ HREF="node18.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html344"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html346"
+ HREF="node20.html">The tactic language introduced</A>
+<B> Up:</B> <A NAME="tex2html343"
+ HREF="node15.html">Implementing algebraic logic in</A>
+<B> Previous:</B> <A NAME="tex2html337"
+ HREF="node18.html">Navigation within terms</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Randall Holmes</I>
+<BR><I>2000-11-03</I>
+</ADDRESS>
+</BODY>
+</HTML>

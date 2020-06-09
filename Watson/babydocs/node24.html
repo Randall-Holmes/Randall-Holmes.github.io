@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Examples of reasoning about case expressions</TITLE>
+<META NAME="description" CONTENT="Examples of reasoning about case expressions">
+<META NAME="keywords" CONTENT="babydocs">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="babydocs.css">
+<LINK REL="previous" HREF="node23.html">
+<LINK REL="up" HREF="node23.html">
+<LINK REL="next" HREF="node25.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html397"
+ HREF="node25.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html394"
+ HREF="node23.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html390"
+ HREF="node23.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html396"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html398"
+ HREF="node25.html">Implementing stratified abstraction in</A>
+<B> Up:</B> <A NAME="tex2html395"
+ HREF="node23.html">Implementing case expression logic</A>
+<B> Previous:</B> <A NAME="tex2html391"
+ HREF="node23.html">Implementing case expression logic</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00043100000000000000">
+Examples of reasoning about case expressions</A>
+</H3>
+
+<P>
+<PRE>
+- s "(?a=?b)||((?c=?b)||(?a+?b),?x),?y";
+- right();left();right();left();left();    (* navigate 
+                                           to term ?a *)
+
+(?a = ?b) || ((?c = ?b) || ({?a} + ?b) , ?x) , ?y  
+?a                                     (* the display *)
+
+- lookhyps();     (* view locally relevant hypotheses *)
+
+(* hypotheses displayed *)
+
+1 (positive):  
+?a  =  
+?b
+
+2 (positive):  
+?c  =  
+?b
+
+(* end of hypothesis display *)
+
+- ri "0|-|1"; ex();
+
+(?a = ?b) || ((?c = ?b) || ({?b} + ?b) , ?x) , ?y  
+?b                                    (* the display *)
+
+- rri "0|-|2"; ex();         (* apply second hypothesis 
+                             in converse sense *)
+
+(?a = ?b) || ((?c = ?b) || ({?c} + ?b) , ?x) , ?y  
+?c                                    (* the display *)
+
+- rri "1|-|1"; ex();   (* introduce new case expression 
+                               with first hypothesis *)
+
+(?a = ?b) || ((?c = ?b) || ({(?a = ?b) || ?c , ?x_3} 
+      + ?b) , ?x) , ?y                (* the display *)
+
+(?a = ?b) || ?c , ?x_3
+
+- ri "1|-|1"; ex();
+
+(?a = ?b) || ((?c = ?b) || ({?c} + ?b) , ?x) , ?y  
+?c                                    (* the display *)
+
+- up(); up(); right();
+
+(?a = ?b) || ((?c = ?b) || (?c + ?b) , {?x}) , ?y  
+?x                                    (* the display *)
+
+- lookhyps();
+(* hypotheses displayed *)
+
+1 (positive):                (* note change of sense of 
+                                   second hypothesis *)
+?a  =  
+?b
+
+2 (negative):  
+?c  =  
+?b
+
+(* end of hypothesis display *)
+
+- rri "(2|-|2)@0"; ex();          (* introduce new case 
+                       expression stipulating the value
+                             to go in the new branch *)
+
+(?a = ?b) || ((?c = ?b) || (?c + ?b) , {(?c = ?b) 
+      || 0 , ?x}) , ?y
+
+(?c = ?b) || 0 , ?x
+
+(* sample definitions of propositional connectives *)
+
+- defineinfix "NOT" "~?x" "?x||false,true";
+
+NOT:  
+~ ?x  =  
+?x || false , true
+NOT , 0
+
+- defineinfix "AND" "?x&amp;?y" 
+                        "?x||(?y||true,false),false";
+
+AND:  
+?x &amp; ?y  =  
+?x || (?y || true , false) , false
+AND , 0
+</PRE>
+<P>
+<BR><HR>
+<ADDRESS>
+<I>Randall Holmes</I>
+<BR><I>2000-11-03</I>
+</ADDRESS>
+</BODY>
+</HTML>

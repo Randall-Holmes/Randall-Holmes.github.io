@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Implementing case expression logic in Watson</TITLE>
+<META NAME="description" CONTENT="Implementing case expression logic in Watson">
+<META NAME="keywords" CONTENT="babydocs">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="babydocs.css">
+<LINK REL="next" HREF="node25.html">
+<LINK REL="previous" HREF="node15.html">
+<LINK REL="up" HREF="node9.html">
+<LINK REL="next" HREF="node24.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html387"
+ HREF="node24.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html384"
+ HREF="node9.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html378"
+ HREF="node22.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html386"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html388"
+ HREF="node24.html">Examples of reasoning about</A>
+<B> Up:</B> <A NAME="tex2html385"
+ HREF="node9.html">The implementation of the</A>
+<B> Previous:</B> <A NAME="tex2html379"
+ HREF="node22.html">More sophisticated tactics</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00043000000000000000">
+Implementing case expression logic in Watson</A>
+</H2>
+
+<P>
+Case expression logic is implemented in Watson by the addition of 
+special features to the tactic interpreter.
+
+<P>
+The execution order of the tactic interpreter is normally depth-first;
+however, when called on a case expression <TT>P || T , U</TT>, the
+hypothesis <TT>P</TT> is rewritten first.  If <TT>P</TT> rewrites to the
+form <TT>true = X</TT>, it is automatically further rewritten to <TT>X</TT>;
+if the final form of the hypothesis is <TT>true</TT> or <TT>false</TT>, the
+whole expression is rewritten to <TT>T</TT> or <TT>U</TT> respectively, and
+the dropped alternative is never rewritten at all (this is the one
+case in which the tactic interpreter is non-strict in its ``order of
+evaluation'').
+
+<P>
+The tactic interpreter recognizes certain built-in tactics built with
+numerals and the special operator <TT>|-|</TT>.  These enable rewriting
+with the hypotheses of case expressions in appropriate contexts.  In a
+tactic <TT>m |-| n</TT>, the numeral <TT>m</TT> will be 0, 1, or 2,
+indicating the type of rewriting being done, and the numeral <TT>n</TT>
+will indicate which hypothesis is being used.  The hypothesis of the
+largest case expression which contains the subterm being rewritten as
+a subterm (not necessarily proper) of one of its branches is numbered
+1; the hypothesis of the second largest such case expression is
+numbered 2, and so forth.
+
+<P>
+The special tactic <TT>0 |-| n</TT> does rewriting in the positive branch
+of the case expression whose hypothesis is numbered <TT>n</TT>.  If the
+hypothesis is of the form <TT>A = B</TT>, the tactic <TT>0 |-| n</TT> will
+rewrite <TT>A</TT> to <TT>B</TT>; if it is introduced in the converse sense
+it rewrites <TT>B</TT> to <TT>A</TT>.  The target of this rewrite needs to
+be identical to the appropriate side of the equation used to rewrite,
+not just a match as in the case of rewriting with theorems.  If the
+hypothesis <TT>X</TT> is not an equation, it is treated just as if it
+were the equation <TT>true = X</TT>.
+
+<P>
+The special tactic <TT>1|-|n</TT> rewrites case expressions <TT>P || T ,
+U</TT>, in the case where the hypothesis <TT>P</TT> is the same as the hypothesis
+numbered <TT>n</TT>, to <TT>T</TT> or <TT>U</TT> depending on whether the
+subterm being rewritten is in the positive or negative branch of the
+case expression with the <TT>n</TT>th hypothesis.  The converse of this
+rewrite rule rewrites the subterm to a new case expression with the
+<TT>n</TT>th hypothesis, with the original form of the subterm as one
+branch and a new variable as the other branch.  The special tactic
+<TT>2 |-| n</TT>, which is only used in the converse sense, rewrites the
+subterm in the same way as the converse of <TT>1 |-| n</TT>, except that it
+takes a parameter which is used in place of the new variable as the
+new branch.  Note that the new branch introduced by these converse
+rewrite rules will have contradictory local hypotheses applicable to
+it.
+
+<P>
+The special axioms 
+<PRE>
+CASEINTRO: ?x = ?p || ?x , ?x
+
+EQUATION: (?a = ?b) = (?a = ?b) || true , false
+</PRE>which are provided
+in the logical preamble supplied by Watson to every theory, are used
+to introduce new case expressions.
+
+<P>
+It should be noted here that the fact that the meaning of built-in
+tactics referring to hypotheses of case expressions is context
+dependent necessitates a complication of the definition of
+substitution: when an expression containing such tactics is
+substituted into a context, it may be necessary for some of these
+tactics to be renumbered.  The full definition of substitution will be
+given below.
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS">&#160;</A>
+<UL>
+<LI><A NAME="tex2html389"
+ HREF="node24.html">Examples of reasoning about case expressions</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html387"
+ HREF="node24.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html384"
+ HREF="node9.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html378"
+ HREF="node22.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html386"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html388"
+ HREF="node24.html">Examples of reasoning about</A>
+<B> Up:</B> <A NAME="tex2html385"
+ HREF="node9.html">The implementation of the</A>
+<B> Previous:</B> <A NAME="tex2html379"
+ HREF="node22.html">More sophisticated tactics</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Randall Holmes</I>
+<BR><I>2000-11-03</I>
+</ADDRESS>
+</BODY>
+</HTML>

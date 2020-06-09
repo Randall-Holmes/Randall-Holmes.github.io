@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>The basic session model of Watson</TITLE>
+<META NAME="description" CONTENT="The basic session model of Watson">
+<META NAME="keywords" CONTENT="babydocs">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="babydocs.css">
+<LINK REL="next" HREF="node18.html">
+<LINK REL="previous" HREF="node16.html">
+<LINK REL="up" HREF="node15.html">
+<LINK REL="next" HREF="node18.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html323"
+ HREF="node18.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html320"
+ HREF="node15.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html314"
+ HREF="node16.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html322"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html324"
+ HREF="node18.html">Navigation within terms</A>
+<B> Up:</B> <A NAME="tex2html321"
+ HREF="node15.html">Implementing algebraic logic in</A>
+<B> Previous:</B> <A NAME="tex2html315"
+ HREF="node16.html">A brief introduction to</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00042200000000000000">
+The basic session model of Watson</A>
+</H3>
+
+<P>
+A typical Watson session begins with a user entering a term.  The user
+then manipulates the term by applying theorems to subterms of this
+term as rewrite rules (all Watson theorems are equations), and closes
+by proving a theorem to the effect that the term originally entered is
+equal to the term finally arrived at.
+
+<P>
+There are two moves available to the user which qualify this picture:
+he may interchange the term originally entered and the term most
+recently arrived at, or he may carry out a global substitution of some
+term for a free variable, which will affect the term originally
+entered as well as the term most recently arrived at.
+
+<P>
+Though it appears to the user that he is ``editing'' a term, what he
+is actually editing is an equation.  Internally, the prover stores two
+terms, the left side and right side of the equation being edited.
+What the user views is the right side of the equation (there is also a
+command available to view the left side).  There is a command which
+interchanges the left and right sides of the equation, and there is a
+global assignment command which replaces a free variable by the same
+term everywhere in the equation; all other commands manipulate the
+right side only.  At the end of the session, the user proves the
+current equation: he assigns a name to it and it is stored as a new
+rewrite rule available for the proof of further theorems.
+
+<P>
+We reproduce the rules of equational reasoning from above and point out
+how they are implemented in the basic session model:
+
+<P>
+<DL>
+<DD><P>
+<DT><STRONG>reflexivity:</STRONG>
+<DD><I>A</I> = <I>A</I> is an axiom for any term <I>A</I>.
+
+<P>
+Each such axiom is implemented by simply entering the term <I>A</I> (which
+has the effect of making the current equation <I>A</I> = <I>A</I>).
+
+<P>
+<DT><STRONG>symmetry:</STRONG>
+<DD>if <I>A</I> = <I>B</I> is a theorem, then <I>B</I> = <I>A</I> is a theorem.
+
+<P>
+If <I>A</I> = <I>B</I> has been proved, the user can swap the left and right hand 
+sides of the theorem to prove <I>B</I> = <I>A</I>.
+
+<P>
+<DT><STRONG>transitivity:</STRONG>
+<DD>if <I>A</I> = <I>B</I> is a theorem and <I>B</I> = <I>C</I> is a theorem, 
+then <I>A</I> = <I>C</I> is a theorem.
+
+<P>
+A sequence of rewrites which prove <I>A</I> = <I>B</I>, followed by a sequence of
+rewrites which prove <I>B</I> = <I>C</I>, give a proof of <I>A</I> = <I>C</I>.
+
+<P>
+</DL>
+<P>
+We recall the notation <I>A</I>[<I>T</I>/<I>x</I>] for the result of substituting the
+term <I>T</I> for the free variable <I>x</I> in the term <I>A</I>.  If <I>T</I> is a term
+containing bound variables (or ``embedded local hypotheses'', a topic
+to be discussed below), there are some technicalities to be considered
+below in how the substitution is effected.
+
+<P>
+<DL>
+<DD><P>
+<DT><STRONG>substitution:</STRONG>
+<DD>if <I>A</I> = <I>B</I> is a theorem, then 
+<!-- MATH: $C[A/x] = C[B/x]$ -->
+<I>C</I>[<I>A</I>/<I>x</I>] = <I>C</I>[<I>B</I>/<I>x</I>] 
+is a theorem.
+
+<P>
+This is implemented by the ability to apply the theorem <I>A</I> = <I>B</I> as as
+a rewrite rule, possibly repeatedly (how this is done is described in
+more detail in the next subsection).
+
+<P>
+<DT><STRONG>generality:</STRONG>
+<DD>if <I>A</I> = <I>B</I> is a theorem, then 
+<!-- MATH: $A[C/x] = B[C/x]$ -->
+<I>A</I>[<I>C</I>/<I>x</I>] = <I>B</I>[<I>C</I>/<I>x</I>] 
+is a theorem.
+
+<P>
+This is implemented by the global assignment command.
+
+<P>
+</DL>
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html323"
+ HREF="node18.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html320"
+ HREF="node15.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html314"
+ HREF="node16.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html322"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html324"
+ HREF="node18.html">Navigation within terms</A>
+<B> Up:</B> <A NAME="tex2html321"
+ HREF="node15.html">Implementing algebraic logic in</A>
+<B> Previous:</B> <A NAME="tex2html315"
+ HREF="node16.html">A brief introduction to</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Randall Holmes</I>
+<BR><I>2000-11-03</I>
+</ADDRESS>
+</BODY>
+</HTML>

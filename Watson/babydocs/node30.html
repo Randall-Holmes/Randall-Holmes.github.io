@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Examples of the implementation of stratification</TITLE>
+<META NAME="description" CONTENT="Examples of the implementation of stratification">
+<META NAME="keywords" CONTENT="babydocs">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="babydocs.css">
+<LINK REL="next" HREF="node31.html">
+<LINK REL="previous" HREF="node29.html">
+<LINK REL="up" HREF="node25.html">
+<LINK REL="next" HREF="node31.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html471"
+ HREF="node31.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html468"
+ HREF="node25.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html462"
+ HREF="node29.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html470"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html472"
+ HREF="node31.html">Support for strongly cantorian</A>
+<B> Up:</B> <A NAME="tex2html469"
+ HREF="node25.html">Implementing stratified abstraction in</A>
+<B> Previous:</B> <A NAME="tex2html463"
+ HREF="node29.html">The implementation of stratification</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00044500000000000000">
+Examples of the implementation of stratification</A>
+</H3>
+
+<P>
+<PRE>
+- s "?x@?x";
+
+{?x @ ?x}
+?x @ ?x
+
+- ri "BIND@?x"; ex();
+
+{?x @ ?x}                  (* the function [?1@?1] 
+?x @ ?x                    violates stratification 
+                           restrictions *)
+
+
+- s "[?1@?1]";
+
+Watson:  Term is not stratified
+
+- s "[[?1]]";              (* this is the ``function'' 
+                           which sends objects to their
+                           constant functions 
+                           (the K combinator); it cannot
+                           be typed in this theory *)
+
+Watson:  Term is not stratified
+
+- s "(?f@?x)+?g@?x";
+
+{(?f @ ?x) + ?g @ ?x}
+(?f @ ?x) + ?g @ ?x
+
+- ri "BIND@?x"; ex();
+
+{[(?f @ ?1) + ?g @ ?1] @ ?x}
+[(?f @ ?1) + ?g @ ?1] @ ?x
+
+- left();ri "BIND@?g";ex();
+
+{[[(?f @ ?2) + ?1 @ ?2]] @ ?g} @ ?x
+[[(?f @ ?2) + ?1 @ ?2]] @ ?g
+
+- left(); ri "BIND@?f"; ex();
+
+(* stratification restrictions prevent this 
+from working; the problem is that ?f and ?g 
+are at the same relative type *)
+
+({[[(?f @ ?2) + ?1 @ ?2]]} @ ?g) @ ?x
+[[(?f @ ?2) + ?1 @ ?2]]
+
+(* we show how to achieve a function with ?f and ?g
+as parameters *)
+
+- startover();
+
+{(?f @ ?x) + ?g @ ?x}
+(?f @ ?x) + ?g @ ?x
+
+- assign "?f,?g" "(P1@?F),P2@?F";
+
+(* the assign command will carry out 
+assignments based on matches of complex terms *)
+
+(* P1 and P2 are projection operators for the pair 
+represented by the comma operator; their defining 
+axioms are predeclared *)
+
+{((P1 @ ?F) @ ?x) + (P2 @ ?F) @ ?x}
+((P1 @ ?F) @ ?x) + (P2 @ ?F) @ ?x
+
+- ri "BIND@?x"; ex();
+
+{[((P1 @ ?F) @ ?1) + (P2 @ ?F) @ ?1] @ ?x}
+[((P1 @ ?F) @ ?1) + (P2 @ ?F) @ ?1] @ ?x
+
+- left(); ri "BIND@?F"; ex();
+
+(* the abstract on the left is a pure abstract 
+which handles addition of functions *)
+
+{[[((P1 @ ?1) @ ?2) + (P2 @ ?1) @ ?2]] @ ?F} @ ?x
+[[((P1 @ ?1) @ ?2) + (P2 @ ?1) @ ?2]] @ ?F
+
+(* we demonstrate application 
+and evaluation of this abstract *)
+
+- assign "?F" "?f,?g";
+
+{[[((P1 @ ?1) @ ?2) + (P2 @ ?1) @ ?2]] @ ?f , ?g} 
+@ ?x
+
+[[((P1 @ ?1) @ ?2) + (P2 @ ?1) @ ?2]] @ ?f , ?g
+
+- ri "EVAL"; ex();
+
+{EVAL =&gt; [[((P1 @ ?1) @ ?2) + (P2 @ ?1) @ ?2]] @ ?f 
+   , ?g} @ ?x
+EVAL =&gt; [[((P1 @ ?1) @ ?2) + (P2 @ ?1) @ ?2]] @ ?f 
+, ?g
+
+- left();left();left();
+
+[({P1 @ ?f , ?g} @ ?1) + (P2 @ ?f , ?g) @ ?1] @ ?x
+P1 @ ?f , ?g
+
+- ri "P1"; ex();
+
+[({?f} @ ?1) + (P2 @ ?f , ?g) @ ?1] @ ?x
+?f
+
+- up();up();right();left();
+
+[(?f @ ?1) + {P2 @ ?f , ?g} @ ?1] @ ?x
+P2 @ ?f , ?g
+
+- ri "P2"; ex();
+
+[(?f @ ?1) + {?g} @ ?1] @ ?x
+?g
+
+- top(); ri "EVAL"; ex();
+
+{(?f @ ?x) + ?g @ ?x}
+(?f @ ?x) + ?g @ ?x
+
+(* Here's something which ought to be allowed -- we'll
+show how to fix this in the next section *)
+
+- s "forall@[forsome@[?1=?2]]";
+
+Watson:  Term is not stratified
+
+(* the term above represents the sentence ``for all x, 
+for some y, x = y'', which certainly ought to be 
+meaningful (and, as we will see below, Watson will 
+treat this as stratified, given further information) *)
+</PRE>
+<P>
+<BR><HR>
+<ADDRESS>
+<I>Randall Holmes</I>
+<BR><I>2000-11-03</I>
+</ADDRESS>
+</BODY>
+</HTML>

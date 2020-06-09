@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>The tactic language introduced</TITLE>
+<META NAME="description" CONTENT="The tactic language introduced">
+<META NAME="keywords" CONTENT="babydocs">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="babydocs.css">
+<LINK REL="next" HREF="node21.html">
+<LINK REL="previous" HREF="node19.html">
+<LINK REL="up" HREF="node15.html">
+<LINK REL="next" HREF="node21.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html356"
+ HREF="node21.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html353"
+ HREF="node15.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html347"
+ HREF="node19.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html355"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html357"
+ HREF="node21.html">An simple example of</A>
+<B> Up:</B> <A NAME="tex2html354"
+ HREF="node15.html">Implementing algebraic logic in</A>
+<B> Previous:</B> <A NAME="tex2html348"
+ HREF="node19.html">An example</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00042500000000000000">
+The tactic language introduced</A>
+</H3>
+
+<P>
+The model of proof introduced in this subsection and exemplified in
+the previous subsubsection is effective in principle but tedious in
+practice.  Watson provides a technique for executing many proof steps
+automatically, which may properly be discussed at this point.  A
+program for executing proof steps automatically is called a ``tactic''
+by a perhaps false analogy with usage in HOL and other provers of the
+LCF family.  In those systems, a tactic is an ML program, an object of
+quite a different sort than a theorem.  In Watson, a tactic is
+represented by the prover to itself as an equational theorem, but
+nonetheless may exhibit complex execution behavior.  We describe here
+the way in which this effect is achieved.
+
+<P>
+The key feature of the language of Watson which makes the tactic
+language possible is the ability to represent the intention to apply a
+rewrite rule inside a term.  This is done using the special infixes
+<TT>=&gt;</TT> and <TT>&lt;=</TT>.
+
+<P>
+A term like <TT>(COMM =&gt; ?x + ?y) + ?z</TT> has precisely the same
+mathematical referent as the term <TT>(?x + ?y) + ?z</TT>.  The presence
+of the embedded theorem <TT>COMM</TT> (a commutativity axiom) indicates
+the intention of applying the theorem <TT>COMM</TT> as a rewrite rule to
+the indicated subterm; running the tactic interpreter <TT>execute</TT>
+will cause the term to be converted to the form <TT>(?y + ?x) + ?z</TT>
+(which of course still has the same referent).  The effect of the
+other special infix <TT>&lt;=</TT> is to signal the intention of rewriting
+with the ``converse'' of the given theorem: if <TT>ASSOC</TT> is the
+theorem <TT>((?x+?y)+?z)=?x+?y+?z</TT><A NAME="tex2html2"
+ HREF="footnode.html#foot830"><SUP>2</SUP></A>, the effect of
+executing the tactic interpreter on <TT>ASSOC &lt;= ?a+?b+?c</TT> will be to
+convert the term to the form <TT>(?a+?b)+?c</TT>.
+
+<P>
+When there are several embedded theorems present, the tactic
+interpreter applies all of them, following a depth-first strategy
+(this needs to be qualified where expressions defined by cases are
+involved; see below).  This applies as well to any embedded theorems
+which are introduced by rewriting with other theorems: it is possible
+to prove theorems which contain embedded theorems (though only on the
+right side).  When an embedded theorem cannot be used to rewrite the
+subterm to which it is attached, it is simply dropped.
+
+<P>
+Further, it is possible to prove theorems which invoke recursive calls
+to themselves.  It is necessary to use a special declaration command
+to do this, as we will see in the example below (since theorem names
+can be embedded in terms, they are required to be declared; the <TT>prove</TT> command normally serves to declare a theorem name, but this
+will not work when recursive dependencies are present; this is
+analogous to the treatment of forward declarations and function
+prototypes in programming languages).
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html356"
+ HREF="node21.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html353"
+ HREF="node15.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html347"
+ HREF="node19.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html355"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html357"
+ HREF="node21.html">An simple example of</A>
+<B> Up:</B> <A NAME="tex2html354"
+ HREF="node15.html">Implementing algebraic logic in</A>
+<B> Previous:</B> <A NAME="tex2html348"
+ HREF="node19.html">An example</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Randall Holmes</I>
+<BR><I>2000-11-03</I>
+</ADDRESS>
+</BODY>
+</HTML>

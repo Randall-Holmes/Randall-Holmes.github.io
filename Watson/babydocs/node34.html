@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Fine points of matching: limited higher order matching and commutative matching</TITLE>
+<META NAME="description" CONTENT="Fine points of matching: limited higher order matching and commutative matching">
+<META NAME="keywords" CONTENT="babydocs">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="babydocs.css">
+<LINK REL="next" HREF="node35.html">
+<LINK REL="previous" HREF="node33.html">
+<LINK REL="up" HREF="node25.html">
+<LINK REL="next" HREF="node35.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html515"
+ HREF="node35.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html512"
+ HREF="node25.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html506"
+ HREF="node33.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html514"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html516"
+ HREF="node35.html">Special effects</A>
+<B> Up:</B> <A NAME="tex2html513"
+ HREF="node25.html">Implementing stratified abstraction in</A>
+<B> Previous:</B> <A NAME="tex2html507"
+ HREF="node33.html">Definitions in Watson</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00044900000000000000">
+Fine points of matching:  limited higher order matching and commutative matching</A>
+</H3>
+
+<P>
+This section is devoted to two refinements of matching, one integral to
+Watson and the other optional.
+
+<P>
+A theorem in the current Watson library is the unsurprising
+
+<P>
+<PRE>
+FORALLDIST:  
+
+forall @ [(?P @ ?1) &amp; ?Q @ ?1]  =  
+(forall @ [?P @ ?1]) &amp; forall @ [?Q @ ?1]
+</PRE>
+<P>
+A term to which this theorem ought to apply is <BR><TT>forall@[(?1=?1)&amp;?1=?1]</TT>;
+application of the theorem should yield <BR><TT>(forall@[?1=?1])&amp;forall@[?1=?1]</TT>.
+And indeed it does:
+
+<P>
+<PRE>
+- s "forall@[(?1=?1)&amp;?1=?1]";
+
+{forall @ [(?1 = ?1) &amp; ?1 = ?1]}
+forall @ [(?1 = ?1) &amp; ?1 = ?1]
+
+- ri "FORALLDIST"; ex();
+
+{(forall @ [?1 = ?1]) &amp; forall @ [?1 = ?1]}
+(forall @ [?1 = ?1]) &amp; forall @ [?1 = ?1]
+</PRE>
+<P>
+However, this would not have worked in early versions of Mark2 (the
+precursor of the present Watson prover), where this proof would have
+taken the following form:
+
+<P>
+<PRE>
+- s "forall@[(?1=?1)&amp;?1=?1]";
+
+{forall @ [(?1 = ?1) &amp; ?1 = ?1]}
+forall @ [(?1 = ?1) &amp; ?1 = ?1]
+
+- right();right();
+
+forall @ [{(?1 = ?1) &amp; ?1 = ?1}]
+(?1 = ?1) &amp; ?1 = ?1
+
+- right(); ri "BIND@?1"; up(); left(); ri "BIND@?1"; ex();
+
+forall @ [{([?2 = ?2] @ ?1) &amp; [?2 = ?2] @ ?1}]
+([?2 = ?2] @ ?1) &amp; [?2 = ?2] @ ?1
+
+- top(); ri "FORALLDIST"; ex();
+
+{(forall @ [[?2 = ?2] @ ?1]) &amp; forall @ [[?2 = ?2] 
+         @ ?1]}
+
+(forall @ [[?2 = ?2] @ ?1]) &amp; forall @ [[?2 = ?2] 
+      @ ?1]
+
+- left();right();right();ri "EVAL";
+	top();right();right();right();ri "EVAL"; top(); ex();
+
+{(forall @ [?1 = ?1]) &amp; forall @ [?1 = ?1]}
+(forall @ [?1 = ?1]) &amp; forall @ [?1 = ?1]
+</PRE>
+<P>
+The difficulty with the old version of the prover (and with the
+intuition that leads one to believe that the application shown is a
+direct application of the theorem) is that <TT>?P@?1</TT> and <TT>?Q@?1</TT> are each
+expected to match <TT>?1=?1</TT>, which they do not in any obvious syntactical
+sense.  This was a serious problem for fluent reasoning with
+quantifiers (and also caused unnecessary work in other applications of
+functions).  (It is also important to note that <TT>forall@[?P&amp;?Q]</TT>
+is not a candidate to match <TT>forall@[(?1=?1)&amp;?1=?1]</TT> at all,
+because <TT>[?P&amp;?Q]</TT> is a constant function; the variables <TT>?P</TT>
+and <TT>?Q</TT> can only match terms not depending on <TT>?1</TT> at all).
+
+<P>
+The solution was to adopt a limited form of higher-order matching: in
+the context where <TT>?n</TT> is the highest-numbered bound variable, the
+expression <TT>?P@?n</TT>, where <TT>?P</TT> is a free variable, will match
+any expression in <TT>?n</TT> which can be expressed as a function of
+<TT>?n</TT> (stratification restrictions are at work here): the free
+variable <TT>?P</TT> will be matched to a suitable abstraction term.  A
+modification of substitution which causes reductions to occur in terms
+of the form <TT>?P@?n</TT> when an abstract is substituted for <TT>?P</TT>
+is also needed.  With these modifications of matching and
+substitution, we get the natural behaviour illustrated in the first
+example above.
+
+<P>
+Recently, we have implemented further refinements of higher-order
+matching and correlated improvements in substitution, which allow
+natural treatments of situations involving multiple bound variables as
+arguments, both when the arguments are curried and when they occur in
+tuples.
+
+<P>
+A further point is that new variables introduced by the application of
+theorems or tactics inside bracket terms may have an unexpected form:
+under certain conditions, a ``new variable'' introduced at level <I>n</I>will take the form <TT>?x_1 @ ?n</TT> rather than the form <TT>?x_1</TT>
+which one expects.  It is better to avoid the use of theorems which
+introduce new variables in such contexts (in fact, it is always better
+to avoid the introduction of new variables except in interactive
+``scratch work''); it is possible that a stratification error will
+result from such a theorem application (the type checking done uses an
+imperfect heuristic to guess whether the new variable has correct
+relative type); such errors are caught by the prover and cause the
+theorem application to fail, and can always be avoided by avoiding the
+introduction of new variables (by using parameterized versions of
+theorems and their converses, either user developed or constructed
+using the <TT>!@</TT> and <TT>!$</TT> built-in operators).  It would be
+possible to redesign Watson to avoid stratification errors of this
+kind, but it would involve a considerable elaboration of the data
+structures representing context information in the prover for a very
+limited benefit.
+
+<P>
+An optional refinement of matching which is available is commutative
+matching, which can be turned on (or off) with the <TT>cmatch</TT>
+command.  With commutative matching on, the prover will in effect
+attempt to apply commutative laws wherever possible in the attempt to
+apply a theorem.  A simple example:
+
+<P>
+<PRE>
+- s "?x+?y+?z";
+
+{?x + ?y + ?z}
+?x + ?y + ?z
+
+- ri "ASSOC"; ex();      (* ASSOC does not apply *)
+
+{?x + ?y + ?z}
+?x + ?y + ?z
+
+cmatch();  (* this turns on commutative matching *)
+
+- ri "ASSOC"; ex();       (* an application of COMM 
+                          gives a term to
+                          which ASSOC can be applied *)
+
+{?y + ?z + ?x}
+?y + ?z + ?x
+</PRE>
+<P>
+An important fact about commutative matching is that it is not applied
+in certain contexts even when it is turned on: for example, the
+alternative and on-success rule infixes use strict matching to
+determine whether a theorem succeeds or fails.  The additional freedom
+of commutative matching would disrupt the control structures of the
+internal programming language too much (for example, the generalized
+associativity tactic given above would fail, because it depends on
+ASSOC to fail on sums whose left term is not a sum).
+
+<P>
+We are not convinced that commutative matching is a useful refinement
+of the prover (largely because of its conflicts with the needs of the
+tactic language), but we continue to experiment with it.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html515"
+ HREF="node35.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html512"
+ HREF="node25.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html506"
+ HREF="node33.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html514"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html516"
+ HREF="node35.html">Special effects</A>
+<B> Up:</B> <A NAME="tex2html513"
+ HREF="node25.html">Implementing stratified abstraction in</A>
+<B> Previous:</B> <A NAME="tex2html507"
+ HREF="node33.html">Definitions in Watson</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Randall Holmes</I>
+<BR><I>2000-11-03</I>
+</ADDRESS>
+</BODY>
+</HTML>

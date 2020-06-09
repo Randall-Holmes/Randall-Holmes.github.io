@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Abstraction and reduction by built-in tactics </TITLE>
+<META NAME="description" CONTENT="Abstraction and reduction by built-in tactics ">
+<META NAME="keywords" CONTENT="babydocs">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="babydocs.css">
+<LINK REL="next" HREF="node28.html">
+<LINK REL="previous" HREF="node26.html">
+<LINK REL="up" HREF="node25.html">
+<LINK REL="next" HREF="node28.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html438"
+ HREF="node28.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html435"
+ HREF="node25.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html429"
+ HREF="node26.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html437"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html439"
+ HREF="node28.html">Examples of the implementation</A>
+<B> Up:</B> <A NAME="tex2html436"
+ HREF="node25.html">Implementing stratified abstraction in</A>
+<B> Previous:</B> <A NAME="tex2html430"
+ HREF="node26.html">The handling of variable</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00044200000000000000">
+ Abstraction and reduction by built-in tactics </A>
+</H3>
+
+<P>
+The semantic interpretation of bracket terms as functions is enforced
+by the three built-in tactics <TT>BIND</TT>, <TT>EVAL</TT> and <TT>UNEVAL</TT>.
+
+<P>
+<TT>BIND</TT> takes a parameter: when <TT>BIND @ T</TT> is applied to a
+term <TT>U</TT> at level <I>l</I>, the effect is to translate <TT>U</TT> to level
+<I>l</I>+1, replace all occurrences of the result of translating <TT>T</TT> to
+level <I>l</I>+1 in the translation of <TT>U</TT> by occurrences of <TT>?[l+1]</TT> (we hope that this is a pardonable abuse of notation),
+enclose the result in brackets and apply it (using <TT>@</TT> to
+represent function application) to <TT>T</TT>; this process only succeeds
+if the bracket term obtained is stratified (otherwise <TT>U</TT> is
+unchanged). In terms of <IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-notation, the result can be
+described as 
+<!-- MATH: $(\lambda x.U[x/T])(T)$ -->
+<IMG
+ WIDTH="112" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img46.gif"
+ ALT="$(\lambda x.U[x/T])(T)$">.
+
+<P>
+<TT>EVAL</TT> takes no parameter; when <TT>EVAL</TT> is applied to a term of
+the form <TT>[T] @ U</TT> at level <I>l</I>, the effect is to translate <TT>U</TT> to
+level <I>l</I>+1, replace <TT>?[l+1]</TT> with the translated form of <TT>U</TT>
+in <TT>T</TT>, and translate this modified form of <TT>T</TT> from level
+<TT>?[l+1]</TT> to level <TT>l</TT>; this modified form of <TT>T</TT> is the
+result.  Mathematically, this is simply <IMG
+ WIDTH="13" HEIGHT="29" ALIGN="MIDDLE" BORDER="0"
+ SRC="img9.gif"
+ ALT="$\beta$">-reduction, and it
+always succeeds.
+
+<P>
+<TT>UNEVAL</TT> is a little more esoteric, and it took some experience to
+realize that it was needed.  When <TT>UNEVAL @ [T]</TT> is applied to
+<TT>U</TT>, the result is a term of the form <TT>[T] @ X</TT> precisely if
+there is such a term which would reduce to <TT>U</TT> on application of
+<TT>EVAL</TT>.  The effect of <TT>UNEVAL</TT> is to rewrite an expression as
+a value of the function given as its parameter if this is possible.
+
+<P>
+The project of providing built-in support to synthetic abstraction and
+reduction algorithms found in the original prover EFTTP (as discussed
+in our reference [<A
+ HREF="node43.html#eft">14</A>]) and still supported by little-used
+features of Mark2 has been abandoned.  Synthetic abstraction and
+reduction algorithms are straightforward to implement in the tactic
+language of Mark2 or Watson.  We are still carrying out investigations
+in this area using the Watson tactic language as a tool.  But we no
+longer see it as reasonable to support this in the prover's built-in
+logic.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html438"
+ HREF="node28.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html435"
+ HREF="node25.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html429"
+ HREF="node26.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html437"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html439"
+ HREF="node28.html">Examples of the implementation</A>
+<B> Up:</B> <A NAME="tex2html436"
+ HREF="node25.html">Implementing stratified abstraction in</A>
+<B> Previous:</B> <A NAME="tex2html430"
+ HREF="node26.html">The handling of variable</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Randall Holmes</I>
+<BR><I>2000-11-03</I>
+</ADDRESS>
+</BODY>
+</HTML>

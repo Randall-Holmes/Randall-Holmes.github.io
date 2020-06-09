@@ -1,0 +1,249 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Definitions in Watson</TITLE>
+<META NAME="description" CONTENT="Definitions in Watson">
+<META NAME="keywords" CONTENT="babydocs">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="babydocs.css">
+<LINK REL="next" HREF="node34.html">
+<LINK REL="previous" HREF="node32.html">
+<LINK REL="up" HREF="node25.html">
+<LINK REL="next" HREF="node34.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html504"
+ HREF="node34.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html501"
+ HREF="node25.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html495"
+ HREF="node32.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html503"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html505"
+ HREF="node34.html">Fine points of matching:</A>
+<B> Up:</B> <A NAME="tex2html502"
+ HREF="node25.html">Implementing stratified abstraction in</A>
+<B> Previous:</B> <A NAME="tex2html496"
+ HREF="node32.html">Examples of the implementation</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00044800000000000000">
+Definitions in Watson</A>
+</H3>
+
+<P>
+Constants, operators and ``type labels'' (retractions with strongly
+cantorian range) can be defined in Watson.  Examples of the definition
+commands have appeared in example sections above, where this seemed
+appropriate.
+
+<P>
+The definition of an atomic constant as a complex term is straightforward:
+
+<P>
+<PRE>
+- defineconstant "four" "2+2";
+
+four:  
+four  =  
+2 + 2
+four , 0
+</PRE>
+<P>
+The prover checks for defects such as circularity in the proposed
+definition and, if no error is found, proves a new theorem embodying
+the definition.  When a constant is defined, the name of the new
+theorem is the same as the name of the defined constant (which cannot
+have been declared previously).
+
+<P>
+The issue of stratification arises in the definitions of functions and
+operations.
+
+<P>
+<PRE>
+- defineconstant "Double@?x" "?x+?x";
+
+Double:  
+Double @ ?x  =  
+?x + ?x
+Double , 0
+
+- defineconstant "(Comp@?f,?g)@?x" "?f@?g@?x";
+
+Comp:  
+(Comp @ ?f , ?g) @ ?x  =  
+?f @ ?g @ ?x
+Comp , 0
+
+- defineconstant "Comp2@?f,?g,?x" "?f@?g@?x";
+
+Watson:  Format, declaration or stratification failure of 
+proposed definition of Comp2@?f,?g,?x
+</PRE>
+<P>
+While reading the two definitions of composition of functions, recall
+that all operations have the same precedence and group to the right.
+In the first definition of composition of functions, note that defined
+functions can have lists of arguments and can be ``curried'' if the
+types of their arguments warrant this.  In the second definition of
+composition, we see a failure of stratification.
+
+<P>
+Operators can be defined similarly.
+
+<P>
+<PRE>
+(* defining operators with ``flat'' type *)
+
+- defineinfix "OR" "?x|?y" "~(~?x)&amp; ~?y";
+
+OR:  
+?x | ?y  =  
+~ (~ ?x) &amp; ~ ?y
+OR , 0
+
+(* defining typed operators *)
+
+- showdec "@";                (* show the declaration of 
+                              the function application 
+                              operator *)
+
+Watson:  Reserved operator @ left type:  1 right type: 0
+
+- definetypedinfix "CONV_APP" 0 1 "?x &lt;@ ?y" "?y @ ?x";
+
+(* the integer parameters are the left and right types 
+of the defined operator &lt;@ (the converse of application, 
+which has left type 1 and right type 0, must have 
+left type 0 and right type 1) *)
+
+CONV_APP:  
+?x &lt;@ ?y  =  
+?y @ ?x
+CONV_APP , 0
+
+(* definition of opaque operators *)
+
+- defineopaque "WEIRD" "?x +`? ?y" "(?x@?x)+?y@?y";
+
+WEIRD:  
+?x +`? ?y  =  
+(?x @ ?x) + ?y @ ?y
+WEIRD , 0
+</PRE>
+<P>
+The name of the theorem defining an operator must be supplied as a
+parameter to the <TT>defineinfix</TT> or <TT>definetypedinfix</TT> commands,
+as we see in the examples.  The <TT>defineinfix</TT> command is used to
+define ``flat'' infixes (those with left and right type of 0); the
+<TT>definetypedinfix</TT> command is used to define infixes with
+nontrivial left and right type, and takes the types of its arguments
+as parameters.  Completely unstratified operations such as <TT>+`?</TT>
+in the example above can also be defined as ``opaque'' operators; the
+use of opaque operators in definitions and in contexts with bound
+variables is extremely restricted, but they do have some applications.
+
+<P>
+The most complex form of definition in Watson is the facility of defining
+``type labels'' (retractions onto strongly cantorian ranges).  The usual
+restrictions of non-circularity and stratification in definitions of
+functions and operators are first modified (the stratification requirements
+are sharper) then extended with the requirement that the operation being
+defined be shown to be a retraction.  We illustrate the definition of 
+a type by defining the type of booleans (using a new identifier Bool
+to avoid conflict with the type label bool declared above).
+
+<P>
+<PRE>
+- start "?x||true,false";
+- assign "?x" "?x||true,false";  (* sets up theorem 
+                           that this operation is a 
+                                      retraction *)
+- ri "(!@CASEINTRO)@?x"; ex();
+- top(); downtoleft "?x||?y,?z"; ri "1|-|1"; ex();
+- top(); downtoright "?x||?y,?z"; ri "1|-|1"; ex();
+- top(); ex();
+- p "BOOLRETRACT";
+
+BOOLRETRACT:  
+(?x || true , false) || true , false  =  
+?x || true , false
+CASEINTRO , 0
+
+- defineconstanttype "BOOLRETRACT" 
+                        "Bool:?x" "?x||true,false";
+
+Bool:  
+Bool : ?x  =  
+?x || true , false
+Bool , CASEINTRO , 0
+</PRE>
+<P>
+The thing to notice is that the defineconstanttype command takes as an
+additional parameter a theorem witnessing the fact that the operation
+being defined is a retraction.  The reason that Watson can tell that
+this retraction has strongly cantorian domain has to do with technical
+aspects of the way Watson determines whether case expressions are
+stratified (it implicitly views the hypothesis of a case expression as
+being restricted to a strongly cantorian domain).
+
+<P>
+It is possible to define functions and operations which generate type
+labels (type constructors).  There are subtleties with the use of type
+constructors which make it necessary to declare constructors as ``opaque''
+operators.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html504"
+ HREF="node34.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html501"
+ HREF="node25.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html495"
+ HREF="node32.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html503"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html505"
+ HREF="node34.html">Fine points of matching:</A>
+<B> Up:</B> <A NAME="tex2html502"
+ HREF="node25.html">Implementing stratified abstraction in</A>
+<B> Previous:</B> <A NAME="tex2html496"
+ HREF="node32.html">Examples of the implementation</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Randall Holmes</I>
+<BR><I>2000-11-03</I>
+</ADDRESS>
+</BODY>
+</HTML>

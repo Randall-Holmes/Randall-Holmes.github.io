@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>An simple example of tactic development</TITLE>
+<META NAME="description" CONTENT="An simple example of tactic development">
+<META NAME="keywords" CONTENT="babydocs">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="babydocs.css">
+<LINK REL="next" HREF="node22.html">
+<LINK REL="previous" HREF="node20.html">
+<LINK REL="up" HREF="node15.html">
+<LINK REL="next" HREF="node22.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html367"
+ HREF="node22.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html364"
+ HREF="node15.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html358"
+ HREF="node20.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html366"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html368"
+ HREF="node22.html">More sophisticated tactics</A>
+<B> Up:</B> <A NAME="tex2html365"
+ HREF="node15.html">Implementing algebraic logic in</A>
+<B> Previous:</B> <A NAME="tex2html359"
+ HREF="node20.html">The tactic language introduced</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00042600000000000000">
+An simple example of tactic development</A>
+</H3>
+
+<P>
+<PRE>
+- axiom "ZERO" "0+?x" "?x";     (* declarations made above 
+                                still in force *)
+                                (* 0 is a numeral, so 
+                                predeclared *)
+
+- declarepretheorem "ZEROES";   (* declare intention 
+                                of proving a theorem 
+                                ZEROES *)
+
+- s "0+?x";                     (* display omitted *)
+- ri "ZERO"; ex();
+
+{?x}                            (* the expected display *)
+?x
+
+- ri "ZEROES";
+
+{ZEROES =&gt; ?x}                  (* we leave the intention
+                                 hanging; after all,
+ ZEROES =&gt; ?x                    what does ZEROES do? *) 
+
+- prove "ZEROES";
+
+ZEROES:                         (* the ``theorem'' *) 
+
+0 + ?x  =  
+ZEROES =&gt; ?x                    (* note presence of
+                                recursion *)
+
+ZERO , 0                        (* axioms used *)
+
+(* now we test it *)
+
+- s "0+0+0+?x";                 (* display omitted *)
+- ri "ZEROES"; ex();
+
+{?x}                            (* the final display *)
+?x
+
+(* demonstration of trace feature *)
+
+- startover();                  (* this command resets 
+                                both sides of the equation 
+                                to the left side *)
+
+{0 + 0 + 0 + ?x}
+0 + 0 + 0 + ?x
+
+- ri "ZEROES"; steps();         (* the steps command 
+                                traces tactic execution *)
+
+ZEROES =&gt; 0 + 0 + 0 + ?x        (* display traced steps *)
+ZEROES =&gt; 0 + 0 + ?x
+ZEROES =&gt; 0 + ?x
+ZEROES =&gt; ?x
+?x                              (* note that the embedded 
+                                theorem is simply dropped 
+                                when it does not apply; 
+                                this makes termination 
+                                possible *)
+</PRE>
+<P>
+This extremely simple example gives the basic idea of Watson's tactic
+language; <TT>ZEROES</TT> as an equational theorem is certainly true
+(this follows from the axiom <TT>ZERO</TT> and the fact that embedded
+theorems have no effect on term reference); as seen here, this
+``equational theorem'' has execution behavior more general than can be
+achieved with any single application of a rewrite rule.
+
+<P>
+<BR><HR>
+<ADDRESS>
+<I>Randall Holmes</I>
+<BR><I>2000-11-03</I>
+</ADDRESS>
+</BODY>
+</HTML>

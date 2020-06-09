@@ -1,0 +1,441 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Stratified abstraction</TITLE>
+<META NAME="description" CONTENT="Stratified abstraction">
+<META NAME="keywords" CONTENT="babydocs">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="babydocs.css">
+<LINK REL="next" HREF="node7.html">
+<LINK REL="previous" HREF="node5.html">
+<LINK REL="up" HREF="node3.html">
+<LINK REL="next" HREF="node7.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html169"
+ HREF="node7.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html166"
+ HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html160"
+ HREF="node5.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html168"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html170"
+ HREF="node7.html">The relationship between stratified</A>
+<B> Up:</B> <A NAME="tex2html167"
+ HREF="node3.html">The Logic of Watson</A>
+<B> Previous:</B> <A NAME="tex2html161"
+ HREF="node5.html">Definition by cases</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00033000000000000000">
+Stratified abstraction</A>
+</H2>
+
+<P>
+The components of the logic of Watson given so far support the logic
+of propositional connectives and equality, in conventional terms.
+
+<P>
+The new component of the logic introduced here is a restricted form of
+<IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-abstraction, the introduction of functions by abstraction.
+The new component is adequate to support the logic of quantification,
+and also a powerful higher-order logic.
+
+<P>
+The particular higher-order logic used will be unfamiliar to most
+readers, though (we hope) not difficult to explain.  It is a variation
+on the nonstandard set theory ``New Foundations'' (<EM>NF</EM>)
+introduced by W. V. O. Quine in [<A
+ HREF="node43.html#nf">25</A>] (1937), as revised by
+R. B. Jensen in [<A
+ HREF="node43.html#nfu">19</A>] (1969).  Set theories like <EM>NF</EM> avoid
+paradox by allowing the scheme of set comprehension to be applied only
+to ``stratified'' predicates.  We will not discuss the set theories
+here, but will describe the analogous system of <IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-calculus
+with ``stratified'' <IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-abstraction, which is the higher-order
+logic of Watson (references for this system are [<A
+ HREF="node43.html#trc">13</A>] (based on
+Holmes's Ph.D. thesis), which describes a system of synthetic
+combinatory logic rather than a <IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-calculus, [<A
+ HREF="node43.html#stratified">15</A>],
+which describes the <IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-calculus, and chapter 23 of Holmes's
+book [<A
+ HREF="node43.html#textbook">17</A>], which introduces further material about the
+representation of data types, discussed below).
+
+<P>
+The notation we will use in this subsection for <IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-abstraction
+is different from the notation used by Watson.  Watson uses a scheme
+of name-free variable binding due to de Bruijn (see [<A
+ HREF="node43.html#debruijn">8</A>];
+not de Bruijn indices, but a related scheme which we have seen called
+``de Bruijn levels''); this will be explained below.  In this
+subsection, the usual <IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-notation will be used.  The usual
+notation <I>f</I>(<I>x</I>) for function application will be used instead of the
+notation (<I>fx</I>) more usual in <IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-calculus.
+
+<P>
+We introduce the term constructions of a stratified
+<IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-calculus.  These are defined by mutual recursion with a
+notion of ``relative type''.  We begin with the description of the
+type constructions and follow it with a description of the notion of
+``relative type''.
+
+<P>
+<DL>
+<DD><P>
+<DT><STRONG>variables:</STRONG>
+<DD>We have a countably infinite supply of variables.
+
+<P>
+<DT><STRONG>primitive constants:</STRONG>
+<DD><B>true</B> and <B>false</B> are primitive
+constants, as are the projection functions <IMG
+ WIDTH="20" HEIGHT="28" ALIGN="MIDDLE" BORDER="0"
+ SRC="img3.gif"
+ ALT="$\pi_1$">
+and <IMG
+ WIDTH="20" HEIGHT="28" ALIGN="MIDDLE" BORDER="0"
+ SRC="img4.gif"
+ ALT="$\pi_2$">.
+There
+is a temptation to identify the projection operators with the truth
+values which we will resist here.
+
+<P>
+<DT><STRONG>equations:</STRONG>
+<DD>If <I>T</I> and <I>U</I> are terms, <I>T</I> = <I>U</I> is a term.
+
+<P>
+<DT><STRONG>pairs:</STRONG>
+<DD>If <I>T</I> and <I>U</I> are terms, (<I>T</I>,<I>U</I>) is a term.
+
+<P>
+<DT><STRONG>case expressions:</STRONG>
+<DD>If <I>P</I>, <I>T</I>, and <I>U</I> are terms, <B>if</B> <I>P</I> <B>then</B> <I>T</I> <B>else</B> <I>U</I> is a term. 
+
+<P>
+<DT><STRONG>function application:</STRONG>
+<DD>If <I>T</I> and <I>U</I> are terms, <I>T</I>(<I>U</I>) is a term.
+
+<P>
+<DT><STRONG><IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-term:</STRONG>
+<DD>If <I>T</I> is a term in which the variable <I>x</I> 
+appears free with no type relative to <I>T</I> other than 0 (it need not
+appear at all) then 
+<!-- MATH: $(\lambda x.T)$ -->
+<IMG
+ WIDTH="50" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img5.gif"
+ ALT="$(\lambda x.T)$">
+is a term, in which the variable
+<I>x</I> is called the binding variable.
+
+<P>
+As usual, an occurrence of a variable <I>x</I> in a term <I>T</I> is termed <EM>bound</EM> if it appears as part of some occurrence of a subterm
+
+<!-- MATH: $(\lambda x.U)$ -->
+<IMG
+ WIDTH="51" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img6.gif"
+ ALT="$(\lambda x.U)$">
+of <I>T</I> with the same binding variable; occurrences of
+variables which are not bound are said to be <EM>free</EM>.
+
+<P>
+</DL>
+<P>
+We now define the notion of relative type.  Each occurrence of a
+subterm of a term <I>T</I> has a type relative to <I>T</I>, which is an integer.
+
+<P>
+<DL>
+<DD><P>
+<DT><STRONG>the whole term:</STRONG>
+<DD>The type of the term <I>T</I> relative to itself is 0.
+
+<P>
+<DT><STRONG>equations:</STRONG>
+<DD>If the type of an occurrence of <I>A</I> = <I>B</I> relative to <I>T</I> is <I>n</I>, the
+types relative to <I>T</I> of the obvious occurrences of <I>A</I> and <I>B</I> are
+also <I>n</I>.
+
+<P>
+<DT><STRONG>pairs:</STRONG>
+<DD>If the type of an occurrence of (<I>A</I>,<I>B</I>) relative to <I>T</I> is <I>n</I>, the
+types relative to <I>T</I> of the obvious occurrences of <I>A</I> and <I>B</I> are
+also <I>n</I>.
+
+<P>
+<DT><STRONG>case expressions:</STRONG>
+<DD>If the type of an occurrence of <B>if</B> <I>P</I> <B>then</B> <I>Q</I> <B>else</B>
+<I>R</I> relative to <I>T</I> is <I>n</I>, the types relative to <I>T</I> of the obvious
+occurrences of <I>P</I>, <I>Q</I>, and <I>R</I> are also <I>n</I>.
+
+<P>
+<DT><STRONG>function application:</STRONG>
+<DD>If the type of an occurrence of <I>A</I>(<I>B</I>) relative to <I>T</I> is <I>n</I>, the
+types relative to <I>T</I> of the obvious occurrences of <I>A</I> and <I>B</I> are
+<I>n</I>+1 and <I>n</I>, respectively.
+
+<P>
+<DT><STRONG><IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-terms:</STRONG>
+<DD>If the type of an occurrence of 
+<!-- MATH: $(\lambda x.U)$ -->
+<IMG
+ WIDTH="51" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img6.gif"
+ ALT="$(\lambda x.U)$">
+relative to <I>T</I> is
+<I>n</I>, the type relative to <I>T</I> of the obvious occurrence of <I>U</I> is
+<I>n</I>-1 (by the condition on well-formedness of <IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-terms, this
+will be the same as the type of the free occurrences of the variable
+<I>x</I> in <I>U</I>).
+
+<P>
+A well-formed <IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-term is said to be <EM>stratified</EM>, for
+reasons which will be explained in the next subsection.
+
+<P>
+</DL>
+<P>
+The axioms of this theory are the axioms of algebraic and case
+expression logic from above, plus the following axioms for the new
+notions of pair, application and <IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-abstraction:
+
+<P>
+<DL>
+<DD><P>
+<DT><STRONG>projection functions:</STRONG>
+<DD>
+<!-- MATH: $\pi_1(x,y) = x$ -->
+<IMG
+ WIDTH="87" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img7.gif"
+ ALT="$\pi_1(x,y) = x$">;
+
+<!-- MATH: $\pi_2(x,y) = y$ -->
+<IMG
+ WIDTH="86" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img8.gif"
+ ALT="$\pi_2(x,y) = y$">.
+
+<P>
+<DT><STRONG><IMG
+ WIDTH="13" HEIGHT="29" ALIGN="MIDDLE" BORDER="0"
+ SRC="img9.gif"
+ ALT="$\beta$">-reduction:</STRONG>
+<DD>
+<!-- MATH: $(\lambda x.T)(A) = T[A/x]$ -->
+<IMG
+ WIDTH="145" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img10.gif"
+ ALT="$(\lambda x.T)(A) = T[A/x]$">
+<P>
+</DL>
+<P>
+Unfortunately, things are not as simple as the brief paragraph before
+the new axioms tries to make them appear.  Algebraic logic is extended
+to allow substitution of equals for equals inside <IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-terms,
+without regard to the fact that the terms for which substitutions are
+made may fail to have reference outside the <IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-terms, because
+of the presence of bound variables.  This extension of the notion of
+substitution is equivalent to a weak form of extensionality for
+functions.  Notice that we do <EM>not</EM> adopt the full axiom of
+extensionality, which we exhibit:
+
+<P>
+<DL>
+<DD><P>
+<DT><STRONG>extensionality axiom not adopted:</STRONG>
+<DD>
+<!-- MATH: $(\lambda x. f(x)) = f$ -->
+<IMG
+ WIDTH="100" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img11.gif"
+ ALT="$(\lambda x. f(x)) = f$">
+<P>
+</DL>
+<P>
+If we were to adopt this assumption we would have a system equivalent
+to Quine's ``New Foundations'', which is not known to be consistent.
+As it is we have a system equivalent to an extension of the
+modification <EM>NFU</EM> + Infinity of <EM>NF</EM> due to Jensen in
+[<A
+ HREF="node43.html#nfu">19</A>], which is known to be equivalent to Russell's theory of
+types (with infinity), which is generally believed to be consistent.
+
+<P>
+Further, the notion of substitution which appears both here and in the
+earlier axioms is considerably complicated by the need to avoid
+collisions of bound variables.  We will not give a formal account of
+substitution here, but we will give a formal description below of the
+notion of substitution for Watson's own notation (using de Bruijn
+levels).
+
+<P>
+We briefly indicate how quantification is supported.  
+We can define the universal quantifier thus:
+
+<P>
+<DL>
+<DD><P>
+<DT><STRONG>definition of <IMG
+ WIDTH="12" HEIGHT="15" ALIGN="BOTTOM" BORDER="0"
+ SRC="img12.gif"
+ ALT="$\forall$">:</STRONG>
+<DD>
+<!-- MATH: $(\forall x.T) =
+((\lambda x.T) = (\lambda x.{\bf true}))$ -->
+<IMG
+ WIDTH="219" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img13.gif"
+ ALT="$(\forall x.T) =
+((\lambda x.T) = (\lambda x.{\bf true}))$">
+<P>
+</DL>
+<P>
+The notation of Watson does not permit the introduction of new
+binders: the actual notation is more like 
+<!-- MATH: $\forall(\lambda x.T)$ -->
+<IMG
+ WIDTH="59" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img14.gif"
+ ALT="$\forall(\lambda x.T)$">.
+The
+existential quantifier <IMG
+ WIDTH="12" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img15.gif"
+ ALT="$\exists$">
+may be defined using deMorgan's laws as usual.
+Reasoning with the existential quantifier may be facilitated by introducing
+a new primitive function <B>choose</B> and the dreaded
+
+<P>
+<DL>
+<DD><P>
+<DT><STRONG>axiom of choice:</STRONG>
+<DD>
+<!-- MATH: $(\exists x.T) = T[$ -->
+<IMG
+ WIDTH="87" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img16.gif"
+ ALT="$(\exists x.T) = T[$"><B>choose</B>
+<!-- MATH: $(\lambda x.T)/x]$ -->
+<IMG
+ WIDTH="72" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img17.gif"
+ ALT="$(\lambda x.T)/x]$">
+<P>
+</DL>
+<P>
+The HOL system uses this as the definition of the existential
+quantifier (and defines the universal quantifier in terms of the
+existential quantifier); this axiom can be used to facilitate
+existential reasoning in Watson, though the built-in logic without
+choice also supports adequate existential reasoning.  It is
+interesting to note that the logic of Watson with full extensionality
+is inconsistent with the axiom of choice (because <EM>NF</EM> is
+inconsistent with choice).
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html169"
+ HREF="node7.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html166"
+ HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html160"
+ HREF="node5.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html168"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html170"
+ HREF="node7.html">The relationship between stratified</A>
+<B> Up:</B> <A NAME="tex2html167"
+ HREF="node3.html">The Logic of Watson</A>
+<B> Previous:</B> <A NAME="tex2html161"
+ HREF="node5.html">Definition by cases</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Randall Holmes</I>
+<BR><I>2000-11-03</I>
+</ADDRESS>
+</BODY>
+</HTML>

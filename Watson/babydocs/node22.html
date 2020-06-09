@@ -1,0 +1,396 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>More sophisticated tactics</TITLE>
+<META NAME="description" CONTENT="More sophisticated tactics">
+<META NAME="keywords" CONTENT="babydocs">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="babydocs.css">
+<LINK REL="previous" HREF="node21.html">
+<LINK REL="up" HREF="node15.html">
+<LINK REL="next" HREF="node23.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html376"
+ HREF="node23.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html373"
+ HREF="node15.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html369"
+ HREF="node21.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html375"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html377"
+ HREF="node23.html">Implementing case expression logic</A>
+<B> Up:</B> <A NAME="tex2html374"
+ HREF="node15.html">Implementing algebraic logic in</A>
+<B> Previous:</B> <A NAME="tex2html370"
+ HREF="node21.html">An simple example of</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00042700000000000000">
+More sophisticated tactics</A>
+</H3>
+
+<P>
+In this subsubsection and the following example, we discuss operations
+on tactics and tactics with parameters.
+
+<P>
+<DL>
+<DD><P>
+<DT><STRONG>introduction of new variables:</STRONG>
+<DD>When a rewrite introduces new
+free variables, they are automatically supplied with a numerical
+subscript as ``new'' variables.  Something more complex may happen if
+the new variable is introduced inside an abstraction (bracketed) term;
+see below.  The introduction of new variables can always be avoided by
+the use of parameterized versions of theorems which supply values to
+the new variables; see examples below.
+
+<P>
+<PRE>
+(* example of introduction of new variables *)
+
+- declareunary "-";            (* declare - as a
+                               prefix operator *)
+- axiom "INV" "?x + -?x" "0";
+
+- s "0";
+- rri "INV";                   (* rri = revruleintro 
+                               applies converse of 
+                               theorem *)
+
+{INV &lt;= 0}                     (* display *)
+INV &lt;= 0
+
+- ex();
+
+{?x_82 + - ?x_82}              (* note appearance 
+?x_82 + - ?x_82                of new variables *)
+</PRE>
+<P>
+<DT><STRONG>control structures:</STRONG>
+<DD>The special infix operators <TT>=&gt;&gt;</TT>, <TT>&lt;&lt;=</TT>, <TT>*&gt;</TT> and <TT>&lt;*</TT> allow one to apply a rewrite rule (or its
+converse) depending on whether the application of a preceding rewrite
+rule succeeded or failed.  
+
+<P>
+The complex rewrite rules <TT>thm1 =&gt;&gt; thm2</TT> and <TT>thm1 &lt;&lt;= ?thm2</TT>
+have the effect of applying <TT>thm1</TT> then applying <TT>thm2</TT>
+(resp. its converse) only if the application of <TT>thm1</TT> fails.
+(the handling of these infixes by Watson is quite different from their
+former handling by Mark2: a chain of alternatives applied to a term
+which Watson represents as <TT>(thm1 =&gt;&gt; thm2 =&gt;&gt; ... =&gt;&gt; thmn) =&gt;
+term</TT> was represented by Mark2 as <TT>thmn =&gt;&gt; ... thm2 =&gt;&gt; thm1 =&gt;
+term</TT>).  The commands <TT>altruleintro (ari)</TT> and <TT>altrevruleintro (arri)</TT> introduce these ``alternative rule infixes''
+(their use is illustrated in the examples below).
+
+<P>
+The complex rewrite rules <TT>thm1 *&gt; thm2</TT> and <TT>thm1 &lt;* thm2</TT>
+have the effect of first applying <TT>thm1</TT>, then applying <TT>thm2</TT>
+only if the application of <TT>thm1</TT> succeeded.
+
+<P>
+For either of the above kinds of operator, if the theorem <TT>thm1</TT>
+happens to be a built-in operator (e.g., the abstraction and reduction
+tactics <TT>BIND</TT> and <TT>EVAL</TT> introduced below), <TT>thm1</TT> is
+said to ``succeed'' if it makes a change in the target term, and
+``fail'' otherwise.  For theorems of the usual kind, success or
+failure depends on whether the appropriate side of the theorem matches
+the target term.
+
+<P>
+In the following example, we illustrate the application of <TT>=&gt;&gt;</TT>
+to fine-tune the behavior of a tactic.  We prove a theorem which
+applies the identity of addition on either side.
+
+<P>
+<PRE>
+(* a preliminary result *)
+
+- s "?x+0";                (* displays suppressed *)
+- ri "COMM"; ri "ZERO";
+- prove "COMMZERO";
+
+COMMZERO:  
+?x + 0  =  
+ZERO =&gt; COMM =&gt; ?x + 0
+0                          (* no axiom was used 
+                           in proving this, 
+                           though some 
+                           were mentioned *)
+
+(* the tactic to apply identity on either side -- 
+naive version *)
+
+- s "?x+?y";
+- ri "ZERO"; ri "COMMZERO"; 
+- p "EITHERZERO";
+
+EITHERZERO:  
+?x + ?y  =  
+COMMZERO =&gt; ZERO =&gt; ?x + ?y
+0
+
+(* the problem with this *)
+
+- s "0+?x+0";
+- ri "EITHERZERO"; ex();
+
+{?x}                       (* the final display *)
+?x
+
+(* the difficulty is that successive applications 
+of theorems cannot be relied upon to serve as 
+alternatives; one may apply and then another after 
+it in the list *)
+
+(* we modify the tactic *)
+
+- s "?x+?y";
+- ri "ZERO"; ari "COMMZERO"; (* ari = 
+                             altrevruleintro
+                             introduces an 
+                             alternative 
+                             theorem to be
+                             applied if COMM fails *)
+- reprove "EITHERZERO";
+
+EITHERZERO:  
+?x + ?y  =  
+(ZERO =&gt;&gt; COMMZERO) =&gt; ?x + ?y  (* note the 
+                                syntactical 
+0                               effect of ari *)
+
+(* we repeat the test above *)
+
+- s "0+?x+0";
+- ri "EITHERZERO"; ex();
+
+{?x + 0}                   (* the final display:  
+?x + 0                     only one application 
+                           of identity is made *)
+</PRE>
+<P>
+<DT><STRONG>tactics with parameters; operators as tactics</STRONG>
+<DD>Watson allows the
+user to develop tactics with parameters, which may be used to pass
+terms or other theorems or tactics as data to a tactic.  The <TT>prove</TT> command will take parameter lists built with the predeclared
+function application infix ``<TT>@</TT>'' and pairing infix ``<TT>,</TT>'';
+it will match the parameter list against actual embedded occurrences
+of the theorem, which needs to have parameters matching the original
+parameter list in order to be used successfully for rewriting.  Watson
+also allows operators (prefix or infix) to be ``proved'' as (necessarily
+parameterized) tactics.
+
+<P>
+<PRE>
+(* an example of parameterized and operator theorems:
+simple structural tactics *)
+
+- declareopaque "^+";           (* variable operator 
+                                declaration will be
+                                explained below 
+                                (sect. ??) *)
+- s "?x^+?y";
+- right(); ri "?thm";
+- p "RIGHT@?thm";
+
+RIGHT @ ?thm:  
+?x ^+ ?y  =  
+?x ^+ ?thm =&gt; ?y
+0
+
+(* a test *)
+
+- s "?x+?y+?z";
+- ri "RIGHT@COMM"; steps();
+
+(RIGHT @ COMM) =&gt; ?x + ?y + ?z (* display of
+?x + COMM =&gt; ?y + ?z           rewriting steps *)
+?x + ?z + ?y
+
+(* operators as theorems *)
+
+- s "?x";
+- ri "?thm1";
+- ri "?thm2";
+- p "?thm1**?thm2";
+
+?thm1 ** ?thm2:  
+?x  =  
+?thm2 =&gt; ?thm1 =&gt; ?x
+0
+
+(* a test *)
+
+- s "?x+?y+?z";
+- ri "COMM**ASSOC"; ex();
+
+{?y + ?z + ?x}                 (* final display *)
+?y + ?z + ?x
+</PRE>  
+
+<P>
+The prefix operator <TT>!@</TT> can be applied to a theorem whose
+application introduces new variables to produce a parameterized
+theorem to which values of these new variables can be supplied; the
+operator <TT>!$</TT> applied to a theorem whose converse introduces new
+variables produces a parameterized theorem with the same effect as the
+converse of the original theorem.
+
+<P>
+In the following example, we develop a tactic converse of a theorem
+which eliminates variables using parameters and using the built-in
+operator <TT>!$</TT>.
+
+<P>
+<PRE>
+(* parameterized converse theorem *)
+
+- s "0";
+- initializecounter();     (* initializes suffixes 
+                           of new variables *)
+- rri "INV"; ex();
+
+{?x_1 + - ?x_1}            (* display *)
+?x_1 + - ?x_1
+
+- assign "?x_1" "?x";      (* rename new variable 
+                           using global assignment *)
+- prove "INV_INVERSE@?x";
+
+INV_INVERSE @ ?x:  
+0  =  
+?x + - ?x
+INV , 0
+
+- s "0";
+- ri "INV_INVERSE@3"; ex();
+
+{3 + - 3}                  (* final display *)
+3 + - 3
+
+(* the same effect using a built in operator *)
+
+- s "0";
+- ri "(!$ INV)@3"; ex();
+
+{3 + - 3}                  (* final display *)
+3 + - 3
+</PRE>
+<P>
+</DL>
+<P>
+We close the section with a not altogether trivial example.
+
+<P>
+<PRE>
+- declarepretheorem "ASSOCS";
+
+- s "(?x+?y)+?z";
+- ri "ASSOC"; ex();
+- ri "ASSOCS";
+- p "ASSOCS";
+
+(* ASSOCS applies associativity 
+as many times as possible at the top *)
+
+ASSOCS:  
+(?x + ?y) + ?z  =  
+ASSOCS =&gt; ?x + ?y + ?z
+ASSOC , 0
+
+(* a test *)
+
+- s "((?x+?y)+?z)+(?u+?v)+?w";
+- ri "ASSOCS"; ex();
+
+{?x + ?y + ?z + (?u + ?v) + ?w}  (* the final display *)
+?x + ?y + ?z + (?u + ?v) + ?w
+
+(* the full tactic *)
+
+- declarepretheorem "ALLASSOCS";
+
+- s "?x+?y";
+- ri "ASSOCS"; ri "RIGHT@ALLASSOCS";
+- p "ALLASSOCS";
+
+ALLASSOCS:  
+?x + ?y  =  
+(RIGHT @ ALLASSOCS) =&gt; ASSOCS =&gt; ?x + ?y
+0                              (* no axiom dependencies 
+                               because no axiom was 
+                               actually used to rewrite *)
+
+(* test *)
+
+s "(((?x+(?y+?z)+?w)+(?u+?v)+?w)+
+                       ((?u+?v)+?w)+?e)+(?u+?v)+?e+?f";
+
+{(((?x + (?y + ?z) + ?w) + (?u + ?v) + ?w) + ((?u 
+            + ?v) + ?w) + ?e) + (?u + ?v) + ?e + ?f} 
+
+(* duplication of displays suppressed *)
+
+- ri "ALLASSOCS"; ex();
+
+(* the final display -- intermediate and duplicate
+displays suppressed *)
+
+{?x + ?y + ?z + ?w + ?u + ?v + ?w + ?u + ?v + ?w + ?e 
+   + ?u + ?v + ?e + ?f}
+</PRE>
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html376"
+ HREF="node23.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html373"
+ HREF="node15.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html369"
+ HREF="node21.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html375"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html377"
+ HREF="node23.html">Implementing case expression logic</A>
+<B> Up:</B> <A NAME="tex2html374"
+ HREF="node15.html">Implementing algebraic logic in</A>
+<B> Previous:</B> <A NAME="tex2html370"
+ HREF="node21.html">An simple example of</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Randall Holmes</I>
+<BR><I>2000-11-03</I>
+</ADDRESS>
+</BODY>
+</HTML>

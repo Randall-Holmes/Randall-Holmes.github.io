@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>The handling of variable binding: de Bruijn levels
+and the formal definition of substitution</TITLE>
+<META NAME="description" CONTENT="The handling of variable binding: de Bruijn levels
+and the formal definition of substitution">
+<META NAME="keywords" CONTENT="babydocs">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="babydocs.css">
+<LINK REL="next" HREF="node27.html">
+<LINK REL="previous" HREF="node25.html">
+<LINK REL="up" HREF="node25.html">
+<LINK REL="next" HREF="node27.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html427"
+ HREF="node27.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html424"
+ HREF="node25.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html418"
+ HREF="node25.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html426"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html428"
+ HREF="node27.html">Abstraction and reduction by</A>
+<B> Up:</B> <A NAME="tex2html425"
+ HREF="node25.html">Implementing stratified abstraction in</A>
+<B> Previous:</B> <A NAME="tex2html419"
+ HREF="node25.html">Implementing stratified abstraction in</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00044100000000000000">
+The handling of variable binding:  de Bruijn levels
+and the formal definition of substitution</A>
+</H3>
+
+<P>
+As we noted above, the term construction using brackets represents
+<IMG
+ WIDTH="13" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\lambda $">-abstraction.  There is nothing in Watson's notation
+corresponding to the <IMG
+ WIDTH="22" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img41.gif"
+ ALT="$\lambda x$">
+component of the notation 
+<!-- MATH: $(\lambda
+x.T)$ -->
+<IMG
+ WIDTH="50" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img5.gif"
+ ALT="$(\lambda x.T)$">;
+the variable bound in a bracket is determined by the syntax of
+its context using a scheme due to deBruijn (but differing from the
+most familiar name-free binding scheme due to deBruijn).
+
+<P>
+The variable bound in an outermost set of brackets is always <TT>?1</TT>;
+the variable bound in a set of brackets which is in the scope of one
+set of brackets is <TT>?2</TT>; in general, the variable bound in a set
+of brackets which is enclosed in <TT>n-1</TT> further brackets is <TT>?n</TT>.  For example, the constant function 
+<!-- MATH: $(\lambda x.x)$ -->
+<IMG
+ WIDTH="48" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img42.gif"
+ ALT="$(\lambda x.x)$">
+is written
+<TT>[?1]</TT>, but its constant function 
+<!-- MATH: $(\lambda y.(\lambda x.x))$ -->
+<IMG
+ WIDTH="82" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img43.gif"
+ ALT="$(\lambda y.(\lambda x.x))$">
+is
+written <TT>[[?2]]</TT> (because the bound variable in this term is bound
+by the inner of the two sets of brackets).
+
+<P>
+This scheme (which we have seen referred to as ``de Bruijn levels'')
+has two advantages.  The first advantage is that it is not necessary
+to manage binding with arbitrary variables, which leads to a complex
+implementation and a very complex definition of substitution.  The
+advantage that this scheme has over the more popular of de Bruijn's
+schemes (de Bruijn indices) is that the variable bound in a given
+bracket is represented in the same way wherever it appears.  The
+disadvantage of de Bruijn levels (which de Bruijn indices do not have)
+is that the bound variables in a term may need to be renumbered when
+it is substituted into a different term.  So far, users of Watson (and
+Mark2) have found the de Bruijn level scheme to be usable in practice;
+what pressure the designer has felt from users to convert to the usual
+variable-binding scheme has been relieved by the availability of
+a tactic provided in the libraries which readily converts bracket
+terms to a form more like the usual form when nesting of brackets is
+sufficient to cause confusion.
+
+<P>
+The use of de Bruijn levels creates a complication of the definition
+of substitution in a much more pervasive way than the similar problem
+that arises with the numbering of hypothesis tactics.  On the other
+hand, the complication is simpler than the one that would be
+occasioned by use of the usual variable binding schemes.  For users
+the system adopted is certainly better than de Bruijn indices, but
+admittedly less readable than the usual schemes of variable binding
+when there is enough nesting of abstraction terms (but, as noted
+above, there is a tactic which converts such terms to a more readable
+form).
+
+<P>
+When we consider an occurrence of a subterm in a larger term, we
+define its <EM>level</EM> as the number of bracket terms of which it is
+a proper subterm, and its <EM>hlevel</EM> (for ``hypothesis level'') as
+the number of branches of case expressions of which it is a
+(not necessarily proper) subterm.
+
+<P>
+The semantics of bound variables requires that each bound variable
+<TT>?n</TT> appear only in contexts contained in at least <TT>n</TT> bracket
+terms (the ``bound variable'' <TT>?0</TT> can appear in any context; it
+is used for special purposes by internal functions of the prover not
+discussed in this paper).  This is enforced by the declaration
+checking functions of the prover.  An analogous requirement could be
+imposed on hypothesis tactics, but is not in practice: no harm can be
+done by meaningless hypothesis tactics, and we are interested in
+allowing natural numbers to be passed as parameters to the <TT>|-|</TT>
+operator in tactics, which would be forbidden if declaration checking
+of hypothesis tactics were to be enforced.
+
+<P>
+We define what it means (and under what circumstances it is possible)
+to substitute a term <TT>T</TT> found at level <I>l</I><SUB>1</SUB> and hlevel <I>h</I><SUB>1</SUB> (in
+some larger term) into a context found at level <I>l</I><SUB>2</SUB> and hlevel <I>h</I><SUB>2</SUB>in a term <TT>U</TT>.  One circumstance under which such a substitution is
+impossible is that in which a variable free in the term <TT>T</TT> becomes
+bound in its new context when <TT>T</TT> is substituted into <TT>U</TT>.  A bound
+variable <TT>?n</TT> is free in <TT>T</TT> iff 
+<!-- MATH: $n \leq l_1$ -->
+<IMG
+ WIDTH="46" HEIGHT="29" ALIGN="MIDDLE" BORDER="0"
+ SRC="img44.gif"
+ ALT="$n \leq l_1$">;
+it becomes bound
+(or meaningless) in its new context in <TT>U</TT> if <I>n</I> &gt; <I>l</I><SUB>2</SUB>; thus,
+substitution is impossible if any bound variable <TT>?n</TT> appears in
+<TT>T</TT> with 
+<!-- MATH: $l_2 < n \leq l_1$ -->
+<IMG
+ WIDTH="79" HEIGHT="29" ALIGN="MIDDLE" BORDER="0"
+ SRC="img45.gif"
+ ALT="$l_2 < n \leq l_1$">.
+A similar restriction is imposed on
+indices of hypothesis tactics in relation to hlevel.  Each variable
+bound in <TT>T</TT> (i.e., <TT>?n</TT> with <I>n</I> &gt; <I>l</I><SUB>1</SUB>) is enclosed by <I>n</I>brackets in the term of which <TT>T</TT> is a subterm, while it is enclosed
+in <I>n</I>-<I>l</I><SUB>1</SUB>+<I>l</I><SUB>2</SUB> brackets in the term <TT>U</TT>; thus its index must be
+changed from <I>n</I> to <I>n</I>-<I>l</I><SUB>1</SUB>+<I>l</I><SUB>2</SUB> (while the indices of locally free
+bound variables remain the same).  Precisely analogously, hypothesis
+tactic indices &gt;<I>h</I><SUB>1</SUB> are translated by <I>h</I><SUB>2</SUB>-<I>h</I><SUB>1</SUB>.
+
+<P>
+The definition of substitution used by Watson is somewhat further
+complicated by the issue of ``higher-order matching'' discussed below.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html427"
+ HREF="node27.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="http://cs.idbsu.edu/icons//next_motif.gif"></A> 
+<A NAME="tex2html424"
+ HREF="node25.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="http://cs.idbsu.edu/icons//up_motif.gif"></A> 
+<A NAME="tex2html418"
+ HREF="node25.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="http://cs.idbsu.edu/icons//previous_motif.gif"></A> 
+<A NAME="tex2html426"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="http://cs.idbsu.edu/icons//contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html428"
+ HREF="node27.html">Abstraction and reduction by</A>
+<B> Up:</B> <A NAME="tex2html425"
+ HREF="node25.html">Implementing stratified abstraction in</A>
+<B> Previous:</B> <A NAME="tex2html419"
+ HREF="node25.html">Implementing stratified abstraction in</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Randall Holmes</I>
+<BR><I>2000-11-03</I>
+</ADDRESS>
+</BODY>
+</HTML>
