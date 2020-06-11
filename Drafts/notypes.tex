@@ -1,0 +1,173 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb}
+
+\title{Type theory with no types}
+
+\author{M. Randall Holmes}
+
+\begin{document}
+
+\maketitle
+
+We assign credit to Thomas Forster for the basic approach here, but we eliminate all traces of stratification from our axioms, and this version proves that the types are disjoint, where Forster's version is noncommital.  This does not make it difficult for this version to pass to NF(U), as we will see!
+
+This is a first order theory with equality and membership as primitives and a notion of sethood.
+
+\begin{description}
+
+
+
+
+\item[Definition:]  We define $x \sim y$ as $(\exists z:x \in z \wedge y \in z)$.  We read this ``$x$ is of the same type as $y$".
+
+\item[Axiom of singletons:]  $(\forall x:(\exists s:(\forall z:z \in s \leftrightarrow z = s)$  We have the notation $\{x\}$ or $\iota`x$ for the witness $s$.
+
+\item[Axioms of sets:]  $(\forall xy:  x \in y \rightarrow {\tt set}(y))$;  $(\forall x:{\tt set}(x) \rightarrow (\exists y:x \sim \{y\}))$
+
+\item[Axiom of extensionality:]  $(\forall xyz:{\tt set}(x) \wedge {\tt set}(y) \wedge (x \sim y \vee z \in x) \rightarrow (x = y \leftrightarrow (\forall z:z \in z \leftrightarrow z \in y)))$
+
+\item[Axiom of binary union:]  $(\forall xy:x \sim y \rightarrow (\exists u:(\forall z:z \in u \leftrightarrow z \in x \vee z \in y)))$.  The notation $x \cup y$ is provided for the witness $u$.
+
+\item[Axiom of comprehension:]  For any formula $\phi$ in which $A$ is not free, $(\forall y:(\exists A \sim \{y\}:{\tt set}(A) \wedge x \in A \leftrightarrow x \sim y \wedge \phi))$
+
+The notation $\{x \sim y:\phi\}$ is provided for the witness $A$ to the instance of this scheme determined by $\phi$ and $y$.
+
+\item[Definition:]  We define $\emptyset_y$ as $\{x \sim y:x \neq x\}$.  Notice that this will be a set, will have no elements, and will be of the same type as $\{y\}$.
+
+\item[Definition:]  We define $\tau`y$, the type of $x$, as $\{x \sim y:x=x\}$.
+
+\item[$\sim$ is an equivalence relation:]  For any $x$, $x \sim x$ because $x \in \{x\} \wedge x \in \{x\}$.  It follows also that $x \in \tau`x$.
+
+If $x \sim y$, then for some $z$, $x \in z \wedge y \in z$, so $y \in z \wedge x \in z$, so $y \sim x$.
+
+If $x \sim y$ and $y \sim z$, then $x \in \tau`y$ and $z \sim y$ so $z \in \tau`y$, so $x \sim z$.
+
+\item[Definition:]  We define $x \subseteq y$ as ${\tt set}(x) \wedge {\tt set}(y) \wedge x \sim y \wedge (\forall z:z \in x \rightarrow z \in y)$.
+
+\item[Definition:]  We define ${\cal P}`y$ as $\{x \sim y:x \subseteq y\}$.
+
+\item[Definition:]  If $A \sim \{y\}$ for some $y$, and neither $A$ nor $y$ occurs in $\phi$, we define $\{x \in A:\phi\}$ as $\{x \sim y:x \in A \wedge \phi\}$.   This set is clearly of the same type as $\{y\}$, and so of the same type as $A$, and it does contain as elements exactly the elements of $A$ such that $\phi$, since any element of $A$ is necessarily of the same type as $y$:  that is, the usual axiom of separation holds as a theorem scheme, with the additional provisos that $\{x \in A:\phi\}$ is a set and the type of $\{x \in A:\phi\}$ is the same as the type of $A$.
+
+\item[Theorem:]  We now argue that if $x$ is a set, ${\cal P}`\tau`x = \{y \in \tau^2`x:{\tt set}(y)\}$ for any $x$.
+
+\item[Proof:]  ${\cal P}`\tau`x$ and $\tau^2`x$ are both the same type as $\{\tau`x\}$, so they are of the same type, and $\{y \in {\tau}^2`x:{\tt set}(y)\}$ is of the same type as $\tau^2`x$.    If $a \in {\cal P}`\tau`x$ then $a \subseteq \tau`x$ so $a$ is of the same
+type as $\tau`x$ so $a \in \tau^2`x$ and ${\tt set}(a)$, so $a \in \{y \in \tau^2`x:{\tt set}(y)\}$.  If $a \in \{y \in \tau^2`x:{\tt set}(y)\}$ then $a \in \tau^2`x$ and ${\tt set}(a)$.
+We have $a \in \tau^2`x$ so $a \sim \tau`x$.  We want to show that if $b \in a$ it follows that $b \in \tau`x$.  We know that $b \in a \cup \tau`x$ and that $x \in a \cup \tau`x$,
+from which it follows that $b \sim x$, so $b \in \tau`x$, whence $a \subseteq \tau`x$, whence $a \in {\cal P}`\tau`x$.   These two objects are sets of the same type with the same elements, so they are equal.
+
+\item[Theorem:]  If $x \in y$ then $y \in \tau^2`x$.  If $x \in \tau^n`z$ then $y \in \tau^{n+1}`z$.
+
+\item[Proof:]   If $x \in y$ then for every $z \in y$ we have $x \sim z$ so we have $y \in {\cal P}`\tau`x$ (because it is nonempty and has the same elements
+as $\{z \in \tau`x:z \in y\}$, which belongs to this set), and so by the previous theorem $y \in \tau^2`x$.
+
+Note that if $x \in \tau`y$ we have $x \sim y$ so $\tau`x = \tau`y$.  Now if $x \in \tau^n`z$ we have $\tau`x = \tau^n`z$ and if we have $x \in y$ we have $y \in \tau^2`x = \tau`(\tau`x) = \tau`(\tau^n`x) = \tau^{n+1}`x$.
+
+\item[Theorem:]  If $x \in y$ and $y \in \tau^{n+1}`z$ then $x \in \tau^n`z$.
+
+\item[Proof:]   $y \in \tau^2`x$ so $\tau^2`x = \tau^{n+1}`z$  so $\tau`x \sim \tau^n`z$ so $x$ and $\tau^{n-1}`z$ ($z$ if $n=1$) belong to the same set
+$\tau`x \cup \tau^n`z$, so $x \sim \tau^{n-1}`z$, whence $x \in \tau^n`z$.
+
+\item[Theorem:]  For any $x$, the types $\tau^n`x$ are distinct and disjoint for distinct $n$.
+
+\item[Proof:]  Consider $R_x = \{y \in \tau`x:y \not\in y\}$.  By the usual diagonal argument, $R_x \not\in \tau`x$.  We do have $R_x \sim \{x\} \sim \tau`x$ so $R_x \in \tau^2`x$.  It follows
+that $\tau`x \neq \tau^2`x$, whence these sets are disjoint.
+
+Now consider $R^n_x = \{\iota^{n}`y \in \tau`x:\iota^{n}`y \not\in y\}$.  If $R^n_x \in \tau`x$ then $\iota^n`R^n_x \in R^n_x \leftrightarrow \iota^n`R^n_x \not\in R^n_x$, a contradiction.  So $R^n_x \not\in \tau`x$.  Clearly $R^n_x \in \tau^{n+2}`x$, so $\tau^{n+2}`x \neq \tau`x$.
+
+
+
+\end{description}
+
+Notice that the appeal to natural numbers in the last theorem must be to natural numbers of the metatheory.  We cannot build the sequence of $\tau^n`x$'s!
+
+We augment our language with new series of variables with natural number superscripts.  We say that an atomic formula is well-typed if it is of one of the forms
+$x^i=y^i$ or $x^i \in y^{i+1}$.  A formula is stratified if each atomic formula in it is well-typed.  We say that a formula is stratifiable if it can be made stratified by
+renaming of bound variables to superscripted variables.  Note that our definition of stratified requires every free variable to be superscripted.  We say that a formula is connected if the smallest set of occurrences of variables in $\phi$ which contains each free occurrence of a variable in $\phi$ and includes both occurrences of variables in an atomic formula if it includes either includes every occurrence of a variable in $\phi$.
+
+\begin{description}
+
+\item[Theorem:]  If $\phi$ is stratified and connected and $y \in \tau^i`z$ and each $a^k$ free in $\phi$ other than $x^i$ belongs to $\tau^k`z$ then $\{x^i \sim y:\phi\}$ is equivalent to $\{x^i \sim y:\phi^*\}$, where
+$\phi^*$ is the result of renaming all bound variables in $\phi$ to superscripted variables and  bounding each quantifier over $z^j$ in $\tau^j`z$.
+
+\item[Proof:]  Lemmas proved above show that the assumptions $u^k \in \tau^k`z$ about which type a variable belongs to, if they are enforced for one variable in an atomic formula, are enforced
+for the other.  The assumption that $\phi$ is connected ensures that all variables are coerced into types;  the assumption that $\phi$ is stratified ensures that the coercion is always the same for occurrences of the same variable bound by the same quantifier.
+
+This shows that we have the scheme of bounded stratified comprehension (an explicitly bounded stratified formula is always connected).
+
+
+\item[Theorem:]  The axiom scheme of bounded stratified comprehension is equivalent to the conjunction of finitely many of its instances,  in the presence of the other axioms.
+
+\item[Proof:]  We proceed as usual by induction on the structure of formulas.  We can assume that every variable is bounded in a type. 
+
+The set $\{x \sim y:\neg \psi\}$ can be handled if we have the axiom asserting the existence of $\tau`y \setminus A \in \tau^2`y$ for any $A$:  this is then
+$\tau`y \setminus \{x \sim y:\psi\}$.
+
+The set $\{x \sim y:\psi \vee \chi\}$ is handled by the axiom of binary union:  this is $\{x \sim y:\psi\} \cup \{x \sim y:\chi\}$.
+
+We now discuss the representation of relations:  we show how to represent the extension a formula $\phi(x,a_1,\ldots,a_n)$ as a set of tuples $(\iota^{i_0}`x,\iota^{i_1}`a_1,\ldots,\iota^{i_n}`a_n)$
+in which the $i_j$'s are chosen so that all components of the tuple are of the same type.  The decoration scheme above should make it clear that we can assume that this can be done.
+
+We first point out that the usual pair $\left<a,b\right>:\{\{a\},\{a,b\}\}$ can be defined for $a,b \in \tau`z$, and itself belongs to $\tau^3`z$.  Pairs, ordered or unordered,
+can be constructed only between objects of the same type.  Now if we have objects $I_1,\ldots,I_n$ which are distinct and of the same type as the $x_i$'s, we
+can define $(x_1,\ldots,x_n)$ as $\{\left<I_1,x_1\right>,\ldots,\left<I_n,x_n\right>\}$ in $\tau^4`x_i$.  Remember that this is a concrete finite set of indices:  this is as it were
+a scheme of definitions of tuples, one for each concrete length, which clearly all work.
+
+Now, if we have constructed $\{(\iota^{i_0}`x,\iota^{i_1}`a_1,\ldots,\iota^{i_n}`a_n):\phi\}$, we can define $\{(\iota^{i_1}`a_1,\ldots,\iota^{i_n}`a_n):(\exists x:\phi)\}$
+if we can define for any set $R$ and object $I_0$ the set $R_{I_0,U}$ of all $r$ of the same type as the elements of $R$ such that $(\exists X \in U: \{\left<I_0,X\right>\} \cup r \in R)$.
+An auxiliary axiom asserts the existence for any set $A$ of the set $\iota``A$:  the set $U$ needed is $\iota^{i_0}``\tau`x$.
+
+So all logical operations are handled:  what remains is the construction of relations.  All we need to do is construct the sets corresponding to atomic relations and the ability
+to pad a tuple with additional variables.  Padding is handled by providing for each $R$ and $I_n$ the set $P_{R,I_n}$ of all $r \cup \{\left<I_n,u\right>\}$ for $r \in R$.
+We provide $Q_{I_m,I_n}$, the set of all $\{\left<I_m,x\right>,\left<I_n,x\right>\}$ for $x$ of the common type of $I_m$ and $I_n$ and $E_{I_m,I_n}$, the set of all
+$\{\left<I_m,x\right>,\left<I_n,y\right>\}$  where $x$ is a singleton and a subset of $y$, both being of the common type of $I_m$ and $I_n$.  We need the construction 
+of the set of all $\{\left<I_m,\{x\}\right>,\left<I_n,\{y\}\right>\}$ of the common type of singletons of elements of $R$ for $\{\left<I_m,x\right>,\left<I_n,y\right>\}\in R$:  this allows construction of all typed versions of
+atomic sentences.
+
+With what we have so far, we can construct  $\{\{\left<I_0,\iota^{i_0}`x\right>\}:\phi\}$.  To get to $\{x:\phi\}$ we need to be able to construct $\{x : \{\left<I_0,x\right>\} \in R\}$,
+and set unions.
+
+Note that quantifiers over symbols $I_n$ in formalizations of these axioms are quantifiers over all objects:  any object of appropriate type can be used as an index.
+
+\end{description}
+
+We introduce a New Idea which enables us to get a finitely axiomatized theory.  We introduce primitive function symbols $\iota^{x,y}$.  $\iota^{x,y}`u$ is defined for each $u \in \tau`x$
+and $\iota^{x,y}`u \in \tau`y$ when it is defined.   Axioms assert the following:
+
+\begin{enumerate}
+
+\item For each $x,y$, one of $\iota^{x,y}$ and $\iota^{y,x}$ is injective.  If $\iota^{x,y}$ is injective and $\tau`x \neq \tau`y$, then $\tau^2`u = \tau`y$ for some $u$,
+and $\tau^{x,u}$ is injective.
+
+\item If $\iota^{x,y}$ and $\iota^{y,z}$ are injective, then $\iota^{y,z}`\iota^{x,y}`u = \iota^{x,z}`u$ for all $u \in \tau`x$.
+
+\item $\iota^{x,x}`u = u$ and $\iota^{x,\{x\}}`u = \{u\}$ for all $u \in \tau`x$.
+
+\item  If $x \sim z$ and $y \sim w$, $\iota^{x,y}`u = \iota^{z,w}`u$ where defined.
+
+\end{enumerate}
+
+A further important condition is that occurrences of $\iota^{x,y}$ are permitted in instances of comprehension only when no variable bound in the instance of comprehension occurs in the terms $x$ or $y$.  The idea being expressed here is that of any two types, one of them can be embedded injectively into the other by an iterate of the singleton map.
+
+Note that types must be linearly ordered by injectivity of $\tau^{x,y}$.  Reflexivity and transitivity are enforced directly.  If $x \neq y$ and both $\iota^{x,y}$ and $\iota^{y,x}$ are injective,
+then their composition must be the identity.  Now consider that one of $\tau^{\{x\},y}$ and $\tau^{y,\{x\}}$ must be injective.  If  $\tau^{\{x\},y}$ were injective,
+we could apply $\tau^{x,\{x\}}$, then $\tau^{\{x\},y}$, then $\tau^{y,x}$, the composition being the identity.  But we would then have an injection from $\tau`{\{x\}}$ into $\tau`x$, mentionable in instances of comprehension, which is impossible.  So $\tau^{y,\{x\}}$ must be injective, and similarly $\tau^{x,\{y\}}$ must be injective.  Now either $\tau^{\{x\},\{y\}}$
+or $\tau^{\{y\},\{x\}}$ must be injective.  Suppose wlog that $\tau^{\{x\},\{y\}}$ is injective.  Then for some $u$, $\tau^2`u = \tau`\{y\}$ and $\tau^{\{x\},u}$ is injective.
+But clearly $u=y$, and we have already shown this to be impossible.
+
+We can then produce a finitely axiomatized theory by modifying developments given above.
+
+The basic idea is that we can internalize the development of the tuples used in the proof of finite axiomatization of bounded stratified comprehension.  If we have $x,y,z$ that
+we want to form a tuple from, one of them (wlog $z$) has $\iota^{x,z}$ and $\iota^{y,z}$ injective:  we can then apply appropriate maps to bring everything to the type of $z$.
+The development above works with slight modifications:  we want to do singleton images of relations in one fell swoop (with general $\iota^{x,y}$) to move atomic sentences to general types, and we want to use
+general elementwise application of $(\iota^{x,y})^{-1}$ rather than set union.
+
+We add more comprehension axioms to our finite collection:  we permit formation of $\{(x,y):((\iota^{v,u})^{-1}`x,(\iota^{v,u})^{-1}`y) \in R\}$ where $x \in \tau`u$.  For example,
+the collection of all $(x,(\iota^{u,\{u\}})^{-1}`x)$ for $x \in \tau`\{u\}$ is the singleton image of $\{y \in \tau`u:y \not\in y\}$.  This allows us to deal with failures of stratification in instances of comprehension.  We do this of course only to support proofs that such sets are empty.
+
+Details to fill in here.
+
+
+
+\end{document}
+

@@ -1,0 +1,403 @@
+\documentclass[12pt]{article}
+
+\title{Category theory in TST(U) and NF(U)}
+
+\author{M. Randall Holmes}
+
+\date{June 3, 1  pm.  Some general cleanup.  One thing which is clear to me on reading Adam's thesis is that some translation is required to establish the correct analogies between what he is doing and what I am doing with exponentials.  This will help me to understand what he is doing.}
+
+\usepackage{amssymb}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Martin, I am going to present basic definitions which I think will support Adam's intentions and results in a situation which should be friendlier to ordinary set theoretical intuition.
+I'll ramp them up at the end to both outlooks which I have been outlining for Adam's thesis, one of which I think is close to the way he is actually thinking, or at any rate supports his results.
+
+
+I shall state all definitions and axioms in foundational theories I am using.  This is not because I don't think you know these things perfectly well, but because there are subtle differences in usage which it is my responsibility to make clear.
+
+I am not necessarily doing the same things that Adam does, and not all of my devices are things Adam has to use.
+
+\section{Type theoretic preliminaries}
+
+\subsection{Primitives and axioms}
+
+I begin with TSTU.  This is the typed theory of sets with sorts (which are also called types) indexed by the natural numbers (the U says that we allow urelements in each positive type).  Each variable has a sort, which we do not always express.  When we
+state an axiom or theorem with no type indices in evidence (which will be most of the time) we intend to assert it for every valid assignment of types to the variables.
+In an atomic formula $x = y$, the sorts of $x$ and $y$ are the same;  in an atomic formula $x \in y$, the sort of $y$ is the successor of the sort of $x$.
+
+In each type $i+1$, we provide a constant $\emptyset^{i+1}$.  The superscript may be dropped subject to the same interpretation we outlined above for variables where superscripts are omitted.  An axiom scheme asserts $(\forall x:x \not\in \emptyset)$ (explicitly,  $(\forall x^i:x^i \not\in \emptyset^{i+1})$ for each $i$).  
+
+We define ${\tt set}(x)$ ($x$ is a set) as $x = \emptyset \vee (\exists y:y \in x)$.  Our initial formulation of the axioms will permit atoms in each positive type.
+
+The axiom of weak extensionality asserts $(\forall xyz:z \in x \rightarrow (x=y \leftrightarrow (\forall w:w \in x \leftrightarrow w \in y)))$.  It should be clear that type assignments
+exist which make this formula well-formed:  we are asserting this at all type levels.  It should also be clear that if $x$ and $y$ are sets and have the same extension, they are equal.
+
+The axiom scheme of comprehension asserts, for each formula $\phi$ in which $A$ is not free, the universal closure of $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$.
+
+It should be clear that for each formula $\phi$ and variable $x$ of type $i$ (and assignment of values to parameters in $\phi$), there is a unique $A$ of type $i+1$ such that ${\tt set}(A)$ and
+$(\forall x:x \in A \leftrightarrow \phi)$:  we introduce the notation $\{x^i:\phi\}^{i+1}$ for this object (from which we will usually elide the type superscripts, but we show how to supply them).
+
+We supply one additional primitive construction (something with these properties is definable in all sufficiently high types if we assume strong extensionality).  We provide function symbols
+$\pi_1(x^i)^{i}$ and $\pi_2(x^i)^{i}$ and a term construction $(x^i,y^i)^{i}$ with axioms $\pi_1(x,y) = x; \pi_2(x,y)=y; (\pi_1(x),\pi_2(x))=x$.  The last of the three isn't strictly necessary but is technically neat.  All instances of the comprehension scheme involving pairing and projection are provided.
+
+We also add for technical reasons the assertion that type 0 has at least two distinct elements.  This ensures in combination with pairing that it has infinitely many elements.
+
+A further technical axiom provides that $(\{x\},\{y\}) = \{(x,y)\}$.  We will provide an argument that this can always be arranged.   The underlying argument is simply from the cardinalities of types, but it needs to be spelled out.  We will provide it later, showing by an argument from cardinalities of sets that if we have a model of our set theory with a pair in each type which does not respect this identity, we can always redefine the pair so that it does satisfy this identity.  We remark further that Adam has no analogue of this technical axiom, and that getting this to be true in NF(U) is possible but quite tricky.
+
+At this point we have presented the axioms of TSTU (the simple typed theory of sets with urelements) with a primitive type-level ordered pair.
+
+
+
+\subsection{Meta considerations}
+
+The metatheory is ordinary set theory.  Any model of TSTU is isomorphic to a model in which all type $i$ objects are pairs $(x,i)$ and the membership relation of the model is the
+restriction of the relation $x \, E\, y$ defined by $(\exists n \in {\mathbb N}:\pi_2(x) = n \wedge \pi_2(y) = n+1 \wedge \pi_1(x) \in \pi_1(y))\}$ (in this context $\pi_1$ and $\pi_2$ refer to the projections of the ordinary Kuratowski pair of the metatheory).  This is easy to see for models in which all objects are sets in the internal sense, and only slightly harder to see for models with atoms in positive types (the first projection of an atom in the sense of the model in type $i+1$ can be taken to be a set disjoint from the elementwise image under $\pi_1$ of the set implementing type $i$).
+
+A particular class of natural models that is useful to think about is the models in which we choose a set $X$ and take ${\cal P}^n(X) \times \{n\}$ as type $n$ for each $n$.  To support pairs and projection operators we need to have a bijection between ${\cal P}^n(x) \times {\cal P}^n(X)$ and ${\cal P}^n(X)$ to use to define the pair and projections of the model, which requires only that $X$ be infinite if we assume AC in the metatheory (and doesn't require much more if we do not assume AC).
+
+A more general class of natural models (more general because they can include atoms) is the class in which type $i$ is represented by $\tau_i \times \{i\}$ with ${\cal P}(\tau_i) \subseteq \tau_{i+1}$ for each $i$ (strict equality for each $i$ would yield a model of the form described in the previous paragraph).
+
+A reasonable condition to impose on all models is that if $\tau_i \times \{i\}$ represents type $i$, each element of any $\tau_{i+1}$ is either a subset of $\tau_i$ (thus representing a set) or nonempty and disjoint from $\tau_i$ (so representing an atom).
+
+\subsection{Relations and functions}
+
+We will discuss relations and functions using the primitive type level pair.  A discussion of the Kuratowski pair will appear subsequently.
+
+The cartesian product $A \times B$ is definable as $\{(x,y):x \in A \wedge y \in B\}$.  Notice that this is of the same positive type as its factors $A,B$.
+
+If $A$ and $B$ are sets of the same positive type, a set $R$ is called a relation from $A$ to $B$ iff it is a subset of $A \times B$.  We write $x \,R\,y$ for $(x,y)\in R$.  For any set $X$ of the common type of $A, B, R$
+we define $R``X$ as $\{y : (\exists x:x \, R\, y)\}$.  This is of the same type as $R$ and $X$.  We define ${\tt conv}$ (a constant in each appropriate type) as $\{((x,y),(y,x)):x=x \wedge y=y\}$.  This allows us to define $R^{-1}$ as ${\tt conv}``R$, ${\tt dom}(R)$ as $R^{-1}``V$ and ${\tt rng}(R)$ as $R``V$, where $V$ always abbreviates $\{x:x=x\}$, the universal set at the appropriate type.  It should be noted that here we are taking an entirely graph-based view of relations, as is appropriate in set theory but not in category theory, where a relation would be equipped with an intended domain and codomain.
+
+A function is a relation $f$ with the property that for any $x$, $f``\{x\}$ is either the empty set or a singleton.  We define $f(x)$ as the unique $y$ such that $f``\{x\} = \{y\}$ (this is only defined for $x \in {\tt dom}(f)$) .  The correct typing in $y=f(x)$ is $y^i = f^{i+1}(x^i)^i$.  When we introduce new function symbols $F$ in our language, we will avoid using the form $F(x)$ unless there actually is a set $\{(x,F(x)):x=x\}$ at all appropriate types, so that $F(x)$ can be construed as a case of function notation.  We write $f:A \rightarrow B$ iff ${\tt dom}(f) = A$ and ${\tt rng}(f)\subseteq B$ (noting again that we are identifying functions with their graphs in this set theoretic treatment:  we have to fix this in implementations of categories of functions).  We define $(T[x] \mapsto U[x])$ as the set $\{(T[x],U[x]):x=x\}$ when this is a function:  here we implicitly restrict to $x$ for which $T[x]$ and $U[x]$ are defined, so for example $\{(x \mapsto f(x)\} = \{(x,f(x)):x=x\}$ is understood to be simply $f$, even if the domain of $f$ is not the universe of the appropriate type.  We define
+$B^A$ as $\{f:(f:A \rightarrow B)\}$.  Note that $B^A$ is one type higher than $A$ and $B$, which must be of the same type, and also (for precision) note that we only
+assert $f:A \rightarrow B$ when $A$ and $B$ are sets.
+
+We introduce an example of a function symbol which does not correlate with a function for obvious reasons.  Define $\iota`x =\{x\} = \{y:y=x\}$.  This is not a function in our
+internal sense because $\iota`x$ is one type higher than $x$.    We will in general introduce non-function function symbols in the format $F`x$, and we will allow ourselves to 
+use the notation $F^n`x$ for iteration of such functions, though we note that the natural number superscript here is meta-theoretical.
+
+We say that a function symbol $F$ is an $n$-lateral function for an integer $n$ of the metatheory  if $n\geq 0$ and $(\iota^n`x \mapsto F`x)$ is a function ($\iota$ itself is 1-lateral)
+or $n\leq 0$ and $(x \mapsto \iota^{-n}`F`x)$ is a function [for each appropriate assignment of types]. An example of a $-1$-lateral function is $\bigcup$, the set union operator.   Lateral functions are usable with due respect for types in instances of comprehension.
+
+In general, a function symbol defined by a formula $y = F`x \leftrightarrow \phi(x^i,y^j)$ using equality, membership, pairs and projections represents a $(j-i)$-lateral function.
+
+Lateral relations can be defined similarly.  It isn't convenient for us to provide different syntax for non-set relation symbols such as $\in$.  A relation symbol
+$R$ is $n$-lateral iff $n \geq 0$ and $\{(\iota^n`x,y):x \, R\, y\}$ is a set or $n \leq 0$ and $\{(x,\iota^n`y):x \, R\, y\}$ is a set [for each appropriate assignment of types].  $\in$ is 1-lateral:  $\{(\{x\},y):x \in y\}$ is a set (the restriction of the subset relation, which is also a set, to the domain of singletons).
+
+It is worth noting that in the standard sort of model of TST in which the sets of type $i+1$ include correlates of all the subsets of type $i$, any function or relation whatsoever from 
+type $i$ to type $j$ (speaking meta-theoretically) is $(j-i)$-lateral, and more generally any relation symbol $R$ for which $x\,R\, y$ holding, though it may not dictate the types of $x$ and $y$, dictates the difference between their types, is $n$-lateral for suitable $n$.   This is not going to be true in some models we discuss eventually.
+
+Most of the concepts introduced so far are exactly cognate to concepts in ordinary set theory.  The details which are different have to do with our segregation of the types from one another.
+Even lateral functions and relations are intended to implement relations we could represent conveniently in the usual way if we were working in something like Zermelo set theory.  Another issue to pay attention to is polymorphic use of symbols (to avoid the proliferation of type indices everywhere).
+
+The terminology for lateral functions is mine, I believe;  at least, I was not conscious of borrowing it.
+
+\subsection{Injections, bijections, and cardinality}
+
+An injection is a function $f$ such that $f^{-1}$ is a function.  A bijection from $A$ to $B$  is a function $f:A \rightarrow B$ such that $f^{-1}:B \rightarrow A$.  Any injection $f$ is
+a bijection from ${\tt dom}(f)$ to ${\tt rng}(f)$.
+
+We say that $A \sim B$ iff there is a bijection from $A$ to $B$.  We define $|A|$, the cardinality of $A$, as $\{B : B \sim A\}$.  Notice that $|A^{i+1}|^{i+2}$ is the general type situation for cardinals.  We say that $|A| \leq |B|$ iff there is an injection $f:A \rightarrow B$.  It should be clear that this does not depend on the choice of the sets $A$ and $B$ from the cardinals.
+The Schr\"oder-Bernstein theorem that $|A| \leq |B| \wedge |B| \leq |A| \rightarrow |A|=|B|$ has essentially the standard proof.
+
+The cardinal 0 = $|\emptyset|$ is the singleton of the empty set.  The cardinal 1 = $|\{x\}|$ is the set of all singletons.  Both of these constants are polymorphic:  we actually have $0^{i+2}$ and $1^{i+2}$ for each type index $i$.  If $|A|$ and $|B|$ are cardinals, we can define
+$|A|+|B| = |(A \times \{x\}) \cup B \times \{y\}|$ for any $x \neq y$ (it is traditional to use 0 and 1, but these are not found in all types) and $|A| \cdot |B|$ as $|A \times B|$.  The reasons why these definitions do not depend on the choice of representatives $A,B$ are standard.  Of course $A$ and $B$ must be of the same type, and the output of each operation is of the same type as $|A|$ and $|B|$.
+
+The intersection of all sets which contain 0 and are closed under addition of 1 is the set of all finite cardinals or natural numbers, which we denote by $\mathbb N$, or $\mathbb N^{i+3}$ if we are being explicit about typing.  This is the Frege-Russell method of representing natural numbers as sets.  The fact that each natural number is inhabited, so that Infinity is true in appropriate well-typed formulations, is established by our definition of addition in combination with our technical axiom that type 0 (and so each type) has at least two distinct elements.
+
+We make some notational remarks.  ${\cal P}`A$ is defined as $\{x:x \subseteq A\}$ (noting for precision that $x \subseteq A$ means ${\tt set}(x) \wedge {\tt set}(A) \wedge (\forall u:u \in x \rightarrow u \in A)$) and we note that for any lateral function $F$ of whatever degree, the notation $F``A = \{F`x:x \in A\}$ makes sense.
+
+The usual Cantor theorem can be proved in this context.  Its usual form $|A| < |{\cal P}`A|$ is not well-typed.  The correct form in TSTU is $|\iota``A| < |{\cal P}`A|$.
+The proof is quite standard except for an unexpected appearance of the singleton operation.  A bijection $f$ from $\iota``A$ to ${\cal P}`A$ is postulated for the sake of a contradiction.
+Consider the set $R = \{a \in A:a \not\in f(\{a\}\}$.  Let $\{r\}=f^{-1}(R)$.  Then $r \in R$ iff $r \not\in f(\{r\}) = R$, a contradiction.
+
+We extract a concept from this proof.  We define $T`|A|$ as $|\iota``A|$.  It is straightforward to establish that $A \sim B$ iff $\iota``A \sim \iota``B$, so the notation
+$T`|A|$ does not depend on the choice of representative of its cardinal argument.  The correct typing of $T`|A|$ is $T`(|A^{i+1}|^{i+2})^{i+3}$:  $T$ is a 1-lateral function.  This also establishes that $T^{-1}$ makes sense though it may not be total.
+We are justly quite tempted to think that for any set $A$, sets $B$ of cardinality any $T^n`|A|$ or $T^{-n}`|A|$ are ``the same size" as $A$, this being witnessed by lateral functions which are bijections in a suitable external sense.
+
+The Cantor theorem tells us that $T`|A| < |{\cal P}`A|$.  Specializing this to the universe $V$ of a suitable type, we have $T`|V|<|{\cal P}`V|$.  This does imply that
+$T^{-1}$ is not total, because of course for any $A$ whatsoever of the appropriate type, $T`|A| \leq T`|V| < |{\cal P}`V|$:  $T^{-1}`({\cal P}`V)$ cannot be defined.  We have avoided extending this chain of inequalities by one more obvious step, but will do it now with explicit typing of innermost letters in each expression:  $T`|A^{i+1}| \leq T`|V^{i+1}| < |{\cal P}`V^{i+1}| \leq |V^{i+2}|.$  We might indeed write $T`|A| \leq T`|V| < |{\cal P}`V| \leq |V|,$ but one has to recognize that there is a pun between occurrences of $V$ at different types.
+
+Another useful extension of type-raising operations is to functions and relations.  $R^{\iota^n}$ can be defined as $\{(\iota^n`x,\iota^n`y):(x,y) \in R\}$.  This notation
+of course extends to functions.  When $f$ witnesses $A \sim B$, $f^{\iota}$ witnesses $\iota``A \sim \iota``B$.  When $g$ witnesses $\iota``A \sim \iota``B$, the notation $g^{\iota^{-1}}$ makes sense and its referent witnesses $A \sim B$.
+
+\subsection{Pairs of singletons and singletons of pairs}
+
+Here we show how to justify the assumption that $(\{x\},\{y\}) = \{(x,y)\}$.  We do this by showing that we can redefine the pair to satisfy this identity in each positive type, subject to the assumption
+that all our other axioms hold.
+
+The idea of the argument is that we have a bijection from $1 \times 1$ to 1 (1 being the set of singletons), induced by the pair already given on the next lower type, which we can use to implement each pair $(\{x\},\{y\})$ as $\{(x,y)\}$.
+We then want to map $((V \setminus 1) \times (V \setminus 1)) \cup ((V \setminus 1) \times 1) \cup (1 \times (V \setminus 1))$ bijectively to $V \setminus 1$ to complete our new pair definition.
+
+This will clearly be established as possible if we can show two things:  $V \setminus 1$ is the same size as $V$, and $V$ can be partitioned into three diisjoint sets each the size of $V$ (if $V \setminus 1$ is
+the size of $V$, the three cartesian products we have to handle are each clearly the size of $V$ by Schr\"oder-Bernstein).
+
+To map $V$ bijectively to $V \setminus 1$, we observe that there is a bijection mapping each $A \in V$ to $(A \times \{x\}) \cup \{(x,y),(y,y)\} $ ($x$ and $y$ distinct constants), a set which is not a singleton, so $V \setminus 1$ includes
+a set the same size as $V$ and so is the same size as $V$ itself by Schr\"oder-Bernstein.
+
+$V$ contains three disjoint sets $V \times \{(x,y)\}$, $V \times \{(y,x)\}$ and the complement of the union of the two preceding sets, each of the same size as $V$ (the last set includes
+$V \times \{(x,x)\}$, for example).  $x,y$ here are just two distinct constants.
+
+Thus we can map $((V \setminus 1) \times (V \setminus 1)) \cup ((V \setminus 1) \times 1) \cup (1 \times (V \setminus 1))$ bijectively to $V \setminus 1$ to complete a new definition of the ordered pair
+which satisfies the technical axiom.
+
+\subsection{Digression:  the Kuratowski pair}
+
+We define $\left<x,y\right>$ as $\{\{x\},\{x,y\}\}$.  This is of course the usual definition of the pair in set theory.  In TSTU it is less convenient than in the usual context because the decoration $\{\{x^i\}^{i+1},\{x^i,y^i\}^{i+1}\}^{i+2}$ reveals the correct typing $\left<x^i,y^i\right>^{i+2}$, which is distinctly annoying in applications.
+
+Relations, functions and related concepts can be defined much as usual using the Kuratowski pair.  This means that the typing in $x \, R \, y$ and $y = f(x)$, respectively, is $x^i\,R^{i+3}\,y^i$ and $y^i = f^{i+3}(x^i)^i$.  The domain and range operators become lateral functions:  ${\tt dom}(f)$, where $f^{i+3}:A^{i+1} \rightarrow B^{i+1}$ is of the same type $i+1$ as $A$ or $B$ (obviously, since it is actually $A$) and similar considerations apply to relations.
+
+There is a precise correlation between Kuratowski functions or relations and those defined using the type level pair.  To be exact, there is a bijection {\tt kconvert} from double singletons of relations defined in the usual way  to Kuratowski relations such that ${\tt kconvert}(\{\{R\}\}) = \{\left<x,y\right>:x \, R\, y\}$ for each relation $R$:  this is a straightforward exercise in the capabilities of stratified comprehension.  This means that the notion $\sim$ and the cardinal numbers $|A|$ are exactly the same no matter which pair is used:  $A \sim B$ defined in terms of the usual pair is witnessed by $f$ if and only if $A \sim B$ defined in terms of the Kuratowski pair is witnessed by ${\tt kconvert}(\{\{f\}\})$.
+
+What is not the same is the notion of cartesian product.  $A \times B$ defined in terms of the usual pair is of the same type as $A$ or $B$;  defined in terms of the Kuratowski pair it is two types higher.
+An example of the nastiness which ensues is that we cannot define $|A| \cdot |B|$ as $|A \times B|$ as is natural, but must instead define it as $T^{-2}`|A \times B|$ (which raises the question of how we know that this cardinal exists).
+
+Another issue has to do with the definition of $n$-tuples.  We can define $(x_1,x_2,\ldots,x_n)$ as $(x_1,(x_2,\ldots,x_n))$ if the type level pair is used, and cartesian products $A_1 \times \ldots \times A_n$ have sensible definitions.  $\left<x_1,x_2,\ldots,x_n\right>$ cannot sensibly be defined as $\left<x_1,\left<x_2,\ldots,x_n\right>\right>$  because the type of $x_1$ is then the same as that of $\left<x_2,\ldots,x_n\right>$,
+which is different from that of the $x_i$'s.  A scheme which puts all the $x_i$'s on the same footing, but which we hardly recommend, is to define $\left<x_1,x_2,\ldots,x_n\right>$ as $\left<\iota^{2n-4}`x_1,\left<x_2,\ldots,x_n\right>\right>$
+
+If we do not assume the axiom of infinity, and so cannot have the type level ordered pair, we note that there is a uniform way to handle $n$-tuples:  define an $n$-tuple $\left<x_1,\ldots,x_n\right>$ as a function
+(as defined in terms of the Kuratowski pair) whose domain is $\{1,\ldots,n\}$, defined by $\left<x_1,\ldots,x_n\right>(i) = x_i$.  This provides a uniform treatment of $n$-tuples for each concrete natural number $n$ in NFU with the negation of Infinity, for example, with $n$-ary relations for any $n$ on type $i$ objects being of type $i+4$.  In low types in type theory it might not be possible to use the actual numerals as indices in the definition of $n$-tuple because some of them might not be inhabited (or the type might be too low to define them).
+
+\subsection{The Quine pair on ${\cal P}^2`V$}
+
+We define a type level pair on sets of sets, which can be used as the pair on the universe in high enough types in TST (TSTU + $(\forall x:{\tt set}(x))$) or in NF.
+
+We define for any $x \neq y$ the set $N_{u,v}$ as the intersection of all sets which contain $(u,v)$ and if they contain any $z$ also contain $(v,z)$,  This set is a model of arithmetic
+with $(u,v)$ as 0 and $(z \mapsto (v,z))$ as the successor operation.  We define $\sigma(z)$ as $(v,z)$ if $z \in N_{u,v}$ and otherwise as $z$.  In sufficiently high types,
+we could instead define $\sigma(x)$ as $x+1$ if $n \in \mathbb N$, and otherwise as $x$.  In fact, for most applications we want to use the natural numbers:  we provide the treatment using
+$u$ and $v$ to show that our version of TSTU supports the Quine pair from type 2 up instead of from type 4 up.
+
+We then define $\sigma_1(z)$ as $\sigma``z$ and $\sigma_2(z)$ as $\sigma``z \cup \{(u,v)\}$ (or $\sigma``z \cup \{0\}$ if natural numbers are being used), for any set $z$, and define the Quine pair $[x,y]$, for any sets of sets $x,y$ as $\sigma_1``x \cup \sigma_2``y$.
+
+It is straightforward to see that $[x,y]$ is defined for sets of sets, and moreover that $\sigma_1^{-1}``[x,y]=x$ and $\sigma_2^{-1}[x,y] = y$, so this is a pair, with the pair and its projections all at the same type,
+defined only on sets of sets.  Since it is defined on sets of sets, it is defined only in types of index at least 2.  If it is defined as usual using natural numbers in place of $N_{u,v}$, it is defined only in types with index at least 4.  Of course if we do not have the primitive pair of TSTU, we do need to use the natural numbers (and we must assume Infinity) and the Quine pair becomes definable in type 4.
+
+The principal application of the Quine pair is that it shows that there is a pair in NF (subject to the esoteric proof that Infinity holds in NF).
+
+A secondary application is that it shows that TSTU (or NFU) + Infinity without a primitive pair interprets TSTU (or NFU) with a type level ordered pair.  The model with the type level ordered pair consists of the sets of sets
+of type at least 4 in the original model of TSTU + Infinity, with sets of sets of sets having their usual elements, sets of sets which are not sets of sets of sets being treated as atoms, and the Quine pair
+of the original model (defined using the natural numbers) being the primitive pair of the new model. It is amusing that by replacing the natural numbers of the original TSTU with the objects expected to be the natural numbers of the interpretation in the definition of the Quine pair, one can arrange for the pair in the interpretation to actually be the Quine pair of the interpretation when restricted to sets of sets.
+
+\section{Developing categories in TSTU}
+
+\subsection{Definitions of category and functor, with examples}
+
+\begin{description}
+
+\item[Definition of category (using lateral functions):]  A category is determined by a set $O$ of objects, a set $M$ of morphisms and certain auxiliary maps.  A partial function $\circ:(M \times M) \rightarrow M$ is provided
+which satisfies the condition that $f \circ (g \circ h)$ is defined and equal to $(f \circ g) \circ h$ iff $(f \circ g) \circ h$ is defined.
+A lateral function ${\tt Hom}$ maps $O \times O$ into ${\cal P}`M$.  ${\tt Hom}``(O\times O)$ is a partition of $M$.  $f \circ g$ is defined iff
+for some $A,B,C$, $g \in {\tt Hom}`(A,B)$ and $f \in {\tt Hom}`(B,C)$, and in this case $f \circ g$ belongs to ${\tt Hom}`(A,C)$.  There is a lateral map $1:O \rightarrow M$ such
+that for each $A \in O$, we have $1`A \in {\tt Hom}(A,A)$, and $1`A \circ f = f$ whenever $1`A \circ f$ is defined, and $g \circ 1`A = g$ whenever $g \circ 1`A$ is defined.
+The usual notation $1_A$ for $1`A$ can of course be used.
+
+We note that this entire definition can be stated in terms of $\circ$ and $1$ alone.  $O$ is the range of 1.  $M$ is the range of $\circ$.  For each $f \in {\tt Hom}`(A,B)$,
+$1`A$ can be identified as the unique $f_1$ such that $f \circ f_1 = f$ and $g \circ f_1 = g$ whenever defined and $1`B$ can be identified as the unique $f_2$ such that
+$f_2 \circ f = f$ and $f_2 \circ g = g$ whenever defined.  $A$ and $B$ can then be defined as $1^{-1}`f_1$ and $B$ can be defined as $1^{-1}`f_2$, and this procedure identifies the homset to which $f$ belongs.
+
+\end{description}
+
+This is precisely the usual definition of a category, except for the use of lateral maps.  We further remark is that the usual assumption is that $O$ and $M$ are of the same type,
+from which it follows that ${\tt Hom}$ is 1-lateral and 1 is a function.  In general, if 1 is $n$-lateral, ${\tt Hom}$ is $(n+1)$-lateral; $\circ$ is always a function.
+
+Replacing either $O$ or $M$ with its elementwise image under $\iota^n$ for a suitable $n$ will put us back in the situation where $O$ and $M$ are of the same type.
+This situation can be formulated entirely in terms of sets (in fact, any talk of lateral functions and relations reduces to talk of sets, but it is wise to remind ourselves of this).  
+
+\begin{description}
+
+\item[Definition of category (objects and morphisms in same type, no laterality):]  A category is determined by a set $O$ of objects, a set $M$ of morphisms and certain auxiliary maps.  $O$ and $M$ are assumed to be of the same type.  A partial function $\circ:(M \times M) \rightarrow M$ is provided
+which satisfies the condition that $f \circ (g \circ h)$ is defined and equal to $(f \circ g) \circ h$ iff $(f \circ g) \circ h$ is defined.
+A function ${\tt Hom}$ maps $\iota``(O \times O)$ into ${\cal P}`M$.  ${\tt Hom}``\iota``(O\times O)$ is a partition of $M$.  $f \circ g$ is defined iff
+for some $A,B,C$, $g \in {\tt Hom}(\{(A,B)\})$ and $f \in {\tt Hom}(\{(B,C)\})$, and in this case $f \circ g$ belongs to ${\tt Hom}(\{(A,C)\})$.  There is a function $1:O \rightarrow M$ such
+that for each $A \in O$, we have $1(A) \in {\tt Hom}(\{(A,A)\})$, and $1(A) \circ f = f$ whenever $1(A) \circ f$ is defined, and $g \circ 1(A) = 1(A)$ whenever $g \circ 1(A)$ is defined.
+The usual notation $1_A$ for $1(A)$ can of course be used.
+
+As above this entire definition can be stated in terms of $\circ$ and 1.  We note that it can be stated entirely in terms of $\circ$ if we adopt the convention that objects
+are identified with their identity morphisms.
+
+\end{description}
+
+We could also make {\tt Hom} a function from $\iota``O \times \iota``O$ into ${\cal P}`M$, so for objects $A,B$ a homset would be ${\tt Hom}(\{A\},\{B\})$, as in some earlier discussion.  Nothing hinges on this, but the way I do it above fits better with my systematic treatment of lateral functions.
+
+We give an example.  The category of sets and functions has as its objects all sets of a certain type.  The morphisms from $A$ to $B$ are of the form $(f,B)$ where $f :A \rightarrow B$.  Explicitly mentioning the codomain makes the homsets disjoint.  So $O = \{A:{\tt set}(A)\}$, $M = \{(f,B):(f:A \rightarrow B)\}$ (we note for precision that we regard ${\tt set}(A)$ and
+${\tt set}(B)$ as prerequisites for $f:A \rightarrow B$ to hold), $\circ = \{((f,g),h) \in (M \times M) \times M:{\tt dom}(\pi_1(f)) = \pi_2(g) \wedge \pi_2(f) = \pi_2(h) \wedge \pi_1(h) = (x \mapsto f(g(x)))\}$ (composition of functions suitably decorated), and $1_A = ((x \mapsto x)\cap (A \times A),A)$.
+
+It is important to note in this and other cases that the category just described has the type of the sets and functions in question as a hidden parameter:  there are actually
+categories of sets and functions of each type $i$, in which the various components of the category have types displaced from $i$ by various constant amounts.
+
+We define the important concept of a {\em functor\/}.  We take the minimalist view that a functor from a category $C$ to a category $D$ is determined by a lateral function $F$
+from $M_C$, the morphisms of $C$, to $M_D$, the morphisms of $D$, with the property that $F`(f\circ_C g) = F`(f) \circ_D F`(g)$ (and each side of this equation is defined iff
+the other side is defined).  Via the construction of the entire category from $\circ$ which has been described, it can be shown that a map $F_O$ on objects is induced such that
+$F`(1^C_A) = 1^D_{F_O`(A)}$ for each $A \in O_C$.  Of course if $C$ and $D$ are categories of the same type (we could conveniently identify the type of $C$ as the type of $\circ_C$) then a functor from $C$ to $D$ is a function.
+
+A {\em natural transformation\/} from a functor $F$ to a functor $G$, both functors from a category $C$ to a category $D$, is a lateral function $\tau$ with domain $O_C$, sending each element of $O_C$ to an element
+of ${\tt Hom}_D`(F_O(C),G_O(C))$  such that for any $f \in {\tt Hom}_C`(A,B)$ we have $G(f) \circ \tau`A = \tau`B \circ F(f)$.  Note that we can have natural transformations between functors which are lateral maps (to the same degree).  If $C$ and $D$ are of the same type, $\tau$ is a function.
+
+Now we can define a further, incestuous, example of a category.  The category of categories has categories (of a particular type) as its objects, represented by their composition operations $\circ$ (presuming the identification of objects with identity morphisms, or simply indifferent to what objects are) and functors, defined as above as functions between the morphism sets of categories, tagged as in the case of the category of sets and functions with the intended codomain, and composition of functors decorated with their intended codomains defined exactly as above as the composition operation of the category (from which of course the entire category can be reconstructed).
+
+We give a specific important example of a lateral functor.  This is the $T$-functor.  (We note that the polymorphic use of $T$ for many different type rasising operations is traditional in NF studies, and we will give some grounds to think all the $T$ operations are intimately related below:  it should be noted that the $T$ functor is only really a $T$ operation in the usual sense if we think of it as acting on isomoprhism classes of categories).  In the bare way I have defined functors, the $T$-functor sends a morphism $(f,B)$, where $f:A \rightarrow B$, to $(f^{\iota},\iota``B)$:  this embeds the category of sets and functions at a particular type $i$ into the category of sets and functions in type $i+1$.  The action of the corresponding map $T_O$ on objects is to send $A$ to $\iota``A$.  In NF this is an external endofunctor:  this is because in the NF context the types are collapsed together (we will talk about this process later).  Here, it is the index example of a functor between categories of different types.
+
+A category which Adam does not like but which my definition does accommodate is the category of sets and functions using the Kuratowski definition of function:  the issue here is that the morphisms are two types higher than the objects, so the lateral function sending $A$ to $1_A$ is 2-lateral and {\tt Hom} is 3-lateral.  It should also be noted that a morphism would have to be of the form $(f,\{\{B\}\})$ where $f$ is a Kuratowski function from $A$ to $B$.
+
+\subsection{Some constructions in the category of sets and functions}
+
+We briefly outline the reason why the category of sets and functions (in each type) in TSTU is not cartesian closed.
+
+The product construction $A \times B$ on sets and the projection maps $\pi_1$, $\pi_2$ (in each type) witness that the category of sets and functions (in each type) has products in an entirely expected way.  We may fill in details as we develop this document further.
+
+For the category of sets and functions to have exponentials, a prerequisite to be cartesian closed, we need for each pair of sets $A,B$ a set $B^A$ [not the same as the set $B^A$ defined above] at the same type as $A$ and $B$ with a function
+{\tt ev} from $B^A \times A$ to $B$ such that for any function $g$ from $C \times A$ to $B$ we have a unique function $\hat{g}$ from $C$ to $B^A$ such that
+${\tt ev}\circ (\hat{g} \otimes 1_A) = g$, that is, ${\tt ev}(\hat{g}(x),y) = g(x,y)$ for every $x \in C$ and $y \in A$.  For simplicity, let $C$ have one element $u$.
+We then have ${\tt ev}(\hat{g}(u),y) = g(u,y)$ for each $y \in A$.  Thus every function $g:A \rightarrow B$, which we can confuse for this purpose with
+a function from $(\{u\} \times A)$ to $B$,  has a correlate $\hat{g}(u)$ which belongs to $B^A$ and so is at the same type as the elements of $A$.  But this is impossible.
+Let $A = V$:  then $V^V \subseteq V$ is clear, and we can define the function $R= ((u,x) \mapsto F({\tt ev}(x,x)))$  and we get ${\tt ev}(\hat{R}(u),x)) = R(u,x) = F({\tt ev}(x,x))$, whence
+${\tt ev}(\hat{R}(u),\hat R(u)) = F({\tt ev}(\hat R(u),\hat R(u))$, which is absurd:  let $F$ be $(A \mapsto V \setminus A)$, the complement operation, which has no fixed point.  In short, from exponentials we get Curry's paradox.  What is going on here is not very mysterious:  the actual space $B^A$ of functions from a set $A$ to a set $B$ is of higher type than $A, B$ and may be larger than any set in the common type of $A$ and $B$.
+
+Let's look at what we actually do have, using the notion of function space $B^A$ defined above.   The equation ${\tt ev}(\hat g(x),y) = g(x,y)$ can have types fixed thus:  ${\tt ev}(\hat g(\{x\}),\{y\}) = \{g(x,y)\} = g^{\iota}(\{(x,y\}) = g^{\iota}(\{x\},\{y\})$ (using the technical axiom on pairs of singletons:  this is what it is for!).    We unfold the corrected
+version of the statement of existence of exponentials above:  there is an arrow ${\tt ev}$ from $B^A \times T_O`A$ to $T_O`B$  to such that for any function $g:C \times A \rightarrow B$ there is a unique
+$\hat g :T_O`C \rightarrow B^A$ such that ${\tt ev} \circ (\hat g \otimes 1_{T_O`A}) = g^\iota = T(g)$.    It is important to notice that this formulation not only does not yield exponentials in the proper sense, but is not even a statement about a single category:  it asserts a relationship between the categories of sets and functions at successive types.   In the NF(U) context, where types are collapsed together, it becomes an assertion about the single category of sets and functions essentially involving the external endofunctor $T$.
+
+My technical axiom makes this quite clean.  Adam does not have this technical axiom, and I need to give an account of the more complex situation which obtains if one does not assume that pairs of singletons and singletons of pairs are nicely correlated.
+
+Without the technical axiom,   ${\tt ev}(\hat g(x),y) = g(x,y)$ can have types fixed thus:  ${\tt ev}(\hat g(\{x\}),\{y\}) = \{g(x,y)\} = g^{\iota}(\{(x,y\}) = (g^{\iota} \circ \pi)(\{x\},\{y\})$, where $\pi = ((\{x\},\{y\}) \mapsto \{(x,y)\})$:   there is an arrow ${\tt ev}$ from $B^A \times T_O`A$  to $T_O`B$  such that for any function $g:C \times A \rightarrow B$ there is a unique
+$\hat g :T_O`C \rightarrow B^A$ such that ${\tt ev} \circ (\hat g \otimes 1_{T_O`A}) = g^\iota \circ \pi = T(g)\circ \pi$.  The map $(g \mapsto T(g) \circ \pi)$ is not a functor, but the map
+$T' = (g \mapsto \pi^{-1} \circ T(g) \circ \pi)$ is:   there is an arrow ${\pi^{-1} \circ \tt ev}$ from $B^A \times T_O`A$ to $T'_O`B$ (the prime here is really intended) such that for any function $g:C \times A \rightarrow B$ there is a unique
+$\hat g :T_O`C \rightarrow B^A$ such that $(\pi^{-1} \circ {\tt ev}) \circ (\hat g \otimes 1_{T_O`A}) = \pi^{-1} \circ g^\iota \circ \pi = T'(g).$   From $\hat g$ we can clearly also determine $g$.  Note that $T'$ is not the same functor as $T$ and its image is not the same subcategory as the image of $T$, though it is isomorphic. 
+
+It is important to note that I did not construct this by consulting anything Adam wrote:  I looked at an account of exponentiation in categories in a textbook, also working from my memory of McLarty's result.  Adam does describe pseudo-cartesian closure in very similar terms (p. 110).  I need to analyze exactly how he frames this.
+
+The technical axiom can be shown to be consistent with NF using technology of mine, and with NF + AxCount under quite strong additional assumptions.  
+
+\section{Polymorphism and ambiguity: collapsing the types to obtain NF(U)}
+
+\subsection{Ambiguity, NF(U), and the results of Specker.}
+
+It is useful to provide some formalism for type manipulations.  Let $(x \rightarrow x^+)$ be a map on variables (as pieces of text), which is a bijection from variables in general to variables of positive type,
+such that if $x$ is of type $i$, $x^+$ is of type $i+1$.  Define $\phi^+$ for any formula $\phi$ as the result of replacing all variables with their images under this map.
+
+It should be evident that if $\phi$ is well-formed, so is $\phi^+$, and almost as immediately evident that if $\phi$ is provable, so is $\phi^+$.  Any concept defined as $\{x :\phi(t_1,\ldots,t_n)\}$ can
+be defined in a precisely analogous way at higher types as $\{x^{+^n} :\phi(t_1^{+^n},\ldots ,t_n^{+^n})\}$, and in fact we have already systematically used such polymorphic definitions.  It is not
+true that provability of $\phi^+$ implies provability of $\phi$, and there is no reason to believe the implication $\phi \rightarrow \phi^+$ (or the corresponding biconditional) in general.
+
+The temptation which presents itself is to {\em identify\/} the types.  There are strong reasons to resist this temptation.  The most obvious is that it appears that type $i+1$, being, informally speaking,
+the power set of type $i$ (plus some atoms), is larger in cardinality.  But what happens when one identifies the types is very interesting.
+
+We present a formulation of NFU.  NFU is a first-order theory whose primitives are a constant $\emptyset$, the equality relation, and the membership relation.  NFU is a one-sorted theory, but it is formally convenient to provide ourselves with countably many superscripted variables $x^i$ for each natural number $i$ (as well as unsuperscripted variables).  
+
+We say that an atomic formula is well-typed iff either one of the variables in it is unsuperscripted or if it is of one of the forms $x^i=y^i$ or $x^i \in y^{i+1}$.   Terms $\pi_1(x), \pi_2(x), (x,y)$ should
+be superscripted with the same superscript as any of their their constituent variables and follow the same rules as variables when they appear superscripted in atomic formulas.  A formula is
+{\em stratified\/} iff each atomic formula in it is well-typed and each bound variable is superscripted.
+
+The axioms of NFU are analogous to those of TSTU.
+
+\begin{description}
+
+\item[empty set:]  $(\forall x:x \not\in \emptyset)$.
+
+\item[definition of sethood:]  We define ${\tt set}(x)$ as $x = \emptyset \vee (\exists y:y \in x)$ just as in type theory.
+
+\item[extensionality:]  $$(\forall xyz: z \in x \rightarrow (x=y \leftrightarrow (\forall w:w \in x \leftrightarrow w \in y)))$$
+
+\item[comprehension:]  For each stratified formula $\phi$ in which $A$ does not appear free, $(\exists A:(\forall x^i:x^i \in A \leftrightarrow \phi))$ is an axiom.  The notation $\{x^i:\phi\}$ (or $\{x:\phi[x/x^i]\}$, if $x$ does not occur in $\phi$) may be used for the unique witness to this axiom which is a set.
+
+\end{description}
+
+Note that superscripted variables have no logical privileges;  in particular, the usual rules for renaming bound variables allow superscripts to be dropped (with care) from bound variables
+in stratified formulas (and in particular in instances of comprehension) without any effect on their truth value.  We refer to a formula which can be made stratified by renaming of bound variables
+as ``stratifiable".
+
+We have the usual axioms $\pi_1(x,y) = x; \pi_2(x,y)=y; (\pi_1(x),\pi_2(x))=x$ for the type level  ordered pair.  These are not usually included in the formulation of NFU as a theory, though it is not unknown to do so.
+Assuming these axioms implies Infinity.  We note that usual forms of the Axiom of Infinity do not imply the existence of a type level ordered pair, though NFU + Infinity does interpret NFU with a typed ordered pair in a way that we may sketch.
+
+We have no need of a special axiom to assert the existence of two distinct objects:  NFU gives us any concrete finite number of distinct objects.  We are not for the moment attempting to justify
+the technical axiom $(\{x\},\{y\}\}) = \{(x,y)\}$, though we believe it to be consistent with both NFU (fairly easily) and NF (rather difficult).
+
+We remark on the general problem of introduction of defined notions.  We introduce a description operator $\delta$, the term  $(\delta x:\phi)$ representing the unique object $x$ such that $\phi$ or $\emptyset$ if there is no such object.
+The subscripting rule for these terms is that if the bound variable is superscripted, the description term must receive the same superscript.  In a stratified formula, of course, all bound variables must be superscripted,
+so all description terms will be superscripted.  Consideration of how description terms are eliminated reveals that use of description terms satisfying this superscripting rule is safe in instances of stratified comprehension.
+A specific case is the notation $\{x^i:\phi\}$, which is shorthand for $(\delta A^{i+1}:{\tt set}(A^{i+1}) \wedge (\forall x^i:x^i \in A^{i+1} \leftrightarrow \phi))^{i+1}$, whence we get the superscripting rule
+$\{x^i:\phi\}^{i+1}$.
+
+Now all of the notions defined above for type theory can be defined for NFU as well.  A particular point is that the notion of $n$-lateral function makes sense in NFU, though the interpretation must be different as we are actually identifying all the types.  Any definition or theorem which makes sense in TSTU will make sense in NFU, with different interpretations of any superscripted variables.  The converse is not necessarily the case.
+
+Because the language of NFU is untyped, there are further opportunities to attempt definitions of invalid function symbols.  For example, the von Neumann successor $\nu`x = x \cup \{x\}$ is definable in NFU.  The object
+$\nu`x$ exists for any $x$, being $\{y^i:y^i \in x \vee y^i = x\}$, which is stratified, but this operation cannot be mentioned (at least, not unless applied to a constant) in the definition of a set.  The function symbol
+$\nu$, which is not even lateral, may be called simply ``bad".  We will continue to use the notation $F`x$ for application of a function symbol $F$ not known to be, or known not to be, equivalent to application of a function.
+
+NFU contains big objects.  The set $V = \{x:x=x\}$ is no longer a shorthand for the collection of all elements of a particular type (which can if one is not careful appear at different type levels in the same
+formula of TSTU, producing a kind of pun) but actually the universal set.  The formula $T`|A| \leq T`|V| < |{\cal P}`V| \leq |V|$, which we gave as an example of a pun above, is also a theorem of NFU and
+really tells us that $|\iota``V| = T`|V|<|V|$, the collection of all singletons is strictly smaller in cardinality than the universe.  This feels really odd, since the singleton map affords a one-to-one correspondence:
+the corollary is that $\iota = (x \mapsto \{x\})$ is not a set function, which is of course hardly surprising, but before we did not even need to say it.  The cardinal $|A|$ of a set in NFU is the set of all sets which are the same size as $A$, another big collection that we would not be able to form in the usual set theory.
+
+NFU does not contain a model of itself.  One might think that $(V ,\in)$ was a model, but in fact $[\in] =\{(x,y):x \in y\}$ cannot be a set.    If it were a set, then $\{x:(x,x) \not\in [\in]\}$ would be a set, and this would be $\{x:x \not\in x\}$, the Russell class, which cannot exist.   NFU does contain models of as many types as desired of TSTU, which are worth describing.  The set $E = \{(\{x\},y):x \in y\}$ does exist by stratified comprehension.  A model of $n$ types of TSTU can be obtained in which type $i$ for $i \leq n$ is $\iota^{n-i}``V$, and the membership relation of type $i-1$ in type $i$ is implemented by $E^{\iota^{n-i}}$, and the projection relations on type $i$ are implemented by $\pi_1^{\iota^{n-i}}, \pi_2^{\iota^{n-i}}$.  In fact, this model can be seen in type $n$ (and above) in TSTU.
+
+We state an important theorem of Specker which clarifies the relationship between NF(U) and TST(U).
+
+Let the scheme asserting $\phi \leftrightarrow \phi^+$ for each closed formula $\phi$ be called the Ambiguity Scheme.
+
+Specker showed the following.
+
+For any model of TSTU + Ambiguity, there is a model of NFU which satisfies the same sentences (with the different interpretation of superscripted variables), and also a model of
+TSTU with a type shifting endomorphism which satisfies the same sentences.  We explain the latter statement.
+
+\begin{description}
+
+\item[Definition:]  A map {\bf j} on a model of TSTU is called a type shifting endomorphism iff ${\bf j}`x^i$ is of type $i+1$, ${\bf j}`x \in {\bf j}`y \leftrightarrow x=y$, ${\bf j}`x \in {\bf j}`y \leftrightarrow x \in y$,
+and ${\bf j}`(x,y) = ({\bf j}`x,{\bf j}`y)$.
+
+\end{description}
+
+A type-shifting endomorphism gives a precise isomorphism between the structure consisting of types 0,1,2$\ldots$ with the primitive notions of our theory and the structure consisting of type 1,2,3$\ldots$.
+
+\begin{description}
+
+\item[Observation:]  The function symbol ${\bf j}$. if it is present, is bad.
+
+\item[Proof:]  If {\bf j} were not bad, it would be 1-lateral, and $(\{x\} \mapsto {\bf j}`x))$ would be a function $J$.  Then we would have a set $R = \{x:x \not\in J(\{x\})\}$.  We would have
+${\bf j}^{-1}`R \in R$ iff ${\bf j}^{-1}`R \not\in J(\{{\bf j}^{-1}`R\}) = R$, which is a contradiction.
+
+\end{description}
+
+Just for fun I describe how to generate a model of TSTU following the rules of the first chapter from a model $(M,E)$ of NFU.   Type $i$ of the model is of the form $\tau_i \times \{i\}$.
+$\tau_0 = M$, the domain of the model.  We define a sequence $m_i$ for each $m \in M$ by a simultaneous recursion with the $\tau_i$'s.  $m_0 = m$ for each $m$.  Each $\tau_i$ is the set of
+all $m_i$'s.  If $m$ is a set in the sense of the model of NFU, $m_{i+1} = \{n_i:n \, E\,m\}$.  If $m$ is an atom in the sense of the model of NFU, $m_{i+1} = \{\{m,\tau_i\}\}$.  Notice that
+$((m_i,i) \mapsto (m_{i+1},i+1))$ is a type shifting endomorphism for this model, and that this model will satisfy all sentences satisfied by the original model of NFU (with the definition of pairing directly inherited from the model of NFU by each type in the obvious way).
+
+\subsection{Unstratified notions of smallness in NFU}
+
+In TSTU, it is natural to think of $|A|$ and $T`|A|$ as the same cardinal:  $A$ and $\iota``A$ are sets in different types which we can see are the same size externally.
+
+In NFU, we cannot think this way, as for example $T`|V| < |V|$.  We do have $T`0 = 0,  T`1=1, T`2 = 2\ldots$, but we cannot prove that $T`n = n$ for each rational number.
+A nice illustration for the reasons of this is found in Rosser's motivation for his axiom on the subject.  We all know, of course, that $\{1,\ldots,n\}$ has $n$ elements:  that is how we count.
+But the assertion $\{1,\ldots,n\} \in n$ cannot be proved:  the problem is that it is badly typed.  The assertion $\{1,\ldots,n\}\in T^2`n$ is well-typed and can be proved by mathematical induction in a standard way.
+The assertion $(\forall n \in {\mathbb N}:\{1,\ldots,n\} \in n\}$ is the original form of Rosser's Axiom of Counting, which is equivalent to and now more often stated as $(\forall n \in {\mathbb N}:n=T`n)$.
+
+If a set $A$ satisfies $T`|A| = |A|$ it is said to be {\em cantorian\/}.  Such a set satisfies the ill-typed original form $|A|<|{\cal P}`A|$ of Cantor's theorem.  A still stronger related property can be defined
+A set $A$ is {\em strongly cantorian\/} iff $\iota\lceil A = \{(a,\{a\}):a \in A\}$, the restriction of the singleton map to $A$, is a set.  It is a theorem that $\mathbb N$ is cantorian;  the assertion that $\mathbb N$ is strongly cantorian is equivalent to the axiom of counting.  The strongly cantorian sets are good candidates for the sensible small sets familiar from ordinary set theory (and so we tend to like axioms which make more and more familiar sets strongly Cantorian).
+
+\subsection{Choice, infinity, and pairing in NF}
+
+NF is NFU + $(\forall x:{\tt set}(x))$, or equivalently $$(\forall xy:x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z \in y)),$$ the strong axiom of extensionality.
+
+A weird result beyond the scope of this note is that NF disproves Choice (NFU does not) and proves Infinity (NFU without the ordered pair axioms does not).
+
+In NF all objects are sets of sets and Infinity holds, so there is a definable type level pair, the Quine pair described above, so the pairing axioms are redundant.
+
+\subsection{Category theory in NF(U)}
+
+The definition of categories in NFU has already been given:  simply recapitulate the definition in type theory.  But the fact that the types are collapsed will give it an odd flavor.
+
+There are, as we have observed, big objects in NFU.  In fact, the category of sets and functions which we defined above in TSTU with a hidden type parameter is in NFU simply the single category of all sets and functions.  Similarly, there is a category of all categories in NFU.
+
+Our proof that the universal category of sets and functions is not cartesian closed can be recapitulated exactly as above.
+
+Our account of the pseudo-exponential construction that the category of sets and functions does have, using the lateral functors $T$ and $T'$, also goes exactly as above.  But now this is a very strange looking property of a single category, rather than a not so unnatural though convoluted relationship between two successive analogous categories in a type structure.
+
+There is a natural desire to state this as a property in categorical language in which $T$ and $T'$ are actual functors.  But in the context of NFU, $T$ and $T'$ are proper class maps.
+
+\end{document}

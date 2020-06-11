@@ -1,0 +1,209 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb}
+
+\title{A Disingenuous Introduction to Category Theory}
+
+\author{M. Randall Holmes}
+
+\date{5/7/2020 -- of course I am up to no good}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+This is an introduction to basic concepts of category theory.  Nothing more.  Of course.
+
+\section{Set theoretical preliminaries}
+
+We review basics of set theory, the usual foundation for mathematics.  Of course, there are those who think the tables should be turned and category theory should be used to found set theory.  We will come back to that point.
+
+We assume for the moment standard preliminaries of first order logic with equality, though if we get to foundations of logic in category theory we may want to insert these above.
+
+The basic primitive concept of set theory is membership, a binary relation written $x \in y$.
+
+A special primitive constant $\emptyset$ is provided for convenience.  
+
+The axiom of the empty set asserts $(\forall y: y \not\in \emptyset)$ (where $y \not\in x$ abbreviates $\neg y \in x$).
+
+We define ${\tt class}(x)$ (in English, $x$ is a class) as $x = \emptyset \vee (\exists y: y \in x)$.
+
+The axiom of extensionality asserts $$(\forall xy: {\tt class}(x) \wedge {\tt class}(y)  \wedge (\forall z:z \in x \leftrightarrow z \in y)),$$ classes with the same elements are equal.
+
+Objects which are not classes are called atoms.
+
+We define ${\tt element}(x)$ as $(\exists y:x \in y)$. 
+
+We provide the axiom of atoms:  $(\forall x:\neg{\tt class}(x) \rightarrow {\tt element}(x)).$
+
+We define ${\tt atom}(x)$ as $\neg{\tt class}(x)$ and ${\tt set}(x)$ as ${\tt class}(x) \wedge {\tt set}(x)$.
+
+The axiom of class comprehension asserts for every formula $\phi$ and variable $A$ not occurring in $\phi$, the universal closure of $$(\exists A: {\tt class}(A) \wedge  (\forall x: {\tt element}(x) \rightarrow (x \in A \leftrightarrow \phi))):$$  we introduce the notation $\{x : \phi\}$ for the unique value of $A$ that witnesses this.
+
+Before introducing our next axiom scheme, we decorate our variables a bit.
+
+From this point on, we reserve bold face upper case variables for classes (noting that sets are classes but atoms are not)  and reserve lower case variables for elements (whether sets or atoms).  Upper case variables which are not boldface may be used for sets:  some upper case letters will be defined constants which stand for classes which are not sets.   Further, we provide additional series of variables $x_i$ adorned with natural number indices, which are  restricted to elements.  A subscripted upper case variable $A_i$ might be used and will represent sets rather than general elements.
+
+We call an atomic formula ``well-typed" if both variables in it are element or set variables and either one of them is unsubscripted or the formula is of the form
+$x_i = y_i$ or $x_i \in y_{i+1}$.  A formula is stratified iff all variables in it are element or set variables, all bound variables are subscripted, and all atomic formulas in it are well-typed.
+Note that our theory is not sorted:  formulas which are not well-typed or stratified are nonetheless formulas.
+
+The axiom scheme of set comprehension asserts the universal closure of each formula $(\exists A_{i+1}:x_i \in A_{i+1} \leftrightarrow \phi)$, where $\phi$ is a stratified formula
+which does not contain any occurrence of $A_{i+1}$.  Note that dropping the type indices from all variables in an instance of comprehension does give a theorem by standard logical considerations of renaming of bound variables, and we do not intend to adorn all our variables with subscripts in practice.  Notice that the axiom of class comprehension already
+gives us $\{x_i:\phi\}$:  what the axiom scheme of set comprehension gives us in addition is that this class is a set.
+
+The typing scheme defends us from the Russell paradox, while preserving the universal set and complements of sets.  $\{x:x \not\in x\}$, the Russell class, certainly exists by class comprehension, and if it were an element, paradox would follow.  But $\{x : x = x\}$ and $\{x : x \not\in a\}$ are sets by stratified comprehension.  In general, a lot of big collections are sets, but their behavior may not be quite what we expect from ordinary small collections.
+
+We define the natural numbers, the general idea being that $n \in \mathbb N$ is the set of all sets with $n$ elements, but of course we cannot say that.
+
+Notice that $\emptyset = \{x : x \neq x\}$ is clearly a set by set comprehension.
+
+We define $\{x\}$ as $\{y : y=x\}$ as usual:  clearly this is a set.  The notation $\iota(x)$ for $\{x\}$ is also useful.
+
+We define 0 as $\{\emptyset\}$.  Notice that 0 is the set of all sets with zero elements in the usual sense.
+
+We define $a \cup b$ as $\{x : x\in a \vee x \in b\}$ for any sets $a,b$.   Clearly binary unions of sets are sets.
+We also provide the usual $a \cap b$ for $\{x : x\in a \wedge x \in b\}$, $a^c$ for $\{x : x \not\in a\}$, $V$ for $\emptyset^c$, and $a \setminus b$ for $a \cap b^c$.  All of these are sets.  All of these operations can be defined on classes as well:  we adopt the convention that any definition of a set using an instance of comprehension can have a class substituted for a parameter which does not appear on the left side of $\in$ (or otherwise in the role of an element)  in the definition:  for example, ${\bf A} \cup {\bf B}$ is $\{x : x\in {\bf A} \vee x \in {\bf B}\}$
+
+For any set $x$, we define $\sigma(x)$ as $\{u \cup \{v\}:u \in x \wedge v \not\in u\}$.  We leave it as an exercise for the gentle reader to verify that $\sigma(x)$ is a set by set comprehension.  Notice that if $x$ is the set of all sets with $n$ elements, $\sigma(x)$ will be the set of all sets with $n+1$ elements.
+
+We define the collection $\cal I$ of {\em inductive sets\/} as $$\{I : 0 \in I \wedge (\forall x \in I:\sigma(x) \in I)\}.$$  The reader may verify that this is a set.
+
+For any set $A$ we define $\bigcup A$ as $\{x : (\exists a:x \in a \wedge a \in A)\}$ and $\bigcap A = \{x: (\forall a:a \in A \rightarrow x \in a)\}$.  Note that this is a set.  Unions of classes can be defined similarly.
+
+We then define $\mathbb N$, the collection of natural numbers, as $\bigcap \cal I$.  We define 1 as $\sigma(0)$, 2 as $\sigma(1)$ and so forth.
+
+We provide an additional axiom governing the natural numbers (the axiom of mathematical induction):  $$(\forall n \in \mathbb N:(\forall {\bf I}: 0 \in {\bf I} \wedge (\forall x:x \in {\bf I} \rightarrow \sigma(x) \in {\bf I}) \rightarrow n \in {\bf I})):$$  every inductive class contains all the natural numbers.
+
+Mathematical induction for conditions that define sets is of course provided by the definition of $\mathbb N$:  but certain unstratified instances of mathematical induction are important.
+
+We define $\{x,y\}$ as $\{u:u=x \vee u=y\}$.  More generally, we define $\{x_1,\ldots,x_n,x_{n+1}\}$ as $\{x_1,\ldots,x_n\} \cup \{x_{n+1}\}$.
+
+We could define $(x,y)$ as $\{\{x\},\{x,y\}\}$ (following Kuratowski).  We leave it as a nontrivial exercise for the reader to verify that $(x,y) = (z,w) \rightarrow x=z \wedge y=w$. 
+
+Hoever, we do not use this definition.  We instead introduce a primitive notion of ordered pair.  For any terms $a,b$ of our language, $(a,b)$ is a term.  In instances of stratified comprehension,
+the correct typing is $(a^i,b^i)^i$ (if we used the Kuratowski definition the typing would be $(a^i,b^i)^{i+2}$).  
+
+The axiom of ordered pairs asserts $(a,b) = (c,d) \leftrightarrow a=c \wedge b=d$.  This is not a mere technicality:  it is (inessentially) stronger than the axiom of infinity.
+
+If we assumed that there were no atoms, we could introduce the type-level pair by a rather baroque definition.
+
+More generally, the definition of stratified comprehension can be extended to involve term constructions.  Each term construction $f(t_1,\ldots,t_n)$ must have a required type displacement between
+the type of each input variable or term  and the type of the whole term.   Atomic formulas then have the same required type displacements as in the original definition.  These term constructions can be introduced as
+primitives or by definition (as for example using an instance of comprehension).
+
+ We define ${\bf A} \times {\bf B}$ as $\{(a,b):a \in {\bf A} \wedge b \in {\bf B}\}$.
+
+We define a relation as a class of ordered pairs.  $x \, {\bf R} \, y$ means $(x,y) \in {\bf R}$.  ${\tt dom}[{\bf R}] = \{x: (\exists y:x {\bf R} y\}$;  ${\bf R}^{-1} = \{(y,x):x {\bf R} y\}$;  ${\tt img}[{\bf R}] = {\tt dom}[{\bf R}^{-1}]$.  Note that of course a relation can be a set, and the domain, inverse, and image of a set relation are sets.
+
+We define ${\bf R}``{\bf A}$ as $\{y:(\exists x \in {\bf A}:x {\bf R} y)\}$.  We say that a relation {\bf F} is a {\em function\/} iff for every $x$, either ${\bf F}``\{x\} = \{y\}$ for some
+$y$ or ${\bf F}``\{x\} = \emptyset$.  We define ${\bf F}(x)$ as the unique $y$ such that ${\bf F}``\{x\} = \{y\}$.  We define ${\tt F}:{\bf A} \rightarrow {\bf B}$ as holding iff {\tt F} is a function, ${\tt dom}[{\bf F}] = {\bf A}$, and ${\tt img}[{\bf F}] \subseteq {\cal B}$.  As was the case for domain and image above, we will
+avoid using notation of the form $f(x)$ for operations which can take classes as inputs.  If $R$ is a set relation, we will be willing to write ${\tt dom}(R)$, for example, because
+there is a function (in fact, a set function) which takes each set relation to its domain.  We note that we do use binary relation notation (as for example $x \in {\bf A}$) for ``relations" which can obtain between classes:  but do bear in mind that a genuine class relation can only relate elements.
+
+A function {\bf F} is called one-to-one or an injection iff ${\bf F}^{-1}$ is a function.  A set function $f$ is a bijection from $A$ to $B$ iff $f:A \rightarrow B$ and $f^{-1}:B \rightarrow A$.
+We define $A \sim B$ as holding precisely if there is a bijection from $A$ to $B$.  This similarity relation is easily seen to be an equivalence relation.  We define
+$|A|$ as $\{B:B \sim A\}$:  this is called the cardinality or size of $A$.  We define $|A| \leq |B|$ as holding iff there is an injection $f:A \rightarrow B$.  It is a well-known theorem that
+if $|A| \leq |B|$ and $|B| \leq |A|$, then $|A| = |B|$, that is, $A \sim B$.  It is straightforward to prove that the natural numbers as defined above are cardinal numbers.
+
+A {\em partition\/} is defined as a pairwise disjoint class of sets.  A {\em choice class\/} for a partition {\bf P}  is a class {\bf C} such that for each $P \in {\bf P}$, $|P \cap {\bf C}|=1$.  We assert the Axiom of Choice in the quite strong form that every
+partition has a choice class.
+
+The assertion that the order relation on cardinals satisfies trichotomy is equivalent to the weaker form of the axiom of choice which asserts that each set partition has a choice set.
+
+\section{The definition of a category}
+
+A {\em category\/} is determined by a class {\bf O} of {\em objects\/} and a class {\bf M} of {\em morphisms\/}, with certain additional operations.  With each pair $(A,B)$ in ${\bf O \times O}$ we associate a set ${\tt Hom}(A,B) \subseteq {\bf M}$:  these sets make up a partition of ${\bf M}$ so each morphism $f$ has a uniquely determined source $A$ and target $B$ such that $f \in {\tt Hom}(A,B)$.  We provide an operation $\circ$ whch is defined for $f,g$ with $g \in {\tt Hom}(A,B)$, $f \in {\tt Hom}(B,C)$, and which satisfies $f \circ g \in {\tt Hom}(A,C)$.
+The partial operation $\circ$ is associative.  For each $A \in {\bf O}$ we have $1_A \in {\bf M}$ which satisfies $f = f \circ 1_A$ for all suitable $f$ and $1_A \circ f = f$ for all suitable $f$.
+
+We note that the conventional use of capital letters for objects and lower case letters for morphisms may set up some conflicts with notation for elements and sets.  In any case, note that objects and morphisms are always elements
+
+We say that a category is a set category  if the partial function $\circ$  on pairs of morphisms is a set (whence it follows that ${\bf O},{\bf M}$ are sets).  It does not follow
+that ${\tt Hom}$ is a set, but the function sending $(\{A\},\{B\})$ to ${\tt Hom}(A,B)$ is a set.  It is worth noting that all the structure of a category is actually coded into $\circ$ (the objects $A$ being accessed via their identity morphisms $1_A$).
+
+We expand on the point that $\circ$ can be interpreted as carrying the entire category structure.  A composition operation for a category is a function ${\bf M} \times {\bf M} \rightarrow {\bf M}$ for some ${\bf M}$ (thus we extract the set of morphisms).  For any $f,g,h$, if either of $f \circ (g \circ h)$ or $(f \circ g) \circ h$ is defined, the other is defined and they are equal.
+For any $f$, there is a unique $1_{{\tt source}(f)}$ such that $f \circ 1_{{\tt source}(f)} = f$ and for all $x$ for which $1_{{\tt source}(f)} \circ x$ is defined, this is equal to $x$, and for all $x$ for which $x \circ 1_{{\tt source}(f)}$ is defined, this is $x$.  For any $f$, there is a unique $1_{{\tt target}(f)}$ such that $1_{{\tt target}(f)} \circ f = f$ and for all $x$ for which $1_{{\tt target}(f)} \circ x$ is defined, this is equal to $x$, and for all $x$ for which $x \circ 1_{{\tt target}(f)}$ is defined, this is $x$.   We identify objects in ${\bf O}$ with their identity morphisms, and we define ${\tt Hom}(A,B)$ as $\{f:1_{{\tt source}(f)} = A \wedge 1_{{\tt target}(f)} = B\}$.  A little calculation will reveal that this adds no information to the description above except for collapsing reference to objects to reference to their identity functions.
+
+  For any $f \in {\bf M}$ there is a set $H_f$, the set of all $g$ such that for any $h$, $g \circ h$ is defined iff $f \circ h$
+and $h \circ g$ is defined iff $h \circ f$ is defined.
+
+A concrete example of a category is the category of sets and functions:  the objects of this category are all the sets, the morphisms in ${\tt Hom}(A,B)$ are the functions $f:A \rightarrow B$, $f \circ g$ is the composition of $f$ and $g$ in the usual sense, and the morphism $1_A$ is the identity function on $A$.
+
+Many natural examples of categories are presented with the objects the sets with some structure and the morphisms the functions which respect that structure in a suitable sense.  For example, there is a category of topological spaces with continuous functions as the morphisms, and a category of groups with homomorphisms of groups as the morphisms.
+Not all categories are naturally  presented in this way, though there is a perhaps silly way to present any category as a system of classes and functions:  view $A \in {\bf O}$ as the union of all classes ${\tt Hom}(C,A)$ and the functor $f \in {\tt Hom}(A,B)$ as implemented by the function taking each $g \in {\tt Hom}(C,A)$ to $f \circ g \in {\tt Hom}(C,B)$.
+It is not necessarily the case that a small category can be presented as a class with sets as objects and set functions between those sets as morphisms.
+
+A structure preserving map (called a {\em functor}) from one category to another is determined by a map ${\bf F}$ whose domain is the union of the sets ${\tt Hom}(A,B)$ in the first category, with a map ${\bf F_O}$ induced by ${\bf F}(1_A) = 1_{{\bf F_O}(A)}$, each ${\bf F}``{\tt Hom}(A,B) \subseteq {\tt Hom}({\bf F_O}(A),{\bf F_O}(B))$, and
+${\bf F}(f \circ g) = {\bf F}(f) \circ {\bf F}(g)$ relating the composition operations of the two categories.   There is a category of set categories (which is itself a set category) whose objects are the set categories (which can conveniently be coded by their composition operations as functions, identifiying objects with identity morphisms) and whose morphisms are the functors.   The category of small categories is small (as are the category of sets and functions, the category of topological spaces, and the category of groups).  We will see examples of categories which are not sets later.
+
+The identification of objects $A$ with their identity arrows $1_A$ does depend on $1_A$ being uniquely determined by $A$ and vice versa.  If we are given $1_A$, we immediately are given $A$ as its source and target.  Suppose there were another $I \in {\tt Hom}(A,A)$ such that $I \circ x = x$ and $x \circ I = x$ whenever the left side of each equation is defined.
+$I \circ 1_A$ is defined, and is equal to both $I$ and $1_A$ by their respective identity map properties, so $I=1_A$ as desired.
+
+Where a specific category ${\bf C}$ is considered, we call its class of objects ${\bf O_C}$, its class of morphisms ${\bf M_C}$, and  label its hom-sets ${\tt Hom}_{\bf C}(A,B)$  We will normally not label identity maps or the composition function, though we could.  We exhibit use of this notation in the definition of subcategory:  {\bf C} is a subcategory of {\bf D} iff
+${\bf O_C} \subseteq {\bf O_C}$, ${\tt Hom}_{\bf C}(A,B) \subseteq {\tt Hom}_{\bf D}(A,B)$, and composition and identity morphism constructions on {\bf C} are restrictions of  those on {\bf D}.  A full subcategory is one which satisfies equality rather than inclusion of homsets of pairs of objects of ${\bf C}$ in the two categories:  a full subcategory of a given category is determined
+by any class of objects of the given category, and includes all morphisms between these objects.
+
+\section{Emulating set theoretical constructions in category theory}
+
+In this section we discuss emulation of properties of sets (and of functions considered as sets) in categories.
+
+Recall that we noted that every category can be considered as a category of structured classes, with $f:A \rightarrow B$ implemented as the class function from the union of all ${\tt Hom}(C,A)$, mapping each $g$ in a ${\tt Hom}(C,A)$ to $f \circ g$ in ${\tt Hom}(C,B)$.  It should be noted though that the function $(g \mapsto f \circ g)$ is a set function but is one type higher than $f$
+in terms of stratified comprehension:  this issue will  turn out to be important.
+
+This does suggest that composition might take over the role of function application in a category-theoretic formulation of interesting properties of sets and functions.
+
+For example, a function $f$ is {\em one-to-one\/} or a injection iff for any $x,y$, if $f(x) = f(y)$ then $x=y$.  Specify this to for any $x$,  $f(g(x)) = f(h(x))$ then $g(x)=h(x)$.  It then follows in the category of sets and functions that if $f \circ g = f \circ h$, then $g=h$ (using extensionality of functions).
+
+From this we can abstract a property of any arrow $f$ in a category ${\bf C}$:  $f:A \rightarrow B$ is {\em monic\/} iff for any $g,h:C \rightarrow A$, if $f \circ g = f \circ h$ then $g=h$.  This is a purely category theoretic property, in which the internal character of the various objects and morphisms plays no role.
+
+A set function from $A$ to $B$ is said to be onto $B$ or surjective if its image is exactly $B$.  In the category of sets and functions, a function comes decorated with its codomain as an intrinsic feature, so this property is an absolute property of the function.  The usual formulaton of this is that for every $y \in B$, there is $x \in A$ such that
+$f(x) = y$.  Suppose we have $g:A \rightarrow C$ and $h:A \rightarrow C$.  If $g(f(x)) = h(f(x))$ for every $x$, then $g=h$, because the expression $f(x)$ ranges over all values in $B$.  So if $g \circ f = h \circ f$, then $g=h$.
+
+From this we can abstract a property of any arrow $f$ in a category ${\bf C}$:  $f:A \rightarrow B$ is {\em epic\/} iff for any $g,h:C \rightarrow A$, if $g \circ f = h \circ f$ then $g=h$.  This is a purely category theoretic property, in which the internal character of the various objects and morphisms plays no role.
+
+These properties are dual in an interesting sense.  If we reverse the direction of all arrows in a category, we get a converse category.  Notice that the monic arrows of a category are the epic arrows of the converse category, and vice versa.
+
+It is important to note that the category theorist prefers not to identify a function with its graph alone (as is usual for set theorists and as we have done in our preamble.  The morphisms in the category of sets and functions are at the very least decorated with a codomain as an extra item of information.
+
+An idea whose motivation in set theoretical terms is obvious is the notion of the inverse of a morphism:  $g=f^{-1}$ iff $f \in {\tt Hom}(A,B)$, $g \in {\tt Hom}(B,A)$, $f \circ g = 1_B$ and $g \circ f = 1_A$.   That there can be only one inverse of a morphism (justifying the notation $f^{-1}$) we show as follows.  Suppose $f \circ g = 1_B$ and $g \circ f = 1_A$.
+$g = g \circ 1_B = g \circ f \circ f^{-1} = 1_A \circ f^{-1} = f^{-1}$.
+
+A morphism with an inverse is called an isomorphism.  It is not in general the case (as it is in the category of sets and functions) that an arrow which is monic and epic is an isomorphism.  But it will be true in special sorts of category which provide alternative formulations of set theory, which we will introduce.
+
+Consider any category in which there is at most one element in each ${\tt Hom}(A,B)$ (such a category is easily determined by any quasi-order, with singletons $\{A\}$ of domain elements $A$ of the quasi order as objects and ${\tt Hom}(A,B)$ neatly definable as the intersection of $\{(A,B)\}$ with the quasi-order.   Every arrow in such a category is obviously both monic and epic, but only the identity maps have inverses.  The use of singletons of elements of the quasi-order as objects ensures that this is a set category if the quasi-order is a set.
+
+We say that objects $A$ and $B$ in a category are {\em isomorphic\/} iff there is an invertible morphism from $A$ to $B$.  This ensures an exact correspondence between arrows from $A, B$ to other objects (in either direction) by composition with the invertible arrow.  In the category of sets and functions, isomorphic objects are sets with the same cardinality.  In other categories, objects which are isomorphic have the same structure in the sense appropriate to that category.
+
+We look for a category theoretical characterization of empty sets in the realm of sets and functions.  The empty set has the property that there is exactly one function from $\emptyset$ to $A$ for any set $A$.   So we define an {\em initial object\/} in a category as an object $A$ such that for any
+$B$, ${\tt Hom}(A,B)$ has exactly one element.  Notice that any two initial objects are isomorphic:  if $A$ and $B$ are initial, there is exactly one arrow $f$ from $A$ to $B$ and exactly one arrow $g$ from $B$ to $A$.  Now $f \circ g$ must be the unique arrow $1_B$ from $B$ to $B$,
+and $g \circ f$ must be the unique arrow $1_A$ from $A$ to $A$, so $f$ (and $g$) are invertible.  In set theory there is one empty set, but even in our set theory, we could add the atoms as additional empty sets.  In other categories there may be many initial objects.
+
+Ain interesting property of singleton sets is that for any singleton $\{x\}$ and set $A$, there is just one function from $A$ to $\{x\}$ (the constant function).  So we define a {\em terminal object\/} in a category as an object $A$ such that for any object $B$, ${\tt Hom}(B,A)$ has exactly one element.
+All terminal objects are isomorphic by a very similar argument to that we gave above for initial objects.  In set theory it is natural for there to be many terminal objects.  In some categories there is only one.  It is interesting to note that the notions of initial and terminal object are dual in a sese mentioned before.
+
+We formalize this notion of duality.  For any category ${\bf C}$, define ${\bf C^{\tt op}}$ as the category with the same objects and morphisms but with composition $f \circ^{\tt op} g$ defined as $g \circ f$, and with ${\tt Hom}(A,B)$ of the new category defined as ${\tt Hom}(B,A)$ of the original category.  We can then observe that proving a theorem about a category theoretic concept often immediately proves a theorem about a dual concept:  for example, we showed that all initial objects in a category ${\bf C}$ are isomorphic, from which it follows that all terminal objects in ${\tt C^{\tt op}}$ are isomorphic, but every category is a converse category so all terminal objects in any category are isomorphic.
+
+We now tackle the more complicated construction of Cartesian products $A \times B$ and import it into a category theoretic setting.  An important role is played by the projection operations $\pi_1:(A \times B) \rightarrow A$ and $\pi_2:(A \times B) \rightarrow B$, which satisfy
+$\pi_1(x,y) = x$ and $\pi_2(x,y) = y$.  We want to modify this to use composition instead of application.  $\pi_1(f(x),g(x)) = f(x)$ and $\pi_2(f(x),g(x)) = g(x)$.  Define $f \otimes g(x)$ as $(f(x),g(x))$.  We can then write this as $\pi_1\circ(f \otimes g) = f$ and
+$\pi_2 \circ (f \otimes g) = g$.  Morever, if $\pi_1\circ h = f$ and $\pi_2\circ h = g$, we have $\pi_1(h(x)) = f(x)$, $\pi_2(h(x)) = g(x)$, and so $h(x) = (f(x),g(x))$.  So, we say in a general category theory setting that an object $C$ with arrows $\pi_1 \in {\tt Hom}(C,A)$ and
+$\pi_2 \in {\tt Hom}(C,B)$ is a product of $A,B$ if for each $f \in {\tt Hom}(D,A)$, $g \in {\tt Hom}(D,B)$ (for any object $D$) there is a unique $f \otimes g \in {\tt Hom}(D,C)$ such that $\pi_1 \circ (f \otimes g) = f$ and $\pi_2 \circ (f \otimes g) = g$.
+
+It should be noted that the object $C$ in the product of $A,B$ is unique only up to isomorphism.  In the category of sets and functions, any set of the same cardinality as $A \times B$ is a product of $A,B$ with different projection maps.  This understood, we can use the notation $A \times B$ for
+$C$ as long as we understand that this identifies the object only up to isomorphism.
+
+Now we are going to introduce coproducts, proceeding in the opposite direction in our presentation.  First we introduce the category theoretic notion as the dual of product, then we see what we have implemented in the set theoretic context.
+
+A coproduct of $A,B$ is an object $C$ with arrows $k_1, k_2$ in ${\tt Hom}(A,C)$ and ${\tt Hom}(B,C)$ respectively, such that for any $f,g$ in ${\tt Hom}(A,D)$, ${\tt Hom}(B,D)$ respectively there is a unique $h \in {\tt Hom}(C,D)$ such that $ h \circ k_1 = f, h\circ k_2 =g$.
+
+The coproduct implements the {\em disjoint union\/} of sets.  If $A$ and $B$ are sets, $A \oplus B = (A \times \{0\}) \cup (B \times \{1\})$ with the maps $k_1(a) = (a,0)$ for $a \in A$ and $k_2(b) = (b,1)$ for $b \in B$ is a coproduct.  We can use the notation $A \oplus B$ for
+the object in a coproduct of $A,B$ as long as we remember that this is defined only up to isomorphism.
+
+The next concept we implement is the {\em equalizer\/} of two functions $f, g:A \rightarrow B$.  The motivation in the category of sets and functions is that the equalizer of $f$ and $g$ is the inclusion map $i$ from  the set $E=\{f(x) = g(x):x \in A$ into $A$.  We immediately have $f(i(x) = g(i(x))$ for all $x \in E$, so $f \circ i = g\circ i$.
+Now suppose $f \circ h = g \circ h$ for a map $h:C \rightarrow A$.  This means that $f(h(x)) = g(h(x))$ for all $x$, so $h(x)$ is always in $E$, so there is a unique map $k$ from $C$ into $E$ which we can define informally as $i^{-1}\circ h$, siuch that $i \circ k = h$.
+
+Abstract, we say that an equalizer of $f,g:A \rightarrow B$ is an arrow $i:E \rightarrow A$ with the property that $f \circ i = g\circ i$ and for any $h:C \rightarrow A$ such that $f \circ h = g \circ h$ we find a unique arrow $k:C \rightarrow E$ such that $i \rightarrow k = h$.
+
+
+\end{document}
