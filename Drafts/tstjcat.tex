@@ -402,4 +402,77 @@ Our account of the pseudo-exponential construction that the category of sets and
 
 There is a natural desire to state this as a property in categorical language in which $T$ and $T'$ are actual functors.  But in the context of NFU, $T$ and $T'$ are proper class maps.
 
+\section{ML}
+
+MLU differs from NFU in allowing proper classes.  
+
+We present the formal definition, and warn that it is not simply an extension of NFU in the format in which we have presented NFU above:  more care is required with use of variables.
+
+MLU is a first order unsorted theory with primitives equality, membership and the empty set.  We provide countably many unsuperscripted variables, and countably many variables with each
+natural number superscript.
+
+We define ${\tt class}(x)$ as $(\exists y:y \in x) \vee x = \emptyset$.
+
+We define ${\tt elt}(x)$ ($x$ is an element) as $(\exists y:x\in y)$.
+
+The unsuperscripted variables range over all objects.  The superscripted variables are restricted to elements.
+
+We define ${\tt set}(x)$ as ${\tt class}(x) \wedge {\tt elt}(x)$.
+
+The axiom of weak extensionality asserts $$(\forall XYz:z \in x \rightarrow (X=Y \leftrightarrow (\forall u:u \in X \leftrightarrow u \in Y)))$$.
+
+The axiom of the empty set asserts $(\forall x:x \not\in \emptyset)$.
+
+The axiom of atoms asserts  $(\forall x:\neg{\tt class}(X) \rightarrow {\tt elt}(X))$.  All atoms are elements.
+
+The axiom of class comprehension asserts for any formula $\phi$ in which $A$ does not occur free,
+$$(\exists A:(\forall x:{\tt elt}(x) \rightarrow (x \in A \leftrightarrow \phi))).$$
+
+The witness to the instance $$(\exists A:(\forall x:{\tt elt}(x) \rightarrow (x \in A \leftrightarrow \phi)))$$  of  class comprehension is written $\{x \in V:\phi\}$, and $V$
+is defined as $\{x \in V:x=x\}$.
+
+An atomic formula is well-typed if it is of one of the forms $x^i \in y^{i+1}$ or $x^i=y^i$.  A stratified formula is a formula in which each atomic formula is well-typed.  Notice
+that this is a stricter definition of ``well-typed".
+
+We add pairing with the usual axioms and the usual typing rule.
+
+The axiom of set comprehension asserts that for any stratified formula $\phi$ we have ${\tt set}(\{x^i \in V:\phi\})$.  Notice that any quantifier $(\forall x^i:\phi)$ abbreviates
+$(\forall x^i\in V:\phi)$ and similarly for existential quantifiers:  this is the precise meaning of our assertion about that superscripted variables are restricted to elements.
+
+Notice that superscripted variables can freely be replaced with unsuperscripted variables by renaming of bound variables, with the additional proviso that the bounding of
+variables in $V$ in quantified sentences must be made explicit.  This could be avoided by stipulating that lower case unsuperscripted variables are restricted to elements, and upper case
+unsuperscripted variables range over all objects.
+
+On a metatheoretical level, notice that any model $(M,E)$ of NFU yields a model of MLU, whose elements are the elements of $M$ plus those subsets of $M$ (in the sense of the metatheory)
+which are not of the form $\{x:x E y\}$ for any $x \in M$, the membership relation being the union of $E$ and the usual membership relation with its range restricted to the subsets
+of $M$ in the new model.  For this to work exactly as described, we need the technical condition that no element of $M$ is a subset of $M$;  it should be clear that any model of NFU
+is isomorphic to a model with this property.
+
+In ML, we can define lateral functions very precisely.  We can define $I$ as the intersection of all classes which contain $((0,x),x)$ for each element $x$ and contain
+$((n+1,x),\{y\})$ if they contain $((n,x),y)$, where we define natural numbers exactly as above in NFU.  $I`(n,x) = \iota^n`x$ is then clear (where we use the notation
+$F`x$ for the unique $y$ such that $(x,y)\in F$ when $F$ is a function not known to be a set, and $f(x)$ where $f$ is a function and a set.
+
+Now we can say for each $n\geq 0$ that a class relation $R$ is $n$-lateral iff $\{(\iota^n`x,y):x \,R\,y\}$ is a set, and $(-n)$-lateral iff $\{(x,\iota^n`y):x \,R\,y\}$ is a set,
+and bad if it is not $z$-lateral for any integer $z$.  This definition extends to functions, considered as relations.  Note that there is no hint of reference to syntax in this definition.
+
+
+\begin{description}
+
+\item[Definition of category (using lateral functions):]  A category is determined by a class $O$ of objects, a class $M$ of morphisms and certain auxiliary maps.  A partial function $\circ:(M \times M) \rightarrow M$ is provided
+which satisfies the condition that $f \circ (g \circ h)$ is defined and equal to $(f \circ g) \circ h$ iff $(f \circ g) \circ h$ is defined, and which further is a subclass of some set partial function.
+A function ${\tt Hom}$ which is included in some lateral function as s subset  maps $O \times O$ into ${\cal P}`M$.  ${\tt Hom}``(O\times O)$ is a partition of $M$.  $f \circ g$ is defined iff
+for some $A,B,C$, $g \in {\tt Hom}`(A,B)$ and $f \in {\tt Hom}`(B,C)$, and in this case $f \circ g$ belongs to ${\tt Hom}`(A,C)$.  There is a  map $1:O \rightarrow M$ which is included in some lateral map as a subset such
+that for each $A \in O$, we have $1`A \in {\tt Hom}(A,A)$, and $1`A \circ f = f$ whenever $1`A \circ f$ is defined, and $g \circ 1`A = g$ whenever $g \circ 1`A$ is defined.
+The usual notation $1_A$ for $1`A$ can of course be used.
+
+We note that this entire definition can be stated in terms of $\circ$ and $1$ alone.  $O$ is the range of 1.  $M$ is the range of $\circ$.  For each $f \in {\tt Hom}`(A,B)$,
+$1`A$ can be identified as the unique $f_1$ such that $f \circ f_1 = f$ and $g \circ f_1 = g$ whenever defined and $1`B$ can be identified as the unique $f_2$ such that
+$f_2 \circ f = f$ and $f_2 \circ g = g$ whenever defined.  $A$ and $B$ can then be defined as $1^{-1}`f_1$ and $B$ can be defined as $1^{-1}`f_2$, and this procedure identifies the homset to which $f$ belongs.
+
+\end{description}
+
+This is precisely the usual definition of a category, except for the references to sethood and laterality.  We further remark is that the usual assumption is that $O$ and $M$ are of the same type,
+from which it follows that ${\tt Hom}$ is 1-lateral and 1 is a function.  In general, if 1 is $n$-lateral, ${\tt Hom}$ is $(n+1)$-lateral; $\circ$ is always a function.
+
+
 \end{document}
