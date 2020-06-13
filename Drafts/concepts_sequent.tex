@@ -1,0 +1,1324 @@
+\documentclass{article}
+%test
+% Dear Randall,
+
+% I use Paul Taylor's macros for drawing proof trees. I enclose this in a 
+% following mail. For sequents I use the macro:
+
+\def\joinrelm{\mathrel{\mkern-7mu}}
+\def\relbar{\mathrel{\smash-}}
+\def\tailpiece{\rule{.02in}{5pt}}
+\def\ltstile{\mathrel{\tailpiece\joinrelm\relbar}}
+
+\newcommand{\ljudge}[2]{{#1}\: \ltstile   {#2}}
+
+
+
+% Thus $\ljudge{\Gamma}{A}$ (ljudge= Logical JUDGEment) produces the appropriate 
+% thing. The little squashed turnstile is a Girard-ism - indeed many people call 
+% it a Girardian turnstile! The point is that it is different from $\vdash$, 
+% which can then be used to denote provability.
+
+% I hope all this works - get in touch if you have any problems.
+
+% Cheers,
+% Gavin.
+
+\message{<Paul Taylor's Proof Trees, 2 August 1996>}
+%% Build proof tree for Natural Deduction, Sequent Calculus, etc.
+%% WITH SHORTENING OF PROOF RULES!
+%% Paul Taylor, begun 10 Oct 1989
+%% *** THIS IS ONLY A PRELIMINARY VERSION AND THINGS MAY CHANGE! ***
+%%
+%% 2 Aug 1996: fixed \mscount and \proofdotnumber
+%%
+%%      \prooftree
+%%              hyp1            produces:
+%%              hyp2
+%%              hyp3            hyp1    hyp2    hyp3
+%%      \justifies              -------------------- rulename
+%%              concl                   concl
+%%      \thickness=0.08em
+%%      \shiftright 2em
+%%      \using
+%%              rulename
+%%      \endprooftree
+%%
+%% where the hypotheses may be similar structures or just formulae.
+%%
+%% To get a vertical string of dots instead of the proof rule, do
+%%
+%%      \prooftree                      which produces:
+%%              [hyp]
+%%      \using                                  [hyp]
+%%              name                              .
+%%      \proofdotseparation=1.2ex                 .name
+%%      \proofdotnumber=4                         .
+%%      \leadsto                                  .
+%%              concl                           concl
+%%      \endprooftree
+%%
+%% Within a prooftree, \[ and \] may be used instead of \prooftree and
+%% \endprooftree; this is not permitted at the outer level because it
+%% conflicts with LaTeX. Also,
+%%      \Justifies
+%% produces a double line. In LaTeX you can use \begin{prooftree} and
+%% \end{prootree} at the outer level (however this will not work for the inner
+%% levels, but in any case why would you want to be so verbose?).
+%%
+%% All of of the keywords except \prooftree and \endprooftree are optional
+%% and may appear in any order. They may also be combined in \newcommand's
+%% eg "\def\Cut{\using\sf cut\thickness.08em\justifies}" with the abbreviation
+%% "\prooftree hyp1 hyp2 \Cut \concl \endprooftree". This is recommended and
+%% some standard abbreviations will be found at the end of this file.
+%%
+%% \thickness specifies the breadth of the rule in any units, although
+%% font-relative units such as "ex" or "em" are preferable.
+%% It may optionally be followed by "=".
+%% \proofrulebreadth=.08em or \setlength\proofrulebreadth{.08em} may also be
+%% used either in place of \thickness or globally; the default is 0.04em.
+%% \proofdotseparation and \proofdotnumber control the size of the
+%% string of dots
+%%
+%% If proof trees and formulae are mixed, some explicit spacing is needed,
+%% but don't put anything to the left of the left-most (or the right of
+%% the right-most) hypothesis, or put it in braces, because this will cause
+%% the indentation to be lost.
+%%
+%% By default the conclusion is centered wrt the left-most and right-most
+%% immediate hypotheses (not their proofs); \shiftright or \shiftleft moves
+%% it relative to this position. (Not sure about this specification or how
+%% it should affect spreading of proof tree.)
+%
+% global assignments to dimensions seem to have the effect of stretching
+% diagrams horizontally.
+%
+%%==========================================================================
+
+\def\introrule{{\cal I}}\def\elimrule{{\cal E}}%%
+\def\andintro{\using{\land}\introrule\justifies}%%
+\def\impelim{\using{\Rightarrow}\elimrule\justifies}%%
+\def\allintro{\using{\forall}\introrule\justifies}%%
+\def\allelim{\using{\forall}\elimrule\justifies}%%
+\def\falseelim{\using{\bot}\elimrule\justifies}%%
+\def\existsintro{\using{\exists}\introrule\justifies}%%
+
+%% #1 is meant to be 1 or 2 for the first or second formula
+\def\andelim#1{\using{\land}#1\elimrule\justifies}%%
+\def\orintro#1{\using{\lor}#1\introrule\justifies}%%
+
+%% #1 is meant to be a label corresponding to the discharged hypothesis/es
+\def\impintro#1{\using{\Rightarrow}\introrule_{#1}\justifies}%%
+\def\orelim#1{\using{\lor}\elimrule_{#1}\justifies}%%
+\def\existselim#1{\using{\exists}\elimrule_{#1}\justifies}
+
+%%==========================================================================
+
+\newdimen\proofrulebreadth \proofrulebreadth=.05em
+\newdimen\proofdotseparation \proofdotseparation=1.25ex
+\newdimen\proofrulebaseline \proofrulebaseline=2ex
+\newcount\proofdotnumber \proofdotnumber=3
+\let\then\relax
+\def\hfi{\hskip0pt plus.0001fil}
+\mathchardef\squigto="3A3B
+%
+% flag where we are
+\newif\ifinsideprooftree\insideprooftreefalse
+\newif\ifonleftofproofrule\onleftofproofrulefalse
+\newif\ifproofdots\proofdotsfalse
+\newif\ifdoubleproof\doubleprooffalse
+\let\wereinproofbit\relax
+%
+% dimensions and boxes of bits
+\newdimen\shortenproofleft
+\newdimen\shortenproofright
+\newdimen\proofbelowshift
+\newbox\proofabove
+\newbox\proofbelow
+\newbox\proofrulename
+%
+% miscellaneous commands for setting values
+\def\shiftproofbelow{\let\next\relax\afterassignment\setshiftproofbelow\dimen0 
+}
+\def\shiftproofbelowneg{\def\next{\multiply\dimen0 by-1 }%
+\afterassignment\setshiftproofbelow\dimen0 }
+\def\setshiftproofbelow{\next\proofbelowshift=\dimen0 }
+\def\setproofrulebreadth{\proofrulebreadth}
+
+%=============================================================================
+\def\prooftree{% NESTED ZERO (\ifonleftofproofrule)
+%
+% first find out whether we're at the left-hand end of a proof rule
+\ifnum  \lastpenalty=1
+\then   \unpenalty
+\else   \onleftofproofrulefalse
+\fi
+%
+% some space on left (except if we're on left, and no infinity for outermost)
+\ifonleftofproofrule
+\else   \ifinsideprooftree
+        \then   \hskip.5em plus1fil
+        \fi
+\fi
+%
+% begin our proof tree environment
+\bgroup% NESTED ONE (\proofbelow, \proofrulename, \proofabove,
+%               \shortenproofleft, \shortenproofright, \proofrulebreadth)
+\setbox\proofbelow=\hbox{}\setbox\proofrulename=\hbox{}%
+\let\justifies\proofover\let\leadsto\proofoverdots\let\Justifies\proofoverdbl
+\let\using\proofusing\let\[\prooftree
+\ifinsideprooftree\let\]\endprooftree\fi
+\proofdotsfalse\doubleprooffalse
+\let\thickness\setproofrulebreadth
+\let\shiftright\shiftproofbelow \let\shift\shiftproofbelow
+\let\shiftleft\shiftproofbelowneg
+\let\ifwasinsideprooftree\ifinsideprooftree
+\insideprooftreetrue
+%
+% now begin to set the top of the rule (definitions local to it)
+\setbox\proofabove=\hbox\bgroup$\displaystyle % NESTED TWO
+\let\wereinproofbit\prooftree
+%
+% these local variables will be copied out:
+\shortenproofleft=0pt \shortenproofright=0pt \proofbelowshift=0pt
+%
+% flags to enable inner proof tree to detect if on left:
+\onleftofproofruletrue\penalty1
+}
+
+%=============================================================================
+% end whatever box and copy crucial values out of it
+\def\eproofbit{% NESTED TWO
+%
+% various hacks applicable to hypothesis list 
+\ifx    \wereinproofbit\prooftree
+\then   \ifcase \lastpenalty
+        \then   \shortenproofright=0pt  % 0: some other object, no indentation
+        \or     \unpenalty\hfil         % 1: empty hypotheses, just glue
+        \or     \unpenalty\unskip       % 2: just had a tree, remove glue
+        \else   \shortenproofright=0pt  % eh?
+        \fi
+\fi
+%
+% pass out crucial values from scope
+\global\dimen0=\shortenproofleft
+\global\dimen1=\shortenproofright
+\global\dimen2=\proofrulebreadth
+\global\dimen3=\proofbelowshift
+\global\dimen4=\proofdotseparation
+\global\count255=\proofdotnumber
+%
+% end the box
+$\egroup  % NESTED ONE
+%
+% restore the values
+\shortenproofleft=\dimen0
+\shortenproofright=\dimen1
+\proofrulebreadth=\dimen2
+\proofbelowshift=\dimen3
+\proofdotseparation=\dimen4
+\proofdotnumber=\count255
+}
+
+%=============================================================================
+\def\proofover{% NESTED TWO
+\eproofbit % NESTED ONE
+\setbox\proofbelow=\hbox\bgroup % NESTED TWO
+\let\wereinproofbit\proofover
+$\displaystyle
+}%
+%
+%=============================================================================
+\def\proofoverdbl{% NESTED TWO
+\eproofbit % NESTED ONE
+\doubleprooftrue
+\setbox\proofbelow=\hbox\bgroup % NESTED TWO
+\let\wereinproofbit\proofoverdbl
+$\displaystyle
+}%
+%
+%=============================================================================
+\def\proofoverdots{% NESTED TWO
+\eproofbit % NESTED ONE
+\proofdotstrue
+\setbox\proofbelow=\hbox\bgroup % NESTED TWO
+\let\wereinproofbit\proofoverdots
+$\displaystyle
+}%
+%
+%=============================================================================
+\def\proofusing{% NESTED TWO
+\eproofbit % NESTED ONE
+\setbox\proofrulename=\hbox\bgroup % NESTED TWO
+\let\wereinproofbit\proofusing
+\kern0.3em$
+}
+
+%=============================================================================
+\def\endprooftree{% NESTED TWO
+\eproofbit % NESTED ONE
+% \dimen0 =     length of proof rule
+% \dimen1 =     indentation of conclusion wrt rule
+% \dimen2 =     new \shortenproofleft, ie indentation of conclusion
+% \dimen3 =     new \shortenproofright, ie
+%                space on right of conclusion to end of tree
+% \dimen4 =     space on right of conclusion below rule
+  \dimen5 =0pt% spread of hypotheses
+% \dimen6, \dimen7 = height & depth of rule
+%
+% length of rule needed by proof above
+\dimen0=\wd\proofabove \advance\dimen0-\shortenproofleft
+\advance\dimen0-\shortenproofright
+%
+% amount of spare space below
+\dimen1=.5\dimen0 \advance\dimen1-.5\wd\proofbelow
+\dimen4=\dimen1
+\advance\dimen1\proofbelowshift \advance\dimen4-\proofbelowshift
+%
+% conclusion sticks out to left of immediate hypotheses
+\ifdim  \dimen1<0pt
+\then   \advance\shortenproofleft\dimen1
+        \advance\dimen0-\dimen1
+        \dimen1=0pt
+%       now it sticks out to left of tree!
+        \ifdim  \shortenproofleft<0pt
+        \then   \setbox\proofabove=\hbox{%
+                        \kern-\shortenproofleft\unhbox\proofabove}%
+                \shortenproofleft=0pt
+        \fi
+\fi
+%
+% and to the right
+\ifdim  \dimen4<0pt
+\then   \advance\shortenproofright\dimen4
+        \advance\dimen0-\dimen4
+        \dimen4=0pt
+\fi
+%
+% make sure enough space for label
+\ifdim  \shortenproofright<\wd\proofrulename
+\then   \shortenproofright=\wd\proofrulename
+\fi
+%
+% calculate new indentations
+\dimen2=\shortenproofleft \advance\dimen2 by\dimen1
+\dimen3=\shortenproofright\advance\dimen3 by\dimen4
+%
+% make the rule or dots, with name attached
+\ifproofdots
+\then
+        \dimen6=\shortenproofleft \advance\dimen6 .5\dimen0
+        \setbox1=\vbox to\proofdotseparation{\vss\hbox{$\cdot$}\vss}%
+        \setbox0=\hbox{%
+                \advance\dimen6-.5\wd1
+                \kern\dimen6
+                $\vcenter to\proofdotnumber\proofdotseparation
+                        {\leaders\box1\vfill}$%
+                \unhbox\proofrulename}%
+\else   \dimen6=\fontdimen22\the\textfont2 % height of maths axis
+        \dimen7=\dimen6
+        \advance\dimen6by.5\proofrulebreadth
+        \advance\dimen7by-.5\proofrulebreadth
+        \setbox0=\hbox{%
+                \kern\shortenproofleft
+                \ifdoubleproof
+                \then   \hbox to\dimen0{%
+                        $\mathsurround0pt\mathord=\mkern-6mu%
+                        \cleaders\hbox{$\mkern-2mu=\mkern-2mu$}\hfill
+                        \mkern-6mu\mathord=$}%
+                \else   \vrule height\dimen6 depth-\dimen7 width\dimen0
+                \fi
+                \unhbox\proofrulename}%
+        \ht0=\dimen6 \dp0=-\dimen7
+\fi
+%
+% set up to centre outermost tree only
+\let\doll\relax
+\ifwasinsideprooftree
+\then   \let\VBOX\vbox
+\else   \ifmmode\else$\let\doll=$\fi
+        \let\VBOX\vcenter
+\fi
+% this \vbox or \vcenter is the actual output:
+\VBOX   {\baselineskip\proofrulebaseline \lineskip.2ex
+        \expandafter\lineskiplimit\ifproofdots0ex\else-0.6ex\fi
+        \hbox   spread\dimen5   {\hfi\unhbox\proofabove\hfi}%
+        \hbox{\box0}%
+        \hbox   {\kern\dimen2 \box\proofbelow}}\doll%
+%
+% pass new indentations out of scope
+\global\dimen2=\dimen2
+\global\dimen3=\dimen3
+\egroup % NESTED ZERO
+\ifonleftofproofrule
+\then   \shortenproofleft=\dimen2
+\fi
+\shortenproofright=\dimen3
+%
+% some space on right and flag we've just made a tree
+\onleftofproofrulefalse
+\ifinsideprooftree
+\then   \hskip.5em plus 1fil \penalty2
+\fi
+}
+
+%==========================================================================
+% IDEAS
+% 1.    Specification of \shiftright and how to spread trees.
+% 2.    Spacing command \m which causes 1em+1fil spacing, over-riding
+%       exisiting space on sides of trees and not affecting the
+%       detection of being on the left or right.
+% 3.    Hack using \@currenvir to detect LaTeX environment; have to
+%       use \aftergroup to pass \shortenproofleft/right out.
+% 4.    (Pie in the sky) detect how much trees can be "tucked in"
+% 5.    Discharged hypotheses (diagonal lines).
+
+
+
+
+
+\title{Quine's Calculus of Concepts}
+
+\author{M. Randall Holmes}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+The calculus of concepts of Quine is described; its semantics and
+formal rules of inference are given.
+
+\section{The Natural Semantics of {\em CC\/}}
+
+We follow Quine's example in first presenting {\em CC\/} via the
+originally intended interpretation.  It will turn out that the system
+has other quite natural interpretations as well, as well as some
+rather strange ones.
+
+We begin by describing the language of {\em CC\/}.
+
+Atomic terms of the language of {\em CC\/} are taken from a countable
+supply of free variables.  Atomic constants will be introduced as
+well.  Atomic terms of {\em CC\/} are terms of {\em CC\/}; if $T$ and
+$U$ are terms, then $T^c$, $T\times U$, $T/U$, and $\delta T$ are
+terms.  Other operations on terms may be introduced by definition.
+All terms are built from atomic terms by the primitive operations and
+operations defined in terms of the primitive operations below.  Unary
+operations are always considered to have higher precedence than binary
+operations.  Both product and quotient group to the right, and
+quotient has higher precedence than product.
+
+We now present the intended interpretation of the notion of
+``concept''.
+\begin{description} \item[Definition:] If ${\cal D}$ is our universe
+of discourse and $n \in {\cal N}$, we define a {\em concept of degree
+$n$\/} as a pair $(S,n)$ with $S \subseteq {\cal D}^n$.  (The pairing
+with $n$ is needed because empty concepts of different degrees need to
+be distinct.)  We identify 1-tuples of elements of ${\cal D}$ with
+elements of ${\cal D\/}$ itself, and we postulate a unique 0-tuple, so
+concepts of degrees 0 and 1 make sense. \end{description}
+
+Any formula in the language of first-order logic with variables
+indexed by the positive integers can be associated in a natural way
+with a concept (actually, with a concept of each sufficiently large
+degree):
+
+\begin{description}
+
+\item[Definition:] A concept $(A,n)$ is said to represent a formula
+$\phi$ just in case $\phi$ has no free variable other than variables
+$x_i$ for $i \leq n$ and $\{(x_1,\ldots,x_n) \mid \phi\} = A$.  Notice
+that concepts of degree 0 represent sentences with no free variables
+(the two concepts of degree 0 represent the truth values).
+
+\end{description}
+
+Each term of the language of {\em CC\/} is intended to represent a
+concept.  Note that there is no explicit indication of numerical
+degree in {\em CC\/}; the explicit indications of degree are a feature
+of the interpretation being given.
+
+We now introduce the operations of CC (in their intended interpretation)
+
+We first define $x.y$, for $x \in {\cal D}^m, y \in {\cal D}^n$, as
+the element of ${\cal D}^{m+n}$ obtained by concatenating $x$ and $y$.
+
+\begin{description}
+
+\item[complement:] The {\em complement\/} of a concept $(A,n)$,
+written $(A,n)^c$ is $$({\cal D}^n-A,n).$$ (Quine would write $-(A,n)$).
+
+\item[product:] The {\em product\/} of concepts $(A,m)$ and $(B,n)$,
+written $(A,m)\times (B,n)$ is $$(\{x.y\mid x\in A \wedge y \in
+B\},m+n).$$ Quine calls this the ``Cartesian product'', but this is
+somewhat misleading, since the underlying operation is concatenation
+rather than pairing; an important difference is that this operation is
+associative and Cartesian products properly so-called are not.
+
+\item[quotient:] The {\em quotient\/} of a concept $(A,m)$ by a
+concept $(B,n)$, written $(A,m)/(B,n)$, is $$(\{x \mid \exists y \in
+B. (x.y \in A)\},\max(m-n,0)\}).$$ Notice that the subtraction of
+degrees natural in this theory is a subtraction on natural numbers.
+Quine called this the ``image'' operation and used the double-quote
+notation for image to represent it.  The definition of quotient when
+the degree of $B$ exceeds the degree of $A$ is a ``don't care'' case;
+under the definition given here such a concept is empty, but this will
+not be provable in the formalization we present.
+
+\item[diagonalization:] The {\em diagonalization\/} of a concept
+$(A,n)$, written $\delta(A,n)$ is the concept $$(\{x.x\mid x \in
+A\},2n).$$  Quine uses $I$ as the name of this operation.
+\end{description}
+
+It is quite appealing that this set of operations has the expressive
+power of first-order logic.  The operations might be thought to have
+some of the same intuitive appeal as the basic operations of Boolean
+algebra.
+
+\section{The expressive power of {\em CC\/}}
+\begin{description}
+
+\item[Theorem (Quine):] The expressive power of the calculus of
+concepts is at least that of first-order logic with equality (if
+concepts are understood via the interpretation given above).
+
+\item[Proof:]  We use $V^1$ as the notation for the concept $({\cal D},1)$ 
+whose extension is the whole domain of the theory being interpreted.
+We can define $V^n$ for each positive $n$ as the product of $n$ copies
+of $V^1$ and $V^0$ as $V^1/V^1$; $V^0$, the universal concept of
+degree 0, is an absolute notion of the calculus, unlike the $V^i$'s
+with $i>0$.
+
+The sentence $x_i = x_j$ (for $i < j$) is represented by the concept
+$V^{i-1}\times (\delta V^{j-i} / V^{j-i-1})\times V^k$ (for any $k$).
+
+If $A$ and $B$ are concepts of the same degree, $\delta A / B$ is the
+intersection $A \cap B$ of $A$ and $B$.
+
+We proceed to represent a formula $\phi$ whose variables (free and
+bound) have indices $\leq n$ using a concept of degree $n$.  We
+proceed by induction on the structure of $\phi$.
+
+If $\phi$ is an atomic sentence $R[x_{a_1}\ldots x_{a_k}]$, we let $A$
+be a concept representing the formula $R[x_1,\ldots,x_k]$.  Let $E$ be the
+intersection of the predicates of degree $n+k$ representing the
+equality assertions $x_{a_i}=x_{n+i}$ for each $i \leq k$.  The
+sentence $R[x_{a_1}\ldots x_{a_k}]$ is represented by the degree $n$
+concept $((V^n \times A) \cap E)/V^{k}$
+If $\phi$ is of the form $\sim\psi$, where $\psi$ is represented by a
+concept $A$ of degree $n$, $\phi$ is represented by $A^c$.  If $\phi$
+is of the form $\psi \wedge \chi$, where $\psi$ and $\chi$ are
+represented by concepts $A$ and $B$ of degree $n$, $\phi$ is
+represented by $A \cap B$.  All propositional logic operations can be
+defined in terms of negation and conjunction.
+
+Let $\phi$ be of the form $(\exists x_i.\psi)$, where $\psi$ is
+represented by a concept $A$ of degree $n$.  Let $E$ be the
+intersection of the concepts of degree $2n$ representing the assertions
+$x_j = x_{n+j}$ for $j$ less than or equal to $n$ and not equal to
+$i$.  $\psi$ is represented by the concept $((V^n\times A)\cap E)/V^n$.
+The universal quantifier can be defined in terms of the existential
+quantifier.
+
+The proof of the theorem is complete.
+
+\end{description}
+
+\section{Other instantiations of the calculus of concepts}
+
+In this section, we present other interpretations of the calculus of
+degree, which will motivate the generality of our treatment of degree.
+
+NOTE:  some of these examples are sketchy.
+
+In any interpretation of the calculus of concepts, concepts are sets
+of ``argument lists'' all of the same size.  Degree measures the size
+of ``argument lists''.  The examples in this section illustrate how
+the notion of ``argument list'' can be generalized while preserving
+the usefulness of the operations of the calculus.
+
+Multi-sorted theories are handled as readily as the single-sorted
+theories in the natural interpretation.  An argument list is a
+function $\alpha$ such that for each sort $\tau$ of the theory,
+$\alpha(\tau)$ is a list of objects of sort $\tau$.  The degree
+$|\alpha|$ of an argument list is also a function, from sorts to
+natural numbers: $|\alpha|(\tau)$ is the length of the list
+$\alpha(\tau)$.  The concatenation $\alpha.\beta$ of two argument
+lists is defined so that $(\alpha.\beta)(\tau) =
+\alpha(\tau).\beta(\tau)$.
+
+A concept is a pair $({\cal A},|\alpha|)$ of a set ${\cal A}$ of
+argument lists of degree $|\alpha|$.  The operations of the calculus
+of concepts are defined in essentially the same way as they are in the
+interpretation above, with attention to the ``arithmetic'' of degrees:
+addition of degrees is defined in the obvious way (and a degree
+$2|\alpha|$ is read $|\alpha|+|\alpha|$), and this allows the
+definition of product and diagonal operations just as above.  The
+degree of the quotient $A/B$, where $A$ is of degree $|\alpha|$ and
+$B$ is of degree $|\beta|$, is the degree $|\alpha|-|\beta|$ defined
+by $(|\alpha|-|\beta|)(\tau) = \max(|\alpha|(\tau)-|\beta|(\tau),0)$;
+this subtraction operation generalizes a natural number subtraction
+operation.
+
+It is straightforward to establish that the interpretation of
+multi-sorted first-order logic with equality in the calculus of
+concepts goes in essentially the same way as we showed it does for
+single-sorted first-order logic above.  The differences are that one
+needs to have a different base concept $V^1_{\tau}$ for each sort
+$\tau$ (the set of all one-term argument lists of that sort); all
+degrees are then finite sums of these base concepts.  Equality is
+defined (between variables of the same sort) in the same way given in
+the argument above.  Negation and conjunction are handled in exactly
+the same way.  The treatment of existential quantification is also
+essentially the same; it is important to note that the equality
+concepts making up the intersection $E$ may be products of the
+equality concepts for two variables of a given sort with universal
+concepts of different sorts (they need to be padded to the degree of
+the concept over which we are quantifying).
+
+This generalization is clearly useful; it will be nice to have a
+formalization which unified multi-sorted and single-sorted logics.
+However, there are further generalizations whose usefulness is much
+less evident.  For these, we will only discuss the nature of argument
+lists and degrees, as we are not seriously interested in doing logic
+in these systems.
+
+Let $X$ be a set and let a concept be a set of functions from $[0,r)$
+to $X$ where $r$ is a nonnegative real number.  An argument list here
+is a function from $[0,r)$ to $X$.  The degree of an argument list is
+the nonnegative real number $r$.  We concatenate argument lists of
+degrees $r$ and $s$ to get an argument list of degree $r+s$ in the
+obvious way.  A full development of the calculus of concepts is easy
+on this basis.  This is an ``unintended'' implementation of the
+calculus, because ``argument lists'' here are ``nonatomic''; we see
+analogues of ``blocks of variables'' here without being able to single
+out individual variables.
+
+Even worse, let $X(r)$ be a set for each element $r$ of $[0,1]$ and
+let $f$ be a continuous function from $[0,1]$ to $[0,\infty)$; let a
+concept of degree $f$ be a set of functions with domain $\{(r,s)\mid r
+\in [0,1] \wedge f(r) < s$ sending each pair $(r,s)$ in their domain
+to an element of $X(r)$.  The degrees here are determined by the
+function $f$.  Addition of degrees corresponds naturally to addition
+of these functions and it is fairly obvious how to define
+concatenation of ``argument lists''.  Here we do not have the expected
+``granularity'' of variables or even of the analogues of sorts of
+object!  (this needs expansion).
+
+A generalization of concepts which is arguably more natural than the
+ones above but which suggests that we should weaken our axioms is the
+following: we return to a single domain $X$, but we let ``argument
+lists'' be functions from countable well-orderings to $X$, with degree
+determined by the countable ordinal which is their domain.  A subtlety
+is that we treat earlier elements of the countable ordinal as {\em
+later\/} elements of the ``block of variables'' the argument list
+represents; the concatenation of a concept with domain $\alpha$ and a
+concept with domain $\beta$ is a concept of domain $\beta + \alpha$.
+This implementation is of interest as handling an infinitary logic (it
+is not ``unnatural'' in the way the last two are); but it suggests a
+weakening of our axioms, because the operation of product is not
+commutative on degrees in this implementation.  We actually do adopt
+commutativity of product on degrees as an axiom of the formal system
+presented here, because it simplifies the axiomatization of
+subtraction of degrees, but we need to observe that a further
+generalization is possible.
+
+
+\section{Axioms for the calculus of degree}
+
+NOTE: the indexing of the axioms in this section is mixed up!  I'll
+fix it later.
+
+In the formal system {\em CC\/}, concepts do not come with explicit
+indications of degree.  It is necessary to verify that degree is
+somehow representable in the calculus and to axiomatize its
+properties.
+
+We rely on the intended interpretation to develop the basic approach.
+In the intended interpretation, there is a canonical object in each
+degree which we may as well use to represent that degree: this is the
+universal concept $({\cal D}^n,n)$.  In the intended interpretation,
+the universal concept of the same degree as a concept $A$ can be
+expressed as $(\delta A/A^c)^c$; it is straightforward to check that
+this works (and that it works in our other interpretations).  In
+uninterpreted {\em CC\/}, we introduce the following
+
+\begin{description}
+\item[Definition:]  
+
+$V^A$, called the {\em degree of $A$\/}, is defined as $(\delta
+A/A^c)^c$.  $\emptyset^A$ is defined as $(V^A)^c$.
+
+\end{description}
+
+The operations on degrees which are needed in the intended
+interpretation are addition and subtraction of natural numbers; our
+intention is that the degree of $A \times B$ will be the sum of the
+degrees of $A$ and $B$, while the degree of $A/B$ will be the
+difference of the degree of $A$ and the degree of $B$.  In the
+intended interpretation, we decided that the degree of $A/B$ would be
+0 when the degree of $B$ exceeded the degree of $A$; this corresponds
+to a natural decision as to how to define subtraction as a complete
+operation on the natural numbers.  We make the modification suggested
+by the last example in the previous section that commutativity does
+not hold for ``addition'' of degrees, though a special case will hold.
+
+We adopt these axioms which reflect the effects of the operations
+other than quotient on degree:
+
+\begin{description}
+
+
+\item[D1:]  $V^{V^A} = V^A$
+
+\item[D2:]  $V^{A^c} = V^A$
+
+\item[D3:]  $V^{\delta A} = V^A \times V^A$
+
+\item[D4:]  $V^{A \times B} = V^A \times V^B$
+
+\end{description}
+
+We adopt an axiom expressing the associativity of product on all
+concepts, not just degrees.
+\begin{description}
+\item[D5:]  $(A \times B) \times C = A \times (B \times C)$
+\end{description}
+
+We now consider the problem of the quotient operation and the
+``subtraction'' operation on degrees.
+
+We introduce the two absolutely definable concepts.
+
+\begin{description}
+
+\item[D7:]  $V^{A/A} = V^{B/B}$
+
+\end{description}
+Axiom {\bf D7} motivates the following
+
+\begin{description}
+
+\item[Definition:]
+
+We define $V^0$ as $V^{A/A}$ and $\emptyset^0$ as $(V^0)^c$.
+
+\end{description}
+Degree 0 is the only degree which can be defined in absolute terms.
+In the intended interpretation, degree 0 has the two inhabitants $V^0$
+and $\emptyset^0$, which are natural representatives of the truth
+values.  $V^0$ is the identity of degree addition.
+
+\begin{description}
+
+\item[D8:] $A \times V^0 = V^0 \times A = A/V^0 = A$
+
+\end{description}
+
+We tackle the general problem of axiomatizing subtraction of degrees.
+Our approach is to view the degrees as forming a lattice.  The
+intention is that the difference $\delta - \epsilon$ of two degrees
+can be understood to be actually equal to $\delta -
+\min(\epsilon,\delta)$ (which is true in the natural number case).
+
+In the natural number case, one of $\delta - \epsilon$ and $\epsilon -
+\delta$ will be 0; this is not the case in the multi-sorted
+interpretations given above.  What is true in these interpretations is
+that $\delta - \epsilon$ and $\epsilon - \delta$ will be ``disjoint''
+in the sense that they will not share variables of any given sort.
+
+We will not need to have max or min operations as primitives in our
+calculus, because max and min are naturally definable in terms of
+subtraction.  $\min(\delta,\epsilon) = \delta - (\delta - \epsilon) =
+\epsilon - (\epsilon - \delta)$ is easily verified as a property of
+natural number subtraction.  Similarly, $\max(\epsilon,\delta) =
+\delta + (\epsilon - \delta) = \epsilon + (\delta - \epsilon)$.
+
+We discuss the justification for this in our more general context.
+The defining property of $\delta - \epsilon$ is that
+$\min(\delta,\epsilon) + (\delta - \epsilon) = \delta$.  The defining
+property of $\delta - (\delta - \epsilon)$ is then that
+$\min(\delta,\delta - \epsilon) + (\delta - (\delta - \epsilon)) =
+\delta$.  Since we expect $\min(\delta,\delta - \epsilon)$ to be
+$\delta - \epsilon$ (if there is any justice), we see that this
+definition depends on commutativity.  For this reason, we do adopt the
+axiom
+
+\begin{description}
+
+\item[D6] $V^A \times V^B = V^B \times V^A$
+
+\end{description}
+
+in spite of the fact that it restricts the generality of the calculus.
+It appears that an implementation general enough to cover the
+infinitary implementation discussed in the last section would require
+a primitive notion of minimum on degrees; we prefer to work in an
+context where all notions can be defined in terms of Quine's basic
+operations.
+
+We note that the minimum of degrees $V^A$ and $V^B$ is $V^A/V^A/V^B$;
+this motivates the right grouping of the quotient operator.
+
+\begin{description}
+
+\item[D10:] $V^A/B = V^{V^A/V^B}$
+
+\end{description}
+
+This axiom expresses the idea that the degree of a quotient is
+determined by the degrees of the concepts involved.  We do not adopt
+the axiom $V^A/B=V^A/V^B$, because this makes commitments about bad
+quotients (those where the degree of $B$ is not less than or equal to
+the degree of $A$).
+
+\begin{description}
+
+\item[D11:] $(V^A \times V^B)/V^B = V^A$
+
+\item[D12:]  $(V^A/V^{A/B}) \times V^{A/B} = V^A$
+
+\end{description}
+
+These axioms capture the defining properties of subtraction.
+
+\begin{description}
+
+\item[D13:]  $V^A/V^A/V^B = V^B/V^B/V^A$
+
+\end{description}
+
+This axiom expresses the commutativity of the degree minimum
+operation.
+
+\begin{description}
+
+\item[D14:]  $A/(B\times C) = (A/C)/B$
+
+\item[D15:]  $(A \times B)/V^{B/C} = A \times (B/V^{B/C})$
+
+\end{description}
+
+These axioms capture technical points about the relationship between
+product and quotient.  D14 is the only axiom which says anything about
+``bad quotients''; it is compatible with the notion that all bad
+quotients are empty.
+
+\begin{description}
+
+\item[D17:] $\delta A/V^A = A$
+
+\end{description}
+
+This might not be regarded as a degree calculation, but it is another
+rule of calculation which will be needed in the following section.
+
+NOTE:  some argument for the adequacy of these axioms is needed, though
+this may turn out to be implicit in the completeness proof.
+
+\section{Rules for sequent calculus presentation of CC}
+
+Sequents are of the form $\Gamma \models \Delta$, where $\Gamma$ and
+$\Delta$ are sets of concepts and all concepts in $\Gamma \cup \Delta$
+are of the same degree.
+
+Degree calculations need to be allowed.  We also need to recognize the
+special category of ``equality concepts'' $V^A \times ((\delta
+V^B)/V^{B/C})$; these represent assertions of equality between blocks
+of variables.  The fact that $(\delta V^A)/V^{A \times B}$ = $V^A/V^B$
+needs to be taken into account; this is subsumed under degree
+calculations.
+
+Axioms: $\Gamma,A \models A,\Delta$.
+
+exercise:  $\models V^A$ is provable.
+
+\begin{prooftree}
+	\ljudge{\Gamma}{A,\Delta}
+\justifies
+	\ljudge{\Gamma,A^c}{\Delta}
+\thickness=0.08em
+\shiftright 2em
+\using
+	{\bf NEG-L}
+\end{prooftree}
+
+
+\begin{prooftree}
+	\ljudge{\Gamma,A}{\Delta}
+\justifies
+	\ljudge{\Gamma}{A^c,\Delta}
+\thickness=0.08em
+\shiftright 2em
+\using
+	{\bf NEG-R}
+\end{prooftree}
+
+These rules for negation are exactly what we expect.  An additional
+calculation allowed with complement is the fact that complement
+commutes with left or right padding:  $V^A \times B^c = (V^A \times B)^c$
+and $A^c \times V^B = (A \times V^B)^c$.
+
+\begin{prooftree}
+	\ljudge{\Gamma,V^A \times B,A \times V^B}{\Delta}
+\justifies
+	\ljudge{\Gamma,A \times B}{\Delta}
+\thickness=0.08em
+\shiftright 2em
+\using
+	{\bf PROD-L}
+\end{prooftree}
+
+\begin{prooftree}$
+	
+	$\ljudge{\Gamma}{V^A \times B,\Delta}$
+
+	$\ljudge{\Gamma}{A \times V^B,\Delta}$
+
+$\justifies
+	\ljudge{\Gamma}{A \times B,\Delta}
+\thickness=0.08em
+\shiftright 2em
+\using
+	{\bf PROD-R}
+\end{prooftree}
+
+These rules for product are exactly what we should expect.  See the
+additional rule {\bf COPY} below, which eliminates right padding; this
+is also a kind of product rule.
+
+\begin{prooftree}
+	\ljudge{\Gamma^A,A,V\times B}{\Delta}
+\justifies
+	\ljudge{\Gamma,A/B}{\Delta}
+\thickness=0.08em
+\shiftright 2em
+\using
+	{\bf QUOT-L}
+\end{prooftree}
+
+\begin{prooftree}$
+
+	$\ljudge{\Gamma}{C/V^B}$
+	
+	$\ljudge{\Gamma^A,C}{A,\Delta}$
+
+	$\ljudge{\Gamma^A,C}{V \times B,\Delta}$
+
+$\justifies
+	\ljudge{\Gamma}{A/B,\Delta}
+\thickness=0.08em
+\shiftright 2em
+\using
+	{\bf QUOT-R}
+\end{prooftree}
+
+(where $C$ is any concept and $V$ is the appropriate universal
+concept; the trick is that $C$ can always be taken to be a conjunction
+of equalities, and the leftmost hypotheses in that case is proved by
+calculation)
+
+($\Gamma^A,\Delta^A$ are suitably right padded versions of $\Gamma,\Delta$)
+
+An important fact about these rules is that they only support
+``quantification'' over final ``blocks of variables''; the limitation
+is circumvented by the {\bf COPY} rule.
+
+\begin{prooftree}
+	\ljudge{\Gamma_1^{\Gamma_1\times \Gamma_2},V^{\Gamma_1}\times \Gamma_2,(\delta V^{\Gamma_1 \times \Gamma_2})/V^A}{\Delta_1^{\Gamma_1\times \Gamma_2},V^{\Gamma_1}\times \Delta_2}
+\justifies
+	\ljudge{\Gamma_1,\Gamma_2\times V^A}{\Delta_1,\Delta_2\times V^A}
+\thickness=0.08em
+\shiftright 2em
+\using
+	{\bf COPY}
+\end{prooftree}
+
+(the notation here is tricky: $V^{\Gamma_1}$ is the universal concept
+of the common degree of $\Gamma_1$, and degrees of sets of concepts
+are used in several places in ways we have above used degrees of
+concepts. An operation $V^A \times \Gamma$ yields a set of concepts
+padded on the left with $V^A$.)
+
+({\bf COPY} is a rule for elimination of right padded concepts; the
+application is to bring quotients (including generalized equality
+concepts) and concepts to which generalized equality concepts are to
+be applied to the position where the quotient or diagonal rules can be
+applied).
+
+The notation in the {\bf COPY} rule is strained because we need economical
+ways to describe a rule which allows manipulation of a set of concepts
+of arbitrary size on each side.
+
+\begin{prooftree}
+	\ljudge{\Gamma,V^A\times D \times D,V^A \times C^D \times B^D}{V^A \times F^D \times E^D,\Delta}
+\justifies
+	\ljudge{\Gamma,V^A\times B^D \times C^D,V^A \times \delta D}{V^A \times E^D \times F^D,\Delta}
+\thickness=0.08em
+\shiftright 2em
+\using
+	{\bf EQ-L}
+\end{prooftree}
+
+\begin{prooftree}$
+	$\ljudge{\Gamma}{V^A \times B \times B,\Delta}$
+
+	$\ljudge{\Gamma,V^A \times C^B \times D^B}{V^A \times D^B \times C^B,\Delta}$
+$\justifies
+	\ljudge{\Gamma}{V^A \times \delta B,\Delta}
+\thickness=0.08em
+\shiftright 2em
+\using
+	{\bf EQ-R}
+\end{prooftree}
+
+(in {\bf EQ-R}, the concepts $C^B$ and $D^B$ are fresh concepts not
+mentioned in the conclusion and of the same degree as $B$)
+
+The following rules handle the problem which we call ``block splicing'':
+an equality concept asserts the equality of two blocks of variables;
+we need to be able to decompose it into the conjunction of equations
+between corresponding sub-blocks.
+
+\begin{prooftree}
+	\ljudge{\Gamma,V^A \times ((\delta B^{C\times D})/V^D) \times V^D,
+V^{A\times C} \times (\delta V^{D \times C})/V^C}{\Delta}
+\justifies
+	\ljudge{\Gamma,V^A \times \delta B^{C\times D}}{\Delta}
+\thickness=0.08em
+\shiftright 2em
+\using
+	{\bf SPLICE-L}
+\end{prooftree}
+
+\begin{prooftree}$
+
+	$\ljudge{\Gamma}{V^A \times ((\delta B^{C\times D})/V^D) \times V^D ,\Delta}$
+
+	$\ljudge{\Gamma}{V^{A\times C} \times (\delta V^{D \times C})/V^C ,\Delta}$
+$\justifies
+	\ljudge{\Gamma}{V^A \times \delta B^{C \times D},\Delta}
+\thickness=0.08em
+\shiftright 2em
+\using
+	{\bf SPLICE-R}
+\end{prooftree}
+
+\section{The Completeness Proof}
+
+\subsection{Objects from Concepts}
+
+The calculus of concepts is a language without nouns or pronouns;
+there is nothing in the language which appears to refer directly to
+``objects''.  In this subsection, we discuss how to formally interpret
+talk of sorts of object and variables referring to objects from a
+theory in the calculus of concepts.
+
+We extract this information from the calculus of degrees.  Each degree
+corresponds to a sort of object and degrees can further be used as
+``indices'' of ``variables'' of each sort.  In the natural
+interpretation of the calculus of concepts, which corresponds to
+single-sorted predicate logic, degree $n$ corresponds to lists of
+length $n$ of objects of the single underlying sort.  In the natural
+interpretation, there are blocks of variables of length $n$ beginning
+at each natural-number-indexed position; the concept $V^k \times B^n
+\times V^m$ includes those $(k+n+m)$-tuples in which the $k$th block
+of $n$ variables has the property represented by the degree $n$
+concept $B^n$.
+
+This needs to be generalized somewhat.  Each degree $V^A$ represents a
+sort.  The ``variables'' of the sort associated with $V^A$ are
+associated with concepts of the form $V^B \times V^A \times V^C$, in
+which the degree $V^C$ serves strictly as padding; it is the degree
+$B$ that determines which ``variable'' of the sort associated with
+$V^A$ is being considered.  However, an equivalence relationship on
+the $V^B$'s, determined by $V^A$, must be imposed.  That is, different
+$V^B$'s may index the same ``variable'' of sort $V^A$.  This can be
+seen by considering the interpretation of multi-sorted predicate logic
+givne above: if $V^A$ interpreting one of the basic sorts is being
+considered , only the number of variables of that sort in the ``block
+of variables'' associated with the degree $V^B$ will be relevant to
+which variable is being denoted.  Degrees $V^B$ and $V^C$ are taken to
+be equivalent as indices for variables of sort $V^A$ just in case
+$V^{A/A/B/C}$ and $V^{A/A/B/C}$ are both equal to $V^0$.
+
+A ``variable'' is then determined by a degree $V^A$ determining its
+sort and an equivalence class of degrees under the indicated
+equivalence relation determining its index (HOLE: prove that it is an
+equivalence relation!).  The models which we will construct in the
+next subsection are sets of variables in this sense.
+
+Variables generally represent lists of arguments of sorts taken from the
+underlying logic.  The operation of concatenation on variables is easily
+definable.  (HOLE:give details).
+
+\subsection{The Proof Itself}
+
+In this subsection, we assume that a sequent $\ljudge{\Gamma}{\Delta}$
+is unprovable and proceed to construct a model on which the calculus
+of concepts has an interpretation in which this sequent turns out to
+be invalid.  We need to start with a complete knowledge of the
+particular calculus of degree in which we are working, in order to be
+able to construct ``variables'' in the manner described in the
+previous subsection: concepts in our model will be represented as sets
+of ``variables'' of the sort corresponding to their degree.
+
+It will be assumed that the calculus of degrees is at most countably
+infinite, which limits the number of sorts and variables of each sort
+to countably infinite size.
+
+We suppose the existence of symbols for countably many ``fresh''
+concepts of each degree, not present in the unprovable sequent.
+
+We construct a tree of sequents as in the usual completeness proofs.
+At any level, we first carry out all applications of the negation,
+product, and equality rules, which involve no complications and do not
+change degree.  Applications of equality rules may need to be iterated
+to make sure that everything we want is done.  Block splicing does not
+change degree, but it involves many possible decompositions of the
+degree of the equality concept into two degrees; we use all the
+decompositions whose index in a suitable enumeration is bounded by our
+current level in the tree (the way we handle copying will ensure that
+each diagonal concept will be visited enough times that all possible
+decompositions will be considered).
+
+There remain to be considered the rules for quotient and the rule of
+copying, which change degree.  The problem here is that we can't
+perform many rules at the same time, because of the degree change.  We
+handle these using enumerations of all quotients and enumerations of
+all pairs of finite sets of concepts of uniform degree; each
+enumeration is to have the property that all items occur infinitely
+often.  At a given level of the tree, we apply the quotient rule if
+the indexed quotient term (left padded suitably and possibly right
+padded as well) is present (copying to the front if necessary), and
+then apply copying if the indicated pair of finite sets of concepts
+(right padded suitably) is present to be copied.  In the rule {\bf
+QUOT-R}, we use all intersections of equality concepts which have the
+correct degree and appear in an enumeration of such at a point before
+the index of the current stage.
+
+We weaken at all levels so that concepts present on either side
+anywhere on a branch are present everywhere above that point on that
+side of the branch.
+
+Now the usual argument establishes that there is an infinite branch in
+this tree of sequents consisting of unprovable sequents (if there
+weren't we would have a proof)..  We claim that the infinite branch
+gives a partial description of a model on which there is a sensible
+interpretation of the calculus of concepts in which the original
+unprovable sequent is invalid.
+
+The elements of the model are all the ``variables'' for the given
+calculus of degree defined as in the preceding subsection.  Concepts
+in the model are interpreted by sets of ``variables'' of the
+appropriate degree.  Variables in the model are interpreted as being
+equal when they belong to the same interpreted concepts.  The variable
+of sort determined by $V^A$ and index determined by $V^B$ will belong
+to the interpreted concept $A$ just in case some concept $V^{B'} \times
+A \times V^C$ with $B'$ equivalent to $B$ as an index appears on the
+left side of some sequent in the branch.
+
+The following can be deduced: complement and product have their
+natural semantics, in the sense that if $A^c$ is asserted (denied),
+$A$ will be denied (asserted), while if $A \times B$ is asserted $A$
+and $B$ will be asserted of appropriate variables interpreted as
+sub-blocks, and if it is denied one of these will be denied of the
+appropriate sub-block.  If two variables are asserted to be equal, any
+property asserted of one will also be asserted of the other.  If two
+variables are denied equality, there will be a concept asserted of one
+and denied of the other.  If a block is asserted to be equal to
+another block, corresponding sub-blocks will be asserted to be equal;
+if it is denied to be equal to another block, at least one subblock in
+any decomposition will be denied equality with the corresponding
+subblock.  If a quotient $A/B$ is asserted, there will be a variable
+of which $A$ is asserted of whose appropriate final sub-block $B$ is
+asserted and of whose appropriate initial block $A/B$ is asserted.  If
+a quotient $A/B$ is denied, each block of variables of the degree
+associated with $A$ must either be denied inclusion in $A$ or have its
+final segment of the degree of $B$ denied inclusion in $B$.  We have
+combinatorial completeness, in the sense that every combination of
+subblocks into blocks is realized somewhere; yes, this is done by the
+quotient rule itself (if copying actually does it, the quotient rule
+can be simplified).
+
+This is enough; the model works.
+
+HOLE:  this is enough for me to see that it works, but needs to be
+throughly rewritten for anyone else to see this!
+
+\section{Why should we care?}
+
+Is there any respect in which the calculus of concepts is an
+improvement on standard first-order logic with equality?  It cannot be
+regarded as a practical system in which to reason!  The only possible
+advantage is conceptual economy, and here it does have certain
+advantages.  The notion which appears essentially in a syntactical or
+semantic account of standard first-order logic and which does not
+appear in the calculus of concepts is that of {\em substitution\/}.
+Moreover, the notion of substitution needed for first-order logic is
+quite complicated, due to the appearance of variable binding
+operators.  In the calculus of concepts, the notion of substitution is
+replaced by a notion of copying.  The mechanics of the system become
+more complex, in exactly the way that imagining an account of
+substitution in the presence of variable binding in terms of copying
+would suggest.  But the basic concepts and the rules associated with
+those basic concepts retain a certain appealing simplicity, though
+somewhat encumbered by ``calculations of degree''.
+
+The complete disappearance of the analogues of nouns and pronouns from 
+this system is somewhat startling.
+
+\section{Notes to myself--not to be viewed as part of paper draft}
+
+In the completeness proof, we are developing a model in which objects
+are ``positions'' in ``blocks of variables'' and concepts are sets of
+these positions, respecting equivalence relations on the positions imposed
+by equality hypotheses.
+
+I believe that the forms of the rules now given are the correct ones
+needed for the completeness proof.
+
+Add a description of the typed system.
+
+Outline the completeness proof.
+
+Think about good treatment of arbitrary situations with the degree
+calculus.
+
+Extracting sorts of objects from the degree calculus:
+
+each degree corresponds to a sort of object (the degree $V0$ to a
+trivial sort with just one element).  A product degree $V^A \times
+V^B$ is inhabited by concatenations of objects of the sort associated
+with $V^A$ and objects of the sort associated with $V^B$.
+``Concatenation'' rather than pairing because this is an associative
+operation; concatenation is the operation which builds argument lists.
+Note that the structure of argument lists is not thought of as linear
+here -- there is a separate linear list of arguments of each sort.
+
+concepts of higher degree ``refer'' to many objects of any given sort:
+degrees also indicate ``positions'' of blocks of a given sort.  The
+concept $V^A \times B$ picks out objects in the ``position'' indicated
+by $V^A$ of the sort associated with $V^B$ and which happen to fall
+under $B$.  Only the part of $V^A$ which is ``commensurable'' with
+$V^B$ is relevant to the position specified?  Is the part of $A$
+commensurable with $B$ computable in the calculus of degrees?  No --
+because no such object need exist in the continuous function example!
+
+How do we tell whether the an object of the degree of $C$ with
+position $A$ is the same as the object of the degree of $C$ with
+position $B$?  Is it enough for $B/A$ and $A/B$ to be incommensurable
+with $C$?  That seems right; it requires some verification.  (it might
+depend on commutativity!)  This seems to express the notion that two
+degrees have equivalent ``parts commensurable with'' a third; we could
+add equivalence classes under this relation as virtual degrees to get
+a kind of completion, maybe?
+
+commutativity for incommensurables seems to make sense, but
+commutativity of commensurable lists does not seem sufficiently
+general.  $V^{A/B} \times V^{B/A} = V^{B/A}\times V^{A/B}$ ought to be
+true.
+
+any pair of degrees $A$ and $B$ can be expressed as sums of the
+minimum of the two plus degrees $A'$ and $B'$.
+
+I would like to prove that the equations of the calculus of degree
+implicit in any finite sequent can be realized in a conventional
+multi-sorted context; this would allow a sensible equation of the
+calculus of concepts with multi-sorted first order logic with
+equality, leaving aside the bizarre nonatomic calculi of degrees which
+are possible.
+
+Can we take any degree calculus and construct a completion thereof which 
+will behave sensibly (allowing things like commensurable parts)?
+
+is commutativity of degree addition really needed?  Think about reverse
+well-ordered lists of arguments; these would seem to satisfy the 
+conditions for a calculus of degree, but the degree calculus one
+obtains is not commutative!  This can be used as an example to illustrate
+why the asymmetry in the treatment of left and right ends might be
+appropriate -- there might not be a left end!
+
+Implementation:  concepts are sets of functions from countable
+ordinals to a set $X$, with the domain of a concept determining its
+degree, and the ``beginning'' of the domain corresponding to the
+final part of the ``argument list''. (or maybe this example suggests
+that we should view quotients as acting on first variables and copying
+as proceeding toward the beginning?)  product, quotient, complement
+and diagonal all have sensible interpretations, and product is not
+commutative on degrees!  it seems that in the absence of commutativity
+it might be difficult to come up with a sensible way of handling bad
+quotients.
+
+For construction of objects, suppose the calculus of degree is known
+completely; we have proposed a definition for equivalence of variables
+of each sort (sorts indexed by degrees and variables in each sort
+indexed by degrees up to equivalence of parts commensurable with the
+degree indexing the sort).  The actual objects can then be identified
+with positions, with an equivalence relation determined by the equality
+concepts in the sequents one is working with.
+
+So we should assume that we know what the calculus of degree is in the
+completeness proof (this seems natural anyway) and that we already
+know that implicit conditions on degree are satisfied in our sequent.
+Then we can use the calculus of degree itself as building material for
+the elements of our ``model'': each degree codes a sort, there is a
+natural way to relate objects of different degree as concatenations,
+and so forth.  But we cannot do this without full commutativity:
+positions are not specifiable in this way in the reverse well-ordering
+example (think about a reverse well-ordering of type $\omega$; all
+positions here are left padded by the same degree!  So stick with
+commutativity.  But can positions still be specified in relation to
+the sequents we work with?  I think so.  Noncommutativity still might
+work; our method of specifying position is what is incorrect!  It is
+the relation to the end of the sequent that we should look at (and fix
+things in relation to earlier sequents as well; but this isnt a
+problem since concepts from earlier sequents are always retained and
+updated).  The correct way to describe position is to consider
+concepts $V \times V^B \times V^A$, with $V^B$ determining sort and
+$V^A$ determining position (automatically adjusted in each sequent);
+the fact that $V$ is not necessarily uniquely determined by $V^A$ is
+only a curiousity.  The equivalence between different $V^A$'s is
+determined in the same way as before.  it is useful for the calculus
+of degrees to be countable, since we need to limit the number of
+witnesses to be handled (the number of equality concepts that need to
+be used at each stage).  It is natural for this calculus to be
+countable as well!  (notice that countable calculi can still exhibit
+the weird incommensurability phenomena).
+
+Would it be better to build a complete model description as in
+Marcel's proof?  Then I would not need to worry about partial
+valuations in quite the same way?
+
+Am I going to have trouble with partial valuations if the sort structure
+is ill-founded?  No, I don't see such a problem.  We are looking at
+concrete objects at each type level; simply accept only those equations
+we are forced to have, and everything should work out correctly -- maybe!!!
+Consider phenomena that occur with equations between ill-founded pairing
+structures?  I don't see that these are really a problem.
+
+Just for fun, I think I should give an axiom which allows analysis of bad
+quotients.  How hard would it be to express the idea that every bad quotient
+is to be identified with the appropriate empty concept?
+
+If we accept as a logical truth the assertion that each sort contains
+more than one object, we can assert that $A/B$ is empty if $V^B/A$
+contains more than one element.  (we also become able to express ideas
+such as linearity of the type structure -- but maybe that's already
+expressible?) The problem here is expressing the idea of the
+nontriviality of a sort.  If we allow bad quotients to be universal
+rather than empty, there might be a cleaner treatment?
+
+another idea: $A/B$ is equivalent to $A/B$'s conjunction with the
+assertion that $B$ is logically equivalent to $V^{B/A} \times B/V^{B/A}$.
+This might be pretty clean!
+
+Define left quotient $A//V^{A/B}$, the left quotient of $A$ by $V^{A/B}$;
+this is a pretty easy diagramming problem.
+
+Then $A/B = A/B//V^{B/A}$ expresses what is perhaps the nicest solution to
+the bad quotient problem.
+
+\end{document}
