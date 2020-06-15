@@ -203,7 +203,53 @@ the object in a coproduct of $A,B$ as long as we remember that this is defined o
 The next concept we implement is the {\em equalizer\/} of two functions $f, g:A \rightarrow B$.  The motivation in the category of sets and functions is that the equalizer of $f$ and $g$ is the inclusion map $i$ from  the set $E=\{f(x) = g(x):x \in A$ into $A$.  We immediately have $f(i(x) = g(i(x))$ for all $x \in E$, so $f \circ i = g\circ i$.
 Now suppose $f \circ h = g \circ h$ for a map $h:C \rightarrow A$.  This means that $f(h(x)) = g(h(x))$ for all $x$, so $h(x)$ is always in $E$, so there is a unique map $k$ from $C$ into $E$ which we can define informally as $i^{-1}\circ h$, siuch that $i \circ k = h$.
 
-Abstract, we say that an equalizer of $f,g:A \rightarrow B$ is an arrow $i:E \rightarrow A$ with the property that $f \circ i = g\circ i$ and for any $h:C \rightarrow A$ such that $f \circ h = g \circ h$ we find a unique arrow $k:C \rightarrow E$ such that $i \rightarrow k = h$.
+Abstractly, we say that an equalizer of $f,g:A \rightarrow B$ is an arrow $i:E \rightarrow A$ with the property that $f \circ i = g\circ i$ and for any $h:C \rightarrow A$ such that $f \circ h = g \circ h$ we find a unique arrow $k:C \rightarrow E$ such that $i \circ  k = h$.
+
+We now define the concepts of limit and colimit.  A diagram $D$ is a category $C$ is a subcategory of $C$ (finite in the applications we have in mind).  A cone for a diagram
+in $C$ consists of an object $V$ of $C$ together with an arrow $v_d$ from $V$ to each $d \in D$ with the property that for each arrow $a:d \rightarrow e$ in $C$
+we have $a \circ v_d = v_{d'}$.   A limit for the diagram $D$ is a $D$-cone with vertex $V$ and arrows $v_d$ such that for every $D$-cone with vertex $V'$ and arrows $v'_d$ there is exactly one arrow
+$f$ from $V'$ to $V$ such that $v_d \circ f = v'_d$.
+
+A product is the limit of a subcategory simply consisting of two objects and no arrows.  An equalizer is the limit of a subcategory consisting of two objects and two arrows with the given pair of objects as source and target.  A limit of the empty diagram is a terminal object.
+
+A colimit for a diagram in a category $C$ is a limit in the category $C^{\tt op}$ (which has the same objects, the same arrows, and $f \circ_{C^{\tt op}} g = g \circ_C f$).
+
+A coproduct is the colimit of a subcategory consisting of two objects and no arrows.  An initial object is a colimit of the empty subcategory.
+
+Note that limits and colimits are unique up to isomorphism (there may be distinct limits/colimits of the same diagram, but there is an invertible arrow between them).
+
+Now for coequalizers.  A coequalizer is a colimit for a diagram consisting of two objects $A,B$ and two arrows $f,g:A \rightarrow B$.
+
+In the category of sets, the existence of coequalizers has to do with the project of identifying objects in equivalence classes under an equivalence relation $R$.
+We remind ourselves that a relation $R$  is an equivalence relation iff it is reflexive, symmetric, and transitive.  With any $x \in {\tt dom}(R)$ we can associate $[x]_R$
+(often written $[x]$ if the equivalence relation is understood from context), defined as $\{y:y \,R\,x\}$ , the equivalence class of $x$ under $R$.  We can show that
+$[x]_R = [y]_R$ iff $x \, R\, y$, so it might seem that we can simply represent each object in the domain of $R$ by its equivalence class and effect the collapse.  Unfortunately,
+$[x^i]_R^{i+1}$ is the superscripting rule for this symbol:  the equivalence classes are not ideal as surrogates for the elements of the domain of $R$ when we collapse them together, because they are at the wrong relative type.  A natural solution is to choose a representative $x^*$ from each equivalence class $[x]_R$, which will work but amounts to assuming the axiom of choice.  The axiom of choice is consistent with our set theory, but inconsistent with the version in which all elements are sets (NF).  A weaker statement which allows us to have coequalizers is the
+axiom CE which asserts that every collection of pairwise disjoint sets is the same size as a set of singletons:  we postulate an injective map $f$ such that
+$f([x]_R)$ is a singleton $\{x^*\}$ for each $x$, with no presumption that $x^*$ has any intrinsic relation to $[x]_R$.
+
+We now describe the coequalizer construction in the category of sets and functions and verify that it works.
+
+Let $f$ and $g$ be maps from $A$ to $B$.  We want to identify $f(x)$ and $g(x)$ for $x \in A$.  Let $R$ be the intersection of all equivalence relations on $B$
+which include $\{(f(x),g(x):x \in A\}$ as a subset.  Let $f$ be a map sending equivalence classes $[b]_R$ to singletons $\{b^*\}$ (existing by CE).  The coequalizer is then the map
+$e_R = (b \mapsto b^*)$.
+
+In abstract terms, the coequalizer is a cone over the subcategory with objects $A,B$ and arrows $f,g$ in the converse category.  This consists in full generality
+of arrows $v_a:A \rightarrow V$ and $v_b:B \rightarrow V$ such that $v_b \circ f = v_a$ and $v_b \circ g = v_a$:  we can elide all mention of $v_a$ and simply present the cone
+as an arrow $v_b$ from $B$ to $V$ such that $v_b \circ f = v_b \circ g$.
+
+This is a colimit, so for any $h:B \rightarrow V'$ such that $h \circ f = h \circ g$ (determining another cone) we have exactly one $k: V \rightarrow V'$ such that $h = k \circ v_b$.
+
+In the concrete situation with sets and functions, we identify $V$ as $\{b^*:b \in B\}$, the set of representatives of equivalence classes under the relation $R$ defined
+as indicated above, define $v_b$ as the map $(b \mapsto b^*)$ from $B$ to $V$.  For any $h:B \rightarrow D$ such that $h \circ f = h \circ g$, we can determine the value
+of $h$ at any element of $B$ if we know $[h]_R$:  if $f(x)=y$ and $g(x)=z$ we have $h(f(x)) = h(g(x))$ so $h(y)=h(z)$:  the equivalence class on $B$ of belonging to the same
+preimage under $h$ includes $R$.  So we have a unique map $k$ from  $V$ to $D$ such that $k \circ v_b = h$.
+
+
+
+
+
+
 
 
 \end{document}
