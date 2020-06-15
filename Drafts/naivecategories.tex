@@ -6,7 +6,7 @@
 
 \author{M. Randall Holmes}
 
-\date{6/15/2020  1215 pm Boise time-- up to coequalizers}
+\date{6/15/2020 \\ 1215 pm Boise time-- up to coequalizers \\ 1:42 pm Boise time, drafted the universal property of exponentials.}
 
 \begin{document}
 
@@ -244,6 +244,39 @@ In the concrete situation with sets and functions, we identify $V$ as $\{b^*:b \
 as indicated above, define $v_b$ as the map $(b \mapsto b^*)$ from $B$ to $V$.  For any $h:B \rightarrow D$ such that $h \circ f = h \circ g$, we can determine the value
 of $h$ at any element of $B$ if we know $[h]_R$:  if $f(x)=y$ and $g(x)=z$ we have $h(f(x)) = h(g(x))$ so $h(y)=h(z)$:  the equivalence class on $B$ of belonging to the same
 preimage under $h$ includes $R$.  So we have a unique map $k$ from  $V$ to $D$ such that $k \circ v_b = h$.
+
+A {\em pullback\/} is the limit of a daigram with objects $A,B,C$ and morphisms $f:A\rightarrow C$ and $g:B \rightarrow C$,
+
+In the category of sets and functions, the vertex of the pullback is the set $D = \{(x,y) \in A \times B:f(x)=g(y)$, with the maps $D_A$ and $D_B$ being the appropriate restrictions of the projection maps.
+
+It is a theorem that if a category has a terminal object and all pullbacks, that it has limits of all finite diagrams.
+
+Now for exponentials.  We are designing a category theory implementation of the construction $B^A = \{f:(f:A \rightarrow N)\}$ of function spaces.  We might want to introduce
+a map {\tt ev} from $B^A \times A$ to $B$ satisfying ${\tt ev}(f,a) = f(a)$.  We can't, because this violates typing rules.  We {\em can\/} have a map {\tt ev} from
+$B^A \times \iota``A$ to $\iota``B$ satisfying ${\tt ev}(f,\{a\}) = \{b\}$.
+
+The universal property of {\tt ev} which we will exploit for our category theoretic definition is based on the currying construction:  naively one might suppose
+that there is an implementation of functions $f(c,a) = b$ of two variables as $\hat f(c)(a) = f(c,a)$, $\hat f$ being uniquely determined by $f$.  This first needs to be corrected
+for type:  we must have $\hat f(\{c\})(a) = f(c,a)$ for reasons of type.  This then transforms to ${\tt ev}(\hat f(\{c\},\{a\}) = \{f(c,a)\}$.
+
+To assist our phrasing we introduce a type raising functor $T$.  $T$ sends each set $A$ qua object of our category to $\iota ``A$, and each function $f$ qua morphism
+to $f^{\iota}$ (the map sending $\{a\}$ to $\{f(a)\}$).   This is clearly not a set map but it does meet the definition of a functor.
+
+The property of {\tt ev} phrased in categorical terms is that for each arrow $f:C \times A \rightarrow B$ there is a unique arrow $\hat f:  T_O`C \rightarrow B^A$
+such that ${\tt ev}\circ (\hat f \otimes 1_{T_O`A})(\{c\},\{a\}) = \{f(c,a)\}$.  We have not yet digested $\{f(c,a)\}$ into categorical terms. 
+
+We express $\{f(c,a)\}$ as $f^\iota(\{(c,a)\})$ and in turn as $(f^\iota \circ \pi)(\{c\},\{a\})$ where $\pi = ((\{c\},\{a\}) \mapsto \{(c,a)\})$.
+
+${\tt ev}\circ (\hat f \otimes 1_{T_O`A})(\{c\},\{a\}) = (f^\iota \circ \pi)(\{c\},\{a\})$ doesn't look very categorical.
+
+But applying $\pi^{-1}$ throughout does the trick.
+
+$(\pi^{-1}\circ {\tt ev})\circ (\hat f \otimes 1_{T_O`A})(\{c\},\{a\}) = (\pi^{-1} \circ f^\iota \circ \pi)(\{c\},\{a\})$ is more categorical, because
+there is a functor $T' = \pi^{-1}\circ f^\iota \circ \pi = \pi^{-1} \circ T`f \circ \pi$ and we can say that there is an arrow ${\tt ev'} [= \pi^{-1} \circ {\tt ev}]$
+such that for each $f:C \times A \rightarrow B$ we have ${\tt ev'}\circ (\hat f \otimes 1_{T_O'A}) = T'`f$ for a unique $\hat f:T_O`C \rightarrow B^A$. 
+
+To make this fully abstract (or at least to commit ourselves to definitely specified concreteness) we need to give some characterization of the functors $T$ and
+$T'$ which appear in the statement of this universal property.
 
 
 
