@@ -6,7 +6,7 @@
 
 \author{M. Randall Holmes}
 
-\date{6/15/2020 \\ 1215 pm Boise time-- up to coequalizers \\ 1:42 pm Boise time, drafted the universal property of exponentials. \\ 3:45 pm further abstract description of exponentiation.  Made stratification indices uniformly superscripts.\\ 12 pm 6/16/2020 minor corrections \\ 1 pm 6/16/2020:  subobject classifier installed.}
+\date{6/25/2020 \\ 11215pm Boise time-- up to coequalizers \\ 1:42 pm Boise time, drafted the universal property of exponentials. \\ 3:45 pm further abstract description of exponentiation.  Made stratification indices uniformly superscripts.\\ 12 pm 6/16/2020 minor corrections \\ 1 pm 6/16/2020:  subobject classifier installed.\\ 10 15 am 6/25/2020 working on internal interpretation of constructive type theory or  constructive NF.  still sketchy.}
 
 \begin{document}
 
@@ -308,6 +308,36 @@ $f$ to be monic (one-to-one in the set theoretical context).  We know that the r
 $\chi_f(g(x)) = \tau(!(x)) = {\tt true}$ (where ! is the trivial map from $a'$ to 1) for every $x$.
 
 Now a $T,\times$-topos is a category with all finite limits and colimits, exponentials and a subobject classifier.  The mention of $T,\times$ is required because of the role of $T$ and a fixed notion of product $\times$ in the definition of the exponential.
+
+Now I am going to try to prove that a topos interprets a certain amount of set theory.  I want to produce an inductive proof of the existence of $\{x \in A:\phi\}$ as an element
+of $\Omega^A$, speaking loosely, where $\phi$ is a stratified formula in the usual language of set theory.  I'm going to do this in stream of consciousness fashion, because my prior understand of how this is going to go is limited.  I am hoping that my experience with finite axiomatizatons of set theory will guide me as I dive down the rabbit hole.
+
+We work by induction on the structure of the formula $\phi$.  Do please note that this treatment is still very sketchy.
+
+We begin with binary propositional connectives.  For each one we want a suitable arrow $\Omega \times \Omega\rightarrow \Omega$.  The map for $\wedge$ is the characteristic function
+associated with the range of the monic $\tau \otimes \tau$.  We make a stab at the map for $\rightarrow$.  Consider the equalizer of the first projection map $\Omega \times \Omega\rightarrow \Omega$
+and $\chi_{\tau \otimes \tau}$, the conjunction map just defined.   The characteristic map of the equalizer ought to be the map we want for implication.  We do need to know that equalizers are monic (or that this equalizer is monic--check).
+
+We outline the implementation of disjunction and negation, but we need quantification first:  we implement $P \vee Q$ as $(\forall R \in \Omega:(P \rightarrow R) \wedge (Q \rightarrow R) \rightarrow R)$.  We can implement $\neg P$ as $(\forall R \in \Omega:P \rightarrow R)$.
+
+A predicate of arguments with types represented by objects $A_1, \ldots, A_n$ is an arrow from $A_1 \times \ldots \times A_n$ to $\Omega$.  Because we have products and projection maps explicitly, reordering arguments and padding with additional arguments is not an issue.
+
+A specific object $a$ in $A$ is represented by an arrow from a terminal object 1 to $A$.  If we have an arrow representing $\phi(a_1,\ldots,a_n)$ ($a_i \in A_i$), its composition with a product of
+the arrow representing $a \in A_1$ with identities on the other component types represents $\phi(a_1,\ldots,a_n) \wedge a_1 = a$.  Quanitfication can eliminate the extra variable.
+
+If we have $\phi:A_1\times \ldots \times A_n \rightarrow \Omega$, we have $\phi^*:TA_2 \times \ldots \times TA_n\rightarrow \Omega^A_1$ because we have exponentials.  We can consider in particular
+the arrow $\psi^*$ where $\psi = \tau \circ 1_{A_1 \times \ldots \times A_n}$.  The inverse image under T of the characteristic function of the equalizer of $\phi^*$ and $\psi^*$ represents
+$(\forall a_1:\phi(a_1,a_2,\ldots,a_n))$.  The inverse image under T in question exists (mod suitable quibbles) because $T\Omega$ is isomorphic to $\Omega$.  Notice that now that we have the universal quantifier, we can implement disjunction and negation as indicated above.
+
+We can then (quite wickedly, from a genuinely constructive standpoint) implement $(\exists a_1:\phi(a_1,\ldots,a_n))$ as $(\forall R\in \Omega:(\forall a_1\in A_1:\phi(a_1,\ldots,a_n) \rightarrow R))$.
+
+It is interesting how the disjunctive components of constructive logic are implemented here in terms of the conjunctive.
+
+This handles logic.  Now we need equality and membership.  Equality is definable in terms of membership, so we just do membership.  In fact, we actually want to implement
+the subset relation.  If we have $a \in TA$ and $b \in \Omega^A$,  an evaluation arrow implements the unit subset relation, which can be used in effect to implement membership.
+Membership relations at different types are handled by images of this membership (actually unit subset) relation under enough applications of T.
+
+
 
 
 
