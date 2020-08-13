@@ -1,0 +1,313 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb}
+
+\title{A new take on construction of a model of ZF with a tangled web, proving Con(NF)}
+
+\author{M. Randall Holmes}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+This is a description of a particularly nice version of my NF consistency proof, in which I think there is more of a chance for the reader to divine what the underlying idea is.
+
+I further remark that it is more like the previous versions than I realize...which is not a bad thing.  It might be said to explain some of their apparently arbitrary features.
+
+\newpage
+
+\section{Type theory, NF, tangled webs, and tangled type theory}
+
+\subsection{The simply typed theory of sets TST}
+
+We define the simple typed theory of sets, often naively attributed to Russell, but in fact apparently due to Tarski (about 1930) and perhaps ultimately to Wiener (1914).  We call this theory TST, following Forster and the Belgian school of NF researchers.
+
+This is a first order many sorted theory with equality and membership.  The sorts are indexed by the natural numbers.  Each variable $x$ has  a natural number sort
+${\tt type}(x)$. The preimage of each natural number under {\tt type} is countable.   An atomic formula $x=y$ is well-formed iff ${\tt type}(x)={\tt type}(y)$.  An atomic formula $x \in y$ is well-formed iff ${\tt type}(x)+1 = {\tt type}(y)$.
+
+The axiom schemes of TST are extensionality, all well-typed instances of $$(\forall xy:x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z \in y)),$$ and comprehension, all well-typed universal closures of formulas
+$$(\exists A:(\forall x:x \in A \leftrightarrow \phi)),$$  where $A$ is not free in $\phi$.  The resemblance to ``naive set theory" is not accidental at all, and of course the reliance on syntax to avoid paradox is certainly in the spirit of Russell.
+
+This theory is quite weak, and is usually further augmented with axioms of Infinity and Choice.  With those axioms, it is a serviceable foundation for mathematics.  TST + Infinity has the same consistency strength as Zermelo set theory with separation restricted to bound formulas (Mac Lane set theory).  Adding Choice does not add consistency strength.
+
+We define for each natural number $n$ the subtheory TST$_n$, which differs from TST in having sorts indexed by natural numbers less than $n$ (we do regard 0 as a natural number, so this gives $n$ types).
+
+A model of TST (or of TST$_n$) is given for us as a sequence (finite in the case of TST$_n$)  of sets $X_i$ implementing type $i$ and relations $\in_i \subseteq X_i \times X_{i+1}$ implementing membership of type $i$ objects in type $i+1$ objects (we presume that equality on each type is represented by equality on the correlated $X_i$), of course satisfying the axioms of the relevant theory in the obvious sense which we will not spell out in detail.   We do not assume that distinct $X_i$'s are disjoint.  We say that a model of either theory is {\em natural\/} iff the collection of preimages of elements of $X_{i+1}$ under $\in_i$ is ${\cal P}(X_i)$.
+
+\subsection{Quine's set theory New Foundations (NF)}
+
+We present Quine's set theory New Foundations (NF) in a slightly different way than this is usually done, which should be clearly equivalent to the usual formulation.
+NF is a first order one-sorted theory with equality and membership.  We suppose that nonetheless we provide the function ${\tt type}$ from variables to natural numbers.
+The preimage of each natural number under ${\tt type}$ is to be countable.  A formula is said to be well-typed under the same conditions under which it is well-typed in TST, though formulas which are not well-typed are nonetheless well-formed.
+
+The axioms of NF are an axiom of extensionality typographically identical to the axiom scheme of extensionality in TST (though any instance of it is logically equivalent to any other, so it is simply an axiom), and an axiom scheme of comprehension again asserting all well-typed universal closures of formulas
+$$(\exists A:(\forall x:x \in A \leftrightarrow \phi)),$$  where $A$ is not free in $\phi$.  This is a scheme not a single axiom, but it is known to be equivalent to the conjunction of finitely many of its instances.  Note for example that the axiom $$(\exists A:(\forall x:x \in A \leftrightarrow x=x))$$ of NF asserts the existence of a universal set containing all objects of the theory, and all of its versions obtained by replacing $x$ and $A$ with dstinct variables not necessarily of  successive types are logically equivalent to one another.   Though this theory is untyped, it does not immediately succumb to Russell's paradox because there is no obvious way to present $$(\exists A:(\forall x:x \in A \leftrightarrow x \not\in x))$$ as a well-typed formula.
+
+The notion of stratified formula usually encountered in formulations of NF  can be restated in our terms:  a sentence is stratified if it can be made well-typed by renaming of bound variables;  a formula is stratified if its universal closure is stratified.
+
+It is known that NF proves Infinity and disproves Choice (the latter is a result of Specker, 1953, and has the first as a corollary, though Specker had independent proofs of the first result), so the axioms of extensionality and comprehension are all that are needed in the basic presentation of the theory.  We believe that the consistency strength of NF is the same as that of TST + Infinity, though we have not shown that here.  We do show that it is much weaker than ZF.
+
+We further augment our system of variables to conveniently present a result of Specker.  In TST, we provide for each variable $x$ a variable $x^+$ with ${\tt type}(x^+) = {\tt type}(x)+1$.  The result of uniformly replacing each variable (free or bound) in a formula $\phi$ with its image under this operation will be denoted by $\phi^+$.  Note that $\phi^+$ is well-formed if $\phi$ is well-formed, $\phi^+$ is an axiom if $\phi$ is an axiom, and further that $\phi^+$ is a theorem of TST if $\phi$ is a theorem.  This is a very strong version of the phenomenon of systematic ambiguity noted by Russell and Whitehead in the far more elaborate type theory of {\em Principia Mathemtica\/}.
+
+The result of Specker (from 1962) of vital importance to our enterprise (and strongly confirming Quine's intuition in formulating the theory NF in the first place) is that NF is consistent iff TST is consistent with the Ambiguity Scheme which asserts $\phi \leftrightarrow \phi^+$ for every closed formula $\phi$.
+
+\subsection{Tangled webs of cardinals and the consistency of NF}
+
+In 1995, we showed that the consistency of NF is equivalent to the existence in ordinary set theory without Choice  of a pecular system of cardinals which we here call a {\em tangled web\/} (the presentation here is much better than in the 1995 paper).  Let $\lambda$ be a limit ordinal.  For any nonempty finite subset $A$ of $\lambda$, define $A_1$ as $A \setminus \{{\tt min}(A)\}$.  Define $A_0$ as $A$ and $A_{n+1}$ as $(A_n)_1$ where this is defined.  
+
+A tangled web is a function from nonempty finite subsets of $\lambda$ to cardinals (which should be implemented using the method of Scott, since Choice cannot be assumed) such that 
+
+\begin{description}
+
+\item[exponential property:]  $2^{\tau(A)} = \tau(A_1)$ if $|A| \geq 2$ and \item[elementarity property:]   if $A \setminus A_n = B \setminus B_n$, where $|A|, |B| \geq n$, then natural models of TST$_n$ with type 0 implemented by
+sets of sizes $\tau(A)$ and $\tau(B)$ satisfy the same closed sentences of the language of TST$_n$.
+
+\end{description}
+
+We demonstrate that the existence of a tangled web implies the consistency of NF.  Let $\Sigma$ be a finite set of sentences of the language of TST.  Let $n$ be chosen so that
+$\Sigma$ is a finite set of sentences of the language of TST$_n$.  The collection $\Sigma$ then determines a partition of $[\lambda]^n$:  an element $A$ of $[\lambda]^n$ goes in a partition determined by the truth values of sentences in $\Sigma$ in natural models of TST$_n$ with base type $\tau(A)$.  There are only finitely many compartments in this partition
+(no more than $2^{|\Sigma|})$.  By the theorem of Ramsey there is a homogeneous set $H$ of size $n+1$ for this partition.
+
+Now consider a natural model of TST with base type of size $\tau(H)$.  The model of TST$_n$ with the same base type has the same theory as any natural model of TST$_n$ with
+base type $\tau(H \setminus \{{\tt max}(H)\})$ by the elementarity property of tangled webs.  This in turn satisfies the same sentences in $\Sigma$ as any natural model of TST$_n$ with base type $\tau(H_1)$ because $H$ is homogeneous for the partition.  Now $\tau(H_1) = 2^{\tau(H)}$ by the exponential property of tangled webs, so the natural model of TST$_n$ whose base type is type 1 of the natural model of TST with base type of size $\tau(H)$ satsifies the same sentences in $\Sigma$ as does the entire model of TST with base type
+of size $\tau(H)$, whence the model with base type of size $\tau(H)$ satisfies $\phi \leftrightarrow \phi^+$ for each formula $\phi \in \Sigma$.  So any finite subset of the Ambiguity Scheme is consistent with TST, so TST with the full Ambiguity Scheme is consistent by compactness, so NF is consistent by the theorem of Specker.
+
+Below, we will show how to construct a model of ZF in which there is a tangled web, completing the project of proving the consistency of NF relative to a better-understood system of set theory.
+
+\subsection{Tangled type theory}
+
+There is another system equivalent to NF which I have some hesitation in presenting here as it is quite hard to think about.  But it underlies the motivation for the tangled web concept, and our construction does lead to a model of this system.
+
+Tangled type theory (TTT) is a system with types indexed by the natural numbers (or indeed by any linearly ordered set with no maximum element, such as for example a limit ordinal).
+Each variable $x$ has a type ${\tt type}(x)$ in the linearly ordered set.  A sentence $x=y$ is well-formed iff ${\tt type}(x)={\tt type}(y)$.  A sentence $x \in y$ is well-formed
+iff ${\tt type}(x) < {\tt type}(y)$.  A sentence $\phi$ is ``well-typed" iff there is a finite set $\tau$  of types such that each type occurring in $\phi$ occurs in $\tau$ and
+each sentence $x \in y$ appearing in $\tau$ has the property that there is no element of $\tau$ between ${\tt type}(x)$ and ${\tt type}(y)$.
+
+The axioms of TTT are all the well-typed sentences of the shape $$(\forall xy:x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z \in y))$$ and all the well-typed sentences which are universal closures of formulas of the shape $$(\forall x:x \in A \leftrightarrow \phi)$$  where $A$ is not free in $\phi$.
+
+TTT is equiconsistent with NF.  If NF is consistent, there is a model of TTT consisting simply of copies of the model of NF, with the membership relation from each type to each higher type being determined by the membership relation on the model of NF in the obvious way.
+
+Suppose that  there is a model of TTT whose types are in an infinite set $T$ with a given linear order with no maximum element.   Let $\Sigma$ be a finite set of sentences in the language of TST.  Let $n$ be such that $\Sigma$ is a finite set of sentences in the language of TST$_n$.  $\Sigma$ determines a partition of $[T]^n$ in which a set $A \in [T]^n$ is placed  in a compartment determined by the truth values in the model of TTT of the sentences obtained if variables of type $i$  in formulas in $\Sigma$ are replaced (in an injective manner) with variables of type the $(i+1)$th element of $A$.  $T$ has a subset with the order type of the natural numbers, which will have an infinite homogeneous set $H$ under the partition.  The types in $H$ determine a model of TST in which $\phi \leftrightarrow \phi^+$ holds for each $\phi \in \Sigma$.  Thus the Ambiguity Scheme is consistent with TST by compactness and NF is consistent by the results of Specker.
+
+TTT is quite bewildering, as each element of each type is determined by an extension in each lower type independently, and each type is interpreted as a power set of each lower type.  It should be clear that there cannot be a natural model of TTT.
+
+
+
+\newpage
+
+\section{The model construction}
+
+We work in ZFA (Zermelo Fraenkel set theory with a set of atoms) with Choice.
+
+\subsection{Relevant cardinals and basic notations}
+
+Let $\lambda>\omega$ be a limit ordinal.
+
+Let $\kappa$ be a regular uncountable ordinal.
+
+Let $\mu$ be a strong limit cardinal with cofinality greater than $\lambda$ or $\kappa$.
+
+We provide that the set of atoms is of cardinality $\mu$.
+
+We call sets of cardinality less than $\kappa$ ``small" sets and other sets we call ``large".
+
+We refer to nonempty finite subsets of $\lambda\setminus \omega$ as ``extended type indices".
+
+We say that an extended type index $B$ downward extends an extended type index $A$ iff all elements of $A \setminus B$ are dominated by all elements of $A$;  if
+$B$ downward extends $A$ and is not equal to $A$ we say that $B$ strictly downward extends $A$.
+
+Where $\alpha \in \lambda\setminus \omega$ and $A$ is an extended type index, we allow $\alpha:A$ to denote $A \cup \{\alpha\}$ if $\alpha\in \lambda \setminus \omega$ is less than all elements of $A$,
+and allow $A:\alpha$ to denote $A \cup \{\alpha\}$ of $\alpha\in \lambda$ is larger than all elements of $A$.   We let $A_1$ denote $A \setminus \{{\tt min}(A)\}$, if this is nonempty (that is,
+$(\alpha:A)_1 = A$).  
+
+The use of $\lambda \setminus \omega$ is a technical device, avoiding ambiguity in notations in this paragraph:  we are ensuring that no element of an extended type index can be an extended type index itself.
+
+\subsection{The gathering of the clans}
+
+We partition the set of atoms into sets $M^{A,0}$ and $M_*^{A,0}$ where $A$ ranges over the extended type indices.  Each set $M^{A,0}$ or $M_*^{A,0}$  is 
+of cardinality $\mu$.  These sets may be referred to as ``clans".
+
+We provide for each $M^{A,0}$ a partition $\Lambda^A$ into sets of size $\kappa$.  The elements of $\Lambda^A$ are called ``litters".  For each litter
+$L \subseteq M^{A,0}$ we define $[L]$, the ``local cardinal" of $L$, as the set of all $M \subseteq M^{A,0}$ such that $|M \Delta L|<\kappa$, that is, the collection of all subsets
+of $M^{A,0}$ with small symmetric difference from $L$.  We define $K^A$ as $\{[L]:L \in \Lambda^A\}$.  Elements of local cardinals are called ``near-litters".
+
+Similarly, we provide for each $M^{A,0}_*$ a partition $\Lambda^A_*$ into sets of size $\kappa$.  The elements of $\Lambda^A_*$ are also  called ``litters".  For each litter
+$L \subseteq M^{A,0}_*$ we define $[L]$, the ``local cardinal" of $L$, as the set of all $M \subseteq M^{A,0}_*$ such that $|M \Delta L|<\kappa$, that is, the collection of all subsets
+of $M^{A,0}_*$ with small symmetric difference from $L$.  We define $K_*^A$ as $\{[L]:L \in \Lambda_*^A\}$.  Elements of local cardinals are called ``near-litters".
+
+We define $M^{A,1}$ for each $A$ as the set of all sets $X \subseteq M^{A,0}$ such that for some set $Y \subseteq \Lambda^A$ with $|Y|<\kappa$, we have either
+$|X \Delta \bigcup Y|<\kappa$ or \newline $|X \Delta (M^{A,0} \setminus \bigcup Y)|<\kappa$: in other words, $M^{A,1}$ is the collection of all subsets of $M^{A,0}$ which have small symmetric difference from unions of small or co-small sets of litters.
+
+Note that $K^A$, $K^A_*$, and $M^{A,1}$ are all of size $\mu$.
+
+We will select a partition of each $K^A$ into compartments $X^{\beta:A}$ for $\beta<{\tt min}(A)$ and an additional compartment $Y^A$.  Each of these compartments is of size $\mu$.  
+
+We provide a bijection $p^A$ from $M_*^{A,0}$ to $Y_A$.
+
+The index of
+an atom or near-litter $x$  is the unique $B$ such that $x$  belongs to $M^{B,0}$, $M^{B,0}_*$, $\bigcup K^B$ or $\bigcup K^B_*$.
+
+For any near-litter $N$ we define $N^\circ$ as the litter such that $N \Delta N^\circ$ is small.
+
+\subsection{Initial description of the extended types}
+
+The sets $M^{A,2}$ may be referred to as ``extended types".  The underlying idea is that each set $M^{A,2}$ will code a ``power set" of $M^{\beta:A,2}$ for each
+$\beta<{\tt min}(A)$.
+
+We stipulate to begin with that $M^{A,2}$ will be a subset of ${\cal P}(M^{A,1})$ of cardinality $\mu$.  Its definition is rather complex, and verifying that it succeeds will require some proofs.
+
+$K^A \subseteq M^{A,2}$:  the local cardinals of litters included in $M^{A,0}$ are all elements of $M^{A,2}$.  Also, for any $X \in \bigcup K^A_*$,  $\bigcup p_A``X \in M^{A,2}$.
+
+
+
+\subsection{The first component of the representation of power sets of extended types}
+
+Our strategy for interpreting $M^{A,2}$ as a power set of $M^{\beta:A,2}$ starts by presenting a rather straightforward way of coding subsets of $M^{\beta:A,2}$ as subsets of
+$M^{A,1}$:  provide a bijection from $M^{\beta:A,2}$ to $X^{\beta:A}$ (these sets both being of size $\mu$) and represent subsets of $M^{\beta:A,2}$ as unions of the corresponding subsets of $X^{\beta:A}$:  this works because $X^{\beta:A}$ is a family of disjoint sets.
+
+We present the formal details.
+
+We select for each $\beta<{\tt min}(A)$ a bijection $f^0_{\beta:A}$ from $M_{\beta: A,2}$ to $X^{\beta:A}$.  We define $f_{\beta:A}(B) =\bigcup( f^0_{\beta:A}``B)$ for $B \subseteq M^{\beta: A,2}$.  Notice that $f_{\beta:A}(B)$ is defined for any $B \subseteq M^{\beta: A,2}$, and is a subset of $M^{A,1}$, and that  $f_{\beta:A}$ is injective (because $X^{\beta:A}$ is a family of disjoint sets).
+
+Note that $X_{\beta:A}$ is a subset of $M^{A,1}$, and so for any $B$, $f_{\beta:A}(B) = f^0_{\beta:A}``B$ is a subset of $M^{A,1}$ and so a candidate
+for membership in $M^{A,2}$.  But these are very special candidates for membership in $M^{A,2}$:  we do not expect the typical element of $M^{A,2}$ to be a union of elements of
+$X_{\beta:A}$.
+
+\subsection{The second component of the representation of power sets of extended types}
+
+To complete our technique for representing the power set of $M^{\beta:A,2}$ as $M^{A,2}$, we need to define a correspondence between subsets of $M^{A,1}$ which happen to be unions of subcollections of $X^{\beta:A}$ and all subsets of $M^{A,1}$.
+
+We begin by postulating a bijection $g^0_{\beta:A}$ from $M_{A,1}$ to $K^{\beta:A}_*$.
+
+This gives us a injection from $M^{A,1}$ into $M^{\beta:A,2}$ defined by $g^1_{\beta:A}(x) = \bigcup p_{\beta:A}``g^0_{\beta:A}(x)$.  This has the stronger property
+that for distinct $x$, values of this function are disjoint.
+
+Thus, we get an injection from ${\cal P}(M^{A,1})$ into ${\cal P}(M^{\beta:A,2})$ defined by $g^2_{\beta:A}(B) = g^1_{\beta:A}``B$.
+
+This gives us an injection from  ${\cal P}(M^{A,1})$ into $\bigcup``({\cal P}(X^{\beta:A}))$ defined as $h^0_{\beta:A}(B) = f_{\beta:A}(g^2_{\beta:A}(B))$.
+
+We then use the usual technique of the proof of the Schr\"oder-Bernstein theorem to get a bijection $h$ from  ${\cal P}(M^{A,1})$ to $\bigcup``({\cal P}(X^{\beta:A}))$:
+$h_{\beta:A}$ will act as the identity on all elements of $\bigcup``({\cal P}(X^{\beta:A}))$ not in the range of $h^0_{\beta:A}$ and their iterated images under $h^0_{\beta:A}$,
+and as $h^0_{\beta:A}$ on all other elements of ${\cal P}(M^{A,1})$.
+
+\subsection{The coded membership relation}
+
+A ``membership relation"  of an element $x$ of $M^{\beta:A,2}$ in a member $y$ of $M^{A,2}$ will  be coded by $x \in_{\beta:A} y$, defined as $f^0_{\beta:A}(x) \subseteq h_{\beta:A}(y)$.  This will be seen to give us membership relations in natural models of TST$_n$ relevant to the tangled web we will define.
+
+\subsection{Symmetry and the actual extent of $M^{A,2}$}
+
+Of course $M^{A,2}$ is not in one to one correspondence with the actual power set of $M^{\beta:A,2}$:  both sets are intended to be of size $\mu$.  We now have enough information to give the criterion for a subset of $M^{A,1}$ to belong to $M^{A,2}$.
+
+We next define a notion of symmetry.  An $A$-allowable permutation is a permutation of atoms in $M^{B,0}$'s and $M^{B,0}_*$'s with $B$ downward extending $A$, extended to sets
+by elementwise action as is usual, whose action fixes each $K^B$ and $K_*^B$ and $p_B$  for $B$ downward extending $A$ and whose action fixes each of the maps
+$f^0_{\gamma:B}$ and $g^0_{\gamma:B}$ for $B$ downward extending $A$.
+
+We note that we are perfectly well aware that the action of an allowable permutation on the clans $M^{B,0}$ completely determined its action on  $M^{B,0}_*$ via information contained in $p_B$.  The starred clans are a piece of scaffolding we could in principle do without, but experience has convinced me that providing them is an aid to exposition.
+
+A $A$-support is a small well-ordering of atoms and near-litters each element of the domain of which has index downward extending $A$ and in which any two near-litter elements  of the domain which differ are disjoint.
+A object $X$ is said to have $A$-support $S$ iff each $A$-allowable permutation which fixes $S$ also fixes $X$.  An object $X$ is $A$-symmetric iff it has an $A$-support.
+
+We define $M^{A,2}$ as the collection of all $A$-symmetric subsets of $M^{A,1}$.
+
+It should be evident that any small subset of an $M^{A,1}$ is in $M^{A,2}$.  It should be evident that the image of any element of $M^{B,1}$ for $B$ downward extending $A$ under the action of an $A$-allowable permutation is in $M^{B,1}$.
+
+\subsection{A remark on what we need to do eventually}
+
+In order to show that this works, we need to verify that the size of $M^{A,2}$ is actually $\mu$ (on the inductive hypothesis that this holds for $M^{B,2}$ with $B$ strictly downward extending $A$, which we suppose already constructed).
+
+\subsection{Systems of extended types;  arranging isomorphisms}
+
+In this system we specify natural structures for the language of type theory (strictly speaking, for the fragments TST$_n$ with finitely many types).  The types in such structures are $M^{B,2}$'s;  the membership relations are relations $\in_{\gamma:B}$
+as defined above (so when one goes up one type one drops the smallest element of the extended type index).  
+
+Each relation $\in_{\gamma:B}$ commutes with any $A$-allowable permutation (where $B$ downward extends $A$).  From this it is clear that the object asserted to exist by any  instance of comprehension of a structure for the language of type theory with membership relations of this kind which has parameters with small $A$-support is a subset of the appropriate $M^{B,1}$ with $A$-support.  This only tells us that it is actually
+in $M^{B,2}$ on the basis of what we already know in case $A$ downward extends $B$, so we only get a predicative version of comprehension for type theory initially (the restriction is
+that variables appearing in the instance of comprehension cannot be of higher type than the type of the set whose existence is asserted).
+However, we will prove below that any subset of $M^{B,1}$ which has $A$-support ($B$ downward extending $A$) also has $B$-support, and this shows us that we get full comprehension in such structures for the language of type theory.
+
+We can further stipulate that for any $\gamma > {\tt max}(A)$, we can have a map $\chi_{A:\gamma}$ which acts on atoms in $M^{B,0}$ and $M^{B,0}_*$ with $B$ downward extending $A$,
+agrees with $\chi_{B:\gamma}$ for each such $B$, and whose iterated elementwise action sends $K^B$, $K^B_*$, $p_B$ to $K^{B:\gamma}$, $K^{B:\gamma}_*,p_{B:\gamma}$ resp. and sends $f^0_{\delta:B}$ to
+$f^0_{\delta:B:\gamma}$ and $g_{\delta:B}$ to $g_{\delta:B:\gamma}$ for all $B$ downward extending $A$.  The reason is that these structures are constructed in exactly the same way with no interaction (when we extend the description of the $g$ maps below, we will add further conditions on the $\chi$ maps with the same motivation of creating isomorphisms).
+
+Note that if we take a structure for the language of type theory of the sort described above and replace each index $B$ with
+$B:\gamma$, for $\gamma$ dominating $B$, we obtain an isomorphic structure for the language of the appropriate TST$_n$ (because of the postulated $\chi$ maps).
+
+\subsection{Further details of the construction of $g$ maps}
+
+We now describe a final feature of the choice of our $g^0$ maps.   
+
+To each item capable of appearing in the domain of a support, we assign a ``parent" (with one class of exceptions).
+An atom in any clan has the litter containing it as its parent.  A near-litter  in $\bigcup X^{\beta:B}$ has the image under $f_{\beta:B}^{-1}$ of its local cardinal as its parent.
+A near-litter in $\bigcup Y_B$ has the  inverse image under $p_B$ of the element of $Y_B$ to which it belongs  (an atom) as its parent.  A near-litter included in $M_*^{B,0}$ has the inverse image of its local cardinal under
+$g_B$ as its parent:  this is not defined for $B=A$ so near litters included in $M_*^{A,0}$ are not (yet) assigned parents.
+
+We first note that any support can be converted to a ``nice support", a support in which every near-litter is a litter.  This is done by replacing each
+near-litter with small symmetric difference from a litter with the litter with small symmetric difference from it and the atoms in the symmetric difference.
+
+We define a notion of $A$-extended support used in our description of maps $g_{\beta:A}$:   an $A$-extended support is a nice support whose domain contains the parent of
+each atom in the domain of the support and whose domain includes $B$-supports of each near-litter not included in $M_*^{A,0}$ or in a $M_*^{\beta:A,0}$ (the exceptions being
+near-litters for which we cannot yet appeal to a previously defined $g$ map to compute the parent).
+
+Now we introduce a final ingredient of our construction:  in constructing $g^0_{\beta:A}$, we use given well-orderings $\leq^A_1$ and $\leq^A_2$ of type $\mu$ on $M^{A,1}$ and $\bigcup _{\gamma<{\tt min}(A)}K^{\gamma:A}_*$ respectively, with the action of $\chi_{A:\gamma}$ sending $\leq^A_1$ and $\leq^A_2$ to $\leq^{A:\gamma}_1$ and $\leq^{A:\gamma}_2$, respectively.  We provide
+a function $S_A$ such that for each element $x$  of $M^{A,1}$, $S_A(x)$ is an $A$-extended support of $x$, and the action of $\chi_{A:\gamma}$ sends $S_A$ to $S_{A:\gamma}$.
+We then define $g^0_{\beta:A}$ by a back and forth process:  we take the first element $x$ of $M^{A,1}$ for which we have not yet defined $g^0_{\beta:A}(x)$ and let $g^0_{\beta:A}(x)$
+be the first element of  $K^{\beta:A}_*$  appearing later in $\leq^A_2$ than any element of any $K^{\gamma:A}_*$ which contains an element of  $S_A(x)$, and which has not already appeared as a value of $g^0_{\beta:A}$, then take the first element $y$ of  $K^{\beta:A}_*$ for which $(g^0_{\beta:A})^{-1}(y)$ has yet to be defined, and choose $(g^0_{\beta:A})^{-1}(y)$ as the first element of $\bigcup Y^{A}$ at which a value of $g_{\beta:A}$ has not yet been assigned, and iterate this process.
+
+\subsection{Strong supports}
+
+We now define an $A$-strong support as a support with the property that each element of its domain is preceded in the order either by its parent or by a support of suitable index of its parent, using full information about maps $g^{\beta:A}$.
+
+Now we argue that any object with a support has a strong support.   Choose an object $x$.  Choose an extended support of $x$ as above.  Go through $\omega$ stages of revision
+of this support:  at each step, take each $y \in \bigcup K^{\beta:A}_*$ for any $\beta$, let $z$ be the parent of $y$, and insert $S_A(z)$ before $y$ in the order, deleting later occurrences of items already found in this support.  If there is an infinite regress in this process, there must be a sequence of elements $y \in \bigcup K^{\beta:A}_*$ each chosen from the support of the
+parent of the previous one, and this must be an infinite descending sequence in $\leq^A_2$, which is impossible.  So this construction must terminate in a well-ordering which is a strong support.
+
+\subsection{Freedom of action of allowable permutations}
+
+
+Now we prove a result on the freedom of action of $A$-allowable permutations (assuming the result for $B$-allowable permutations for $B$ strictly downward extending $A$).
+Define an $A$-local bijection as an injective function whose domain is the same as its range, which is the union of a bijection from $K^A_*$ to $K^A_*$ and
+bijections with small domains (empty domains being an option) included in each $M^{B,0}$ and $M_*^{B,0}$ for $B$ downward extending $A$.
+Our claim is that an $A$-local bijection $\pi_0$ can be extended to an $A$-allowable permutation $\pi$ with an additional technical property:  our additional technical condition is that for any litter $L$, any atoms in  $\pi(L)^{\circ} \Delta \pi(L)$ or $\pi^{-1}(L)^{\circ} \Delta \pi^{-1}(L)$ must belong to the domain of $\pi_0$.   Elements of $\pi(L)^{\circ} \Delta \pi(L)$ or $\pi^{-1}(L)^{\circ} \Delta \pi^{-1}(L)$ for any litter $L$ may be referred to as ``exceptions" of $\pi$.
+
+The proof of the freedom of action result is by induction on strong supports.  The idea is that we can compute the value of $\pi$ at any atom $x$ (in fact, all values $\pi^i(x)$ for $i \in \mathbb Z$) by a recursive computation along a strong support of $x$ with the further property that every near-litter in it is a litter (this can readily be arranged by replacing any near-litter which is not a litter by the litter with small symmetric difference from it and the atoms in the symmetric difference).   We further provide a system of maps $\pi_{L,M}$ where $L$ and $M$ are litters in the same $\bigcup K^B$ or $\bigcup K_*^B$, which
+are bijections from $L \setminus {\tt dom}(\pi_0)$ to $M \setminus {\tt dom}(\pi_0)$.  What we prove by induction (assuming that the same thing has been shown for indices
+strictly downward extending $A$) is that there is a uniquely determined $\pi$ which extends $\pi_0$ and extends each $\pi_{L,\pi(L)^{\circ}}$:  a $\pi$ satisfying these conditions will clearly satisfy the technical condition.
+
+Now for any atom $y$ in the given strong support of $x$, the litter $L$ containing $y$ already has $\pi(L)$ (in fact, $\pi^i(L)$ for each integer $i$) defined by inductive hypothesis, and so we can compute $\pi(x)$ as
+either $\pi_0(x)$ (if appropriate) or as $\pi_{L,\pi(L)^{\circ}}(x)$ otherwise, and we can compute $\pi^i(x)$ similarly by iterating this process (in either direction).
+
+If we know where the local cardinal of a litter is mapped (as we do for any litter in $\bigcup K^A_*$), we can determine where the litter is mapped by applying $\pi_0$ or the appropriate $\pi_{L,\pi(L)^{\circ}}$ to each atom in $L$ or local cardinal included in $L$.  Notice that in all other cases we will know where the local cardinal of a litter is mapped if we know where its parent is mapped.
+
+
+Now for a litter $L$ which has a parent, we are given values already computed at all elements of a strong support of appropriate index of its parent.  Extend this assignment of values to atomic elements of the strong support
+to a local bijection of appropriate index:  this is facilitated by our assumption that we have already computed complete orbits of $\pi$ at each atom in the support.  This extension will act correctly at litters in the strong support:  consider the first litter at which it fails;  its local cardinal will be mapped correctly because a support of it is mapped correctly, and failure can only happen due to existence of exceptions not in the domain of the local bijection.  This extension will map the parent to the only possible value it can be mapped to and so we will know where its local cardinal is mapped to.  Once it is known where the local cardinal maps, the value can be computed:  the correct $\pi_{L,M}$ and values mapped out of and into $L$ by $\pi_0$ are known.  If $L$ doesnt have a parent, the value at its local cardinal is known.  The extension of the local bijection is possible by induction because
+the index strictly downward extends $A$ (the same maps $\pi_{L,M}$ can be used), except in one case discussed in the next paragraph.
+
+One apparent point of weakness here:  what happens if the parent of an item $x$ is in $M_{A,1}$?   In this case, the structure of the set in $M_{A,1}$  is very simple:  no $A$-allowable permutation needs
+to be constructed, just appeal to supports of the parents (if any) of the small collection of atoms and litters involved in the support of the element of $M_{A,1}$, items in which either have
+parents of lower index or have parents of index $A$ and can be supposed to have local cardinal preceding  $x$ in the order $<^A_2$.  Once we know where each atom and litter involved
+in the parent of $x$ is sent, we can determine where the parent is sent, and so where the local cardinal of $x$ is sent, and so where $x$ is sent.
+
+We have to verify that the result at any given atom is the same regardless of the support used.  This can be handled by considering unions of supports.
+
+This completes the proof of the freedom of action result.
+
+\subsection{Verifying impredicative comprehension}
+
+We want to show that any subset of $M_{B,1}$ with $A$-support ($B$ downward extending $A$) actually has $B$-support, in order to complete
+the argument for comprehension in our structures for the language of type theory.
+
+Suppose that $X \subseteq M^{B,1}$ has $A$-strong support $S$.  Our claim is that a $B$-strong support is obtained simply by restricting $S$ to items with index downward extending $B$.   Suppose that $\pi$ fixes each item in $S$ with index downward extending $B$.  Let $x \in M^{B,1}$ have $B$-strong support $T$.  We construct a $A$-local bijection fixing each
+atom in $S$ (regardless of index) and sending each atom  in $T$ to its image under $\pi$.  An extension of this to an $A$-allowable permutation $\pi'$ will send each litter in $T$ to its image under $\pi$ (consider the first point of failure in the support, which must be a litter:  all elements of the support of the parent of the litter are mapped correctly, so the local cardinal is mapped correctly, which would force
+an exception outside the domain of the local bijection  if the litter itself were not mapped correctly).  Thus $\pi'$ must map $x$ to the same value that $\pi$ does and further
+it must fix $X$, so $\pi$ in fact fixes $X$, establishing that the restriction of $S$ is a support (the same argument can be applied to $\pi^{-1}$ to verify that $X$ is mapped onto $X$ rather than merely into $X$.
+
+This result implies that all subsets of $M^{B,1}$ definable in one of our structures for the language of type theory which have $A$-support where $A$ is a higher index in the same structure
+have $B$-support and so are actually sets in the structure (elements of $M^{B,2}$).  This ensures that our structures for the language of TST$_n$ are actually models of TST$_n$.
+
+\subsection{Verifying that $M^{A,2}$ is of cardinality $\mu$}
+
+
+\end{document}
