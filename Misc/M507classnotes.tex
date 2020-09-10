@@ -266,5 +266,95 @@ So if we have two distinct representations $n=\Sigma_{0 \leq i \leq k+1}d_ib^i$ 
 we have $n = d_{k+1}b^{k+1} + \Sigma_{0 \leq i \leq k}d_ib^i$ and $n = D_{k+1}b^{k+1} + \Sigma_{0 \leq i \leq k}D_ib^i$, where both $\Sigma_{0 \leq i \leq k}d_ib^i$ and $\Sigma_{0 \leq i \leq k}D_ib^i$ are nonnegative and less
 than $b^{k+1}$.  By the division algorithm theorem, $d_{k+1} = D_{k+1}$ and $\Sigma_{0 \leq i \leq k}d_ib^i = \Sigma_{0 \leq i \leq k}D_ib^i$.  By the inductive hypothesis $S(k)$, the representations $\Sigma_{0 \leq i \leq k}d_ib^i$ and $\Sigma_{0 \leq i \leq k}D_ib^i$ are the same.  So there is only one representation of $n$.
 
+\section{Continued Fractions}
+
+This was unfamiliar material to me.  I have seen it before, but never really come to grips with it (I've read about it, but never taught it or been taught it).
+
+Let $[r]$ represent the greatest integer $\leq r$ for a real number $r$.
+
+The book uses the notation $\{r\}$ for $r-[r]$, the fractional part of $r$.
+
+Now we define a finite or infinite sequence $C^r_i$ such that $C^r_0 = [r]$.  If $r=[r]$, there is no $C^r_1$.  If $r \neq [r]$ then $0 < r < 1$, so $1 < \{r\}$ and we can define
+$C^r_n$ for each $n>1$ as $C^{\frac 1{\{r\}}}_{n-1}$.  Please note that the notation $C^r_i$ is mine:  it is not in the book.
+
+$$r = C^r_0 +\frac1{C^r_1 +\frac1{C^r_2 +\frac1{C^r_3 +\frac1{\ldots}}}}$$
+
+should give the idea of what is happening.
+
+It should be clear that if a number has a finite continued fraction, it is rational.
+
+It should be clear that irrational numbers have infinite continued fractions (logically equivalent!)
+
+It should also be obvious that if $r$ is irrational, the sequence of convergents for $r$ (the rational numbers $r_i$ for which $C^{r_i}_j = C^{r}_j$ for each $j\leq i$ and
+$C^{r_i}_{i+1}$ is undefined) converges to $r$.
+
+It is not perhaps entirely obvious that every rational number has a finite continued fraction, but we already have the machinery for this.
+
+We show that computation of $C^{\frac ab}$ is basically the same thing as the Euclidean algorithm.  
+
+Let $a$ be an integer and $b \geq 1$.  We set $r_0=a$ and $r_1 = b$.
+
+In the Euclidean algorithm, once we have computed $r_i$ and $r_{i+1}$, we stop if $r_{i+1}=0$ and otherwise we compute
+$q_i$ and $r_{i+2}$ as the unique numbers such that $r_i = q_ir_{i+1} + r_{i+2}$ and $0 \leq r_{i+2} < 1$.
+
+Notice that $q_0 = [\frac ab] = C^{\frac ab}_0$.
+
+Now observe that $\frac ab = q_0 + \frac{r_2}b$, so we will define each $C_{k+1}^{\frac ab}$ as $C^{\frac b{r_{2}}}_k$ (because $\{\frac ab\} = \frac{r_2}b$, so $\frac1{\{\frac ab\}}= \frac b{r_2}$). (if $r_{2}\neq 0$;  if $r_2=0$ we are simply done).
+
+But this is exactly how the Euclidean algorithm works:  to compute stage $k+1$ of the Euclidean algorithm for $a$ and $b$ as the starting values
+is the same thing as to compute stage $k$ of the Euclidean algorithm for $b$ and $r_{2}$ as the starting values (if $r_{2} \neq 0$; if $r_2=0$ we are simply done).
+
+So the computation of the Euclidean algorithm shows that
+
+$$\frac ab =  q_0 +\frac1{q_1 +\frac1{q_2 +\frac1{q_3 +\frac1{\ldots}}}}$$
+
+The book gives notation for a finite continued fraction $q=\left<C^q_0,\ldots,C^q_N\right>$, where $C^q_{N+1}$ is undefined (i.e, we have the entire continued fraction).
+It relates to exercise 13 in section 1.3 to explain why $C^q_N$ in this case will not be 1 unless $N=0$ (and the finite continued fraction $q=\left<C^q_1,\ldots,C^q_N-1,1\right>$ will have the same value).  As a hint for that last point, notice that $\left<1,1\right>=\left<2\right>=2$.
+
+\section{The Fundamental Theorem of Arithmetic}
+
+I'll give my own self-contained account of this which you can compare with the account in the book.  The main difference is that I really view prime factorizations as unique, because I impose the additional condition that the primes in the factorization are presented in nondecreasing order.
+
+A prime number is a positive integer $p$ with exactly two positive divisors (that is, a positive integer $p>1$ such that the positive divisors of $p$ are exactly 1 and $p$).
+
+The lemma of Euclid says that if $a|bc$ and ${\tt gcd}(a,b)=1$, then $a|c$.  
+
+We prove the lemma of Euclid.  Because ${\tt gcd}(a,b)=1$ there are integers $x,y$ such that $ax+by=1$.  So $c=1c=(ax+by)c = acx+bcx$.  $a|acx$ is obvious.  $a|bcx$ follows from $a|bc$.  So $a|c=acx+bcx$.
+
+A prime factorization for us is of the form $\prod_{i=1}^np_i$ where each $p_i$ is a prime.
+
+We argue using the minimality principle that each positive integer $n$ has a prime factorization.  We argue this using the minimality principle.  If there is a positive integer with no prime factorization, then there is a smallest one $N$.
+
+$N$ cannot be a prime $p$ because any prime $p$ has the prime factorization $\prod_{i=1}^1p_i$ where $p_1=p$.
+
+So there are positive integers $A,B$ with $1<A,B<N$ such that $AB=N$ (if there were not, $N$ would be prime).  $A$ and $B$ have prime factorizations because $N$ is minimal,
+so $A = \prod_{i=1}^mp_i$ and $B=\prod_{i=1}^mq_i$.  But then $AB= \prod_{i=1}^{m+n}r_i$ where $r_i = p_i$ for $i\leq m$ and $r_i = q_{i-m}$ for $m<i\leq m+n$.
+
+Now we make a further condition on prime factorizations:  we require in $\prod_{i=1}^np_i$ that the sequence of $p_i's$ be nonincreasing, that is, that for $i<j$ we have
+$p_i \leq p_j$.  It should be clear that each prime factorization can be reordered to be nondecreasing in exactly one way.  Stating and proving this fact is exceedingly annoying:  defining what is meant is hard, and proving it is a nasty induction.  I tried to put it here but thought better of it!
+
+We prove that each positive integer  $N$ has exactly one nondecreasing prime factorization.
+
+Again, we prove this by the minimality principle.  Suppose that $N$ is the smallest positive integer expressible with two different nondecreasing prime factorizations
+$\prod_{i=1}^mp_i$ and $\prod_{i=1}^nq_i$.
+
+We argue that $p_1 = q_j$ for some $j$.  Suppose otherwise for the sake of a contradiction.
+
+We argue using this assumption that $p_1 | \prod_{i=z}^nq_i$ for each $z\leq n$.  The basis step is direct: $p_1 | \prod_{i=1}^mp_i = \prod_{i=1}^nq_i$.
+
+Now suppose that $p_1 | \prod_{i=k}^nq_i$:  our goal is to show (if $k<n$) that $p_1|\prod_{i=k+1}^nq_i$.  $\prod_{i=k+1}^nq_i = q_k\cdot \prod_{i=k+1}^nq_i$.  ${\tt gcd}(p_1,q_k)=1$ because
+$p_1$ and $q_k$ are distinct primes.  So by Euclid's lemma $p_1|\prod_{i=k+1}^nq_i$.
+
+So by induction $p_1 | \prod_{i=z}^nq_i$ for each $z\leq n$.  But this is absurd, because then $p_1 | \prod_{i=n}^nq_i=q_n$, and so $p_1=q_n$ contrary to hypothesis.
+
+So in fact $p_1=q_j$ for some $j$.
+
+Now $\frac N{p_1}$ has the nondecreasing factorization $\prod_{i=1}^{m-1}p_{i+1}$, which is unique by minimality of $N$.  But it also has the nondecreasing factorization
+$\prod_{i=1}^{n-1}q^*_i$ where $q^*_i = q_i$ for $i<j$ and $q^*_i = q_{i+1}$ for $j \leq i \leq n+1$ (the result of dropping $q_j$)).  It is immediately clear that $m=n$.  If $j=1$, it is clear that our original factorizations were the same, because $p_1=q_1$ and each $p_{i+1}=q^*_i=q_{i+1}$.  If $j>1$, observe that each $q_i$ for $1\leq  i < j$ is $\leq p_1=q_j$ because $q$ is nondecreasing, but also $q_i = q^*_i = p_{i+1} \geq p_1$ for all such $j$, so in fact $q_i = p_{i+1}=p_1$ for each $i<j$.  So we have $p_1 = q_1$, and we have
+$p_{i+1}= q^*_i = q_{i+1}$ if $i \geq j$, and if $i<j$ we have $p_{i+1}=q_{i+1}=p_1$, so the original factorizations were the same.
+
+
+
+
 
 \end{document}
