@@ -1,0 +1,161 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb}
+
+\title{Logic and abstraction}
+
+\author{Randall Holmes}
+
+\begin{document}
+
+\maketitle
+
+These notes report and build on what I said in the lecture of 9/29.
+
+We review our logical primitives.
+
+Our propositional logic is two-valued truth table logic.  There are other ways of viewing propositional logic which we might visit later, but for the moment we stay with the standard.  We do reserve the right to think of sentences as expressions with values {\bf true} or {\bf false}.  We take {\bf true}, {\bf false}, $\neg$ and $\rightarrow$ as primitive, but we could choose other sets of primitives.  At any rate we can define $\wedge$, $\vee$, $\leftrightarrow$.
+
+There is more to say about the quantifiers $(\forall x:P(x))$, $(\exists x:P(x))$.
+
+First, we only need one primitive quantifier:  $(\exists x:P(x))$ can be defined as $\neg(\forall x:\neg P(x))$ (or the universal quantifier could be defined in terms of the existential quantifier).
+
+Now for the big question:  what is the letter $P$ supposed to stand for in $(\forall x:P(x))$, $(\exists x:P(x))$?
+
+There are two answers, one characteristic of Frege and perhaps Zermelo and a minority view in modern logic, and the other characteristic of the majority view in modern logic.
+
+The first view is that the letter $P$ stands for a function:  a concept in Frege's terms (because it is a function whose outputs are truth values), a propositional function in Zermelo's terminology.  In philosophical terms, $P$ denotes a {\em property\/}, a universal.
+When we write $P(x)$, the parentheses indicate that we are supplying $x$ as input to the function $P$.  If we write $P(a)$, this signals that we supply a different input $a$ to the propositional function.
+
+The second view is that the letter $P$ stands for a piece of text, and that if the function is written $P(x)$, the meaning of $P(a)$ is that $a$ is substituted for $x$ in the notation $P(x)$.
+
+We will write $P[t/x]$ to represent substitution of a term $t$ for a variable $x$ in notation $P(x)$.
+
+These two views can be difficult to tease apart, because propositional functions are certainly associated with substitution.  Frege would write a statement like $(\forall x:(x-1)(x+1)=x^2-1)$
+and would agree with a modern that this implies $(3-1)(3+1) = 3^2-1$.  But he would regard this as involving a function $P$ defined by $P(x) = (x-1)(x+1)=x^2-1$ to which the universal quantifier is applied as a second-level operator.  A modern would think that nothing is involved but the expression $P = ``(x-1)(x+1)=x^2-1"$, in which 3 replaces the variable $x$.
+
+The minority view of the rules of quantification might be (universal generalization) if we can prove $P(a)$ for a propositional function $P$ with a completely arbitrary $a$, then we can prove
+$(\forall x:P(x))$ and (universal instantiation) if we can prove $(\forall x:P(x))$ we can prove $P(t)$ for any term $t$ ($t$ may be as specific as we like).  The rules for the existential quantifier can be deduced from these.
+
+The modern view is that if we can prove $P$ without any special assumptions about a variable $a$ then we can prove $(\forall x:P[x/a])$ (in which $x$ replaces $a$), and if we can prove
+$(\forall x:P)$ then we can draw the conclusion $P[t/x]$.  Notice that I completely eliminate function application notation in favor of notation for textual substitution.
+
+A clear sign of the presence of the minority view is the use of quantifiers over propositional functions.  Frege in effect defines $a=b$ as $$(\forall P:P(a) \rightarrow P(b)).$$  This would make no sense at all in the modern view.  Compare reasoning in the two views.
+
+The modern view is that there is a rule of substitution:  if we have $a=b$ and an assertion $P[a/x]$ we can deduce $P[b/x]$.
+
+Frege on the other hand could argue from $a=b$ and $P(a)$ to $$(\forall Q:Q(a) \rightarrow Q(b))$$ [definition of equality, changing the bound variable for clarity] thence to
+$P(a) \rightarrow P(b)$ [universal instantiation] thence to $P(b)$ [modus ponens].
+
+It must be noted that substitution plays a vital role for the minority viewpoint as well.  If we write the Fregean concept $x^2>4$ as ${\bf X}^2>4$, we could write the needed rule
+as ``for any propositional function $P$ and object $x$, $P(x)$ is equivalent to $P[{\bf X}/x]$.  In this document, we might prefer to use set builder notation for propositional functions:  we write $\{x:x^2>4\}$ for the propositional function and the rule is ``$\{x:P\}(a)$ is equivalent to $P[a/x]$":  even for the minority viewpoint, a propositional function is typically given as an expression with a variable in it, for which we make a substitution to evaluate it.
+
+A topic where the two approaches look noticeably different is mathematical induction.
+
+A formulation with five axioms (and yes, they are enough with some trickery)
+
+\begin{enumerate}
+
+\item 0 is a natural number
+
+\item  For any natural number $n$, $n+1$ is a natural number
+
+\item  For any natural number $n$, $n+1 \neq 0$
+
+\item  For any natural numbers $m,n$, $m+1 = n+1 \rightarrow m=n$
+
+\item  For any property $P$ of natural numbers, if $P(0)$ and $$(\forall k:P(k) \rightarrow P(k+1)),$$ then $(\forall n:P(n))$.  This is the familiar principle of mathematical induction.
+
+\end{enumerate}
+
+This formulation really has five axioms, the last one involving a quantifier over all propositional functions defined on the natural numbers.  The notation $+\,1$ is unanalyzable (we have not introduced addition or the number 1 yet).
+
+The modern formulation looks like this:
+
+\begin{enumerate}
+
+\item 0 is a natural number
+
+\item  For any natural number $n$, $n+1$ is a natural number
+
+\item  For any natural number $n$, $n+1 \neq 0$
+
+\item  For any natural numbers $m,n$, $m+1 = n+1 \rightarrow m=n$
+
+\item  For each sentence $P$ about natural numbers, ``$P[0/x] \wedge (\forall k:P[k/x] \rightarrow P[k+1/x]) \rightarrow (\forall n:P[n/x])$" is an axiom.
+
+\end{enumerate}
+
+In the modern formulation, the fifth item is an infinite list of axioms, and no quantifier over any class of objects correlated with the sentences $P$ as items of text is involved.
+
+The minority view gives a simpler list of axioms but involves more ontological commitment (we have a quantifier over a domain of properties of natural numbers as well as quantifiers over the domain of natural numbers itself).
+
+A similar treatment can be presented of Zermelo's Axiom III.
+
+Zermelo says ``For each set $M$ and propositional function $P(x)$ there is a set $M_P$ such that for any $x$, $x \in M_P$ if and only if $x \in M$ and $P(x)$".  This is a single statement in the minority style.  Zermelo isn't as explicit about the status of
+propositional functions as entities as Frege is, but he does not seem to be talking about items of text.
+
+The modern formulation of Zermelo's Axiom of Separation is
+
+For each sentence $\phi$ in our language, we have an axiom $$(\forall M:(\exists A:(\forall x:x \in A \leftrightarrow (x \in M \wedge \phi)))).$$ This is an infinite list of axioms, one for each formula $\phi$, with no acknowledgement in our logic of a domain of propositional functions.
+
+We observe that the formulation of arithmetic in Zermelo's set theory, even if we use the modern weak form of separation, looks
+like the minority view strong formulation.  The reason is that we can let sets stand in for properties of the natural numbers.
+
+Axiom VII says ``There is a set $Z$ such that $0 \in X$ and for each $a$, if $a \in Z$ then $\{a\} \in Z$".
+
+Let's let the empty set 0 stand in for the natural number 0 and let $a+1$ be interpreted as $\{a\}$ for the time being.  We show 
+that we can define a set $Z_0$ which satisfies the strong form of the axioms for the natural numbers.
+
+We say that a set $I$ is inductive iff it contains 0 and contains the singleton $\{a\}$ if it contains $a$.  Notice that axiom VII
+simply says that there is an inductive set $Z$.
+
+We define $I_Z$ as the set of all elements of ${\cal P}(Z)$ which are inductive.  $I_Z$ is nonempty, because it clearly contains $Z$ as an element.
+
+We then define $Z_0$ as the intersection of $I_Z$, that is, the set of all $n$ which belong to every inductive subset of $Z$.
+Notice that an element of $Z_0$ belongs to {\em any\/} inductive set $Z'$, because $Z' \cap Z$ will be a subset of $Z$ and will be inductive, and so any element of $Z_0$ will belong to $Z'\cap Z$, and so will belong to $Z'$.
+
+Now we interpret ``is a natural number" as ``is an element of $Z_0$" and ``is a property of natural numbers" as
+``is a subset of $Z_0$":  each property $P(x)$ of natural numbers corresponds to the set $\{x \in Z_0:P(x)\}$.
+
+\begin{enumerate}
+
+\item $0 \in Z_0$:  0 is a natural number.
+
+\item For any $a \in Z_0$, $\{a\} \in Z_0$.  Certainly if $a$ belongs to every inductive set, $\{a\}$ belongs to every inductive set.  In our interpretation, the successor of each natural number is a natural number.
+
+\item ``For any $a \in Z_0$, $\{a\} \neq 0$" is obvious in set theory (0 is the empty set, and $\{a\}$ has an element).  In our interpretation, no successor is zero.
+
+\item ``For any $a,b\in Z_0$, $\{a\} = \{b\} \rightarrow a=b$" is obvious in set theory.  Numbers with the same successors are the same, in    our interpretation.
+
+\item For any $P \subseteq Z_0$, if $0 \in P$ and $(\forall k:k \in P \rightarrow \{k\} \in P)$, then $(\forall n \in Z_0:n \in P)$.
+The reason this is true is that the conditions ensure that $P$ is inductive, and $Z_0$ is a subset of any inductive set $P$ (so the punchline is that under the stated conditions, $P=Z_0$.)  And this gives us mathematical induction, {\em with\/} a universal quantifier over (objects representing) properties of the natural numbers.
+
+
+\end{enumerate}
+
+I am hoping that this will clarify remarks that I have made to the effect that $Z_0$ is defined exactly in such a way as to satisfy mathematical induction.   An interesting point here is that even if we formulate our Zermelo set theory in the modern way, the version of arithmetic interpreted here has just the five axioms of the minority viewpoint.  There is a reason for this:  in Zermelo set theory, even with the weak form of Separation, we are committed to all sets of natural numbers as objects, so we are not metaphysically strained when we quantify over $P \in {\cal P}(Z_0)$, the set of subsets of $P_0$.  Stronger ontological commitments make up for weaker logical commitments.
+
+I am planning to extend this document to give further discussion later.  For the moment, I merely pause to do something philosophical.  I pose a question.  Is quantification over predicate letters (understood as propositional functions) {\em logic\/}?
+I tend to think that Frege's introduction of propositional (and other) functions as entities is not what makes his system fail as a reduction of mathematics to logic (and certainly not what makes it inconsistent):  the problem is his non-logical assumption
+
+$$(\forall FG:(x \mapsto F(x)) = (x \mapsto G(x)) \leftrightarrow (\forall x:F(x) =G(x))),$$
+
+the assumption of a one-to-one correspondence (sort of) between functions and objects (the symbols $(x \mapsto F(x))$ being courses of values, which are objects, not functions, for Frege).  This is a daring postulate of a non-logical nature (at the very least, an assertion that there are a lot of objects) and turns out to be impossible.
+
+I notice that this involves a philosophical question raised in the class discussion:  what {\em are\/} the identity conditions for properties = propositional functions?  For mathematics, it is convenient to assume that properties are the same if they hold of the same objects.  This is less evident from a general philosophical standpoint.  Notice that Frege (being a good philosopher) doesn't commit himself:  he doesn't ever ask whether functions are equal, only whether they are coextensional (have equal object values at each input).
+
+A final point I raised in the lecture is that substitution is {\em not\/} innocent.  Whereever a notation such as $(\forall x:P(x))$
+(or $\{x \in M:P(x)\}$, or even $\int_a^b\, f(t)\,dt$) occurs which contains bound variables, substitution is dangerous.
+
+$(\forall m \in {\mathbb N}:(\exists n \in {\mathbb N}:n = m+1))$ is true.  If we naively replace $m$ with $n$, we get
+$(\exists n\in {\mathbb N}:n = n+1)$.  Ooops.  Of course, this isn't valid.  We can correct it by replacing the bound variable
+on the inside before we apply universal instantiation:  $(\forall m \in {\mathbb N}:(\exists n \in {\mathbb N}:n = m+1))$ is equivalent to $(\forall m \in {\mathbb N}:(\exists u \in {\mathbb N}:u = m+1))$, and universal instantiation then gives the valid
+$(\exists u:n = n+1)$.
+
+The key point is that if one is making a substitution $(\forall x:P)[t/y]$, the variable $y$ should not be $x$ and the expression $t$ should not include any occurrence of $x$.  The problem is that the dummy variable $x$ in $(\forall x:P)$ does not stand for any specific object outside the context of that expression.  The solution is to rename the bound variable:  change this to
+$(\forall u:P[u/x])[t/y]$, where the variable $u$ is not $y$ and does not occur in $t$, and no problem will ensue.  This has a bearing on history of logic in the period under discussion:  respectable workers made mistakes in defining substitution!
+
+An interesting point about Frege and Russell is that they didn't regard $(\forall x:P(x))$ as well-formed unless $x$ actually occurred in $P(x)$.  This restriction has generally been abandoned, and it might be interesting to think about why it was initially maintained.
+
+\end{document}
