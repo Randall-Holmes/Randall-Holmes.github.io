@@ -141,6 +141,117 @@ I went through some explicit examples of this procedure in lecture.
 
 I will give a simpler way to produce a function realizing any truth table next time.
 
+\section{Discussion of Oct 7}
+
+\subsection{A sample proof in Post's system}
+
+We derive $\vdash p \supset p$ in Post's system.  Implication is a defined concept:  we are actually deriving $\sim p \vee p$.
+
+\begin{enumerate}
+
+\item $\vdash\, \sim q \vee (p \vee q)$ an axiom (IV number 2)
+
+\item $\vdash\, \sim[p \vee (q \vee r)] \vee (q \vee (p \vee r))$ an axiom (IV number4)
+
+\item  $\vdash\, \sim[\sim q \vee (p \vee q)] \vee (p \vee (\sim q \vee q))$  II applied to line 2:  replace $p$ with $\sim q$, $q$ with $p$, $r$ with $q$.
+
+\item $\vdash p \vee (\sim q \vee q)$  III line 1, line 3
+
+\item $\vdash\, \sim[\sim q \vee (p \vee q)] \vee (\sim q \vee q)$  II line 4:  replace $p$ with $\sim[\sim q \vee (p \vee q)]$
+
+\item $\vdash\, \sim q \vee q$  III 1,5
+
+\item $\vdash\, \sim p \vee p$ II line 6, replace $q$ with $p$
+
+\item $\vdash p \supset p$  line 7, definition of $\supset$
+
+\end{enumerate}
+
+\section{Another way to get an assertion with a given truth table}
+
+We illustrate by example another general method of getting an expression with a desired truth table.
+
+$$\begin{array}{c|c|c||c}
+
+p & q & r & ??? \\ \hline
+
++ & + & + & -\\
+
++ & +& - & + \\
+
++ & -& + & + \\
+
++ & - & - & - \\
+
+- & + & + & - \\
+
+-& + & - & + \\
+
+- & - & + & + \\
+
+- & - & - & - \\ \end{array}$$
+
+Above I have given a truth table in the final column of which I have sprinked random +'s and $-$'s.  There is a uniform way to write down an expression with this truth table, which I now demonstrate using ordinary logical notation.
+
+$(p \wedge q \wedge \neg r)$ from row 2
+
+$\vee (p \wedge \neg q \wedge r)$ from row 3
+
+$\vee (\neg p \wedge q \wedge \neg r)$ from row 6
+
+$\vee (\neg p \wedge \neg q \wedge r)$ from row 7
+
+giving a complete expression $(p \wedge q \wedge \neg r)\vee (p \wedge \neg q \wedge r)\vee (\neg p \wedge q \wedge \neg r)\vee (\neg p \wedge \neg q \wedge r)$ with the given table.
+
+This method will work for any table except one with a column of $-$'s on the right, which can be represented by $p \wedge \neg p$ (for example).
+
+The expression obtained is in a very stereotyped form, being a disjounction (or statement) linking conjunctions (and statements) composed of atomic letters and negations of letters (such an expression is said to be in disjunctive normal form).
+In addition, each expression contains all three letters in use in a fixed order.
+
+This method could be used to give an alternative proof of Post's theorem that there is an expression with any given truth table.
+
+\section{Boolean algebra}
+
+There is a presentation of propositional operations (which is at the same time a presentation of certain basic operations on sets) which supports computations which are involved in the motivation of Post's proof of his main theorem.
+
+You may notice Post referring to disjunction (or) as ``logical addition" and conjunction (and) as ``logical multiplication".  In boolean algebra, we write
+$x + y$ for $x \vee y$ and $xy$ for $x \wedge y$ (and $\overline x$ for $\neg x$).  The advantage of doing this is that we can present a set of computational rules which
+suggests a method of taking any expression of propositional logic and converting it to a form which represents its truth table, from which it is easy to see whether it is a theorem or not.
+
+We also use 0 to stand for $-$ or false, and 1 to stand for $+$ or true.
+
+Where we say one expression equals another, we say that they have the same truth table.
+
+$$\begin{array}{c c c}
+ x+y = y + x & & xy = yx \\
+
+(x+y)+z = x+(y+z) & & (xy)z = x(yz) \\
+
+x(y+z) = xy+xz &  & x+yz = (x+y)(x+z)^* \\
+
+x+0 = x&   &x1 = x \\
+
+x+1 = 1^*& & x0=0 \\
+
+x+x = x^* &  &xx=x^* \\
+
+\overline{x+y} = \overline x \,\overline y & & \overline{xy} = \overline x + \overline y \\
+
+   & \overline{\overline{x}} = x & \\
+
+x + \overline{x} = 1 &  &x\overline{x}=0 \\
+
+\end{array}$$
+
+These rules formally resemble algebraic rules for the usual addition and multiplication, though there are some surprises (marked with stars).
+The negation operation doesn't correspond to any standard arithmetic operation, so we do not star its formulas.
+
+Most of these are common sense if we read addition as intended as ``or", multiplication as ``and", overstrike as negation, 0 as false and 1 as true.
+
+Something analogous to ordinary algebraic expansion will reduce any expression to a disjunction of conjunctions.   The letters can be put in standard order using
+commutativity and associativity.  Repeated letters or negated letters can be shortend to one letter or negated letter ($xx=x, \overline x \,\overline x = \overline x$).  Conjunctions with $x\overline{x}$ in them will convert to 0 and can be eliminated.  If a conjunction (such as $xy$) is missing a letter
+(such as $z$) we can add it:  $xy = xy1 = xy(z+\overline z) = xyz + xy\overline z$.  So algebraic procedures can convert any expression to the form
+that would be obtained from its truth table by the procedure of the previous section, and this form can be recognized as true if it contains all lines (and actually can then be reduced to 1 by a boolean algebra calculation:  for example, $xy + x\overline y + \overline x y + \overline x\,\overline y = x(y + \overline y) + \overline x(y + \overline y) = x1 + \overline x 1 = x + \overline x = 1$.)
 
 
 
