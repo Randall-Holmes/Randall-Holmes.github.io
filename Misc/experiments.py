@@ -1,3 +1,4 @@
+import math
 def double(x):
     return x+x;
     
@@ -47,9 +48,10 @@ def isprime(p):
 
     if (p<1): return "bad"
     divisorpaircount=0
+    if(p==1):  return False
     productlist=[]
     n=1
-    while(divisorpaircount<2 and n**2 <= p):
+    while( n**2 <= p):
         if (p%n == 0):
             divisorpaircount=divisorpaircount+1
             productlist=[[n,p//n]]+productlist
@@ -84,7 +86,7 @@ def primecount(n):
         i=i+1
     return count
 
-def primesweep(n):
+def primesweep():
 
     i=1
     done=False
@@ -103,7 +105,7 @@ def primereport(n):
     thecount=0
     while(True):
         if (isprimesilent(i)): thecount=thecount+1
-        if (thecount>=i//n):print([i,thecount])
+        if (thecount>i//n):print([i,thecount])
         i=i+1
 
 def primescan(r):
@@ -112,8 +114,89 @@ def primescan(r):
     ratio=1
     while(ratio>r):
         i=i+1
-        if (isprimesilent(i)): ratio = ratio*(1-1/i)*1.0
+        if (isprimesilent(i)): ratio = ratio*(1-1/i)
+        print([i,ratio])
         
     print([i,ratio])
     return i
+
+def isitlog(n):
+
+    i = 1
+    prod = 1
+    while(i^2<=n):
+        if isprimesilent(i):prod=prod*(1-1/i)
+        i=i+1
+    print(prod)
+    print((primecount(n+math.ceil(n**.5))-primecount(n))/((n**0.5)))
+    return(prod)
+
+# determine whether d can be expressed as a linear combination
+# with nonnegative indices of a,b,c
+
+def frobenius3(a,b,c,d):
+
+   x=0
+   y=0
+   z=0
+   t=False
+   while (a*x <= d):
+       #print([x,y,z])
+       while ((a*x)+(b*y) <= d):
+           #print([x,y,z])
+           while(a*x+b*y+c*z <= d):
+               #print([x,y,z])
+               if (a*x)+(b*y)+(c*z) == d:
+                   print([a,x,b,y,c,z,d])
+                   t=True
+
+               z=z+1
+           z=0
+           y=y+1
+       y=0
+       x=x+1
+   return t
+
+def frobenius3b(a,b,c,d,a2,b2,c2,d2):
+
+   x=0
+   y=0
+   z=0
+   t=False
+   while (a*x <= d):
+       #print([x,y,z])
+       while ((a*x)+(b*y) <= d):
+           #print([x,y,z])
+           while(a*x+b*y+c*z <= d):
+               #print([x,y,z])
+               if ((a*x)+(b*y)+(c*z) == d
+                   and a2*x+b2*y+c2*z==d2) :
+                   print([a,x,b,y,c,z,d])
+                   t=True
+
+               z=z+1
+           z=0
+           y=y+1
+       y=0
+       x=x+1
+   return t
+
+def Frobenius3(a,b,c):
+    dd=0
+    count = 0
+    while(dd<(a+b)*(c-1)):
+        if not(frobenius3(a,b,c,dd)):
+            print([dd])
+            count=count+1
+        dd=dd+1
+    return count
+
+        
+def Ltest():
+    x=0
+    while(x<=1000):
+       y=((x**2+1)/2)**.25
+       if (x**2-2*(math.floor(y))**4== -1):print([x,math.floor(y)])
+       x=x+1
+
     
