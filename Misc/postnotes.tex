@@ -256,6 +256,192 @@ that would be obtained from its truth table by the procedure of the previous sec
 It is useful to note that implication $x \rightarrow y$ is $\overline xy$ in Boolean algebra notation.  This corresponds to Post's definition of $P \supset Q$ as
 $\sim P \vee Q$.
 
+\section{Where do these axioms come from?  A kind of answer in the proof of the Deduction Theorem}
+
+I want to address the origin of the axiom set Post is using (which is originally from Russell and Whitehead, Principia Mathematica, 1910).  The best way to see where they come from is to see what can be done with them.
+
+\subsection{Axioms and variants}
+
+\begin{enumerate}
+
+\item $\sim(p \vee p) \vee p$
+
+\item $\sim q \vee (p \vee q)$
+
+\item $\sim(p \vee q) \vee (q \vee p)$
+
+\item $\sim[p \vee (q \vee r)] \vee (q \vee (p \vee r))$
+
+\item $\sim(\sim q \vee r) \vee (\sim (p \vee q) \vee (p \vee r))$
+
+\end{enumerate}
+
+is the set of axioms as it appears in Post's paper.  I remind you that $P \supset Q$ (which you may also write $P \rightarrow Q$, the familiar material conditions), is
+defined as $\sim P \vee Q$.  We can rewrite the axioms as
+
+\begin{enumerate}
+
+\item $(p \vee p) \supset p$
+
+\item $q \supset (p \vee q)$
+
+\item $(p \vee q) \supset (q \vee p)$
+
+\item $[p \vee (q \vee r)] \supset (q \vee (p \vee r))$
+
+\item $( q \supset r) \supset ((p \vee q) \supset (p \vee r))$
+
+\item Replacing $p$ with $\sim p$ and applying the definition gives another form of 5:
+
+ $( q \supset r) \supset ((\sim p \vee q) \supset (\sim p \vee r))$
+
+which is equivalent to
+
+ $( q \supset r) \supset ((p \supset q) \supset (p \supset r))$
+
+\item  Similarly, replacing $p$ with $\sim p$ in axiom 2 gives
+
+$q \supset (\sim p \vee q)$
+
+which is equivalent to
+
+$q \supset (p \supset q)$
+
+\item Similarly, replace $p,q$ with $\sim p,\sim q$ in axiom 4 to get 
+
+\item $[\sim p \vee (\sim q \vee r)] \supset (\sim q \vee (\sim p \vee r))$
+
+which is equivalent to 
+
+\item $[p \supset (q \supset  r)] \supset (q \supset  (p \supset r))$
+
+\end{enumerate}
+
+Further notice that rule III ({\em modus ponens}) can be restated as allowing us to derive $\vdash Q$ from $\vdash P$ and $\vdash P \supset Q$.
+
+\subsection{State the deduction theorem and introduce notation $\vdash_P$}
+
+We state  and start to prove the Deduction Theorem:  if adding $\vdash P$ as an assumption allows us to derive $\vdash Q$, with the restriction on rule II that no substitutions are made
+for variables in $P$, then it is possible to derive $\vdash P \supset Q$ without any additional assumptions or restrictions.  In other words, we are allowed to use the method:
+``suppose $P$ for the sake of argument:  if we can then derive $Q$, then $P \rightarrow Q$ must be true without any assumption.".
+
+We introduce the abbreviation $\vdash_P Q$ for $\vdash P \supset Q$.
+
+We have $\vdash_P P$:  we showed $\vdash \sim P \vee P$ which is equivalent to $\vdash P \supset P$, above.
+If we have(1)  $\vdash Q$, then we have (2) $\vdash Q \supset (P \supset Q)$ by the variant 7 of axiom 2 above, followed by rule II to put $Q$ in place of $q$ and $P$ in place of $p$.
+Then rule III applied to (1) and (2) gives us $\vdash P \supset Q$.  Thus we have shown that if we have $\vdash Q$ we also have $\vdash_P Q$.
+
+Suppose that we have $\vdash_P f(p)$, where $p$ is a variable not appearing in $P$.  Then we have $\vdash P \rightarrow f(p)$, from which by rule II we can derive $\vdash P \supset f(q)$ and $\vdash P\supset f(q \vee r)$ for any variables $q$ and $r$, and so we can derive $\vdash_P f(q)$ and $\vdash_P f(q \vee r)$.  Thus we have for $\vdash P$ the ability to apply rule II just as for $\vdash$, as long as we make no substitution which changes $P$.
+
+\subsection {Lemma 1 and the rule of transitivity of implication}
+
+We now prove a lemma.
+
+We have
+
+(1) $( q \supset r) \supset ((p \supset q) \supset (p \supset r))$  variant 7 of axiom 5
+
+(2)  $[[q \supset r] \supset ([p \supset q] \supset  [p \supset r])] \supset ([p \supset q] \supset  ([q \supset r] \supset [p \supset r]))$  variant 8 of axiom IV with rule II
+applied, replacing $p$ with $q \supset r$, $q$ with $p \supset q$, and $r$ with $p \supset r$ (note that these substitutions are being carried out simultaneously, not one after the other).
+
+(Lemma 1)  $([p \supset q] \supset  ([q \supset r] \supset [p \supset r]))$  rule III (1),(2)
+
+This lemma gives us a very useful rule.  Suppose we have derived $\vdash A \supset B$ and $\vdash B \supset C$.
+
+Then we have
+
+(1) $\vdash A \supset B$  given
+
+(2) $\vdash B \supset C$ given
+
+(3) $\vdash (A \supset B) \supset ((B \supset C) \supset (A \supset C))$  rule II applied to Lemma 1
+
+(4) $((B \supset C) \supset (A \supset C))$  III  1,3
+
+(5)  $\vdash A \supset C$  III 2,4
+
+So from $\vdash A \supset B$ and $\vdash B \supset C$ we can derive $\vdash A \supset C$.  Call this ``transitivity of implication".
+
+\subsection{Lemma 2}
+
+We need to prove another lemma, which we will prove by a series of applications of our derived rule.
+
+(1) $\vdash (\sim p \vee q) \supset (q \vee \sim p)$  rule II applies to axiom 2
+
+(2) $\vdash (\sim p \vee q) \supset (q \vee \sim p) \supset ((p \rightarrow (\sim p \vee q)) \supset (p \supset (q \vee \sim p)))$  rule II applied to variant 6 of axiom 5
+
+(3) $\vdash (((p \supset (\sim p \vee q)) \supset (p \supset (q \vee \sim p)))$  rule III  1,2
+
+(4) $\vdash (((p \supset (p \supset q)) \supset (p \supset (q \vee \sim p)))$ definition of implication
+
+(5) $\vdash [\sim p \vee  (q \vee \sim p)] \supset [q \vee (\sim p \vee \sim p)]$ rule II applied to variant of axiom 4
+
+(6) $\vdash [p \supset  (q \vee \sim p)] \supset [q \vee (\sim p \vee \sim p)]$ def imp 5
+
+(7) $\vdash (((p \supset (p \supset q)) \supset [q \vee (\sim p \vee \sim p)$  trans imp 4,6
+
+(8)  $\vdash (\sim p \vee \sim p) \supset \sim p$  rule II axiom 1
+
+(9) $\vdash ((\sim p \vee \sim p) \supset \sim p)\supset ((q \vee (\sim p \vee \sim p)) \supset (q \supset \sim p))$  rule II applied to variant 6 of axiom 5
+
+(10) $\vdash ((q \vee (\sim p \vee \sim p)) \supset (q \supset \sim p))$  III, 8,9
+
+(11)) $\vdash (p \supset (p \supset q) ) \supset (q \supset \sim p)$  trans imp 7,10
+
+(12) $\vdash (q \vee \sim p) \supset (\sim p \vee q)$  rule II applied to axiom 2
+
+(13) $\vdash (q \vee \sim p) \supset (p \supset q)$  def imp 12
+
+(Lemma 2) $\vdash (p \supset(p \supset q)) \supset (p \supset q)$  trans imp 11 13
+
+\subsection{The proof of modus ponens for $\vdash_P$}
+
+
+Now suppose that we have $\vdash_PQ$ and $\vdash_PQ \supset R$.
+
+Thus we have
+
+(1) $\vdash P \supset Q$  assumption
+
+(2) $\vdash P \supset (Q \supset R)$  assumption
+
+(3) $\vdash (P \supset Q) \supset ((Q \supset R) \supset (P \supset R))$  Lemma 1 above with rule II to replace $p$ with $P$ etc.
+
+(4) $\vdash ((Q \supset R) \supset (P \supset R))$ III (1)(3)
+
+(5)  $\vdash (P \supset (Q \supset R)) \supset (((Q \supset R) \supset (P \supset R)) \supset (P \supset (P \supset R)))$  II on the Lemma with $p,q,r$ replaced with $P$, $Q \supset R$, $P \supset R$.
+
+(6) $\vdash (((Q \supset R) \supset (P \supset R)) \supset (P \supset (P \supset R)))$  III 2,5
+
+(7)  $\vdash (P \supset (P \supset R))$  III 4,6
+
+(8) $\vdash ((P \supset (P \supset R)) \supset (P \supset R))$ rule II applied to Lemma 2
+
+(9) $\vdash P \supset R$ III 7,8
+
+Thus from $\vdash_P Q$ and $\vdash_P Q \supset R$ we can derive $\vdash_PR$.
+
+\subsection{Remarks on why we have proved the Deduction Theorem at this point}
+
+So, we have shown that the collection of statements provable under the hypothesis $P$ contains all statements which are simply derivable,
+contains $P$ itself, and is closed under applications of rule III and under applications of rule II which leave $P$ fixed.  Thus, if we can prove from
+theorems of our original system and the hypothesis $P$ that $Q$ follows, without applying rule II to any variable appearing in $P$ (except in subproofs which make no use of the hypothesis $P$), we have $\vdash_P Q$, from which we have $\vdash P \supset Q$.
+
+\subsection{Further remarks}
+
+You should see from what I have done that the basic axioms and rules of Russell's system used by Post make for very long and boring proofs.  The rule of transitivity of implication which 
+I proved is a basic example of a simplification of the system which can make proofs a lot more reasonable in length (and understandable).  Imagine what the proof of Lemma 2 would look like without uses of transitivity of implication!  The Deduction Theorem justifies a much more powerful technique for shortening proofs and organizing them intelligibly.
+
+The motivations for the individual axioms can be seen in the manipulations they enable in the proof above.  That they are a sufficient set is actually witnessed by the fact that we can prove this theorem, the double negation theorem $\sim \sim P \supset P$,  and the standard method  of proof of negative statements:  if we have $\vdash_P \sim(Q \vee \sim Q)$ then we have $\vdash \sim P$.  To get this result it is sufficient to
+derive $\vdash (P \supset \sim(Q \vee \sim Q)) \supset \sim P$.  Notes on these derivations may appear here later.
+
+
+
+
+
+
+
+
 
 
 \end{document}
