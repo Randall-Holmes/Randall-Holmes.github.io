@@ -437,6 +437,118 @@ I proved is a basic example of a simplification of the system which can make pro
 The motivations for the individual axioms can be seen in the manipulations they enable in the proof above.  That they are a sufficient set is actually witnessed by the fact that we can prove this theorem, the double negation theorem $\sim \sim P \supset P$,  and the standard method  of proof of negative statements:  if we have $\vdash_P \sim(Q \vee \sim Q)$ then we have $\vdash \sim P$.  To get this result it is sufficient to
 derive $\vdash (P \supset \sim(Q \vee \sim Q)) \supset \sim P$.  Notes on these derivations may appear here later.
 
+\section{Post's fundamental theorem}
+
+I am going to try to present Post's proof in one or more lectures.  Post himself divides his proof into four parts.
+
+\subsection{Part A:  substitution property of biconditionals}
+
+Note that Post uses $p \equiv q$ where I would write $p \leftrightarrow q$.  Usually $\equiv$ is used now for logical equivalence, but I will follow Post's notation.
+
+$p \equiv q$ is defined as $(p \supset q).(q \supset p)$.
+
+He proves that $(p \equiv q) \supset (f(p) \equiv f(q))$  where the function (expression) $f$ may involve other letters.
+
+He proves this by induction on the complexity of expressions.  A variable $p$ is said to be of rank 0, as is a variable $q$ other than $p$, considered as a constant function of $p$.  If $f(p)$ is of rank $m$, $\sim f(p)$ is of rank $m+1$.
+If $f(p)$ is of rank $m$ and $g(p)$ is of rank $n$, then $f(p) \vee g(p)$ is of rank ${\tt max}(m,n)+1$.
+
+For any rank $0$ function, we have the theorem:  if $f(p)$ is a rank 0 function of $p$, then $p \equiv q \supset f(p) \equiv f(q)$ simplifies to either $(p \equiv q) \supset (p \equiv q)$ (if $f(p) = p$) or $(p \equiv q) \supset (r \equiv r)$  (if $f(p) = r$, a constant function where $r$ is distinct from $p$).
+Both of these are theorems (facts Post leaves the reader to prove for themselves or look up in Principia Mathematica).
+
+Suppose that the theorem is true for any function of rank $\leq m$ (this is an argument by strong induction).  A formula $f(p)$ of rank $m$ is of the form either $\sim g(p)$ or $g(p) \vee h(p)$, where $g,h$ are of rank $\leq m$.
+
+We have $(p \equiv q) \supset (g(p) \equiv g(q))$ and  $(p \equiv q) \supset (h(p) \equiv h(q))$ by inductive hypothesis.  Post tells us that (1) $r \equiv s \supset (\sim r \equiv \sim s)$ is a theorem.
+
+The case where $f(p)$ is defined as $\sim g(p)$:
+
+(1) $\vdash (r \equiv s) \supset (\sim r \equiv \sim s)$ claimed to be a theorem of PM by Post (we might revisit this)
+
+(2) $\vdash (g(p) \equiv g(q)) \supset (\sim g(p) \equiv \sim g(q))$  rule II applied to (1)
+
+(3) $\vdash (p \equiv q) \supset (g(p) \equiv g(q))$ inductive hypothesis ($g$ is of rank $\leq m$)
+
+(4) $\vdash (p \equiv q) \supset (\sim g(p) \equiv \sim g(q))$  trans imp 3,2
+
+(5) $\vdash (p \equiv q) \supset (f(p) \equiv f(q))$ in the case where $f(p)$ is defined as $\sim g(p)$.
+
+Post tells us that $(r\equiv s) \supset  (t\equiv u) \supset ((r \vee t) \equiv (s \vee u))$ is a theorem of the system of PM.
+
+The case wher $f(p)$ is defined as $g(p) \vee h(p)$:
+
+(1) $\vdash (r\equiv s) \supset  (t\equiv u) \supset ((r \vee t) \equiv (s \vee u))$ Post claim
+
+(2)  $\vdash (g(p) \equiv g(q)) \supset ((h(p) \equiv h(q)) \supset ((g(p) \vee h(p)) \equiv (g(q) \vee h(q))))$  rule II applied to (1)
+
+(3) $\vdash (p \equiv q) \supset (g(p) \equiv g(q)$  ind hyp ($g$ is of rank $\leq m$)
+
+(4)  $\vdash (p \equiv q) \supset ((h(p) \equiv h(q)) \supset ((g(p) \vee h(p)) \equiv (g(q) \vee h(q))))$  trans imp 3,2
+
+I am going to pause and introduce a rule:  from $\vdash A \supset (B \supset C)$ derive $\vdash B \supset (A \supset C)$:  this is easily justified using
+a combination of the basic rules and a variant of axiom 4, and I think I will assign this as homework.  I'll call it ``hypothesis reordering".
+
+(5) $\vdash (h(p) \equiv h(q)) \supset ((p \equiv q) \supset ((g(p) \vee h(p)) \equiv (g(q) \vee h(q))))$  hypothesis reordering, 4
+
+(6)  $\vdash (p \equiv q) \supset (h(p) \equiv h(q))$  ind hyp ($h$ is of rank $\leq m$)
+
+(7) $\vdash (p \equiv q) \supset ((p \equiv q) \supset ((g(p) \vee h(p)) \equiv (g(q) \vee h(q))))$  trans imp 6,5
+
+(8) $\vdash ((p \equiv q) \supset ((p \equiv q) \supset ((g(p) \vee h(p)) \equiv (g(q) \vee h(q))))) \supset  ((p \equiv q) \supset ((g(p) \equiv h(p)) \equiv (g(q) \vee h(q)))) $ rule II applied to Lemma 2
+
+(9) $\vdash ((p \equiv q) \supset ((g(p) \vee h(p)) \equiv (g(q) \vee h(q)))$ rule III 7,8
+
+(10) $\vdash (p \equiv q) \supset (f(p) \equiv f(q))$ in the case where $f(p)$ is defined as $g(p) \vee h(p)$.
+
+
+One could remove line 8 if one also had a rule of hypothesis collapse, from $\vdash A \supset (A \supset B)$ derive $A \supset B$.  This can be derived using Lemma 2 much as hypothesis reordering is derived
+from a variant of axiom 4.
+
+This completes the proof of the theorem of part A, by mathematical induction.
+
+\subsection{Part B}
+
+The second part is basically a Boolean algebra calculation.  This is why I mentioned Boolean algebra.  The purpose of Part A is in effect to allow us to use
+biconditionals as equations for purposes of calculation.
+
+Using the biconditional theorems $\sim (p \vee q) \equiv (\sim p.\sim q)$ and $\sim \sim p \equiv p$ repeatedly with the result of Part A, and also
+the theorem $(p \equiv q) \supset ((q \equiv r) \supset (p\equiv r))$ (these are theorems that Post simply claims can be derived), we can for any function
+$f(t_1,\ldots,t_n)$ prove $f(t_1,\ldots,t_n) \equiv f'(t_1,\ldots,t_n)$, where $f'(t_1,\ldots,t_n)$ does not contain any negation except of a single letter, and is otherwise
+formed of disjunctions and conjunctions.
+
+\subsection{Part C}
+
+We then apply what Post actually calls the distributive law of logical multiplication, $p .(q \vee r) \equiv(( p.q) \vee( p.r))$, repeatedly, along with $(p \equiv q) \supset ((q \equiv r) \supset (p\equiv r))$, to get $f(t_1,\ldots,t_n) \equiv f''(t_1,\ldots,t_n)$, where $f''(t_1,\ldots,t_n)$ is a disjunction of conjunctions of single variables and negations of single variables (it is in disjunctive normal form).
+
+If any of these conjunctions contains neither $t_i$ nor $\sim t_i$, this can fixed using $p \equiv ((p.q) \vee (p.\sim q))$. 
+
+The products can then be rewritten using commutative and associative laws of logical multiplication = conjunction (which I invite you to write as biconditionals to which the result of Part A can be applied) into forms in which each product contains at most one $t_i$ and at most one $\sim t_i$ for each $i$:  we end up with the biconditional $\vdash f(t_1,\ldots,t_n) \equiv f'''(t_1,\ldots,t_n)$ where $f'''$ is a disjunction of conjunctions of products of variables and negations of variables in which each product contains at least one of $t_i$ and $\sim t_i$ and
+at most one of each of these.
+
+\subsection{Part D}
+
+We can prove by induction that any asserted $\vdash A$ has $A$ positive (its truth table consists entirely of +'s).
+
+Suppose that the original function $f(tt_1,\ldots,t_n)$ is positive (has a truth table consisting entirely of +'s).  Then $\vdash f(t_1,\ldots,t_n) \equiv f'''(t_1,\ldots,t_n)$ is positive because it is asserted.  It follows that $f'''(t_1,\ldots,t_n)$ must be positive (looking at the truth table of the biconditional.
+
+We then complete the proof that $f(tt_1,\ldots,t_n)$  can be asserted by induction on the number of letters used.
+
+In the case of $n=1$, $f''$ must be either $t_1 \vee \sim t_1$ or $t_1 \vee \sim t_1 \vee t_1.\sim t_1$ (up to reordering), because these are the only candidate $f''$'s which have truth table all +'s, and both of these are asserted
+($\vdash t_1 \vee \sim t_1$ and $\vdash t_1 \vee \sim t_1 \vee t_1.\sim t_1$ are both fairly easy from things we have already shown).
+
+Suppose we have shown that $f(t_1,\ldots,t_k)$ having positive truth table implies $\vdash f(t_1,\ldots,t_k)$.  We show that this follows for $k+1$.
+
+$\vdash f(t_1,\ldots,t_k,t_{k+1}) \equiv f''(t_1,\ldots,t_k,t_{k+1})$ for $f''$ with properties stated in Part C.  Use the distributive property of logical multiplication over logical addition and part A methods (and commutativity and associativity of disjunction) to get $\vdash f(t_1,\ldots,t_k,t_{k+1}) \equiv f'''(t_1,\ldots,t_k,t_{k+1})$  where $f'''(t_1,\ldots,t_{k+1})$ is of
+the form $(t_{k+1}.f_1(t_1,\ldots,t_k)) \vee (\sim t_{k+1}.f_2(t_1,\ldots,t_k)) \vee (t_{k+1}.\sim t_{k+1}.f_3(t_1,\ldots,t_k))$.
+
+Truth table analysis reveals that $f_1$ and $f_2$ must be positive (it doesn't matter what $f_3$ is).  It follows by inductive hypothesis that
+$\vdash f_1(t_1,\ldots,t_k)$ and $\vdash f_2(t_1,\ldots,t_k)$.  The theorem $p \supset q \supset (r .p \vee \neg r.q \vee r.\neg r.s$ then allows us to see
+that $\vdash f'''$ is derivable.  The theorem $(p \equiv q) \rightarrow q \supset p$ then allows us to show that, because $\vdash f'''$ is derivable, so is $\vdash f''$, and so is$\vdash f$.
+Every function with positive truth table is derivable.
+
+So the propositional calculus as described in PM is a complete realization of the propositional calculus as described by the method of truth tables.  Tautologies (positive statements) can be proved, and no other statement can be proved.
+
+
+
+
 
 
 
