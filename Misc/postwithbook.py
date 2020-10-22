@@ -391,3 +391,37 @@ axiom('(~(p1 V (q1 V r1))V (q1 V(p1 V r1)))')
 
 axiom('(~(~q1 V r1) V (~(p1 V q1)V(p1 V r1)))')
 
+def book():
+
+  propose('(p1V(~q1 V q1))')
+
+  propose('(~q1 V q1)')
+
+  propose('(p1V ~p1)')
+
+  propose('p1>p1')
+
+  propose('(p1Vp1)>p1')
+
+  propose ('(p1Vq1)>(q1Vp1)')
+
+  propose('(p1>q1)>((q1>r1)>(p1>r1))')
+
+  propose('(p1>(p1>q1))>(p1>(q1V~p1))')
+
+  propose ('((p1 > (q1 V ~p1)) > (q1 V (~p1 V ~p1)))')
+
+  propose('(*14 > ((p1 > (p1 > q1)) > (q1 V (~p1 V ~p1))))')
+
+  propose('((p1 > (p1 > q1)) > (q1 V (~p1 V ~p1)))')
+
+  propose('(q1V(~p1V~p1))>(q1V~p1)')
+
+  propose('*18>((p1>(p1>q1))>(q1V~p1))')
+
+  propose('((p1>(p1>q1))>(q1V~p1))')
+
+  propose('(q1V~p1)>(p1>q1)')
+
+  propose('*21>((p1>(p1>q1))>(p1>q1))')
+
