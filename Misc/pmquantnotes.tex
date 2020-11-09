@@ -32,7 +32,7 @@ We present the axioms and rules stated in PM section 10 (and one in 11).
 
 \item[10.11] If we have $\vdash \phi(y)$, where $y$ is a variable (not a constant), then we have $\vdash (x)(\phi(x))$.  This is the rule of universal generalization.
 
-\item[10.12]  $\vdash (x)(p \vee \phi(x)) \equiv (p \vee (x)(\phi(x)))$
+\item[10.12]  $\vdash (x)(p \vee \phi(x)) \supset (p \vee (x)(\phi(x)))$
 
 \item[10.121]  If $x$ is a variable and $a$ is any constant of the same type as $x$, $\phi(x)$ is significant if and only if $\phi(a)$ is significant.
 
@@ -42,7 +42,7 @@ We present the axioms and rules stated in PM section 10 (and one in 11).
 
 \end{description}
 
-We define Russell's chapter 11 notation $(x,y)(\phi(x,y))$ as $(x)((y)(\phi(x,y))$.
+We define Russell's chapter 11 notation $(x,y)(\phi(x,y))$ as $(x)((y)(\phi(x,y))$ (Actually, Russell defines it this way, too).
 
 His axiom 11.07 seems to be redundant.  Its use is to reverse the order of universal quantifiers and we can do this in any case.
 
@@ -54,11 +54,111 @@ From this we get $\vdash (x)(\phi(x,y))$ by 10.11.
 
 From this we get $\vdash (y)((x)(\phi(x)))$ by 10.11.
 
-We do not see the need for 11.07.
+We do not see the need for 11.07.  This is an interesting question...
 
 We list the statements about types which PM has as axioms but we will not make much use of them (or give much of an explanation of them) until we actually have some discussion of the theory of types.
 
 We analyze some sample theorems.
+
+\begin{description}
+
+\item[10.13:]  If $\phi(\hat{x})$ and $\psi(\hat{x})$ take argument of the same type, and we have $\vdash \phi(x)$ and $\vdash \psi(x)$, then we have $\vdash \phi(x).\psi(x)$.
+
+\item[Proof:]  
+
+\begin{enumerate}
+
+\item $\vdash \phi(x)$  hypothesis
+
+\item $\vdash \psi(x)$ hypothesis
+
+\item $$\vdash (\sim\phi(x) \vee \sim \psi(x)) \vee (\phi(x) \vee \psi(x))$$
+
+This is by the tautology $(\neg p \vee \neg q) \vee (p . q)$, which follows directly from the definition of conjunction and the law of excluded middle.
+
+\item $$\vdash \phi(x) \supset (\psi (x) \supset (\phi(x).\psi(x)))$$
+
+This follows from (3) by first applying associativity of disjunction then applying the definition of implication twice.
+
+\item  $$\vdash \phi(x).\psi(x)$$
+
+This follows by two applications of modus ponens (Post rule III), one applying (1) and (4)  and one using (2) and the result of the previous application of modus ponens.  And this is the desired conclusion.
+
+\end{enumerate}
+
+Notice that what we have proved is a rule, not a single proposition.
+
+\item[10.2:]  $$(x)(p \vee \phi(x)) \equiv (p \vee (x)(\phi(x))$$
+
+Notice that this replaces the implication in axiom 10.12 with a biconditional.
+
+\item[Proof:]
+
+\begin{enumerate}
+
+\item  $$\vdash (p \vee (x)(\phi(x)) \supset (p \vee \phi(y))$$
+
+This is justified by the axiom 10.1, $(x)(\phi(x)) \rightarrow \phi(y)$, in combination with the tautology $(Q \supset R) \supset ((P \supset Q) \supset (P \supset R))$, familiar to use from our work with Post's system, replacing $P, Q,$ and $R$ with $p, (x)(\phi(x)),$ and $\phi(y)$, respectively.  Then apply modus ponens to get the desired line.
+
+\item $$\vdash (y)((p \vee (x)(\phi(x)) \supset (p \vee \phi(y)))$$
+
+Apply 10.11 (universal generalization) to (1).
+
+\item $$\vdash ((p \vee (x)(\phi(x)) \supset (y)(p \vee \phi(y)))$$
+
+This uses an instance of 10.12, $\vdash (x)(p \vee \phi(x)) \supset (p \vee (x)(\phi(x)))$, with $x$ replaced by $y$, $p$ replaced by $(p \vee (x)(\phi(x))$ (noting that this includes no occurrence of $y$)
+and $\phi(\hat{x})$ replaced by $p \vee \phi(\hat{y})$, in combination with (2) using the rule of modus ponens.
+
+\item , $$\vdash (x)(p \vee \phi(x)) \supset (p \vee (x)(\phi(x)))$$
+
+This is 10.12.
+
+\item  The theorem is then proved as written above by applying rule 10.13 to get the conjunction of line (3) and line (4), then applying the definition of the biconditional $\equiv$.
+
+\end{enumerate}
+
+\item[10.22:]  $$(x)(\phi(x).\psi(x)) \equiv ((x)(\phi(x)).(x)(\psi(x)))$$
+
+Thiis is of course ``obvious".
+
+\item[Proof:]
+
+\begin{enumerate}
+
+\item $$\vdash ((x)(\phi(x).\psi(x)) \supset \phi(y).\psi(y)$$
+
+This is an instance of 10.1, with the propositional function $\phi(\hat{x})$ in 10.1 replaced with $\phi(\hat{x}).\psi(\hat{x})$.
+
+\item $$\vdash ((x)(\phi(x).\psi(x)) \supset \phi(y)$$
+
+This is obtained by transitivity of implication from (1) and the tautology $(A.B) \supset A$ with $\phi(x)$ replacing $A$ and $\psi(x)$ replacing $b$.
+
+\item  $$\vdash (y)(((x)(\phi(x).\psi(x)) \supset \phi(y))$$  10.11 (universal generalization) applied to (2).
+
+\item $$\vdash (((x)(\phi(x).\psi(x)) \supset (y)(\phi(y)))$$  This is obtained by modus ponens from (3) and an appropriate instance of axiom 10.12 (adapted to implication rather than disjunction, but implications are defined as disjunctions, so it works).  We are moving the quantifier over $y$ past a subterm which doesn't contain $y$.
+
+\item $$\vdash ((x)(\phi(x).\psi(x)) \supset \phi(z)$$  This is obtained in the same way as line (2), but using $(A.B) \supset B$ instead.  I do not know why the authors use $z$:  as far as I can see they could use $y$, too.
+
+\item $$\vdash (z)((x)(\phi(x).\psi(x)) \supset \phi(z))$$  10.11
+
+\item $$\vdash ((x)(\phi(x).\psi(x)) \supset (z)(\phi(z)))$$  10.12 adapted to implication, as above
+
+\item $$\vdash ((x)(\phi(x).\psi(x)) \supset ((y)(\phi(y)).(z)(\phi(z))))$$  This follows from (4), (7), and the valid rule of propositional logic that if we have $A \supset B$ and
+$A \supset C$, we have $A \supset (B.C)$.
+
+\item $$\vdash ((y)((x)(\phi(x)).(x)(\psi(x)) \supset \phi(y).\psi(y))$$  This combines two steps.  First, using theorem 10.14 which I haven't proved here, $((x)(\phi(x)).(x)(\psi(x))) \supset \phi(y).\phi(y)$;  by transitivity of implication we get $((x)(\phi(x).\psi(x)) \supset (\phi(y).\psi(y))$, and then the desired line by 10.11 (universal generalization).
+
+\item $$\vdash (((x)(\phi(x)).(x)(\psi(x)) \supset (y)(\phi(y).\psi(y)))$$
+
+apply 10.12 adapted to implication to move the quantifier over $y$
+
+\item The desired proposition follows by using 10.13 to get the conjunction of line 8 and line 10, then apply the definition of $\equiv$.  The picture here is confused because the authors assume that we can rename bound variables without any comment at all.
+
+
+
+\end{enumerate}
+
+\end{description}
 
 
 
