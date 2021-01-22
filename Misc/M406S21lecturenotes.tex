@@ -506,7 +506,49 @@ So we can carry out the entire Euclidean algorithm preserving the condition that
 we compute the gcd is a linear combination of $a$ and $b$ with integer coefficients.  This condition will be preserved
 at the last step, the computation of a ${\tt gcd}(e,0)$ where $e$ turns out to be ${\tt gcd}(a,b)$, which is thus seen to be a linear combination of $a$ and $b$ with integer coefficients.
 
-I'll provide a spreadsheet implementing this, and I'm planning to put up a Sage project implementing it as well.  If you don't know what Sage is, you will find out.
+In class I gave a very formal description of this procedure, which I will now summarize.
+
+Let $a \geq b \geq 0$ with $a$ positive.
+
+We give recursive definitions of three finite sequences.
+
+$A_0$ is defined as $a$, $A_1$ is defined as $b$, and $A_{i+2}$ is defined as $A_i \,{\tt mod}\, A_{i+1} = A_i - (A_i \,{\tt div}\, A_{i+1})A_{i+1}$, as long as this is nonzero:
+if $A_{i+1}$ goes evenly into $A_i$, $A_{i+2}$ is undefined.
+
+$B_0$ is defined as 1, $B_1$ as 0, and $B_{i+2}$ as $B_i - (A_i \,{\tt div}\, A_{i+1})B_{i+1}$, as long as $A_{i+1}$ does not evenly go into $A_i$, in which case
+$B_{i+2}$ is undefined.
+
+$C_0$ is defined as 0, $B_0$ as 1, and $C_{i+2}$ as $C_i - (A_i \,{\tt div}\, A_{i+1})C_{i+1}$, as long as $A_{i+1}$ does not evenly go into $A_i$, in which case
+$C_{i+2}$ is undefined.
+
+Notice that $A_{i+2} < A_{i+1}$ for every $i$.  This is because $A_i{\tt mod}A_{i+1} < A_{i+1}$.
+
+This means that the set of all $A_i$'s has a smallest element $A_k$, and it must be the case then that $A_k$ goes evenly into $A_{k-1}$, or we would be able to
+define $A_{k+1}<A_k$ and $A_k$ would not be smallest.  In other words, the sequences must be finite.
+
+We have ${\tt gcd}(A_{i+1},A_{i+2}) = {\tt gcd}(A_{i+1},A_i {\tt mod}A_{i+1}) = {\tt gcd}(A_i,A_{i+1})$ for each $i$, so in fact for each $i$ we have
+${\tt gcd}(A_{i+1},A_{i+2})  = {\tt gcd}(A_0,A_1) = {\tt gcd}(a,b)$.  And further if $A_k$ is the smallest of the $A_i$'s we have ${\tt gcd}(a,b) = {\tt gcd}(A_{k-1},A_k) = {\tt gcd}(A_k,A_{k-1}{\tt mod}A_k) = {\tt gcd}(A_k,0) = A_k$.
+
+So there is a smallest $A_i$, call it $A_k$, and $A_k = {\tt gcd}(a,b)$.
+
+Further, we prove by induction that for each $i$ we have $A_i = B_ia + C_ib$.
+
+For $i=0$ we have $A_0 = a = 1a+0b = B_0a + C_0b$.
+
+For $i=1$, we have $A_1 = b = 0a+1b = B_1a+c_1b$.
+
+This completes the basis step.
+
+Our induction hypothesis is that $A_i = B_ia+C_ib$ and $A_{i+1} = B_{i+1}a + C_{i+1}b$.
+
+Then $$A_{i+2} = A_i {\tt mod}A_{i+1} = A_i - (A_i {\tt div}A_{i+1})A_{i+1} =$$ [ind hyp] $$( B_ia+C_ib) - (A_i {\tt div}A_{i+1})(B_{i+1}a + C_{i+1}b) = $$[algebra]
+$$(B_i - (A_i {\tt div} A_{i+1})B_{i+1})a + (C_i - (A_i {\tt div} A_{i+1})C_{i+1})b = B_{i+2}a + C_{i+2}b.$$
+
+This completes the proof by induction that $A_i = B_ia+C_ib$ for each $i$.  It might require a little thought to see that this is a proof by induction:  this is the pattern found in many induction proof involving the Fibonacci numbers.
+
+This then implies that ${\tt gcd}(a,b) = A_k = B_ka + C_kb$, so there are as desired integers $x,y$ such that $ax+by = {\tt gcd}(a,b)$.  Moreover, we are presented with an explicit computation procedure to find these integers.
+
+I'll provide a spreadsheet implementing this (there is already a link to it above).
 
 It is further worth noting that ${\tt gcd}(a,b)$ is the smallest natural number which can be expressed
 in the form $ax+by$ where $x$ and $y$ are integers.  To see this, notice that every number of the form 
