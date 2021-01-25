@@ -14,6 +14,16 @@ def versiondate():
     HLPR pages through all available help. \n \
     ?(name of command) will give help on a command.\n')
 
+# working on Beeson definitions for INF proof.  One bug fixed so far:
+# the free variable check in bodies of definitions of binary ops was missing
+
+# 12/30 improved understanding of the behavior of substitute. I had
+# a delusion that there was a problem with Python list equality causing
+# me to have to use equality of printed forms of terms in substitution:
+# in fact, what was happening was that printing the terms was performing
+# needed updates to the next object index in quite special situations.
+# I am still trying to debug a time leak in an instance of SU.
+
 # 12/26 introduces an atomic name for the unique witness when applying rules for THE.
 # This should make proofs about definite descriptions easier to navigate.  It is suggested
 # that one immediately use the atomic name and equality rules to eliminate the description
@@ -935,7 +945,8 @@ def isupper(c):  return 'A'==c or 'A'<c<'Z' or 'Z'==c
 # be used in operator names.  ! is also restricted:  I am not sure why.
 
 def isspecial(c):  return  c in {'~','#','%','^','&','*','-','+',\
-                                 '=',',','<','>','/','`','@',':','|','`'}
+                                 '=',',','<','>','/','`','@',':'
+                                 ,'|','`'}
 
 # returns the initial segment of the second string argument
 #  which passes the character class test represented by the first argument,
@@ -1037,7 +1048,7 @@ def getident(x):
             return(['constant',y],len(y))
         if isnumeral(x[len(y)]):
             z=getinit(isnumeral,x[len(y):])
-            return (['variable',y,z],len(y)+len(z))
+            return (['variable',y,str(int(z))],len(y)+len(z))
         if x[len(y)]=='_' and len(x)>len(y)+1 and isnumeral(x[len(y)+1]):
             z=getinit(isnumeral,x[len(y)+1:])
             if int(z)+1>nextobjectindex: nextobjectindex=int(z)+1
@@ -2280,18 +2291,31 @@ setprecoddabove('~','&')
 
 def substitute(t,v,T):
      global theproof
+     
      if not (v[0]=='variable' or v[0]=='constant' or v[0]=='instantiable'):  return T
      if T[0]=='operator':  return T
      if (not (type(t)=='object' or type(t)=='class')) or not freevars(t)==[]:
          printerror('term to be substituted is not an object or class term or contains free variables?\n')
          return T
-     if type(T)=='bad': return T
-     if type(t)=='object' and termprint(T)==termprint(v): return t
-     if type(t)=='class' and T[0]=='unary' and prec(T[1][1])==0 and T[2]==v:
+     #if type(T)=='bad': return T
+
+     # the function of this strange line is to update the new object index when what is being
+     # done is replacing a local constant or instantiable with a term.  All updates of nextobjectindex
+     # are actually done by the term parse and display functions.  This line does work
+     # when a substitution is made for a constant or instantiable in a theorem or definition
+     # which forces an update of the next object index:  of course the update associated
+     # with a local constant or instantiable introduced in the current proof has already
+     # been done when we viewed the sequent introducing it.
+
+     termprint(v)
+     
+    
+     if type(t)=='object' and (T[0]==v[0]) and T==v: return t
+     if type(t)=='class' and T[0]=='unary' and prec(T[1][1])==0 and ((T[2])==(v)):
          return ['unary',T[1],t]
-     if type(t)=='class' and T[0]=='binary' and (opof(T)[1]=='IN' or opof(T)[1]=='INR') and T[3]==v:
+     if type(t)=='class' and T[0]=='binary' and (opof(T)[1]=='IN' or opof(T)[1]=='INR') and ((T[3])==(v)):
          return ['binary',T[1],substitute(t,v,T[2]),t]
-     if type(t)=='class' and termprint(T)==termprint(v):
+     if type(t)=='class' and ((T)==(v)):
           printerror('class term substituted in inappropriate context')
           return T
      if T[0]=='unary':  return ['unary',T[1],substitute(t,v,T[2])]
@@ -3544,6 +3568,7 @@ def define(L):
             #if thetype=='constant':  thetype='sc'
             body2=substitute(['constant','.arg','1'],var1,\
                              substitute(['constant','.arg','2'],var2,body))
+            if not freevars(body2)==[]:  return 'bad'
             Definitions[ident[1]]=body2
             declarebinary(ident[1],thetype,type1,type2)
             Showdef(ident[1])
@@ -3756,7 +3781,7 @@ def leftexpand(PP):
                  '\ninto its constituent implications']]
     if P[0]=='unary' and P[1]==['operator','A'] and P[2][0] == 'binary' \
        and P[2][1]==['operator',':'] and P[2][2][0] == 'variable':
- #       nextobjectindex=nextobjectindex+1
+         #nextobjectindex=nextobjectindex+1
          return [[[fix(substitute(['instantiable',P[2][2][1],\
                                    str(nextobjectindex)],P[2][2],P[2][3])),fix(P)],[],\
                   '\nuse the universal hypothesis\n'+(termprint(P))+\
@@ -4703,7 +4728,13 @@ def maxsequentindex(S):
 def listsub(t,v,L):
     if L==[]:  return []
     global theproof
-    return [[substitute(t,v,L[0][0]),L[0][1]]]+listsub(t,v,L[1:])
+#    return [[substitute(t,v,L[0][0]),L[0][1]]]+listsub(t,v,L[1:])
+    list1 = L
+    list2 = []
+    while(not(list1==[])):
+        list2 = list2+[[substitute(t,v,list1[0][0]),list1[0][1]]]
+        list1 = list1[1:]
+    return list2
 
 # this command is used by Rf()--adds genealogy information
 
@@ -4724,7 +4755,13 @@ def proofsub(t,v,P):
 def prooflistsub(t,v,L):
     global theproof
     if L==[]:  return []
-    return [proofsub(t,v,L[0])]+prooflistsub(t,v,L[1:])
+#    return [proofsub(t,v,L[0])]+prooflistsub(t,v,L[1:])
+    list1 = L
+    list2 = []
+    while(not(list1==[])):
+        list2=list2+[proofsub(t,v,list1[0])]
+        list1=list1[1:]
+    return list2
 
 # substitution for an instantiable, appropriately
 # guarded by index
@@ -5759,3 +5796,4 @@ versiondate()
 # for Trinket, Marcel should start in its own shell
 
 interface('')
+
