@@ -1,0 +1,1295 @@
+\documentclass[12pt]{article}
+
+\title{Lab Guide to the web-based version of the Marcel Theorem Prover}
+
+\author{Dr Holmes}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Starting out}
+
+Marcel is a system for computer assisted theorem proving.  I have used it before in classes; some of you may have used it.
+
+You need Python to run the software.  I typically run it by editing the file {\tt pythonmarcel.py} with IDLE and running the module.
+
+To start a proof, type the command {\bf s} followed by a logic expression.  For example, here is a sample interaction:
+
+\begin{verbatim}
+
+Enter quit to break out of interface:
+
+>>  s p?->p?
+
+
+Line 1:
+
+
+------------------
+
+1:  p? -> p?  
+
+
+
+
+Enter quit to break out of interface:
+
+>>  
+
+\end{verbatim}
+
+We are only interested in a limited subset of the language of logical expressions of Marcel, for the moment.  A lower-case letter (or string of lower case letters) followed by a question mark is a propositional letter (a sentence with an unknown value of True or False).  The logical operators have different shapes because
+of the limitations of ASCII:  
+
+\begin{enumerate}
+
+\item instead of using $P,Q,R\ldots$ to represent unknown sentences, we use {\tt p?, q?, r?...} (lower case letters followed by question marks); 
+
+\item  instead of $P \wedge Q$, we type {\verb p?&q? };  \item 
+
+instead of $P \vee Q$ we type {\verb p?Vq? } (that needs to be a capital V); \item instead of $P \rightarrow Q$ we type {\verb p?->q? }; \item instead of $P \leftrightarrow Q$ we type {\verb p?==q? }; instead of $\neg P$ we type {\verb ~p? }; one should leave a space in front of the negation symbol if it is preceded by another operation symbol.
+
+\end{enumerate}
+
+So you can see that what I wrote above is $P \rightarrow P$, and I should be able to prove that.
+
+\begin{verbatim}
+
+>>  r
+
+
+Line 2
+prove
+p? -> p?
+by assuming
+p?
+and deducing
+p?:
+
+1:  p?  
+
+------------------
+
+1:  p?  
+
+
+Enter quit to break out of interface:
+
+>>  
+
+\end{verbatim}
+
+We look first at the product of this move before we look at the command.  Marcel manipulates {\em arguments\/}, and its aim is to show that
+arguments are valid by suitable manipulations.  The argument produced here is 
+
+$$\begin{array}{c}P \\ \hline P \end{array}$$ which is clearly valid.
+
+The \verb r  command looks at the conclusion of the previous argument and uses it to guide construction of a simpler argument or arguments.  In this case, Marcel is following the familiar strategy for proving an implication:  to prove $A \rightarrow B$, assume $A$ and try to show $B$.
+
+The action of the \verb s  command can be explained here too.  When we set out to prove a theorem $T$, Marcel's view of what we are doing is that we are trying to show that
+
+$$\begin{array}{c} \\ \hline T\end{array}$$ is a valid argument.  If all of zero premises are true, $T$ follows, as it were.
+
+On the next page we finish this trivial proof.
+
+\newpage
+
+\begin{verbatim}
+
+Enter quit to break out of interface:
+
+>>  d
+
+
+Q. E. D.
+
+Line 1:
+
+
+------------------
+
+1:  p? -> p?  
+
+
+
+
+Enter quit to break out of interface:
+
+>>  
+
+\end{verbatim}
+
+The \verb d  command signals to Marcel that we recognize that the sequent is valid.  The one circumstance we will see in our examples where we can do this is if the first premise and the conclusion are the same (there are some other situations where \verb d  will work, but we will not see them in propositional logic).
+
+I'll talk about the actual manipulations of arguments that Marcel does in class.  Here I am focussed on how the system works.  I will do two examples to illustrate the commands.
+
+For reference I give the five basic commands used in propositional logic proofs (though a real explanation of them is best obtained by reading the examples and actually trying them out).
+At any moment, Marcel is manipulating an argument, a list of premises from which a conclusion is to be show to follow.  There might be no premises (the conclusion is to be proved as a theorem);  there might be no conclusion (a contradiction is to be deduced from the premises).
+
+The basic commands are 
+\begin{enumerate}
+
+\item \verb s  (logical expression):  start to prove that the logical expression is a theorem.
+
+\item \verb r :  manipulate the argument based on the form of the conclusion (try to prove the conclusion as a goal).
+
+\item \verb l :  manipulate the argument based on the form of the first premise (try to use the first premise as a given statement).
+
+\item \verb gl (number):  move the indicated numbered premise to first position.
+
+\item \verb d :  recognize that the current argument is valid (because the first premise and the conclusion are identical):  Marcel will then present you with the next thing you have to prove,
+or tell you that you have proved the theorem you are working on (Q. E. D signals end of proof).
+
+\end{enumerate}
+
+
+\section{First example}
+
+\begin{verbatim}
+
+>>  s ((p? & q?) -> r?) == (p? -> (q?->r?))
+
+
+Line 1:
+
+
+------------------
+
+1:  p? & q? -> r? == p? -> q? -> r?  
+
+\end{verbatim}
+
+We use the \verb s  command to start the proof of $P \wedge Q \rightarrow R \leftrightarrow P \rightarrow (Q \rightarrow R)$.  We make a point by supplying all possible parentheses in the first line.  Notice that Marcel, which does know about order of operations conventions for these operations, doesn't need any of the parentheses and does not display them.  You will find in other examples that Marcel does know when parentheses are important.
+
+\newpage
+
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  r
+
+
+Line 2
+proving biconditional
+p? & q? -> r? == p? -> q? -> r?
+Part I =>
+:
+
+1:  p? & q? -> r?  
+
+------------------
+
+1:  p? -> q? -> r?  
+
+
+
+\end{verbatim}
+
+The \verb r  command acts on the conclusion, and if you read the hint, it suggests that Marcel is following the familiar strategy of the biconditional.
+Here it is presenting Part I of the proof:  it will present Part II to be proved automatically when Part I is finished..
+
+\newpage
+
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  r
+
+
+Line 4
+prove
+p? -> q? -> r?
+by assuming
+p?
+and deducing
+q? -> r?:
+
+1:  p?  
+2:  p? & q? -> r?  
+
+------------------
+
+1:  q? -> r?  
+
+\end{verbatim}
+
+Again, the \verb r  command acts on the conclusion of the previous argument, which is an implication, and it follows our usual strategy for proving
+an implication, adding the hypothesis of the complication as a new premise and making the conclusion of the implication the new conclusion of the argument.
+
+\newpage
+
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  r
+
+
+Line 5
+prove
+q? -> r?
+by assuming
+q?
+and deducing
+r?:
+
+1:  q?  
+2:  p?  
+3:  p? & q? -> r?  
+
+------------------
+
+1:  r?  
+
+\end{verbatim}
+
+We do the same thing again!
+
+\newpage
+
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  gl 3
+
+
+Line 5
+prove
+q? -> r?
+by assuming
+q?
+and deducing
+r?:
+
+1:  p? & q? -> r?  
+2:  q?  
+3:  p?  
+
+------------------
+
+1:  r?  
+
+\end{verbatim}
+
+Marcel commands always manipulate either the conclusion or the first premise of an argument.  Here, the 
+first premise and the conclusion are just letters, so we use the command {\tt gl 3} to bring the third premise to the front, so we can manipulate it.
+\newpage
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  l
+
+
+Line 6
+use
+p? & q? -> r?
+, first part, showing that
+p? & q?
+or the desired conclusion holds:
+
+1:  q?  
+2:  p?  
+3:  ~r?  
+
+------------------
+
+1:  p? & q?  
+
+\end{verbatim}
+
+We use the \verb l  command to manipulate the first premise.  This means we are using the premise $P \wedge Q \rightarrow R$ in the argument.
+The strategy of use of an implication $A \rightarrow B$ is basically to attempt to prove $A$, and when $A$ has been proved, show that the desired consequence follows from $B$ (which is appropriate because modus ponens then gives $B$).  I'll talk about the exact way Marcel sets up this argument in class.
+
+Notice that as expected we are now trying to prove $P \wedge Q$, and we should have the idea that it will not be difficult from the given premises.
+\newpage
+\begin{verbatim}
+
+
+
+
+Enter quit to break out of interface:
+
+>>  r
+
+
+Line 8
+prove
+p? & q?
+first part:  prove
+p?:
+
+1:  q?  
+2:  p?  
+3:  ~r?  
+
+------------------
+
+1:  p?  
+
+\end{verbatim}
+
+Proving $P \wedge Q$ breaks down into proving $P$ then proving $Q$.
+
+This argument is obviously valid, since the conclusion is one of the premises!
+\newpage
+{\tiny
+\begin{verbatim}
+Enter quit to break out of interface:
+
+>>  gl 2
+
+
+Line 8
+prove
+p? & q?
+first part:  prove
+p?:
+
+1:  p?  
+2:  ~r?  
+3:  q?  
+
+------------------
+
+1:  p?  
+
+Enter quit to break out of interface:
+
+>>  d
+
+
+Line 9
+prove
+p? & q?
+second part:  prove
+q?:
+
+1:  q?  
+2:  p?  
+3:  ~r?  
+
+------------------
+
+1:  q?  
+
+\end{verbatim}}
+
+Marcel can be informed (with the \verb d  command) that it should record an argument as valid, when the first premise and the conclusion are the same.
+
+Before we could do this, we used {\tt gl 2} to move the appropriate premise to the front.
+
+We made the text smaller so we could fit these remarks on one page.  Note that after the \verb d  command Marcel serves up the second
+part of the proof of $P \wedge Q$.
+\newpage
+
+
+\begin{verbatim}
+
+
+
+
+Enter quit to break out of interface:
+
+>>  d
+
+
+Line 7
+use
+p? & q? -> r?
+second part, show that the desired conclusion follows
+      from
+r?:
+
+1:  r?  
+2:  q?  
+3:  p?  
+
+------------------
+
+1:  r?  
+
+\end{verbatim}
+
+$Q$ gets proved by a single application of \verb d .  Marcel then presents us with the task (since we proved $P \wedge Q$) of using $R$, which we can deduce by modus ponens...to prove our current conclusion, which is also $R$$\ldots$
+\newpage
+
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  d
+
+
+Line 3
+proving biconditional
+p? & q? -> r? == p? -> q? -> r?
+Part II <=
+:
+
+1:  p? -> q? -> r?  
+
+------------------
+
+1:  p? & q? -> r?  
+
+\end{verbatim}
+
+$R$ gets proved directly by applying \verb d .  Once this is done, the proof of Part I is complete, and I am going to leave Part II for you to read and think about.
+\newpage
+\begin{verbatim}
+
+
+
+
+Enter quit to break out of interface:
+
+>>  r
+
+
+Line 10
+prove
+p? & q? -> r?
+by assuming
+p? & q?
+and deducing
+r?:
+
+1:  p? & q?  
+2:  p? -> q? -> r?  
+
+------------------
+
+1:  r?  
+
+\end{verbatim}
+\newpage
+\begin{verbatim}
+
+
+
+Enter quit to break out of interface:
+
+>>  l
+
+
+Line 11
+use 
+p? & q?
+by breaking it into its parts
+p?
+and
+q?:
+
+1:  p?  
+2:  q?  
+3:  p? -> q? -> r?  
+
+------------------
+
+1:  r?  
+
+
+\end{verbatim}
+\newpage
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  gl 3
+
+
+Line 11
+use 
+p? & q?
+by breaking it into its parts
+p?
+and
+q?:
+
+1:  p? -> q? -> r?  
+2:  p?  
+3:  q?  
+
+------------------
+
+1:  r?  
+
+\end{verbatim}
+\newpage
+\begin{verbatim}
+
+
+
+Enter quit to break out of interface:
+
+>>  l
+
+
+Line 12
+use
+p? -> q? -> r?
+, first part, showing that
+p?
+or the desired conclusion holds:
+
+1:  p?  
+2:  q?  
+3:  ~r?  
+
+------------------
+
+1:  p?  
+
+\end{verbatim}
+\newpage
+\begin{verbatim}
+
+
+
+Enter quit to break out of interface:
+
+>>  d
+
+
+Line 13
+use
+p? -> q? -> r?
+second part, show that the desired conclusion follows
+      from
+q? -> r?:
+
+1:  q? -> r?  
+2:  p?  
+3:  q?  
+
+------------------
+
+1:  r?  
+
+\end{verbatim}
+\newpage
+\begin{verbatim}
+
+
+
+Enter quit to break out of interface:
+
+>>  l
+
+
+Line 14
+use
+q? -> r?
+, first part, showing that
+q?
+or the desired conclusion holds:
+
+1:  p?  
+2:  q?  
+3:  ~r?  
+
+------------------
+
+1:  q?  
+
+\end{verbatim}
+\newpage
+\begin{verbatim}
+
+
+
+Enter quit to break out of interface:
+
+>>  gl 2; d
+
+
+Line 14
+use
+q? -> r?
+, first part, showing that
+q?
+or the desired conclusion holds:
+
+1:  q?  
+2:  ~r?  
+3:  p?  
+
+------------------
+
+1:  q?  
+
+\end{verbatim}
+
+Notice here that you can put more than one command on a line, separated by semicolons.
+
+\newpage
+\begin{verbatim}
+
+
+
+Line 15
+use
+q? -> r?
+second part, show that the desired conclusion follows
+      from
+r?:
+
+1:  r?  
+2:  p?  
+3:  q?  
+
+------------------
+
+1:  r?  
+
+
+\end{verbatim}
+\newpage
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  d
+
+
+Q. E. D.
+
+Line 1:
+
+
+------------------
+
+1:  p? & q? -> r? == p? -> q? -> r?  
+
+
+
+
+Enter quit to break out of interface:
+
+>>  
+
+\end{verbatim}
+
+And finally, it reports the proof of the theorem.
+
+This example shows us all the proof commands we use:  \verb s  to start the proof,  \verb r  to carry out a reasoning step based on the conclusion of the previous argument,  {\tt gl n} to bring the $n$th premise to first position, and \verb d  to report to Marcel that the first premise and the conclusion are in agreement.
+
+\newpage
+
+\section{Second example}
+
+The next example will show some things which can happen with the display and the rules which we haven't seen in the first example, basically because the first example doesn't involve negation.
+
+\begin{verbatim}
+
+>>  s ~(p? & q?) == ~p? V ~q?
+
+
+Line 1:
+
+
+------------------
+
+1:  ~(p? & q?) == ~p? V ~q?  
+
+\end{verbatim}
+
+
+We are proving $\neg(P \wedge Q) \leftrightarrow \neg P \vee \neg Q$, one of the versions of deMorgan's law.
+
+\newpage
+
+\begin{verbatim}
+
+
+
+Enter quit to break out of interface:
+
+>>  r
+
+
+
+
+Line 2
+proving biconditional
+~(p? & q?) == ~p? V ~q?
+Part I =>
+:
+
+1:  ~(p? & q?)  
+
+------------------
+
+1:  ~p? V ~q?  
+
+\end{verbatim}
+
+First, we apply the usual strategy for proving a biconditional.
+\newpage
+
+\begin{verbatim}
+
+
+
+
+Enter quit to break out of interface:
+
+>>  r
+
+
+Line 4
+prove
+~p? V ~q?
+by denying
+~q?
+and showing
+~p?:
+
+1:  ~(p? & q?)  
+2:  q?  
+
+------------------
+
+1:  ~p?  
+
+\end{verbatim}
+
+Marcel applies the alternative elimination strategy:  to prove $A \vee B$, it assumes $\neg B$ and argues to $A$.  Marcel carries out a double negation automatically here.
+
+\newpage
+
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  l
+
+
+Line 5
+use 
+~(p? & q?)
+by denying conclusion and proving
+p? & q?:
+
+1:  q?  
+2:  p?  
+
+------------------
+
+1:  p? & q?  
+
+
+\end{verbatim}
+
+Marcel uses a negative hypothesis $\neg A$ to reason to a conclusion $C$ by assuming $\neg C$ and deducing $A$ (this is valid as a contrapositive).  This is slightly disguised because again Marcel automatically applies a double negation (proving $\neg P$ from $\neg(P \wedge Q)$ turns into proving $P \wedge Q$ from $P$).
+
+\newpage
+
+\begin{verbatim}
+
+
+
+Enter quit to break out of interface:
+
+>>  r
+
+
+Line 6
+prove
+p? & q?
+first part:  prove
+p?:
+
+1:  q?  
+2:  p?  
+
+------------------
+
+1:  p?  
+
+\end{verbatim}
+
+Proving $P \wedge Q$ turns into two proofs, one of $P$ and one of $Q$.
+
+\newpage
+{\tiny
+\begin{verbatim}
+
+
+
+
+Enter quit to break out of interface:
+
+>>  gl 2; d
+
+
+Line 6
+prove
+p? & q?
+first part:  prove
+p?:
+
+1:  p?  
+2:  q?  
+
+------------------
+
+1:  p?  
+
+
+
+
+Line 7
+prove
+p? & q?
+second part:  prove
+q?:
+
+1:  q?  
+2:  p?  
+
+------------------
+
+1:  q?  
+
+
+\end{verbatim}}
+
+$P$ proved, we turn to $Q$.
+
+\newpage
+
+\begin{verbatim}
+
+Enter quit to break out of interface:
+
+>>  d
+
+
+Line 3
+proving biconditional
+~(p? & q?) == ~p? V ~q?
+Part II <=
+:
+
+1:  ~p? V ~q?  
+
+------------------
+
+1:  ~(p? & q?)  
+
+\end{verbatim}
+
+Proving $Q$ completed the proof of the first part of the main biconditional.  Now we start the proof of the second part.
+
+\newpage
+
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  l
+
+
+Line 8
+using hypothesis
+~p? V ~q?
+first part: assume case 1,
+~p?:
+
+1:  ~p?  
+
+------------------
+
+1:  ~(p? & q?)  
+
+
+\end{verbatim}
+
+I chose to use \verb l  to demonstrate Marcel using the method of proof by cases (exactly as in our paper system).  Here is case 1 with the hypothesis $\neg P$; when it is finished Marcel will resume with the second case, assuming $\neg Q$.  The proof could have been carried out by manipulating the conclusion as well.
+
+\newpage
+
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  r
+
+
+Line 10
+prove
+~(p? & q?)
+by assuming
+p? & q?
+and deducing a contradiction or alternative conclusion
+     :
+
+1:  p? & q?  
+2:  ~p?  
+
+------------------
+
+_|_
+
+\end{verbatim}
+
+When we aiim to prove a negative conclusion $\neg A$, Marcel assumes $A$ and reasons to a contradiction.  The argument here actually has no conclusion:  it
+is valid because it is impossible for all the premises to be true (as we will show).
+
+\newpage
+
+\begin{verbatim}
+
+Enter quit to break out of interface:
+
+>>  l
+
+
+Line 11
+use 
+p? & q?
+by breaking it into its parts
+p?
+and
+q?:
+
+1:  p?  
+2:  q?  
+3:  ~p?  
+
+------------------
+
+_|_
+
+\end{verbatim}
+
+We break down the premise $P \wedge Q$ into two premises, an entirely natural move.
+
+\newpage
+
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  gl 3; d
+
+
+Line 11
+use 
+p? & q?
+by breaking it into its parts
+p?
+and
+q?:
+
+1:  ~p?  
+2:  p?  
+3:  q?  
+
+------------------
+
+_|_
+
+\end{verbatim}
+
+\newpage
+
+\begin{verbatim}
+
+Line 11
+use 
+p? & q?
+by breaking it into its parts
+p?
+and
+q?:
+
+1:  ~p?  
+2:  p?  
+3:  q?  
+
+------------------
+
+_|_
+
+\end{verbatim}
+
+I think I tried to use \verb d  and it failed to work.
+
+\newpage
+
+\begin{verbatim}
+
+
+
+Enter quit to break out of interface:
+
+>>  l
+
+
+Line 12
+use 
+~p?
+by denying conclusion and proving
+p?:
+
+1:  p?  
+2:  q?  
+
+------------------
+
+1:  p?  
+
+
+\end{verbatim}
+
+Using the premise $\neg P$ to argue to a contradiction can be reduced to arguing for the conclusion $P$.
+
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  d
+
+
+Line 9
+using hypothesis
+~p? V ~q?
+second part: assume case 2,
+~q?:
+
+1:  ~q?  
+
+------------------
+
+1:  ~(p? & q?)  
+
+\end{verbatim}
+
+And now \verb d  works, and then serves up the other case of the proof by cases, which is argued in basically the same way (I will not comment it).
+\newpage
+
+\begin{verbatim}
+
+
+
+Enter quit to break out of interface:
+
+>>  r
+
+
+Line 13
+prove
+~(p? & q?)
+by assuming
+p? & q?
+and deducing a contradiction or alternative conclusion
+     :
+
+1:  p? & q?  
+2:  ~q?  
+
+------------------
+
+_|_
+
+
+\end{verbatim}
+
+\newpage
+
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  l
+
+
+Line 14
+use 
+p? & q?
+by breaking it into its parts
+p?
+and
+q?:
+
+1:  p?  
+2:  q?  
+3:  ~q?  
+
+------------------
+
+_|_
+
+
+\end{verbatim}
+
+\newpage
+
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  gl 3
+
+
+Line 14
+use 
+p? & q?
+by breaking it into its parts
+p?
+and
+q?:
+
+1:  ~q?  
+2:  p?  
+3:  q?  
+
+------------------
+
+_|_
+
+\end{verbatim}
+
+\newpage
+
+\begin{verbatim}
+
+Enter quit to break out of interface:
+
+>>  l
+
+
+Line 15
+use 
+~q?
+by denying conclusion and proving
+q?:
+
+1:  p?  
+2:  q?  
+
+------------------
+
+1:  q?  
+
+\end{verbatim}
+
+\newpage
+
+\begin{verbatim}
+
+
+Enter quit to break out of interface:
+
+>>  gl 2; d
+
+
+Line 15
+use 
+~q?
+by denying conclusion and proving
+q?:
+
+1:  q?  
+2:  p?  
+
+------------------
+
+1:  q?  
+
+
+
+
+Q. E. D.
+
+Line 1:
+
+
+------------------
+
+1:  ~(p? & q?) == ~p? V ~q?  
+
+
+
+
+Enter quit to break out of interface:
+
+>>  
+
+\end{verbatim}
+
+And this completes the proof.
+
+\section{Strategy (in fact, you don't need much...)}
+
+It is actually a theorem that if you attempt to prove a propositional logic theorem in Marcel and you take pains to simplify something at each step, and move complex premises into first position when you can no longer simplify something, you {\em will\/} succeed in proving the theorem.  Marcel does this while using a single strategy for each logical form of a premise and a single strategy for each logical form of a conclusion (most of these being the same as the strategies used in my paper system).  The only strategy which looks different is the strategy for using an implication, and with experience many student eventually recognize the strategy as modus ponens in disguise (it looks different because Marcel is acting just on a premise $A \rightarrow B$ rather than on two premises $A$ and $A \rightarrow B$:  but notice that if you have the premise $A$ as well you can immediately prove the first argument with \verb d , since you will have $A$ as both premise and conclusion.
+
+Marcel supports the logic of quantifiers, the logic of equality, and a system of set theory as well;  we might look at quantifiers later.  It doesn't guarantee proofs in these more complicated situations as it does in propoiitional logic (and further, if you take an unnatural approach to proving a theorem, it can take quite a while).
+
+\section{Saving your work}
+
+This section tells you how to save your work so you can send it to me.
+
+If you type the command {\tt SL} followed by a filename, a log file will be created with a name {\tt (your filename)logfile.ilg}.  Commands you issue to Marcel will be saved in this file.
+You won't be able to look at the log file until you close it:  I usually close it by issuing the command {\tt SL done} (which creates a new dummy log file, but we don't use it).
+
+So, if you issue {\tt SL (your file name)} before starting a proof and {\tt SL done} after it, you will get a file in the left pane (you can look at it by clicking the tab) which contains all the commands you used to build your proof.  If you type {\tt LP} (for ``log proof") {\bf before} {\tt SL done}, Marcel will insert an almost human-readable proof of your theorem into the log file.
+To hand in your work, the best approach is to build a log file of your proof, cut and paste the log file into a text file and email it to me.  One file per proof is acceptable.  The names of files you mail to me should include your name.
+
+\section{Exercises}
+
+Carry out the following proofs in Marcel.  I am giving you the exercise of translating our book notation into Marcel notation:  this is actually a common mathematical communication issue, converting more usual mathematical notation into a form understood by software.
+
+Please turn in your work by email.  You can use the instructions of the previous section to get nicely formatted files to email to me.  It is not unacceptable to cut and paste the
+Python window with your work in it into a text file, though I would prefer the format described above.  It is officially due on Feb 10 2021, but this is not inflexible.
+
+You get a check mark for handing it in in the gradebook:  the point here is exposure, and I reiterate that it is a mathematical theorem that if you set up your theorem correctly and keep simplifying statements in your proofs, you {\em will\/} prove each of these eventually.  You might however get some ideas about practical proof strategy in the course of working on the larger proofs.
+
+\begin{enumerate}
+
+\item Prove transitivity of implication, $(P \rightarrow Q) \wedge (Q \rightarrow R) \rightarrow (P \rightarrow R)$.  You might get a feeling for why the rule for handling implications as premises is really rather like modus ponens.
+
+\item Prove $((P \vee \neg Q) \wedge (\neg P \vee R)) \rightarrow (Q \rightarrow R)$.  This was a problem in the second logic homework set.
+
+\item Prove $(P \vee Q) \wedge (P \rightarrow R) \wedge (Q \rightarrow S) \rightarrow (R \vee S)$.  This amounts to showing the validity of the rule of constructive dilemma.
+Start with {\tt r; l; l} to make it look exactly like constructive dilemma.  It might be interesting to try using each of the two different proof strategies I used in the notes
+(alternative elimination, starting with the conclusion, or proof by cases, starting with the first premise).
+
+\item Set up and prove the rule of destructive dilemma in the same way (this is a problem in your current homework).
+
+\item Prove the other de Morgan law  $\neg(P \vee Q) \leftrightarrow \neg P \wedge \neg Q$.
+
+\item (optional, this is long) Prove the perhaps surprising theorem $$((A \leftrightarrow B) \leftrightarrow C) \leftrightarrow (A \leftrightarrow (B \leftrightarrow C)).$$  You might want to think about what
+$A \leftrightarrow B \leftrightarrow C$ actually means:  it does not mean that $A,B,C$ are equivalent!
+
+
+
+\end{enumerate}
+
+
+
+\end{document}
