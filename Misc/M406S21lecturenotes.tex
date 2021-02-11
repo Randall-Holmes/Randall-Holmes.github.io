@@ -6,8 +6,8 @@
 
 \author{Dr. Holmes}
 
-\date{2/5/2021:  fourth homework is section 8.2.
-
+\date{
+2/11/2021 complete rewrite of section 8.1\\2/5/2021:  fourth homework is section 8.2.\\
 1/29/2021:  minor updates to section 6.1, moved third homework to 6.2\\
 1/27/2021:  slight revision of Pythagorean triple theorem.  Extension of homework assignment.\\
 1/22/2021:  redated second homework assigment (forgot to put this datestamp on)\\
@@ -30,6 +30,8 @@ Please read the notes:  and be aware that I give {\em bonus points} for finding 
 {\bf Version notes}
 
 I'm going to keep track of changes here to avoid version control accidents.
+
+2/11/2021 complete rewrite of section 8.1, the proof of the Linear Congruence Theorem.
 
 2/5/2021 fourth homework is section 8.2
 
@@ -958,28 +960,20 @@ Solving an equation $ax + b \equiv c\,{\tt mod}\,m$ reduces to solving $ax \equi
 
 We solve $ax \equiv b\,{\tt mod}\,m$. 
 
-Let $g={\tt gcd}(a,m)$.  
+Suppose that $x$ is a solution to $ax \equiv b\,{\tt mod}\,m$..  It follows that for some integer $y$, $ax+my = b$, from which it follows that ${\tt gcd}(a,m)|b$.
 
-Note first that if $ax \equiv b\,{\tt mod}\,m$ then there is $k$ such that $ax+km=b$, and it follows that
-there can be no solution to the congruence unless $g | b$, since clearly $g|ax+km$ for any $x$ and $k$.
+Now suppose that ${\tt gcd}(a,m)|x$.  For some integers $u,v$ we have $au+mv = {\tt gcd}(a,m)$ by the extended Euclidean algorithm.  For some integer $k$ we have $k{\tt gcd}(a,m)=b$.
+Thus we have $a(ku)+m(kv) = k(au+mv) = k{\tt gcd}(a,m)=  b$, so $x=ku$ is a solution to $ax \equiv b\,{\tt mod}\,m$
 
-So suppose that $g|b$, so $gh=b$ for some integer $h$.  We know by a theorem proved earlier that there are
-integers $u$ and $v$ such that $au+mv=g$.   Multiply both sides of this equation by $h$ to get
-$auh+mvh=gh=b$.  $x=uh$ gives us a solution to the equation.
+At this point we have shown that $ax \equiv b\,{\tt mod}\,m$ has a solution exactly if ${\tt gcd}(a,m)|b$.
 
-The solution is not unique.  Suppose $ax\equiv ay \equiv b\,{\tt mod}\,m$.   It follows that $m|(ax-ay)=a(x-y)$.
-If $a$ had no common factors with $m$, it would follow that $m|(x-y)$ which would imply the uniqueness of the solution
-up to congruence mod $m$.  In the more general situation, we analyze things as follows.  $a=a'g$ and $m=m'g$
-where $a'$ and $m'$ have no common factors.  $m'g | a'g(x-y)$ implies $m' | a'(x-y)$ which implies (since $m'$ and
-$a'$ have no common factors) that $m' | (x-y)$.   Moreover, if we have $ax \equiv b\,{\tt mod}\,m$ then we will also
-have $a(x+km')\equiv b\,{\tt mod}\,m$, because $a(x+km')=ax+akm'=ax+a'gkm'=ax+a'km$, which is congruent to
-$ax$ mod $m$.   $x+km' \equiv x+nm'\,{\tt mod}\,m$ iff $(k-n)m'$ is divisible by $m$, which will be true iff
-$k-n$ is divisible by $g$, that is, iff $k \equiv n \,{\tt mod}\,g$.   So there are $g$ solutions up to congruence
-mod $n$, obtained by plugging in $0,1,\ldots,g-1$ in for $k$ in $x+km'$.
+Suppose that $x_1$ and $x_2$ are two different solutions to  $ax \equiv b\,{\tt mod}\,m$.  We then have $ax_1+my_1=b=ax_2+my_2$, so $a(x_1-x_2) = m(y_2-y_1)$, so $\frac a{{\tt gcd}(a,m)}(x_1-x_2) = \frac m{{\tt gcd}(a,m)}(y_2-y_1)$, so $\frac m{{\tt gcd}(a,m)}|(x_1-x_2)$ by Euclid's lemma, because $\frac a{{\tt gcd}(a,m)}$ and $\frac m{{\tt gcd}(a,m)}$ are relatively prime, that is, $$x_1\equiv x_2\, {\tt mod}\, \frac m{{\tt gcd}(a,m)}.$$
 
-We summarize the solution.   If ${\tt gcd}(a,m)\not|b$, then there is no solution to the congruence.
-If ${\tt gcd}(a,m)|b$, find $u$ and $v$ such that $au+mv={\tt gcd}(a,m)$.  $\frac{ub}{{\tt gcd}(a,m)}$ is a solution to the congruence, and the full set of ${\tt gcd}(a,m)$ distinct solutions up to congruence mod $m$ is obtained
-as $\frac{ub}{{\tt gcd}(a,m)}+\frac{km}{{\tt gcd}(a,m)}$ where $0 \leq k<g$. 
+Now suppose that $x_1$ is a solution to $ax \equiv b\,{\tt mod}\,m$ and that $x_1\equiv x_2\, {\tt mod}\, \frac m{{\tt gcd}(a,m)}$, that is, there is an integer $k$ such that $x_1+k\frac m{{\tt gcd}(a,m)} = x_2$.  Then $ax_2 = ax_1+k\frac a{{\tt gcd}(a,m)}m$, so $ax_2$ differs from $ax_1$ by a multiple of $m$, and so $ax_1 \equiv ax_2 \equiv b \, {\tt mod}\, m$, and $x_2$ is also a solution to the equation.
+
+So we have shown that if $x_1$ is a solution to $ax \equiv b\,{\tt mod}\,m$, then an integer $x_2$ is a solution iff $x_1\equiv x_2\, {\tt mod}\, \frac m{{\tt gcd}(a,m)}.$
+
+If $x_1$ is the smallest nonnegative solution to the equation, then the solutions are of the form $x_1+k\frac m{{\tt gcd}(a,m)}$, and these solutions will be in $\{0,\ldots,m-1\}$ exactly if $0 \leq k < {\tt gcd}(a,m)$, so there are exactly ${\tt gcd}(a,m)$ solutions up to congruence mod $m$..  This is because there are precisely ${\tt gcd}(a,m)$ elements of $\{0,\ldots,{\tt gcd}(a,m)-1\}$.  If we plugged in $k={\tt gcd}(a,m)$ then we would get $x_1+m$, which is too large.  If plugging in $k={\tt gcd}(a,m)-1$ gave a value $\geq m$, then we would have $x_1-\frac m{{\tt gcd}(a,m)}\geq 0$, and $x_1$ would not be the smallest nonnegative solution.
 
 \subsection{Exercises (assigned 2/5/2021}
 
