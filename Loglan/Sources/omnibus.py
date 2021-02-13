@@ -1,6 +1,4 @@
-#  version of 10/19/2019 10 pm laptop
-
-# 10/19/19 caches only information about named classes
+#  version of 12/6/2017 10 pm laptop
 
 # 12/6 fixed bug in parsing of grammar rules with double quotes in them.
 # improved display of escape sequences.  Query:  are escape sequences
@@ -71,6 +69,8 @@ def charlistfind(c,L):
 # is really useful, and the greedy option would be useful and easy to
 # install.  It desperately needs sensible parse display.
 
+cachehits=0
+
 thecache={}
 label=0
 greedy=False
@@ -95,8 +95,9 @@ def parse(thegrammar,expression,string):
    SE=showrule(expression)
 
    if len (expression) == 0 or len(expression)>2 :  return 'bad expression'
-   if expression[0] == 'identifier' and (SE,(string)) in thecache.keys():
-       
+   if (SE,(string)) in thecache.keys():
+       cachehits=cachehits+1
+       #print(cachehits)
        return thecache[(SE,(string))]
    if expression[0]=='literal':
        s=expression[1]
@@ -622,6 +623,7 @@ def printparse(P):
 # though it seems that this version will be slaved to the ML version for now, since I can now export files thence to here.
 
 # more feedback from commands will be useful.
+
 
 # recent updates
 
@@ -1588,12 +1590,22 @@ def grammarbatch(gfile):
         while not line1=='' and (line1[len(line1)-1]==' ' or line1[len(line1)-1]=='\n' or line1[len(line1)-1]=='\r'):line1=line1[0:len(line1)-1]
         while not line1=='' and line1[0]==' ':line1=line1[1:]
         if not(line1=='' or line1[0]=='#'):  rundef(loglan,line1)
+    
+
+
+#from loglanpreamble import *
 
 L("V1 <- [aeiouyAEIOUY]")
 
 L("V2 <- [aeiouAEIOU]")
 
 L("C1 <- [bcdfghjklmnprstvzBCDFGHJKLMNPRSTVZ]")
+
+L("Cvoiced <- [bdgjvzBDGJVZ]")
+
+L("Cunvoiced <- [ptkcfsPTKCFS]")
+
+L("Badvoice <- ((Cvoiced (Cunvoiced/[Hh]))/(Cunvoiced (Cvoiced/[Hh])))")
 
 L("letter <- (![qwxQWX] [a-zA-Z])")
 
@@ -1651,7 +1663,7 @@ L("SyllableB <- (InitialConsonants? Vocalic (!Syllable FinalConsonant)? (!Syllab
 
 L("Syllable <- ((SyllableA/SyllableB) juncture?)")
 
-L("FinalConsonant <- (!syllabic (!(!continuant C1 !Syllable continuant) !NoMedial2 !NoMedial3 C1 !(juncture? (V2/syllabic))))")
+L("FinalConsonant <- (!syllabic !(&Badvoice C1 !Syllable) (!(!continuant C1 !Syllable continuant) !NoMedial2 !NoMedial3 C1 !(juncture? (V2/syllabic))))")
 
 L("SyllableD <- (&(InitialConsonants? ([Yy]/DoubleVowel/BrokenMono/(&Mono V2 DoubleVowel)/(!MustMono &Mono V2 BrokenMono))) Syllable)")
 
@@ -2499,6 +2511,4 @@ L("utterance0 <- (!GE ((!PAUSE freemod period? utterance0)/(!PAUSE freemod perio
 
 L("utterance <- (&(phoneticutterance !.) (!GE ((!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end)/(ICA freemod? uttF (&I utterance)? end))))")
 
-
-
-interface();
+if __name__ == '__main__':interface();

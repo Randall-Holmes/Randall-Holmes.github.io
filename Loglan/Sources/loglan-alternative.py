@@ -6,6 +6,12 @@ L("V2 <- [aeiouAEIOU]")
 
 L("C1 <- [bcdfghjklmnprstvzBCDFGHJKLMNPRSTVZ]")
 
+L("Cvoiced <- [bdgjvzBDGJVZ]")
+
+L("Cunvoiced <- [ptkcfsPTKCFS]")
+
+L("Badvoice <- ((Cvoiced (Cunvoiced/[Hh]))/(Cunvoiced (Cvoiced/[Hh])))")
+
 L("letter <- (![qwxQWX] [a-zA-Z])")
 
 L("lowercase <- (![qwx] [a-z])")
@@ -62,7 +68,7 @@ L("SyllableB <- (InitialConsonants? Vocalic (!Syllable FinalConsonant)? (!Syllab
 
 L("Syllable <- ((SyllableA/SyllableB) juncture?)")
 
-L("FinalConsonant <- (!syllabic (!(!continuant C1 !Syllable continuant) !NoMedial2 !NoMedial3 C1 !(juncture? (V2/syllabic))))")
+L("FinalConsonant <- (!syllabic !(&Badvoice C1 !Syllable) (!(!continuant C1 !Syllable continuant) !NoMedial2 !NoMedial3 C1 !(juncture? (V2/syllabic))))")
 
 L("SyllableD <- (&(InitialConsonants? ([Yy]/DoubleVowel/BrokenMono/(&Mono V2 DoubleVowel)/(!MustMono &Mono V2 BrokenMono))) Syllable)")
 

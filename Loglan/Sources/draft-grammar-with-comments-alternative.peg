@@ -2,6 +2,9 @@
 
 # Dated updates now to appear here
 
+# 2/4/2021  Imposed the rule that two final consonants cannot be consonants from voiced/unvoiced pairs
+# with different voice.  Also forbid second final consonant to be h.
+
 # I have further fine-tuning of djifoa gluing in mind.
 # Allow the -r glue to be expressed as
 # -rr after all mandatory monosyllables, removing the annoying pronunciation problem?
@@ -325,6 +328,17 @@ V2 <- [aeiouAEIOU]
 
 C1 <- [bcdfghjklmnprstvzBCDFGHJKLMNPRSTVZ]
 
+#consonants in voiced/unvoiced pairs
+
+Cvoiced <- [bdgjvzBDGJVZ]
+
+Cunvoiced <- [ptkcfsPTKCFS]
+
+# bad voice pair (or pair second term of which is h)
+# forbidden as pairs of final consonants
+
+Badvoice <- (Cvoiced (Cunvoiced/[Hh])/Cunvoiced (Cvoiced/[Hh]))
+
 # letters
 
 letter <- (![qwxQWX] [a-zA-Z])
@@ -482,7 +496,12 @@ Syllable <- ((SyllableA/SyllableB) juncture?)
 # is natural and obvious but not in our Sources.  Such a pair of consonants would seem to 
 # naturally form another syllable.
 
-FinalConsonant <- !syllabic (!(!continuant C1 !Syllable continuant) !NoMedial2 !NoMedial3 C1 !(juncture? (V2/syllabic)))
+
+# a pair of final consonants cannot be differently voiced
+
+FinalConsonant <- !syllabic !(&Badvoice C1 !Syllable) (!(!continuant C1 !Syllable continuant) !NoMedial2 !NoMedial3 C1 !(juncture? (V2/syllabic)))
+
+#!((!MaybeInitial)C1 juncture? !syllabic C1 juncture? !syllabic C1) !(&MaybeInitial C1 juncture C1 !(juncture? C1))
 
 # Here are various flavors of syllable we may need.
 
