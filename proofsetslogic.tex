@@ -11,7 +11,7 @@
 
 \author{M. Randall Holmes}
 
-\date{version of 2/11/2021 with revised and additional solutions}
+\date{version of 3/2/2021 with new material on proof strategy for sets}
 
 \begin{document}
 
@@ -41,6 +41,8 @@ lectured (or past material), which will of course also be of interest
 to current students.
 
 \begin{description}
+
+\item[3/2/2021:]  (some of these dhanges already posted on the first):  new material on rules for reasoning about sets, and proof strategies for reasoning about sets, and a new homework set.
 
 \item[2/11/201:]  some revised and additional solutions.  Allowed a dummy line $a=a$ at the beginning of a UG block (actually, reflexivity of equality already allows this line!)
 
@@ -2544,13 +2546,91 @@ We prove the result by cases on 2
 
 In the first chapter, you should have noticed our orientation toward letting the form of a statement drive the way we prove it and the way we use it.  This approach of identifying proof strategies can be extended to set theory.  We present some rules along these lines, some of which will already have been mentioned.
 
+Here is a collection of official basic rules for reasoning about sets in our logic.  We assume the type constraints on language stated above, but we don't attach types explicitly to variables here.  The basic notions are membership, equality, the sethood predicate, and set builder notation.
+
+You might want to look back to section 1.11 for basic rules of equality (reflexivity and substitution) as well as familiar derived rules.
+
+\begin{description}
+
+\item[Rule of nonemptiness:]  things with elements are sets.
+
+$$\begin{array}{ccc}
+
+  & t \in u  &  \\ \hline
+
+  & {\tt set}(u)&  \end{array}$$
+
+\item[Rule of abstraction:]  set abstracts (the objects denoted by set builder notation) are sets.  No premises are needed:  this could also simply be stated as an axiom.
+
+$$\begin{array}{ccc}
+
+& &\\ \hline
+
+  & {\tt set}(\{x:P[x]\}) &  
+
+  \end{array}$$
+
+\item[Rule of extensionality for set abstracts.]
+
+$$\begin{array}{ccc}
+
+& (\forall x:P[x] \leftrightarrow Q[x])&\\ \hline
+
+  & \{x:P[x]\} = \{x:Q[x]\} &  
+
+    \end{array}$$
+
+\item[General rule of extensionality:]  the preceding rule can be deduced from this one and the rule of abstraction.  The extensionality rules are further expanded into a more complicated proof strategy using the rules for the universal quantifier and the biconditional below.
+
+$$\begin{array}{ccc}
+
+{\tt set}(t)  &{\tt set}(u)  &  (\forall x:x \in t \leftrightarrow x \in u) \\ \hline
+
+  & t=u &  \end{array}$$
+
+\item[Leibniz rules for equality:] (these could even be taken as a definition of equality).  Notice that this is not extensionality:  this says that things are equal iff they belong to the same sets.  The official rules of equality, reflexivity and substitution, can be deduced from these rules with the aid of other rules of logic and the rules of comprehension below (try it).
+
+$$\begin{array}{ccc}
+
+  & (\forall x: t \in x \leftrightarrow u \in x )&  \\ \hline
+
+  & t=u &  \end{array}$$
+
+$$\begin{array}{ccc}
+
+  & t=u &  \\ \hline
+
+  & (\forall x:t \in x \leftrightarrow u \in x)&  \end{array}$$
+
+
+\item[First rule of comprehension]
+
+$$\begin{array}{ccc}
+
+  & P[t] &  \\ \hline
+
+  & t \in \{x:P[x]\} &  \end{array}$$
+
+\item[Second rule of comprehension]
+
+$$\begin{array}{ccc}
+
+  & t \in \{x:P[x]\}  &  \\ \hline
+
+  & P[t]  &  \end{array}$$
+
+\end{description}
+
+
+Here is a discussion of proof strategies.
+
 \begin{description}
 
 \item[to prove that sets are equal:]
 
 Given that $A$ and $B$ are sets, to prove $A=B$, prove $(\forall x:x \in A \leftrightarrow x \in B)$.  This expands out using the proof strategies for the universal quantifier and the biconditional. 
 
-Like the proof of a biconditional, 
+Like the proof of a biconditional,  the proof is divided into two parts.
 
 Let $c$ be arbitary.  Assume $c \in A$ for the sake of argument:  show that $c \in B$.
 
@@ -2586,7 +2666,7 @@ To show that $a \in \{x:P[x]\}$, prove $P[a]$.  This is of course very abstract.
 
 \item[a general strategy:  when all else fails, expand definitions.]
 
-To prove or use statements involving defined operations, expand the definitions (and use the comprehenion axiom).
+To prove or use statements involving defined operations, expand the definitions (and use the comprehension axiom).
 
 For example, to prove $a \in \{b\}$, notice that this is $\{x:x=b\}$, so prove $a=b$.
 
@@ -2612,13 +2692,51 @@ this should be pretty automatic.
 
 \begin{enumerate}
 
-\item Prove $A \cup B = B \cup A$ (using the definition of union and the proof strategy indicated for equality of sets:  it comes down to that proof strategy and very easy propositional logic).
+\item Prove $A \cap B = B \cap A$ (using the definition of intersection and the proof strategy indicated for equality of sets:  it comes down to that proof strategy and very easy propositional logic).
 
 \item Prove $(A \cup B)^c = A^c \cap B^c$ (recalling that $A^c$, the complement of $A$ is defined as $\{x \mid x \not\in A\}$).
 
-\item Prove the theorem $A \subseteq B \wedge B \subseteq C \rightarrow A \subseteq C$.  Look at the proof strategies for the subset relation in the text.
+\item Prove $(A - B)-C = A-(B\cup C)$.
 
-\item Prove $A \subseteq B \rightarrow {\cal P}(A) \subseteq {\cal P}(B)$.
+\item Verify the validity of the rule
+
+$$\begin{array}{ccc}
+
+ t \in A& &A \subseteq B \\ \hline
+
+&t \in B&
+
+\end{array}$$  using basic rules of logic and the rules for reasoning with sets given in the previous section.  You may then use this rule (call it ``subset rule").
+
+\item Prove the theorem $A \subseteq B \wedge B \subseteq C \rightarrow A \subseteq C$.  Look at the proof strategies for the subset relation in the text.  Roughly the same proof
+justifies the ``rule of transitivity of subset", $$\begin{array}{ccc}
+A \subseteq B & & B \subseteq C \\ \hline
+
+& A \subseteq C & \end{array}$$
+
+\item Prove $A \subseteq B \rightarrow {\cal P}(A) \subseteq {\cal P}(B)$.  I did this in class in a rough form:  so obviously I would like something closer to a line by line proof,
+and in the text above I have given you finer-grained rules and strategies that you may employ.
+
+\item  Give possible assignments of types to variables in each of the following statements or set expressions, or say that they cannot really be statements in our typed language
+(with at least a brief explanation).  There will not be a unique answer, because you can take any assignment of types that works and add one to every type you use (this is an important observation!)
+
+We give some schematics as a reminder:  $$x^{\bf n} = y^{\bf n};  x^{\bf n} \in y^{\bf n+1};  \{x^n:P[x^n]\}^{\bf n+1}.$$  Of course, any defined set operation has
+some effect on types:  for example, $(x^{\bf n} \bigcup y^{\bf n})^{\bf n}$, union doesn't move types, but ${\cal P}(x^{\bf n})^{\bf n+1}$, the output of the power set operation is one type higher than the input.  Problem 7 is intended to give you a little tutorial in thinking about types.  I hope I have given enough hints!
+
+\begin{enumerate}
+
+\item  $$(\forall x \in A:(\exists y \in x:y \in B))$$
+
+\item  $$(\forall x:x \in A \wedge y \in x \rightarrow x \in y)$$ [in ordinary set theory, this makes sense and the set $A$ is said to be ``transitive" if this is true.  Here it does not.  Explain why.]
+
+\item  We attempt to define $x^+$ as $x \cup \{x\}$.  Does this make sense in type theory?   If it does, give a possible assignment of types to $x$ and $x^+$.  If it doesn't, explain the problem.  Hint:  you need to think about the type of $\{x\}$ too.
+
+\item  We define the set $\cal F$ of finite sets as $\{x : (\forall I:\emptyset \in I \wedge (\forall xy:x \in I \rightarrow x \in \{y\} \in I) \rightarrow x \in I\}$.  We assure you that this
+does indeed make sense.  Find a sensible assignment of types to $\cal F$ and all the variables in its definition.
+
+\item  Compare the similar assertions $\{x :x=x\} \in \{y:y=y\}$ and $\{x :x=x\} \in \{x:x=x\}$.  One of these makes sense in type theory and one of them doesn't.  Explain.
+
+\end{enumerate}
 
 \end{enumerate}
 
