@@ -188,3 +188,19 @@ def textencrypt(s,key):
 def textdecrypt(n,key):
     global noisy
     return alphabetize(decrypt(n,key))
+
+# look for three factor Carmichael numbers
+
+def threefactor(p,q,n):
+    P = findprime(p)
+    Q = findprime(q)
+    if P==Q: Q = findprime(Q)
+    i=0
+    j=0
+    while(i<n):
+        increment=((P-1)*(Q-1))//gcd(P-1,Q-1)
+        R = increment*j+1
+        if R%(P*Q)==0 and isprime(R//(P*Q)) and (R-1)%(R//(P*Q)-1)==0 and not P==R//(P*Q) and not Q==R//P*Q:
+            print([P,Q,R//(P*Q),R,j])
+            i=i+1
+        j=j+1
