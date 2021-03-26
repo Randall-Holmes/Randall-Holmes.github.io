@@ -4,6 +4,7 @@
 \usepackage{amssymb}
 \usepackage{latexsym}
 \usepackage{makeidx}
+\usepackage{comment}
 
 \makeindex
 
@@ -11,7 +12,7 @@
 
 \author{M. Randall Holmes}
 
-\date{version of 3/2/2021 with new material on proof strategy for sets}
+\date{version of 3/26/2021 with new material on the unsorted presentation of type theory}
 
 \begin{document}
 
@@ -1919,6 +1920,141 @@ In much of this chapter, every variable
 we introduce will have a type, and a quantifier over that variable
 will be implicitly restricted to that type.
 
+Sections 2.1.1 and 2.1.2 give an explanation for the typed theory presented in the following sections in an unsorted language with unrestricted quantifiers.  This is labelled as a digression from the main development, but it might be useful as an alternative motivation of the system of type theory given below in the main line of the development.
+
+\subsection{(digression) Unsorted Preamble}
+
+We begin with an unsorted theory (in which quantifiers range over all objects), which is a theory of sets, though it is not the usual untyped theory of sets.
+
+We introduce the membership relation $\in$ as a primitive, and a primitive notion of sethood (we write ${\tt set}(x)$ for ``$x$ is a set".)
+
+In the context of our unsorted set theory, we can represent the notion of being the same type.  We certainly expect that all elements of a set will be of the same kind (type).
+We further expect that for any kind of object, there will be a set of all objects of that kind.  So being of the same type will coincide precisely with belonging to some common set.
+
+\begin{description}
+
+\item[Definition:]  We say that $x$ and $y$ are of the same type, written $x \sim_\tau y$, iff $(\exists z:x \in z \wedge y \in z)$.
+
+\end{description}
+
+The terminology suggests that $\sim_\tau$ is an equivalence relation.  That this relation is symmetric is a truth of logic.  We provide an axiom which makes it easy to demonstrate
+that it is reflexive and transitive.
+
+\begin{description}
+
+\item[Axiom of types:]  $(\forall x:(\exists y:x\in y \wedge (\forall z:z \in y \leftrightarrow z \sim_\tau x))).$  For each $x$, we define $\tau(x)$ as the set provided by this
+axiom which contains $x$ and contains all objects of the same type as $x$.  We call this set the type of $x$.
+
+\item[$\sim_\tau$ is an equivalence relation:]  That $x \sim_\tau y \leftrightarrow y \sim_\tau x$ is a tautology of first order logic.  From $x \in \tau(x)$ it follows
+immediately that $x \sim_\tau x$.  Suppose $x \sim_\tau y$ and $y \sim_\tau z$.  Then $z \sim_\tau y$ (symmetry) so $x \in \tau(y) \wedge z \in \tau(y)$, so
+$(\exists u:x \in u \wedge y \in u)$, so $x \sim_\tau z$.
+
+\end{description}
+
+We provide that objects with elements are sets, and that sets with the same elements and of the same type are equal.
+
+\begin{description}
+
+\item[Axiom of the empty set:]  We introduce a primitive construction of an object $\emptyset_x$ for each object $x$, and the axiom $(\forall xy:\emptyset_x \sim_\tau \tau(x) \wedge y \not\in x).$   We refer to $\emptyset_x$ as the empty set over $x$.
+
+\item[Definition of sethood:]  We define ${\tt set}(x)$ ($x$ is a set) as $$(\exists y:y \in x \vee x=\emptyset_y).$$
+
+\item[Axiom of (weak) extensionality:]  $$(\forall xy: {\tt set}(x) \wedge {\tt set}(y) \wedge x \sim_\tau y \wedge (\forall z:z\in x \leftrightarrow z \in y) \rightarrow x=y)$$
+
+\end{description}
+
+It has become stylish in foundations of mathematics to assume that all objects are sets (so there would be no more than one object with no elements).  We leave open the possibility that there are many objects with no elements, for more than one reason.
+
+
+
+We postulate that every property of objects of a particular kind determines a set.
+
+\begin{description}
+
+\item[Axiom scheme of comprehension:]  For each formula $\phi$ in which $A$ is not free, we have an axiom $$(\forall x:(\exists A: {\tt set}(A) \wedge A \sim_\tau \tau(x) \wedge (\forall y:y \in A \leftrightarrow x \sim_\tau y \wedge \phi))),$$  For each $x$, the witness $A$ (unique by extensionality) is denoted by $\{y \sim_\tau x:\phi\}$.  
+
+\item[Notational observations:]  We note that $\emptyset_x$ (the empty set over the type of $x$) can be expressed as $\{y \sim_\tau x:y \neq y\}$.  We note that $\tau(x)$ (the type of $x$) can be written as $$\{y \sim_\tau x:y = y\},$$ but the axiom of types does have additional content, since it ensures that $x$ is in this set and so that it is nonempty.  We may also write this $V_x$ (the universe containing $x$).  We define $\{y \in \tau(x):\phi\}$ as $\{y \sim_\tau x:\phi\}$.  
+
+
+
+\end{description}
+
+We provide a further axiom regulating types.  If two nonempty sets are of the same type, their respective elements are of the same type as well.
+
+\begin{description}
+
+\item[Axiom of levels:]  For any $x,y,z,w$, if $x \sim_\tau y$ and $z \in x$ and $w \in y$, then $z \sim_\tau w$.
+
+\end{description}
+
+We consider notation for hierarchies of types.
+
+\begin{description}
+
+\item[Definition:]  For any function symbol $F$, we define $F^0(x) = x$ and $F^{n+1}(x) = F(F^n(x))$, for each numeral $n$.  Notice that these superscripts
+are not variables in our language and will not be quantified over.  In particular, we now have definitions for $\tau^n(x)$ for any $x$.
+
+\item[Observations and Definition:]  Notice that $x \in \tau(x)$ for any $x$, so $\tau^n(x) \in \tau^{n+1}(x)$.  Note further that if $\tau^2(x) = \tau^2(y)$, we have
+$\tau(x) \sim_\tau \tau(y)$ and with $x \in \tau(x),y \in \tau(y)$ the axiom of levels gives us $x \sim_\tau y$, so $\tau(x)=\tau(y)$.  Thus we can define $\tau^{-1}$ by
+$\tau^{-1}(\tau^2(x)) = \tau(x)$, with $\tau^{-1}$ defined only at types of types.  We can define $\tau^{-n}(x)$ as $(\tau^{-1})^n(x)$, when this is defined.
+
+\item[Definition (common set builder notations):]  We define $\{x \in A:\phi\}$ for a set $A$ as $\{x \in \tau^{-1}(\tau(A)):\phi\}$.  We define $\{F(x_1,\ldots,x_n) \in A:\phi\}$ as $$\{y \in A:(\exists x_1,\ldots,x_n:y = F(x_1,\ldots,x_n) \wedge \phi)\},$$ where $F$ is any $n$-ary  function symbol (it may be a complex term construction).
+
+\item[Definition (singletons):]  We define $\iota(x)$ or $\{x\}$ as $\{y \sim_\tau x:y=x\}$.
+
+\end{description}
+
+We know, because we have shown that $\sim_\tau$ is an equivalence relation, that if two types meet, they are the same.  We argue that the types in the hierarchies we have defined are distinct.  The argument is related to the paradox of Russell.
+
+\begin{description}
+
+\item[Theorem:]  $\tau(x) \neq \tau^2(x)$.
+
+\item[Proof of Theorem:]  Suppose otherwise.  Then we can define $$R = \{y \in \tau(x):y \not\in y\},$$ and we will have $R \sim_\tau \tau(x)$ so $R \in \tau^2(x) = \tau(x)$.
+Then $$R \in R \leftrightarrow R \in \tau(x) \wedge R \not\in R,$$ a contradiction.
+
+\end{description}
+
+This can be generalized.
+
+\begin{description}
+
+\item[Theorem:]  $\tau(x) \neq \tau^{n+2}(x)$.
+
+\item[Proof of Theorem:]  Suppose otherwise.  Note that $\tau(\iota^n(x)) = \tau^{n+1}(x)$.  Then we can define $$R_n = \{\iota^n(y) \in \tau(x):\iota^n(y) \not\in y\},$$ and we will have $R_n \sim_\tau \tau^{n+1}(x)$ so $R_n \in \tau^{n+2}(x) = \tau(x)$ and also $\iota^n(R_n) \in \tau^{n+1}(\tau(x)) = \tau^{n+2}(x) = \tau(x)$.
+Then $$\iota^n(R_n) \in R_n \leftrightarrow \iota^n(R_n) \in \tau(x) \wedge \iota^n(R_n) \not\in R_n,$$ a contradiction (since $\iota^n(R_n) \in \tau(x)$ is supposed true). 
+
+\end{description}
+
+This establishes that for any particular $x$, the sequence of types $\tau(x), \tau^2(x),\tau^3(x),\ldots$ are distinct and therefore disjoint.  This does have one corollary which may feel unusual.  The empty set $\emptyset_x \in \tau^2(x)$, and generally $\emptyset_{\tau^n(x)} \in \tau^{n+2}(x)$, so for distinct values of $n$ these empty sets are distinct.
+
+\subsection{ (digression) Typed language introduced}
+
+We explain the type theory we use below using the unsorted language of the previous subsection.
+
+We fix a type $\tau({\bf x})$ ({\bf x} being a constant object about which we have very little to say) and define ``type $n$" as $\tau^{n+1}({\bf x})$.  We adopt the convention that each variable $x$ in our language has a natural number type ${\tt type}(x)$,
+and stands for an object in $\tau^{{\tt type}(x)+1}({\bf x})$.
+We read any quantifier $(\forall x:\phi)$ or $(\exists x:\phi)$ as $(\forall x\in \tau^{{\tt type}(x)+1}({\bf x}):\phi)$ or $(\exists x\in \tau^{{\tt type}(x)+1}({\bf x}):\phi)$, respectively.
+We further adopt the convention that we will only write $x=y$ when ${\tt type}(x)={\tt type}(y)$, and we will only write $x \in y$ when ${\tt type}+1 = {\tt type}(y)$
+(notice that if we wrote an atomic sentence not satisfying the appropriate one of these conditions, it would be false).  Notice that in this stereotyped language we cannot even write down the definitions of the sets $R$ and $R_n$ appearing in the proofs that the types are disjoint.  We can write the definition of $\sim_\tau$, but as interpreted, any instance
+of $x \sim_\tau y$ that we can write down consistent with our convention will be true, so this relation does not need to be mentioned.
+
+We can then formulate typed versions of our axioms (which are presented below).  It might seem that we are restricting our means of expression by regimenting our
+language in this way, but this is provably not the case.  Any instance of any of the axioms other than comprehension actually satisfies our typed variable conventions.
+We argue that every instance of comprehension ``$\{x \in \tau^n({\bf x}):\phi\}$ exists" is a consequence of an instance of comprehension which can be expressed in our typed
+language (so the full untyped version of the comprehension axiom does not define any sets, at least in types $\tau^n({\bf x})$ that are not defined in the typed language).
+
+Any sentence in which no variable of a type $\tau^n({\bf x})$ appears can be replaced with a truth value (easily represented as $u=u$ or its negation):  its truth value won't
+depend on the value of the binding variable $x$.  Each quantified subformula $(\forall y:\psi)$ should be replaced with a conjuncton of versions in which $y$ is assigned a type:  all types should be used which are obtained from the type of a parameter or $\tau^n({\bf x})$ by applying $\tau^{\pm(i+1)}$ where $i$ is less than (say) the number of variables in the formula plus one.  Similarly, existentially quantified formulas should be replaced with disjunctions of  existential formulas restricted to types.  When this is done, every variable in the expanded formula will have a type:  it is possible that some negative indexed types will be conjured into being.  All atomic formulas which do not satisfy the type conventions can be replaced with $\neg u=u$.
+Logical identities can be used to ensure that no variable not of a type $\tau^{\pm n}({\bf x})$ appears in a quantified formula restricted to a type  type $\tau^{\pm n}({\bf x})$,
+and no variable of this form appears in a quantified formula restricted to a type not of this form:  this is done by using logical identities which pull formulas in which the bound variable does not occur out of a quantified formula.  Then every formula in which  no variable of a type $\tau^{\pm n}({\bf x})$ appears can be replaced with a truth value (either one, we do not care;
+either truth value is supported by an instance of typed comprehension) and every formula in which variables of  type $\tau^{\pm n}({\bf x})$ appear will actually be well-typed.  This transforms our instance of general untyped comprehension into an instance of typed comprehension (or several instances, one of which gives the desired set).
+
+The point of this is the only untyped comprehension axioms that do any work here are the definitions of $R$ and $R_n$, which manifest themselves only in our assurance that
+badly typed atomic sentences are false.
+
+It is worth noticing that the unsorted theory may have lots of types other than the types $\tau^{n+1}({\bf x})$ which we use in our typing scheme.  The normal expectation that we have types indexed by the natural numbers cannot be conveniently expressed in the unsorted language used here.
+
 \section{Typed Theory of Sets}
 
 We introduce a typed theory of sets in this section, loosely based on
@@ -2088,12 +2224,12 @@ determine a set of type $n+1$, and this is what we will say:
 
 For any formula $A[x]$ in which the
 variable $y$ (of type one higher than $x$) does not appear, $$(\exists
-y.(\forall x.x \in y \leftrightarrow A[x]))$$ is an axiom.
+y.{\tt set}(y) \wedge (\forall x.x \in y \leftrightarrow A[x]))$$ is an axiom.
 
 \end{description}
 
 This says that for any formula $A[x]$ expressing a property of an
-object $x$ (of some type $n$), there is an object $y$ of type $n+1$ such
+object $x$ (of some type $n$), there is a set $y$ of type $n+1$ such
 that the elements of $y$ are exactly the objects $x$ such that $A[x]$.
 
 The axiom of extensionality tells us that there is only one such
@@ -2190,6 +2326,8 @@ type of $y$ is not the successor of the type of $x$ (for example, if
 $x$ and $y$ are of the same type) we do not say $x \in y$ (it is
 ungrammatical, not false).  We do not ask whether $x \in x$; we do not
 say that it is false (or true) (for now).
+
+If the reader has looked at sections 2.1.1 and 2.1.2, she will have seen an application of the Russell argument to show a fact we cannot express in our typed language.
 
 \newpage
 
@@ -2741,6 +2879,8 @@ does indeed make sense.  Find a sensible assignment of types to $\cal F$ and all
 \end{enumerate}
 
 \newpage
+
+\begin{comment}
 
 \section{Digression:  Type theory introduced all over again as an unsorted theory}
 
@@ -3330,6 +3470,191 @@ It can be clarified as $V_x \in V_{\{x\}}$, which is indeed true.
 
 \newpage
 
+\end{comment}
+
+\section{Digression:  simple ideas of set theory in the language of the unsorted preamble}
+
+In this section we develop some familiar ideas of set theory, in the unsorted language of section 2.1.1.  This section is here just to give a flavor of what a development without typed language of the same theory might look like.
+
+We first develop the familiar list notation for finite sets.  Here are
+the standard notations for one and two element sets.
+
+\begin{description}
+
+\item[List notation for sets:]  $\{x\}$ is defined as $\{y \sim_\tau x:  y=x\}$.
+$\{x,y\}$ is defined, when $x \sim_\tau y$, as $\{z\sim_\tau x:  z=x\vee z=y\}$.
+
+\end{description}
+
+It is convenient to define Boolean union and intersection of sets
+before giving the general definition of list notation.
+
+\begin{description}
+
+\item[Boolean union and intersection:] If $x$ and $y$ are sets of the same type, define
+$x \cup y$ as $$\{z \in \tau^{-1}(\tau(x)): z \in x \vee z \in y\}$$ and $x \cap y$ as $$\{z \in \tau^{-1}(\tau(x)): z \in x \wedge z \in y\}.$$  Notice that though we may informally
+think of $x \cup y$ as ``$x$ and $y$'', it is actually the case that
+$x \cup y$ is associated with the logical connective $\vee$ and it is
+$x \cap y$ that is associated with $\wedge$ in a logical sense.
+
+The axiom of levels plays an important role here, ensuring that the fact that $x \sim_\tau y$ implies that elements of $x$ are of the same type as elements of $y$.
+
+We also define $a^c$ (the complement of $a$) as $\{x \in \tau^{-1}(\tau(a)): x \not\in
+a\}$ and $a-b$ (the set difference of $a$ and $b$) as $a \cap b^c$ (of course under the assumption $a \sim_\tau b$).
+
+\item[recursive definition of list notation:] $\{x_1,x_2,\ldots,x_n\}$
+is defined as $$\{x_1\} \cup \{x_2,\ldots,x_n\}.$$  Notice that the
+definition of list notation for $n$ items presupposes the definition
+of list notation for $n-1$ items: since we have a definition of list
+notation for 1 and 2 items we have a basis for this recursion.
+
+Note that all elements of a set defined by listing must be of the same
+type, just as with any set.
+
+\end{description}
+
+There is one more very special case of finite sets which needs special
+attention.
+
+\begin{description}
+
+\item[null set:]  We define $\emptyset_x$ as $\{y \in \tau(x):y \neq y\}$.  Notice that $\emptyset_x \in \tau^2(x)$.  It would
+be natural to extend our typed language convention to allow $\emptyset$ to be used as a constant without the subscript in situations where its
+type can be deduced from that of neighboring variables.  A statement such as $\emptyset \in \emptyset$ could be read as
+$\emptyset_x \in \emptyset_{\tau(x)}$ (though strictly speaking probably one of the subscripts should be supplied).  In any event, all such statements are false.
+
+\item[universe:] We define $V_x$ as $\{y \in \tau(x):y = y\} (= \tau(x))$.  Notice that $V_x \in \tau^2(x)$.  It would
+be natural to extend our typed language convention to allow $V$ to be used as a constant without the subscript in situations where its
+type can be deduced from that of neighboring variables.  A statement such as $V \in V$ could be read as
+$V_x \in V_{\tau(x)}$ (though strictly speaking probably one of the subscripts should be supplied).  In any event, all such statements are true.
+
+\end{description}
+
+Of course we assume that the universal set is not finite, but we do
+not know how to say this yet.
+
+The combination of the empty set and list notation allows us to write
+things like $\{\emptyset,\{\emptyset\}\}$, but not things like
+$\{x,\{x\}\}$: the former expression is another pun, with empty sets
+of different types appearing, and the latter expression is
+undefined, because $x$ and $\{x\}$ have different types.  An expression like this can make sense in a more usual
+untyped set theory (and in fact in the usual set theory the first
+expression here is the most popular way to define the natural number 2, as we
+will explain later).
+
+Set builder notation can be generalized.  
+
+\begin{description}
+
+\item[Generalized set builder notation:] If we have a complex term
+$t[x_1,\ldots,x_n]$ containing only the indicated variables, we define
+$$\{t[x_1,\ldots,x_n] \in \tau(u):  A\}$$ as $\{y \in \tau(u):  (\exists x_1\ldots
+x_n.y=t[x_1,\ldots,x_n] \wedge A)\}$ (where $y$ is a new variable).
+We do know that this kind of very abstract definition is not really
+intelligible in practice except by backward reference from examples,
+and we will provide these!
+
+\item[Examples:] $\{\{x\}\in \tau(u):x=x\}$ means, by the above convention,
+$$\{z\in \tau(u) \mid (\exists z.z=\{x\}\wedge x=x)\}.$$  It is straightforward to
+establish that this is the set of all sets with exactly one element,
+and we will see below that we will call this the natural number 1.
+The notation $\{\{x,y\}\in \tau(u): x \neq y\}$ expands out to $\{z\in \tau(u) \mid
+(\exists xy.z = \{x,y\} \wedge x\neq y)\}$: this can be seen to be the
+set of all sets with exactly two elements (belonging to $\tau^2(u)$), and we will identify this
+set with the natural number 2 below.
+
+\end{description}
+
+
+We define some familiar relations on sets.
+
+\begin{description}
+
+\item[subset, superset:] We define $A \subseteq B$ as $${\tt
+set}(A)\wedge{\tt set}(B) \wedge A \sim_\tau B \wedge (\forall x.x \in A \rightarrow x \in
+B).$$  We define $A \supseteq B$ as $B \subseteq A$.
+
+\item[Theorem:] For any set $A$, $A \subseteq A$.
+
+\item[Theorem:]  For any sets $A,B$, $A \subseteq B \wedge B \subseteq A \rightarrow A=B$.
+
+\item[Theorem:] For any sets $A,B,C$, if $A \subseteq B$ and $B
+\subseteq C$ then $A \subseteq C$.
+
+\item[Observation:] The theorems we have just noted will shortly be
+seen to establish that the subset relation is a ``partial order''.
+
+\item[Proof Strategy:] To show that $A \subseteq B$, where $A$ and $B$
+are known to be sets of the same type (and so with elements of the same type), introduce an arbitrary object $x$ and assume
+$x\in A$: show that it follows that $x\in B$.
+
+If one has a hypothesis or previously proved statement $A \subseteq B$ and a statement $t \in A$, deduce $t \in B$.
+
+Notice that the proof strategy given above for
+proving $A = B$ is equivalent to first proving $A \subseteq B$, then
+proving $B \subseteq A$.
+
+\end{description}
+
+The notions of element and subset can be confused, particularly
+because mathematicians and math students have a bad habit of saying things like ``$A$ is in $B$'' or
+``$A$ is contained in $B$'' both  for $A \in B$ and for $A \subseteq B$.  It
+is useful to observe that elements are not ``parts'' of sets.  The
+relation of part to whole is transitive: if $A$ is a part of $B$ and
+$B$ is a part of $C$, then $A$ is a part of $C$.  The membership
+``relation'' is not transitive in a quite severe sense: if $A \in B$
+and $B \in C$, then $A \not\in C$, because $C \in \tau^2(B) = \tau^3(A)$, and any set to which $A$ belongs is an element of $\tau^2(A)$, which is disjoint from $\tau^3(A)$.   But the subset
+relation is transitive: if $A \subseteq B$ and $B \subseteq C$, then
+any element of $A$ is also an element of $B$, and so is in turn an
+element of $C$, so $A \subseteq C$.  If a set can be said to have
+parts, they will be its subsets, and its one-element sets $\{a\}$ for
+$a \in A$ can be said to be its atomic parts.
+
+
+
+We give a general format for introducing operations, and then
+introduce an important operation.
+
+\begin{description}
+
+\item[Definable Operations:] For any formula $\phi[x,y]$ with the
+property that $$(\forall xyz.\phi[x,y] \wedge \phi[x,z] \rightarrow
+y=z)$$ we define $F_{\phi}(x)$ or $F_{\phi}`x$ as the unique $y$ (if
+there is one) such that $\phi[x,y]$.  Note that we will not always
+explicitly give a formula $\phi$ defining an operation, but it should
+always be clear that such a formula could be given.  Note also that
+there might be a type differential between $x$ and $F_{\phi}(x)$
+depending on the structure of the formula $\phi[x,y]$:  we require that
+$\tau(F_\phi(x))$ be expressible for any $x$ for which it is defined
+in some form $\tau^m(\tau^{-n}(\tau(x)))$ for fixed $m,n$.
+
+For any such definable operation $F(x)$, we define $F``x$ for any set
+$x$ as $\{F(u) \in \tau^m(\tau^{-n}(\tau(x))):  u \in x\}$, where $\tau^m(\tau^{-n}(\tau(x)))$ is the type of values of $F$ with arguments taken from $x$: $F``x$ is called the (elementwise) {\em
+image\/} of $x$ under the operation $F$.
+
+We also support iteration of such operations:  $F^{\bf 0}(x)$ is defined as
+$x$ and $F^{\bf n+1}(x)$ is defined as $F(F^{\bf n}(x))$.   The numerals here are in boldface to indicate that no reference to natural numbers as mathematical objects is intended.
+
+\item[Power Set:] For any set $A$, we define ${\cal P}(A)$ as $\{B
+\in \tau(A): B \subseteq A\}$.  The power set of $A$ is the set of all subsets
+of $A$.  Notice that ${\cal P}(V_x)$ is the collection of all
+sets in $\tau^2(x)$, and is not necessarily the universe $\tau^2(x)$,
+which might also contain some atoms.
+
+\item[Singleton:]  For any object $x$, we define $\iota(x)=\{x\}$.  The primary use
+of this alternative notation for the singleton operation is to allow notations like $\iota^{\bf 3}(x)$ for $\{\{\{x\}\}\}$.
+
+\item[Observation:] $\cal P$ is $F_{\phi}$ where $\phi[x,y]$ is the
+formula $(\forall z.z \in y \leftrightarrow z \subseteq x)$ (or just $y = \{z \in \tau(x):  z \subseteq x\}$).  The operator $\iota$ is $F_{\phi}$ where $\phi$ is $(\forall z.z \in y \leftrightarrow z=x)$.
+
+\end{description}
+
+It is {\bf very important} to notice that ${\cal P}(x)$ is one type
+higher than $x$ (belongs to $\tau^2(x)$ instead of $\tau(x)$), and similarly that $\iota(x)=\{x\}$ is one type higher than
+$x$.
+
+
+
 \section{Finite Number; the Axiom of Infinity; Ordered Pairs}
 
 In the usual untyped set theory, the natural numbers are usually
@@ -3425,7 +3750,8 @@ when $x$ is an atom, $\bigcup \{x\} = x$.}
 type ${\bf n+1}$ if $A$ is of type ${\bf n+2}$ (we are using boldface here to clearly indicate where I am talking about types rather than natural numbers).
 
 \item[Definition:]  We define ${\mathbb N}$, the set of all natural numbers, as $\bigcap
-{\cal I}$, the intersection of all inductive sets.
+{\cal I}$, the intersection of all inductive sets.\footnote{In the system of the unsorted preamble, the discussion above can be adapted to
+define $0_x$ as $\{\emptyset_x\}$, an element of $\tau^3(x)$, to define $\sigma(A)$ for any set $A$ as $$\{a \cup \{x\} \in \tau^{-1}(\tau(A)):a \in A \wedge x \not\in a\},$$ which is of the same type as $A$, thus allowing definition of $0_x,1_x,2_x\ldots$, the natural numbers in $\tau^3(x)$.  We can then define ${\mathbb N}_x  \in \tau^4(x)$ as the intersection of all inductive sets in $\tau^4(x)$.}
 
 \end{description}
 
@@ -3978,7 +4304,7 @@ Another definition of 1 is $$\{x \mid (\exists y.y \in x \wedge (\forall z.z\in 
 Notice the different structure of the scopes of the quantifiers in the
 two definitions.
 
-\item The usual definition of the ordered pair use in untyped set
+\item The usual definition of the ordered pair used in untyped set
 theory (due to Kuratowski) is $$\left<x,y\right> =_{\tt def}
 \{\{x\},\{x,y\}\}.$$ We will not use this as our definition of ordered
 pair because it has the inconvenient feature that the pair is two
@@ -4332,7 +4658,7 @@ S^{-1}``\{x\}$.  (This is a nonstandard adaptation of a piece of
 terminology from model theory).
 
 \item[function:] $f$ is a {\em function from $A$ to $B$\/} (written
-$f:A\rightarrow B$) iff $f$ is a relation from $A$ to $B$ and for all
+$f:A\rightarrow B$) iff $f$ is a relation from $A$ to $B$, ${\tt dom}(f)=A$,  and for all
 $x,y,z$, if $x\,f\,y$ and $x\,f\,z$ then $y=z$.  For each $x\in {\tt
 dom}(f)$, we define $f(x)$ as the unique $y$ such that $x\,f\,y$ (this
 exists because $x$ is in the domain and is unique because $f$ is a
@@ -7513,6 +7839,29 @@ This convention would allow the elimination in practice of the
 inconvenient reduplication of cardinals, ordinals, and similar
 constructions at each type.  We do not use it as yet, but it is
 important to us to note that it is possible to use this convention.
+
+\subsection{Lateral functions in the system of the unsorted preamble:  an axiom of embedding}
+
+In the system of section 2.1.1,  where we cannot be sure that all types are indexed by natural numbers as in our basic type scheme,
+we postulate the existence of many external embeddings of one type into another.
+
+\begin{description}
+
+\item[Axiom of embedding:]  We postulate a primitive strict partial order $<_\tau$ on types.  We postulate function symbols $I_{xy}$ and $I_{yx}$ such
+that we have $I_{xy}(a)$ defined just in case $a \in \tau(x)$, $I_{xy}(a) \in \tau(y)$ if it is defined, and, if $\tau(x) <_\tau \tau(y)$,  $I_{yx}(I_{xy}(a)) = a$ for all $a \in \tau(x)$.  We provide further
+that for any $x,y$ there is $z$ such that $\tau(x) <_\tau(z)$ and $\tau(y) <_\tau(z)$ and that further, $\tau(x) <_\tau (y)$ iff $|I_{xz}``(\tau(x))| < |I_{yz}``(\tau(y))|$.
+
+Further clauses which are tempting to add to our axiom, though we believe they are not really needed, are $I_{x\tau(x)}(a) = \{a\}$ and, for $\tau(x) <_\tau (y) <_\tau (z)$,
+$I_{yz}(I_{xy}(a)) = I_{xz}(a)$ for all $a \in \tau(x)$.  Another reasonable assumption is that the action of the function symbol $I_{xy}$ is exactly determined by the type of $x$
+and the type of $y$.
+
+\end{description}
+
+I want to include a description here of how operations such as $\iota^n(x)$ can actually be defined in terms of the natural numbers of the theory using this axiom.
+
+An effect of this axiom is that isomorphism types (including cardinal and ordinal numbers) can be systematically identified between types.
+
+This axiom implies the existence of base types in the unsorted system.
 
 \newpage
 
