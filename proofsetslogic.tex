@@ -12,7 +12,7 @@
 
 \author{M. Randall Holmes}
 
-\date{version of 4/2/2021}
+\date{version of 4/4/2021}
 
 \begin{document}
 
@@ -42,6 +42,8 @@ lectured (or past material), which will of course also be of interest
 to current students.
 
 \begin{description}
+
+\item[4/4/2021:]  added section 3.9.2 about unsorted type theory with proper classes...
 
 \item[4/2/2021:]  C. Ryan-Smith pointed out some corrections needed in section 2.1.1.  Thank you!
 
@@ -1963,7 +1965,7 @@ We provide that objects with elements are sets, and that sets with the same elem
 
 \begin{description}
 
-\item[Axiom of the empty set:]  We introduce a primitive construction of an object $\emptyset_x$ for each object $x$, and the axiom $(\forall xy:\emptyset_x \sim_\tau \tau(x) \wedge y \not\in x).$   We refer to $\emptyset_x$ as the empty set over $x$ or the empty set of the same type as $\tau(x)$.
+\item[Axiom of the empty set:]  We introduce a primitive construction of an object $\emptyset_x$ for each object $x$, and the axiom $(\forall xy:\emptyset_x \sim_\tau \tau(x) \wedge y \not\in x).$   We refer to $\emptyset_x$ as the empty set over $x$.
 
 \item[Definition of sethood:]  We define ${\tt set}(x)$ ($x$ is a set) as $$(\exists y:y \in x \vee x=\emptyset_y).$$
 
@@ -2023,9 +2025,9 @@ $\tau^{-1}(\tau^2(x)) = \tau(x)$, with $\tau^{-1}$ defined only at types of type
 Note that for any $A$, $\tau^{-1}(\tau(A))$ is defined iff $\tau(A) = \tau^2(x)$ for some $x$ and in this case is $\tau(x)$, the type of elements of $A$ if $A$ is nonempty,
 and the type of the same type as $A$ if $A$ is empty.  If $A$ is not of a type $\tau^2(x)$ this is undefined.
 
-\item[Definition (common set builder notations):]  We define $\{x \in A:\phi\}$ for a set $A$ as $\{x \in \tau^{-1}(\tau(A)):x \in A \wedge \phi\}$: it is indeed our intention that this be defined only if $A$ belongs to some type $\tau^2(x)$. We define $$\{F(x_1,\ldots,x_n) \in A:\phi\}$$ as $$\{y \in A:(\exists x_1,\ldots,x_n:y = F(x_1,\ldots,x_n) \wedge \phi)\},$$ where $F$ is any $n$-ary  function symbol (it may be a complex term construction).
+\item[Definition (common set builder notations):]  We define $\{x \in A:\phi\}$ for a set $A$ as $\{x \in \tau^{-1}(\tau(A)):x \in A \wedge \phi\}$.  We define $$\{F(x_1,\ldots,x_n) \in A:\phi\}$$ as $$\{y \in A:(\exists x_1,\ldots,x_n:y = F(x_1,\ldots,x_n) \wedge \phi)\},$$ where $F$ is any $n$-ary  function symbol (it may be a complex term construction).
 
-The axiom scheme of separation of Zermelo, adorned with technicalities about sethood and type, asserting for each formula $\phi$ $$(\forall A:{\tt set}(A)\rightarrow (\exists B:{\tt set}(B) \wedge B \sim_\tau A \wedge (\forall x:x \in B \leftrightarrow x \in A \wedge \phi))),$$ is equivalent to the axiom of comprehension we have presented (in the presence of the other axioms).
+The axiom scheme of separation of Zermelo, adorned with technicalities about type, asserting for each formula $\phi$ $$(\forall A:{\tt set}(A)\rightarrow (\exists B:{\tt set}(B) \wedge B \sim_\tau A \wedge (\forall x:x \in B \leftrightarrow x \in A \wedge \phi))),$$ is equivalent to the axiom of comprehension we have presented (in the presence of the other axioms).
 
 \item[Definition (singletons):]  We define $\iota(x)$ or $\{x\}$ as $\{y \sim_\tau x:y=x\}$.
 
@@ -2055,8 +2057,7 @@ Then $$\iota^n(R_n) \in R_n \leftrightarrow \iota^n(R_n) \in \tau(x) \wedge \iot
 
 \end{description}
 
-This establishes that for any particular $x$, the sequence of types $\tau(x), \tau^2(x),\tau^3(x),\ldots$ are distinct and therefore disjoint. 
- This does have one corollary which may feel unusual.  The empty set $\emptyset_x \in \tau^2(x)$, and generally $\emptyset_{\tau^n(x)} \in \tau^{n+2}(x)$, so for distinct values of $n$ these empty sets are distinct.  This allows us to flesh out our remark that there is more than one reason that we do not adopt strong extensionality:  we want to support the possibility of the existence of many atoms which are not sets in each type, and we want to support the existence of distinct empty sets in distinct types.
+This establishes that for any particular $x$, the sequence of types $\tau(x), \tau^2(x),\tau^3(x),\ldots$ are distinct and therefore disjoint.  This does have one corollary which may feel unusual.  The empty set $\emptyset_x \in \tau^2(x)$, and generally $\emptyset_{\tau^n(x)} \in \tau^{n+2}(x)$, so for distinct values of $n$ these empty sets are distinct.
 
 \subsection{ (digression) Typed language introduced}
 
@@ -12763,6 +12764,67 @@ The class of reals is the same size as the power class of $\omega$ for the usual
 \end{description}
 
 There are two ways to view this.  We may suppose that we have a system in which all collections are very small (they being no larger than the system of real numbers) or we may suppose that our view is that the class of reals is very large.
+
+\newpage
+
+\subsection{The theory of the unsorted preamble with proper classes}
+
+Somehow this seems to evade the fundamental motivation of the theory, but it does work.  Like other theories with proper classes, the real charm comes from a precise criterion for which classes are proper.
+
+We develop a first order theory with equality and membership as primitives.
+
+\begin{description}
+
+\item[Definition:]  An object $x$ is an {\em element\/} (and we write ${\tt elt}(x)$) just in case $(\exists y:x \in y)$.
+
+\item[Definition:]  We define $x \sim_\tau y$ as $(\exists z:{\tt elt}(z) \wedge x \in z \wedge y \in z)$.  We say that $x$ and $y$ are of the same type:  to be of the same type is to belong to the same {\em element\/}.
+
+\item[Axiom of types:]  For each element $x$, there is an element $\tau(x)$ such that for all $y$, $y \in \tau(x) \leftrightarrow y \sim_\tau x$.  This object is called the type of $x$.  
+
+We write $\tau^1(x)$ for $\tau(x)$ and for each numeral $n$ we write $\tau^{n+1}(x)$ for $\tau(\tau^n(x))$.  A type $\tau(x)$ not of the form $\tau^2(y)$ for some $y$ we may call a base type.
+
+\item[$\sim_\tau$ is an equivalence relation on elements:]  For any element $x$, the condition $x \sim_\tau x$ holds trivially.  $x \sim_\tau y \leftrightarrow y \sim_\tau x$ is a theorem of first order logic.
+If $x \sim_\tau y$ and $y \sim_\tau z$ then $z \sim_\tau y$ and so both $x$ and $z$ belong to $\tau(y)$, so $x \sim_\tau z$.
+
+\item[Axiom of non-elements:]  An object $x$ is a non-element iff there are $y$ and $z$ such that $y \in x$, $z \in x$, and $\neg y \sim_\tau z$.  Notice that this implies immediately that
+objects with no elements are elements and objects with one element are elements.
+
+\item[Construction and axiom of empty sets:]  For each element $x$, there is an object $\emptyset_x \in \tau^2(x)$ with no elements.  This is called the empty set over $x$ or the empty set included in $\tau(x)$.   We say that an object $x$ is a {\em class\/} if it has elements or is an empty set.  
+
+We say that an object $x$ is a {\em set\/} if it is a class and an element.
+We say that an object $x$ is an {\em atom\/} if it is not a class (since a non-class has no elements, it is an element).  A class which is not an element may be called a {\em proper class\/}.
+
+\item[Axiom of extensionality:]  Classes with the same elements are equal.  Notice that we have left open the possibility that there are many atoms in each type.
+
+\item[Axiom of comprehension:]  For every formula $\phi$ in which $A$ does not appear free, $(\exists A:(\forall x:x \in A \leftrightarrow {\tt elt}(x) \wedge \phi))$.  If $(\exists x:{\tt elt}(x) \wedge \phi)$ holds the witness $A$ is unique by extensionality and we use the notation  $\{x:\phi\}$ for the witness $A$.  Notice that this axiom implies that there are empty objects, so there are elements.
+
+\item[Definition:]  We define $x \subseteq y$ as holding for sets $x,y$ if $$(\forall z \in x:x \in y) \wedge ((\neg(\exists z:z \in x) \rightarrow (\exists u:x = \emptyset_u) \wedge x \sim_\tau y):$$  all elements of $x$ are elements of $y$ and if $x$ is empty, $x$ is the empty set of the same type as $y$ (there is at most one such empty set by extensionality).
+
+\item[Axiom of intersection:]  $$(\forall xyz:{\tt elt}(x) \wedge {\tt elt}(y) \wedge z \in x \wedge z \in y \rightarrow x \sim_\tau y):$$  sets which meet are of the same type.
+
+\item[Observation:]  For any nonempty set $A$ and property $\phi$ which holds of some element of $A$, $\{x:x \in A \wedge \phi\}$ is a set.  Every such set has a common element with $A$, so by the axiom of intersection is of the same type as $A$.   If $x \in A$, $\emptyset_x$ is of the same type as $A$.  Thus the collection of all subsets of $A$, which we write 
+${\cal P}(A)$ and call the power set of $A$, is a set, since it does not have two distinct elements of different types.  The power set of an empty set clearly exists since it is just a singleton.
+
+Further, if $x \in y$, we have $x \in \tau(x)$ so by intersection $y \sim_\tau \tau(x)$, so $y \in \tau^2(x)$.  The statement ``for any element $y$, $x \in y \rightarrow y \in \tau^2(x)$", in the presence of the previously given axioms is equivalent to the axiom of intersection.
+
+\item[Axiom of levels:]  For any elements $x,y$, $$\tau^2(x) = \tau^2(y) \rightarrow \tau(x)=\tau(y).$$  We define $\tau^{-1}(\tau^2(x))$ as $\tau(x)$ and otherwise leave
+$\tau^{-1}(y)$ undefined.  We define $\tau^{-(n+1)}(x)$ as $\tau^{-1}(\tau^{-n}(x))$ for positive numerals $n$.
+
+\item[Observations:]  From the axiom of levels  it follows that if $u \in x$ and $v \in y$ and $x \sim_\tau y$
+we have $x \in \tau^2(u)$ and $y \in \tau^2(v)$, so $\tau^2(u) = \tau(x)=\tau(y) =\tau^2(v)$ so $\tau(u) = \tau(v)$.
+
+Further, it follows that if $x,y$ are sets and $x \sim_\tau y$ (and one of these sets is nonempty) that $\{z:z \in x \vee z \in y\}$ is a set (which we call $x \cup y$), since all of its elements are of the same type.
+and further that for any set all of whose elements are sets and which contains a nonempty set, $\bigcup A = \{x:(\exists a \in A:x \in a)\}$ is a set, for the same reason.  The union of two empty sets or the union of a set of empty sets is defined in the obvious way.  Either the binary axiom of union or the general axiom of union implies the axiom of levels in the presence of the other axioms.
+
+\item[Definitions:]  Define $\iota(x)$ or $\{x\}$ as $\{y:y=x\}$, which we know is a set.  Define $\iota^0(x)$ as $x$ as $\iota^{n+1}(x)$ as $\{\iota^n(x)\}$.  Define $I(x)$ as the intersection of all classes $C$ which contain $x$ as an element and satisfy $(\forall y:y \in C \rightarrow \{y\} \in C)$.  This can be called the class of iterated singletons of $x$.
+
+\item[$^*$Axiom of hierarchy:] $$(\forall xy:(\exists z:z \in \tau(x) \wedge z \in I(y) \vee z \in\tau(y) \wedge z \in I(x))):$$  for any $x,y$, there is an iterated singleton of $x$ of the same type as $y$ or there is an iterated singleton of $y$ of the same type as $x$.
+
+This axiom provides that the hierarchy of types looks exactly as we expect.  It might seem that a bottomless type hierarchy  is supported, but it is not:  we have enough machinery to prove that there must be base types.
+
+
+\end{description}
+
 
 \newpage
 
