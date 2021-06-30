@@ -1,0 +1,625 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb}
+
+\title{The proof of consistency of New Foundations from a tangled web}
+
+\author{M. Randall Holmes}
+
+\date{finished transferring BEST slides, 6/30/2021}
+
+\begin{document}
+
+\maketitle
+
+\maketitle
+
+\newpage
+
+\subsection{Version notes}
+
+\begin{description}
+
+\item[June 28, 2021:]  Starting.
+
+\item[June 30, 2021:]  I've been working steadily.  Finished transferring the BEST slides:  it remains to work through these and see what clarifications are needed and to finish the
+argument for external size of double power sets of clans.
+
+\end{description}
+
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{Development of relevant theories}
+
+\subsection{The simple theory of types TST and TSTU}
+
+We introduce a theory which we call the simple typed theory of sets or TST, a name favored by the school of Belgian logicians who studied NF ({\em th\'eorie simple de types}).  This is not the same as the simple type theory of Ramsey (see historical remarks below).
+
+TST is a first order multi-sorted theory with sorts (types) indexed by the nonnegative integers.  The primitive predicates of TST are equality and membership.
+
+The type of a variable $x$ is written ${\tt type}($`$x$'$)$:  this will be a nonnegative integer.   A countably infinite supply of variables of each type is supposed.  An atomic equality sentence `$x=y$' is well-formed iff ${\tt type}($`$x$'$)={\tt type}($`$y$'$)$.
+An atomic membership sentence `$x \in y$' is well-formed iff ${\tt type}$`$(x$'$)+1 = {\tt type}($`$y$'$)$.
+
+The axioms of TST are extensionality axioms and comprehension axioms.
+
+The extensionality axioms are all the well-formed assertions of the shape $(\forall xy:x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z\in y))$.  For this to be well typed, the variables
+$x$ and $y$ must be of the same type, one type higher than the type of $z$.
+
+The comprehension axioms are all the well-formed assertions of the shape $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$, where $\phi$ is any formula in which $A$ does not occur free.
+
+The witness to $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$ is unique by extensionality, and we introduce the notation $\{x:\phi\}$ for this object.  Of course, $\{x:\phi\}$  is to be assigned type one higher than that of $x$;  in general, term constructions will have types as variables do.
+
+The modification which gives TSTU (the simple type theory of sets with urelements) replaces the extensionality axioms with the formulas of the shape $$(\forall xyw:w \in x \rightarrow (x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z\in y))),$$  allowing many objects with no elements (called atoms or urelements)  in each positive type.  A technically useful refinement adds a constant $\emptyset^i$ of each positive type $i$ with no elements:  we can then address the problem that $\{x^i:\phi\}$ is not uniquely defined when $\phi$ is uniformly false by defining $\{x^i:\phi\}$ as $\emptyset^{i+1}$.
+
+\subsubsection{Typical ambiguity}
+
+TST exhibits a symmetry which is important in the sequel.
+
+Provide a bijection $(x \mapsto x^+)$ from variables to variables of positive type satisfying   ${\tt type}($`$x^+$'$)$ = ${\tt type}($`$x$'$)+1$.
+
+If $\phi$ is a formula, define $\phi^+$ as the result of replacing every variable $x$ (free and bound) in $\phi$ with $x^+$.  It should be evident that if $\phi$ is well-formed, so is $\phi^+$,
+and that if $\phi$ is a theorem, so is $\phi^+$ (the converse is not the case).  Further, if we define a mathematical object as a set abstract $\{x:\phi\}$ we have an analogous
+object $\{x^+:\phi^+\}$ of the next higher type (this process can be iterated).
+
+The axiom scheme asserting $\phi \leftrightarrow \phi^+$ for each closed formula $\phi$ is called the Ambiguity Scheme.   Notice that this is a stronger assertion than is warranted by the symmetry of proofs described above.
+
+\subsubsection{Historical remarks}
+
+TST is not the type theory of the {\em Principia Mathematica\/} of Russell and Whitehead, though a description of TST is a common careless description of Russell's theory of types.
+
+Russell described something like TST informally in his 1904 {\em Principles of Mathematics\/}.  The obstruction to giving such an account in {\em Principia Mathematica\/} was that
+Russell and Whitehead did not know how to describe ordered pairs as sets.  As a result, the system of {\em Principia Mathematica\/} is a complex type theory with complex
+types inhabited by $n$-ary relations with arguments of specified previously defined types, further complicated by predicativity restrictions (which are cancelled by an axiom of reducibility).
+The simple theory of types of Ramsey eliminates the predicativity restrictions and the axiom of reducibility, but is still a theory with complex types inhabited by $n$-ary relations.
+
+Russell noticed a phenomenon like the typical ambiguity of TST in the more complex system of {\em Principia Mathematica\/}, which he refers to as ``systematic ambiguity".
+
+In 1914, Norbert Wiener gave a definition of the ordered pair as a set (not the one now in use) and seems to have recognized that the type theory of {\em Principia Mathematica\/} could be simplified to something like TST, but he did not give a formal description.  The theory we call TST was apparently first described by Tarski in 1930.
+
+It is worth observing that the axioms of TST look exactly like those of ``naive set theory", the restriction preventing paradox being embodied in the restriction of the language by the type system.
+For example, the Russell paradox is averted because one cannot have $\{x:x \not\in x\}$ because $x \in x$ (and so its negation $\neg x \in x$) cannot be a well-formed formula.
+
+It was shown around 1950 that Zermelo set theory proves the consistency of TST with the axiom of infinity;  TST + Infinity has the same consistency strength as
+Zermelo set theory with separation restricted to bounded formulas.
+
+
+\newpage
+
+\subsection{Some mathematics in TST;  the theories TST$_n$ and their natural models}
+
+We briefly discuss some mathematics in TST.
+
+We indicate how to define the natural numbers.  We use the definition of Frege ($n$ is the set of all sets with $n$ elements).  0 is $\{\emptyset\}$ (notice that we get a natural number 0 in each type $i+2$;  we will be deliberately ambiguous in this discussion, but we are aware that anything we define is actually not unique, but reduplicated in each type above the lowest one in which it can be defined).  For any set $A$ at all we define $\sigma(A)$ as $\{a \cup \{x\}:a \in A \wedge x \not\in a\}$.  This is definable for any $A$ of type $i+2$ ($a$ being of type $i+1$ and $x$ of type $i$).  Define 1 as $\sigma(0)$, 2 as $\sigma(1)$,  3 as $\sigma(2)$, and so forth.  Clearly we have successfully defined 3 as the set of all sets with three elements, without circularity.
+But further, we can define $\mathbb N$ as $\{n:(\forall I:0 \in I \wedge (\forall x \in I:\sigma(x) \in I) \rightarrow n \in I\}$, that is, as the intersection of all inductive sets.
+$\mathbb N$ is again a typically ambiguous notation:  there is an object defined in this way in each type $i+3$.
+
+The collection of all finite sets can be defined as $\bigcup \mathbb N$.  The axiom of infinity can be stated as $V \not\in \bigcup \mathbb N$ (where $V= \{x:x=x\}$ is the typically ambiguous symbol for the type $i+1$ set of all type $i$ objects).  It is straightforward to show that the natural numbers in each type of a model of TST with Infinity are isomorphic in a way representable in the theory.
+
+Ordered pairs can be defined following Kuratowski and a quite standard theory of functions and relations can be developed.  Cardinal and ordinal numbers can be defined as Frege or Russell would have defined them, as isomorphism classes of sets under equinumerousness and isomorphism classes of well-orderings under similarity.  
+
+The Kuratowski pair $(x,y) = \{\{x\},\{x,y\}\}$ is of course two types higher than its projections, which must be of the same type.  There is an alternative definition (due to Quine) of an ordered pair
+$\left< x,y\right>$ in TST + Infinity which is of the same type as its projections $x,y$.  This is a considerable technical convenience but we will not need to define it here.  Note for example that if we use the Kuratowski pair the cartesian product $A \times B$ is two types higher than $A,B$, so we cannot define $|A| \cdot |B|$ as $|A \times B|$ if we want multiplication of cardinals to be a sensible operation.  Let $\iota$ be the singleton operation and define $T(|A|)$ as $|\iota``A|$ (this is a very useful operation sending cardinals of a given type to cardinals in the next higher type which seem intuitively to be the same).  The definition of cardinal multiplication if we use the Kuratowski pair is then $|A| \cdot |B| =T^{-2}(|A\times B|)$.  If we use the Quine pair this becomes the usual definition $|A| \cdot |B| =|A\times B|$.  Use of the Quine pair simplifies matters in this case, but it should be noted that the T operation remains quite important (for example it provides the internally representable isomorphism between the systems of natural numbers in each sufficiently high type).
+
+Note that the form of Cantor's Theorem in TST is not $|A| < |{\cal P}(A)|$, which would be ill-typed, but $|\iota``A|<|{\cal P}(A)|$:  a set has fewer unit subsets than subsets.  The exponential map $\exp(|A|) = 2^{|A|}$ is not defined as $|{\cal P}(A)||$, which would be one type too high, but as $T^{-1}(|{\cal P}(A))$, the cardinality of a set $X$ such that $|\iota``X| = |{\cal P}(A)|$;   notice that this is partial.  For example
+$2^{|V|}$ is not defined (where $V=\{x:x=x\}$, an entire type), because there is no $X$ with $|\iota``X|=|{\cal P}(V)|$, because $|\iota``V|<|{\cal P}(V)| \leq |V|$, and of course there is no set larger than $V$ in its type.
+
+For each natural number $n$, the theory TST$_n$ is defined as the subtheory of TST with vocabulary restricted to use variables only of types less than $n$ (TST with $n$ types).
+In ordinary set theory TST and each theory TST$_n$ have natural models, in which type 0 is implemented as a set $X$ and each type $i$ in use is implemented as ${\cal P}^i(X)$.  It should be clear that each TST$_n$ has natural models in bounded Zermelo set theory, and TST has natural models in a modestly stronger fragment of ZFC.
+
+Further, each TST$_n$ has natural models in TST itself, though some care must be exercised in defining them.  Let $X$ be a set.  Implement type $i$ for each $i<n$ as
+$\iota^{(n-1)-i}``{\cal P}^i(X)$.  If $X$ is in type $j$, each of the types of this interpretation of TST$_n$ is a set in the same type $j+n-1$.  For any relation $R$, define
+$R^{\iota}$ as $\{(\{x\},\{y\}):x R y\}$.  The membership relation of type $i-1$ in type $i$ in the interpretation described is the restriction of $\subseteq^{\iota^{(n-1)-i}}$ to
+the product of the sets implementing type $i-1$ and type $i$.
+
+Notice then that we can define truth for formulas in these natural models of TST$_n$ for each $n$ in TST, though not in a uniform way which would allow us to define truth for formulas
+in TST in TST.
+
+Further, both in ordinary set theory and in TST, observe that truth of sentences in models of TST$_n$ is completely determined by the cardinality of the set used as type 0.
+since two natural models of TST or TST$_n$ with base types implemented by sets of the same type are clearly isomorphic. 
+
+\newpage
+
+\subsection{New Foundations and NFU}
+
+In 1937, Willard van Orman Quine proposed a set theory motivated by the typical ambiguity of TST described above.  The paper in which he did this was titled ``New foundations for mathematical logic", and the set theory it introduces is called ``New Foundations" or NF, after the title of the paper.
+
+Quine's observation is that since any theorem $\phi$ of TST is accompanied by theorems $\phi^+, \phi^{++}, \phi^{+++}, \ldots$ and every defined object $\{x:\phi\}$ is accompanied by
+$\{x^+:\phi^+\},\{x^{++}:\phi^{++}\},\{x^{+++}:\phi^{+++}\}$, so the picture of what we can prove and construct in TST looks rather like a hall of mirrors, we might reasonably suppose that the types are all the same.
+
+The concrete implementation follows.  NF is the first order unsorted theory with equality and membership as primitive with an axiom of extensionality $(\forall xy:x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z\in y))$ and an axiom of comprehension $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$ for each formula $\phi$ which can be obtained from a formula of TST by dropping all distinctions of type.  We give a precise formalization of this idea:  provide a bijective map $(x \mapsto x^*)$ from the countable supply of variables (of all types) of TST onto the countable supply of variables of the language of NF.  Where $\phi$ is a formula of the language of TST, let $\phi^*$ be the formula obtained by replacing every veriable $x$, free and bound,
+in $\phi$ with $x^*$. For each formula $\phi$ of the language of TST, an axiom of comprehension of NF asserts $(\exists A:(\forall x:x \in A \leftrightarrow \phi^*))$.
+
+In the original paper, this is expressed in a way which avoids explicit dependence on the language of another theory.  Let $\phi$ be a formula of the language of
+NF.  A function $\sigma$ is a stratification of $\phi$ if it is a (possibly partial) map from variables to non-negative integers such that for each atomic subformula
+`$x=y$'  of $\phi$ we have $\sigma($`$x$'$)=\sigma($`$y$'$)$ and for each atomic subformula `$x \in y$' of $\phi$ we have $\sigma($`$x$'$)+1 = \sigma($`$y$'$)$.
+A formula $\phi$ is said to be stratified iff there is a stratification of $\phi$.  Then for each stratified formula $\phi$ of the language of NF we have an axiom $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$.  The stratified formulas are exactly the formulas $\phi^*$ up to renaming of variables.
+
+For each stratified formula $\phi$, there is a unique witness to $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$ whch we denote by $\{x:\phi\}$.
+
+An important theorem of Specker (1962) is that NF is consistent if and only if TST + the Ambiguity Scheme is consistent.
+
+Jensen in 1969 proposed the theory NFU which replaces the extensionality axiom of NF with $$(\forall xyw:w \in x \rightarrow (x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z\in y))),$$  allowing many atoms or urelements.  One can reasonably add an elementless constant $\emptyset$, and define $\{x:\phi\}$ as $\emptyset$ when $\phi$ is false for all $x$.
+
+Jensen showed that NFU is consistent and moreoever NFU + Infinity + Choice is consistent.  We will give an argument similar in spirit though not the same in detail for the consistency of NFU in the next section.
+
+An important theorem of Specker (1962) is that NF is consistent if and only if TST + the Ambiguity Scheme is consistent.  His method of proof adapts to show that  NFU is consistent if and only if TSTU + the Ambiguity Scheme is consistent.  Jensen used this fact in his proof of the consistency of NFU.  We indicate a proof of Specker's result using concepts from this paper below.
+
+In 1954, Specker had shown that NF disproves Choice, and so proves Infinity.  At this point if not before it was clear that there is a serious issue of showing that NF is consistent relative to some set theory in which we have confidence.  There is no evidence that NF is any stronger than TST + Infinity, the lower bound established by Specker's result.
+
+Note that NF or NFU supports the implementation of mathematics in the same style as TST, but with the representations of mathematical concepts losing their ambiguous character.  The number 3 really is realized as the unique set of all sets with three elements, for example.  The universe is a set and sets make up a Boolean algebra.   Cardinal and ordinal numbers can be defined
+in the manner of Russell and Whitehead.
+
+The apparent vulnerability to the paradox of Cantor is an illusion.  Applying Cantor's theorem to the cardinality of the universe in NFU gives $|\iota``V| < |{\cal }(V)| \leq |V|$ (the last inequality would be an equation in NF), from which we conclude that there are fewer singletons of objects than objects in the universe.  The operation $(x \mapsto \{x\})$ is not a set function, and there is every reason to expect it not to be, as its definition is unstratified.  The resolution of the Burali-Forti paradox is also weird and wonderful in NF(U), but would take us too far afield.
+
+\newpage
+
+\subsection{Tangled type theory TTT and TTTU}
+
+In 1995, this author described a reduction of the NF consistency problem to consistency of a typed theory and of a kind of extension of bounded Zermelo theory, both motivated by reverse engineering from Jensen's method of proving the consistency of NFU.
+
+Let $\lambda$ be a limit ordinal.  It can be $\omega$ but it does not have to be.  
+
+In the theory TTT (tangled type theory) which we develop, each variable $x$ is supplied with a type ${\tt type}($`$x$'$) <\lambda$;  we are provided with countably many distinct variables of each type.
+
+For any formula $\phi$ of the language of TST and any strictly increasing sequence $s$ in $\lambda$, let $\phi^s$ be the formula obtained by replacing each variable
+of type $i$ with a variable of type $s(i)$.  To make this work rigorously, we suppose that we have a bijection from type $i$ variables of the language of TST to type $\alpha$ variables
+of the language of TTT for each natural number $i$ and ordinal $\alpha<\lambda$.
+
+TTT is then the first order theory with types indexed by the ordinals below $\lambda$ whose well formed atomic sentences `$x=y$' have ${\tt type}($`$x$'$) = {\tt type}($`$y$'$)$ and whose atomic sentences `$x \in y$' satisfy ${\tt type}($`$x$'$) < {\tt type}($`$y$'$)$, and whose axioms are the sentences $\phi^s$ for each axiom $\phi$ of TST and each strictly increasing sequence $s$ in $\lambda$.  TTTU has the same relation to TSTU (with the addition of constants $\emptyset^{\alpha,\beta}$ for each $\alpha<\beta<\lambda$  such that $(\forall {\bf x}_0^{\alpha} :{\bf x}_0^{\alpha}\not\in \emptyset^{\alpha,\beta})$ is an axiom).
+
+It is important to notice how weird a theory TTT is.  This is not cumulative type theory.  Each type $\beta$ is being interpreted as a power set of {\em each\/} lower type $\alpha$.  Cantor's theorem in the metatheory makes it clear that most of these power set interpretations cannot be honest.
+
+There is now a striking
+
+\begin{description}
+
+\item[Theorem (Holmes):]  TTT(U) is consistent iff NF(U) is consistent.
+
+\item[Proof:]  Suppose NF(U) is consistent.  Let $(M,E)$ be a model of NF(U) (a set $M$ with a membership relation $E$).  Implement type $\alpha$ as $M \times \{\alpha\}$ for
+each $\alpha<\lambda$.  Define $E_{\alpha,\beta}$ for $\alpha<\beta$ as $\{((x,\alpha),(y,\beta)):xEy\}$.  This gives a model of TTT(U).   Empty sets in TTTU present no essential additional difficulties.
+
+Suppose TTT(U) is consistent, and so we can assume we are working with a fixed model of TTT(U).  Let $\Sigma$ be a finite set of sentences in the language of TST(U).  Let $n$ be the smallest type such that no type $n$ variable occurs in any sentence in $\Sigma$.  We define a partition of the $n$-element subsets of $\lambda$.  Each $A \in [\lambda]^n$ is put in a compartment
+determined by the truth values of the sentences $\phi^s$ in our model of TTT(U), where $\phi \in \Sigma$ and ${\tt rng}(s \lceil \{0,\ldots,n-1\}) = A$.  By Ramsey's theorem, there is a homogeneous set $H \subseteq \lambda$ for this partition, which includes the range of a strictly increasing sequence $h$.  There is a complete extension of TST(U) which includes
+$\phi$ iff the theory of our model of TTT(U) includes $\phi^h$.  This extension satisfies $\phi \leftrightarrow \phi^+$ for each $\phi \in \Sigma$.  But this implies by compactness that the full Ambiguity Scheme $\phi \leftrightarrow \phi^+$ is consistent with TST(U), and so that NF(U) is consistent by the 1962 result of Specker.
+
+We note that we can give a treatment of the result of Specker (rather different from Specker's own) using TTT(U).  Note that it is easy to see that if we have a model of TST(U) augmented with a Hilbert symbol (a primitive term construction $(\epsilon x:\phi)$ (same type as $x$) with axiom scheme $\phi[(\epsilon x:\phi)/x] \leftrightarrow (\exists x:\phi)$) which cannot appear in instances of comprehension (the quantifiers are not defined in terms of the Hilbert symbol, because they do need to appear in instances of comprehension) and Ambiguity (for all formulas, including those which mention the Hilbert symbol) then we can readily get a model of NF, by constructing a term model using the Hilbert symbol in the natural way, then identifying all terms with their type-raised versions.  All statements in the resulting type-free theory can be decided by raising types far enough (the truth value of an atomic sentence $(\epsilon x:\phi) \,R\, (\epsilon y:\psi)$ in the model of NF is determined by raising the type of both sides until the formula is well-typed in TST and reading the truth value of the type raised version;  $R$ is either = or $\in$).  Now observe that a model of TTT(U) can readily be equipped with a Hilbert symbol if this creates no obligation to add instances of comprehension
+containing the Hilbert symbol (use a well-ordering of the set implementing each type to interpret a Hilbert symbol  $(\epsilon x:\phi)$ in that type as the first $x$ such that $\phi$), and the argument above for consistency of TST(U) plus Ambiguity with the Hilbert symbol goes through.
+
+\item[Theorem (essentially due to Jensen):]  NFU is consistent.
+
+\item[Proof:]  It is enough to exhibit a model of TTTU.  Suppose $\lambda>\omega$.  Represent type $\alpha$ as $V_{\omega+\alpha} \times \{\alpha\}$ for each $\alpha<\lambda$ ($V_{\omega+\alpha}$ being a rank of the usual cumulative hierarchy).  Define $\in_{\alpha,\beta}$ for
+$\alpha<\beta<\lambda$ as $$\{((x,\alpha),(y,\beta)):x \in V_{\omega+\alpha} \wedge y \in V_{\omega+\alpha+1} \wedge x \in y\}.$$  This gives a model of TTTU in which the membership of
+type $\alpha$ in type $\beta$ interprets each $(y,\beta)$ with $y \in V_{\omega+\beta} \setminus V_{\omega+\alpha+1}$ as an urelement.
+
+Our use of $V_{\omega+\alpha}$ enforces Infinity in the resulting models of NFU (note that we did not have to do this:  if we set $\lambda=\omega$ and interpret type $\alpha$ using $V_\alpha$ we prove the consistency of NFU with the negation of Infinity).  It should be clear that Choice holds in the models of NFU eventually obtained if it holds in the ambient set theory.
+
+This shows in fact that mathematics in NFU is quite ordinary (with respect to stratified sentences), because mathematics in the models of TSTU embedded in the indicated model of TTTU is quite ordinary.  The notorious ways in which NF evades the paradoxes of Russell, Cantor and Burali-Forti can be examined in actual models and we can see how they work (since they work in NFU in the same way they work in NF).
+
+\end{description}
+
+Of course Jensen did not phrase his argument in terms of tangled type theory.  Our contribution here was to reverse engineer from Jensen's original argument for the consistency of NFU an argument for the consistency of NF itself, which requires additional input which we did not know how to supply (a proof of the consistency of TTT itself).  An intuitive way to say what it happening here is that Jensen noticed that it is possible to skip types in a certain sense in TSTU in a way which is not obviously possible in TST itself.
+
+\subsubsection{How internal type representations unfold in TTT}
+
+We have seen above that TST can internally represent TST$_n$.   An attempt to represent types of TTT internally to TTT has stranger results.
+
+In TST the strategy for representing type $i$ in type $n>i$  is to use $n-i$-iterated singletons for a large enough $n$;  then membership of representations of type $i-1$ objects in type
+$i$ objects is represented by the relation on $n-i$-iterated singletons induced by the subset relation.  This is described more formally above.
+
+In TTT the complication is that there are numerous ways to embed type $\alpha$ into type $\beta$ for $\alpha<\beta$ along the lines just suggested.    We define a generalized
+iterated singleton operation:  where $A$ is a finite subset of $\lambda$, $\iota_A$ is an operation defined on objects of type ${\tt min}(A)$.  $\iota_{\{\alpha\}}(x)=x$.
+If $A$ has $\alpha<\beta$ as its two smallest elements, $\iota_A(x)$ is  $\iota_{A_1}(\iota_{\alpha,\beta}(x))$, where $A_1$ is defined as $A \setminus \{{\tt min}(A)\}$ (a notation we will continue to use) and $\iota_{\alpha,\beta}(x)$ is the unique type $\beta$ object whose only type $\alpha$ element is $x$.
+
+Now for any nonempty finite $A \subseteq \lambda$ with minimum $\alpha$ and maximum $\beta$. the range of $\iota_A$ is a set, and a representation of type $\alpha$ in
+type $\beta$.  For simplicity we carry out further analysis in types $\beta, \beta+1,\beta+2\ldots$ though it could be done in more general increasing sequences.  Use the notation
+$\tau_A$ for the range of $\iota_A$, for each set $A$ with $\beta$ as its maximum.  Each such set has a cardinal $|\tau_A|$ in type $\beta+2$.  It is a straightforward
+argument in the version of TST with types taken from $A$ and a small finite number of types $\beta+i$ that $2^{|\tau_A|} = |\tau_{A_1}|$ for each $A$ with at least two elements.
+The relevant theorem in TST is that $2^{|\iota^{n+1}``X|} = \iota^n``X$, relabelled with suitable types from $\lambda$.   We use the notation $\exp(\kappa)$ for $2^\kappa$ to support iteration.  Notice that for any $\tau_A$ we have $\exp^{|A|-1}(|\tau_A|) = |\tau_{\{\beta\}}|$, the cardinality of type $\beta$.  Now if $A$ and $A'$ have the same minimum $\alpha$ and maximum $\beta$ 
+but are of different sizes, we see that $|\tau_A| \neq |\tau_{A'}|$, since one has its $|A|-1$-iterated exponential equal to $|\tau_{\{\beta\}}|$ and the other has its $|A'|-1$-iterated exponential equal to $|\tau_{\{\beta\}}|$.  This is odd because there is an obvious external bijection between the sets $\tau_A$ and $\tau_{A'}$:  we see that this external bijection cannot be realized as a set.  $\tau_A$ and $\tau_{A'}$ are representations of the same type, but this is not obvious from inside TTT.  We recall that we denote $A \setminus \{{\tt min}(A)\}$ by $A_1$;  we further denote $(A_i)_1$ as $A_{i+1}$.  Now suppose that $A$ and $B$ both have maximum $\beta$ and $A \setminus A_i = B \setminus B_i$, where $i<|A| \leq |B|$.
+We observe that for any concrete sentence $\phi$  in the language of TST$_i$, the truth value of $\phi$ in natural models with base type of sizes $|\tau_A|$ and $|\tau_B|$ will be the same, because the truth values we read off are the truth values in the model of TTT of versions of $\phi$ in exactly the same types of the model (truth values of $\phi^s$ for
+any $s$ having $A \setminus A_i = B\setminus B_i$ as the range of an initial segment).  This much information telling us that $\tau_{A_j}$ and $\tau_{B_j}$ for $j<i$ are representations of the same type  is visible to us internally, though the external isomorphism is not.  We can conclude that the full first-order theories of natural models of TST$_i$ with base types $|\tau_A|$ and $|\tau_B|$ are
+the same as seen inside the model of TTT, if we assume that the natural numbers of our model of TTT are standard.
+
+\newpage
+
+\subsection{Tangled webs defined}
+
+The situation just described in a model of TTT can be transferred to ZF or fragments thereof.  We favor bounded Zermelo set theory with extensionality weakened to allow a set of atoms with the assumption that everything is
+in a rank of the cumulative hierarchy (the set of atoms being rank 0):  this is no stronger than TST + Infinity and supports the Scott definition of cardinal (we do not want to assume choice, because the situation we are about to described refutes choice).  Recall that the Scott cardinal of a set $A$ is the set of all sets $B$ such that $B \sim A$ which are of minimal rank.
+
+A tangled web is a function $\tau$ from nonempty finite subsets of a limit cardinal $\lambda$ to cardinals with the following properties
+
+\begin{description}
+
+\item[naturality:]  For each $A$ with $|A| \geq 3$, $2^{\tau(A)} = \tau(A_1)$
+
+\item[elementarity:]  For each $A,B$ with $A\setminus A_{n+1} = B \setminus B_{n+1}$ and $n+1\leq|A|\leq |B|$, the theories of natural models of TST$_n$ with base types $\tau(A)$ and $\tau(B)$ will be the same.
+
+\end{description}
+
+The conditions stated here are weaker than those which hold in the implementation $\tau(A) = |\tau_A|$ in TTT suggested by the discussion above;  the weaker conditions are what we can make hold in our construction below, and they turn out to be sufficient 
+for us to show the following
+
+\begin{description}
+
+\item[Theorem:]  The existence of a tangled web implies the consistency of NF
+
+\item[Proof:]  Suppose that there is a tangled web $\tau$.  Let $\Sigma$ be a finite set of formulas in the language of TST.  Let $n$ be any natural number dominating all types which occur
+in a formula in $\phi$.  We define a partition of $[\lambda]^{n+1}$ (where $\tau$ is defined on nonempty subsets of $\lambda$), putting each $A \in [\lambda]^{n+1}$ in a partition
+determined by the truth values of the formulas in $\Sigma$ in natural models of TST with base type of cardinality $\tau(B)$ with $|B|>n+1$ and $B \setminus B_{n+1}=A$.  This partition has a homogeneous set $H$ of size $n+2$.  A natural model of TST$_{n+1}$ with base type $\tau(H)$ satisfies $\phi \leftrightarrow \phi^+$ for each $\phi \in \Sigma$, because
+$\phi$ is satisfied in this model iff $\phi^+$ is satisfied in the model  of TST$_n$ whose base type is type 1 of this natural model, which has size $2^{\tau(H)} = \tau(H_1)$, which has the same theory by homogeneity of $H$ with respect to the partition.  Consistency of TST + Ambiguity follows by compactness, since we have shown that TST$_{n+1}$ is consistent with ambiguity for any finite set of formulas of the language of TST for any large enough $n$.
+
+\end{description}
+
+The actual existence of a tangled web in a model of TTT would follow if the model had standard natural numbers and every subset of a type in the model with cardinality less than or equal to the cardinality of $\lambda$  was implemented in each higher type in the model.
+
+It is also worth noting that the definition of a tangled web and the proof that existence of a tangled web implies consistency of NF do not depend on understanding anything about tangled type theory at all.
+
+\newpage
+
+\section{The construction of a tangled web in ZFA}
+
+We work in ZFCA (Zermelo-Fraenkel set theory with choice and with extensionality weakened to allow a set of atoms), with some assumptions about the size of the set of atoms which we will detail
+shortly.  Consistency of this theory relative to ZFC is unproblematic.  In this theory, we carry out a Fraenkel-Mostowski construction of an interpretation of ZFA in which there is a tangled web.  This establishes the consistency of New Foundations.
+
+\subsection{The description of the postulated structure}
+
+In this section, we describe the structure which turns out to be the Fraenkel-Mostowski model containing a tangled web.  It is rather elaborate.
+
+\newpage
+
+\subsubsection{Important cardinals and related concepts}
+
+We specify a limit cardinal $\lambda$.  Our intention is to construct a tangled web with domain the nonempty finite subsets of $\lambda$.  This ordinal can be $\omega$ but does not have to be.
+
+If $A$ is a nonempty finite subset of $\lambda$, we define $A_1$ as $A \setminus {\tt min}(A)$.  We define $A_{i+1}$ as $(A_i)_1$ if this is defined.
+
+We let $\ll^*$ be the unique strict well-ordering of finite subsets of $\lambda$ satisfying these conditions ($A$, $B$ ranging over all finite subsets of $\lambda$):
+
+\begin{enumerate}
+
+\item  $A \ll^* \emptyset$
+
+\item  If ${\tt max}(A) < {\tt max}(B)$, then $A \ll^* B$.
+
+\item  If ${\tt max}(A) = {\tt max}(B)$, then $A \ll^* B \leftrightarrow A \setminus \{{\tt max}(A)\} \ll^* B \setminus \{{\tt max}(B)\}$.
+
+\end{enumerate}
+
+We further define $A \ll B$ as $(\exists i \in {\mathbb Z}^+:A_i = B)$:  that is, $B$ is a proper initial segment of $A$ in the natural order.  It should be clear
+that $A \ll B \rightarrow A \ll^* B$.
+
+We specify an regular cardinal $\kappa>\lambda$ (and so uncountable).  This can be $\omega_1$ but does not have to be.  We call sets of cardinality $<\kappa$ {\em small\/} and all other sets
+{\em large}.  The intention is that all subsets of the model of ZFA with a tangled web which are small will be sets in the model of ZFA, so the meaning of ``small" will be unequivocal (the same in the ambient set theory and in the FM interpretation).
+
+We specify a strong limit cardinal $\mu$ whose cofinality is at least $\kappa$.  This can be $\beth_{\omega_1}$ but does not have to be.
+
+\newpage
+
+\subsubsection{The structure of the set of atoms; clans and litters}
+
+There are $\mu$ atoms.
+
+We provide a partition of the atoms into disjoint sets $\tau^0_A$ indexed by nonempty finite subsets of $\lambda$, each of these sets being of size $\mu$.
+These sets may be referred to as {\em clans}: the notation for $\tau^0_A$ in older accounts of this argument is ${\tt clan}[A]$.
+
+We provide a partition of each $\tau^0_A$ into sets of size $\kappa$ which we refer to as {\em litters\/}.  A subset of a clan with small symmetric difference from a litter
+we call a {\em near-litter\/}.  If $N$ is a near-litter, we denote the litter with small symmetric difference from $N$ by $N^{\circ}$.  Elements of $N \Delta N^{\circ}$ we may refer to as anomalies or anomalous elements of $N$.  The collection of all near-litters $N$ such that $N^{\circ}=L$ we call the local cardinal of $L$ and denote by $[L]$.  We will see that in the FM model the local cardinal of $L$ will be the intersection of the Scott cardinal of $L$ with the clan to which $L$ belongs.  We define $K_A$ as the set of local cardinals of litters included in $\tau^0_A$.
+
+We define $\tau^1_A$ as the set of all subsets $X$ of $\tau^0_A$ for which there is a small set $Y$ of litters included in $\tau^0_A$ such that either $X \Delta \bigcup Y$ is small
+or $X \Delta (\tau^0_A \setminus \bigcup Y)$ is small.  In other words, $\tau^1_A$ is the collection of all subsets of $\tau^0_A$ which have small symmetric difference from small or co-smal unions of litters.  We will see that the FM model sees $\tau^1_A$ as the power set of $\tau^0_A$.
+
+We will construct subsets $\tau^2_A$ of each $\tau^1_A$ whose description is rather elaborate (recursive along $\ll^*$).  These sets are each of size $\mu$.  The FM model we eventually
+construct will see $\tau^2_A$ as the power set of $\tau^1_A$.  Further, the value of the tangled web at $A$ in the FM model will be the FM model's cardinality for $\tau^2_A$.
+
+\newpage
+
+\subsubsection{Isomorphisms on the $\tau^i_A$'s;  parent maps}
+
+For each $\alpha$ we choose a map $\chi_\alpha$ which is an injective map with domain the union of all $\tau^0_A$ with ${\tt max}(A)=\alpha$ and $|A|>1$ whose restriction
+to each such $\tau^0_A$ is a bijection from $\tau^0_A$ to $\tau^0_{A\setminus \{{\tt max}(A)\}}$.  We further require that the elementwise image of a litter under $\chi_\alpha$ is a litter.
+
+
+
+We extend the action of $\chi_\alpha$ to any set whose transitive closure contains no atoms not in its domain by the rule $\chi_\alpha(X) = \chi_\alpha``X$.
+
+The motivation for our use of maps $\chi_A$ is to provide a way to identify elements of sets $\tau^i_A$ with elements of $\tau^i_{A \setminus \{{\tt max}(A)\}}$, via the
+map $\chi_{{\tt max}(A)}$:  recall our intuitive motivation of tangled webs by ``unfolding" types in TTT, in which all representations of types indexed by sets with the same minimal element are to be understood as secretly representing he same type.
+
+We will provide for each pair $\{\alpha,\beta\}$, $\alpha>\beta$, a map $\Pi_{\{\alpha,\beta\}}$, a bijection from $K_{\{\alpha,\beta\}}$ to the union of
+$\tau^0_{\{\alpha\}}$ and all sets $\tau^2_{\{\alpha,\beta,\gamma\}}$ for which $\gamma<\beta$.  For each $A$ with $|A|\geq 3$ we define $\Pi_A$ as $\chi_{{\tt max}(A)}^{-1}(\Pi_{A \setminus \{{\tt max}(A)\}})$. 
+
+ It follows that $\Pi_A$ is a bijection from $K_A$ to the union of $\tau^0_{A_1}$ and the union of all $\tau^2_B$ for which $B_1=A$.
+
+Traditional terminology from older versions of this argument which I will feel free to use:   when $x$ is an atom in the clan $\tau^0_A$ belonging to the litter $L$, to refer to $\Pi_A([L])$ as the {\em parent\/} of $x$, or of $L$, or for that matter of $[L]$ or of any $N \in [L]$.
+
+\newpage
+
+\subsubsection{Allowable permutations and supports}
+
+We allow a permutation $\pi$ of the set of atoms to induce a permutation of the entire universe by the rule $\pi(A) =\pi``A$.
+
+An $A$-allowable permutation is a permutation of atoms whose action fixes each $\tau^0_B$, fixes each $K_B$ (so it always maps litters to near-litters in the same clan), and fixes $\Pi_B$ for $B \ll^* A$
+%and (if $A$ is nonempty) for $B=A$
+.  
+An $\emptyset$-allowable permutation is simply called an allowable permutation.
+
+A small well-ordering of atoms and near-litters is called a support.   An object $X$ has $A$-support $S$ iff $S$ is a support and each $A$-allowable permutation $\pi$ such that $\pi(S)=S$ also
+satisfies $\pi(X)=X$.  A strict $A$-support is one for which if its domain meets $\tau^i_B$, we have $B \ll A$ or $B=A$ (i.e. $B$ is a downward extension of $A$).
+
+An object $X$ has prestrong $A$-support $S$ iff $X$ has $A$-support $S$ and $S$ is a strict $A$-support and each atom in the domain of $S$ which is not in $\tau^0_A$ belongs to a near-litter in the domain of $S$ preceding it in $S$ and for each near litter $N \in{\tt dom}(S)$ belonging to $\tau^1_B$ for $B \ll A$% or $B=A$
+, the segment of $S$
+before $N$ includes  a strict $C$-support of $\Pi_B([N])$ where  $\Pi_B([N])\in \tau^i_C$ for $i=0,2$, unless $C=A$, and each near-litter in the domain of $S$ is a litter.
+
+An object $X$ has strong $A$-support $S$ iff $X$ has prestrong $A_1$-support $S$ (so $S$ is actually an $A_1$-support), and each element of $S$ belongs to 
+a $\tau^i_C$ with $C \ll A$, $C=A$ or $C = A_1$.
+
+\newpage
+
+\subsubsection{The definition of $\tau^2_A$ (mod a refinement)}
+
+The collection $\tau^2_A$ consists exactly of those subsets of $\tau^1_A$ which have strong $A$-supports (these will turn out to be exactly those which have $A_1$-supports).
+
+This actually completes the definition of the sets $\tau^2_A$, mod the choice of the maps $K_B$ for $B \ll^* A$ and $B=A$, and an annoying refinement described in the next subsection, as long as we can verify that $\tau^2_A$ is of size $\mu$
+in the ambient set theory.
+
+The role of the maps $\chi_{\alpha}$ is to provide an isomorphism between sets $\tau^2_A$ and $\tau^2_{A \cup B}$ with respect to set theoretical structure and relevant maps $\Pi_C$ (mapped to $\Pi_{C \cup B}$) when all elements of $B$ dominate all elements of $A$:
+$\chi_{{\tt max}(A)}$ witnesses an isomorphism between $\tau^2_A$ and $\tau^2_{A \setminus \{{\tt max}(A)\}}$, and iteration of this fact gives the stated result.
+
+\newpage
+
+\subsubsection{Refinement of the choice of the parent maps; analysis of supports}
+
+We describe an annoying refinement of the choice of the maps $\Pi_{\{\alpha,\beta\}}$ which seems to be necessary.
+
+We provide a well-ordering $<^1_{\alpha,\beta}$ of the union of $\tau^0_{\{\alpha\}}$ and all sets $\tau^2_{\{\alpha,\beta,\gamma\}}$ with $\gamma<\beta<\alpha$.  We provide a well-ordering $<^2_{\alpha,\beta}$ of $K_{\{\alpha,\beta\}}$.  We stipulate that both orders are of order type $\mu$.  We define orders $<^i_A$:  $<^i_A$ for $|A|>1$ is the image under $\chi_{{\tt max}(A)}^{-1}$ of $<^i_{A \setminus \{{\tt max}(A)\}}$ ($i=1,2$).
+
+We regiment the construction of $K_{\{\alpha,\beta\}}$.  The idea is that when we apply $\Pi_{\{\alpha,\beta\}}$ to an  element $[L]$ of $K_{\{\alpha,\beta\}}$, we want to obtain, if the ordinal is even, the $<^1_{\alpha,\beta}$-first element of $\tau^0_{\{\alpha\}}$ not already used as a value at  a $<^2_{\alpha,\beta}$-earlier element of $K_{\{\alpha,\beta\}}$, and if the ordinal is odd,
+the $<^1_{\alpha,\beta}$-first element not already used as a value at  a $<^2_{\alpha,\beta}$-earlier element of $K_{\{\alpha,\beta\}}$ in the appropriate well-ordering of a $\tau^2_{\{\alpha,\beta,\gamma\}}$ which has an $\{\alpha,\beta\}$-prestrong support $S$ such that any element of the domain of $S$ which is an element $M$ of $\tau^1_{\{\alpha,\beta\}}$ 
+has had $\Pi_{\{\alpha,\beta\}}([M])$ already defined (that is, $[M] <^2_{\alpha,\beta} [L]$).
+
+We observe that any strict $B$-support included in a segment in a prestrong $A$-support ($B \ll A$, and so if the support is nonempty, $B_i=A$ for some $i$) is included in a strong $B$-support included in the same segment, because the closure conditions of
+a prestrong $A$-support ensure that the segment already includes suitable $B_1$-supports of each element of $\tau^2_B$ in the strict $B$-support.
+
+A consequence of this is that every element of any $\tau^2_A$ has an $A$-strong support with the further property that for for each $L \in \tau^1_A$ which is in $S$,
+there is a $A$-strong support for $\Pi_A([L])$ included in the segment  preceding $L$ with the property that for each $M$ in this support belonging to $\tau^1_A$, we have $[M]<^2_A[L]$.
+
+A further consequence is that any strict $A$-support  can be extended to an $A$-strong support.  This is done by adding supports of litters appearing in the support which
+satisfy the condition just stated before the litter in question.  This process can be iterated through $\omega$ stages to obtain an ordered set, which will be a well-ordering because it is impossible to have an infinite regress in the process of adding items to the support:  a litter  needed for a strong support of an element of $\tau^1_B$ will either be in $\tau^1_B$ and earlier in the well-ordering $<^2_B$, or will be in a $\tau^2_C$ with $C\ll B$.
+
+\newpage
+
+\subsubsection{The Fraenkel-Mostowski models; claims to be checked}
+
+There are actually models determined by each finite subset $A$ of $\lambda$.
+
+We say that a set is $A$-symmetric if it has an $A$-support.   There is a model of ZFA consisting of the atoms and hereditarily $A$-symmetric sets, by standard results about the
+Fraenkel-Mostowski permutation method.
+
+We use the notation ${\cal P}_*(X)$ for the power set of $X$ in an FM model.  We use the notation $|X|_*$ for the Scott cardinal of $X$ in an FM model.
+
+The model we are ultimately concerned with is the model consisting of the atoms and the hereditarily $\emptyset$-symmetric sets.
+
+We list claims that we need to verify.
+
+\begin{enumerate}
+
+\item The cardinality of $\tau^2_A$ is $\mu$.  This must be verified for each $B \ll A$ for $\tau^2_A$ to even be defined.
+
+\item ${\cal P}_*(\tau^0_A) = \tau^1_A$  for any $A$ in any of the FM models.
+
+\item ${\cal P}_*(\tau^1_A) = \tau^2_A$ in the model consisting of atoms and $B$-symmetric sets if $B=A_1$ or $A_1 \ll^* B$. 
+
+\item $\tau(A) = |\tau^2_A|_*$ defines a tangled web in the model consisting of atoms and $\emptyset$-symmetric sets.
+
+\end{enumerate}
+
+\newpage
+
+\subsection{Verification of the properties of the purported model}
+
+In this section, we verify that the structure defined above actually contains the tangled web indicated.
+
+\newpage
+
+\subsubsection{Mod the indicated claims, $\tau$ is a tangled web.}
+
+We verify that (subject to outstanding claims) we can show that $\tau(A) = |\tau^2_A|_*$ defines a tangled web in the FM model determined by all allowable permutations.  Please note that cardinalities and exponentiation maps on cardinals in the argument for the elementarity property which  follows are those of the FM model.
+
+We use the notation $|A|_* \leq |B|_*$ for assertions that the cardinal of $A$ is less than the cardinal of $B$ in the FM model.  We use the notation $2^{|A|_*}$ for $|{\cal P}_*(A)|_*$.
+
+Obviously $|K_A|_* \leq |\tau^2_A|_*$, since elements of $K_A$ are elements of $\tau^2_A$.  An element of $K_A$, the local cardinal of a litter, has the well-ordering on the singleton of that litter
+as a support.  Further, in fact $2^{|K_A|_*} \leq |\tau^2_A|_*$, because subsets of $K_A$ are in one to one correspondence with their set unions, which are elements of
+$\tau^2_A$, because $K_A$ is a pairwise disjoint collection.  Because of the existence of the map $\Pi_A$, we have $|\tau^0_{A_1}|_* \leq |K_A|_*$ and
+$|\tau^2_B|_* \leq |K_A|_*$ when $B_1=A$.  We define $\exp(|A|_*) = 2^{|A|_*}$.
+
+The inequalities above further give $\exp(|\tau^0_{A_1}|_*) \leq |\tau^2_A|_*$ and $\exp(|\tau^2_B|_*) \leq |\tau^2_A|_*$ when $B_1=A$, so $\exp(|\tau^2_{A}|_*) \leq |\tau^2_{A_1}|_*$ when $|A|\geq 3$.
+
+Further, we get $\exp^2(|\tau^0_{A_1}|_*) = |\tau^2_{A_1}|_* = |\tau(A_1)|_* \leq \exp(|\tau^2_A|_*) = \exp(\tau(A))$.
+
+and $\exp(|\tau^2_{A}|_*) = \exp(\tau(A)) \leq |\tau^2_{A_1}|_* = \tau(A_1)$ (where $|A| \geq 3$), so we have the naturality property of a tangled web for $\tau$.
+
+The natural model of TST$_n$ with base type $\tau^2_A$ is sent by the composition of $\chi_\alpha$'s determined by the elements of $A_{n+1}$
+to the natural model of TST$_n$ with base type $\tau^2_{A \setminus A_{n+1}}$, and the $\chi_\alpha$'s are external isomorphisms for all relevant structure, so the first order theory of these models is the same.  For this to make sense of course we need $|A| \geq n+1$.
+The reason for this is that the size of type $i<n$ in the first model is internally seen to be the same as that of $\tau^2_{A_i}$, and type $i$ in the  second is internally seen to be the same size
+as  $\tau^2_{(A \setminus A_{n+1})_i} = \tau^2_{A_i \setminus A_{n+1}}$, and independently of the value of $i$ the same composition of $\chi_\alpha$'s serves as an external isomorphism.
+This verifies the elementarity property of $\tau$.
+
+\newpage
+
+\subsubsection{The Freedom of Action theorem}
+
+If $\pi$ is an allowable permutation, we say that an atom $x$ is
+an exception of $\pi$ if either $\pi(x) \not\in \pi(L)^{\circ}$ or $\pi^{-1}(x) \not\in \pi^{-1}(L)^\circ$, where $L$ is the litter containing $x$.
+
+Define a local bijection as a map from atoms to atoms which is injective, has domain the same as its range,  sends elements of a given $\tau^0_A$ to elements of the same
+$\tau^0_A$, and whose domain has small intersection with each litter (empty being a case of small).
+
+
+
+The Freedom of Action theorem asserts that for any $A$, any local bijection $\pi_0$ whose domain meets no $\tau^0_C$ with $A \ll C$ can be extended to an $A$-allowable permutation $\pi$ with the property that each exception of $\pi$ is either
+fixed by $\pi$ or belongs to the domain of $\pi_0$.
+
+We commence proving the Freedom of Action theorem.  Fix a local bijection $\pi_0$ and a finite subset $A$ of $\lambda$. 
+
+Specify a well-ordering $<_L$ of type $\kappa$ of each litter $L$.  For each co-small subset $L'$ of a litter $L$ and co-small $M'$ of a litter $M$ define $\pi_{L',M'}$ as
+the unique bijection from $L'$ to $M'$ such that $\pi_{L',M'}(x) <_M \pi_{L',M'}(y)$ iff $x <_L y$, for all $x,y \in L'$.  
+
+For any atom $x$, we compute $\pi(x)$ by a recursion along a strong support of $x$. 
+
+If $x$ is in the domain of $\pi_0$, $\pi(x) = \pi_0(x)$.
+
+If $x$ is in a $\tau^0_B$ with $A \ll B$, and not in the domain of $\pi_0$, $\pi(x)=x$.  Alternatively, $\pi$ could be made to agree with an arbitrary $\pi'$ extending $\pi_0$ and sending local cardinals to local cardinals at such values.
+
+For the remaining cases, in which $x \in \tau^0_B \setminus {\tt dom}(\pi_0)$ and $B \ll A$ or $B=A$, we first compute $\pi(\Pi_B([L]))$, where $L$ is the litter to which $x$ belongs,
+then $\pi(x) = \pi_{L \setminus {\tt dom}(\pi_0),\pi(L)^\circ \setminus {\tt dom}(\pi_0)}(x)$, where $\pi(L)^\circ$ is the litter in $\Pi_B^{-1}(\pi(\Pi_B([L])))$.
+
+It should be evident that what we have said already enforces that $\pi$ has no exceptions outside the domain of $\pi_0$.
+
+It remains to say how to compute $\pi(\Pi_B([L]))$.
+
+We note that $L$ precedes $x$ in the strong support, and we assume as an inductive hypothesis that we have computed $\pi$ already for all items before $L$.
+This will include all elements of a strong $C$-support of $\pi(\Pi_B([L]))$, where $\Pi_B([N]) \in \tau^i_C$.  If $i=0$ we are computing $\pi$ at an atom as above, and
+by inductive hypothesis $\pi$ has already been computed at this atom.
+
+If $i=2$, extend the union of $\pi_0$ and the restriction of $\pi$ to the atoms in this strong $C$-support to a local bijection $\pi'_0$, with the restriction
+that no exceptions mapping from or into litters in the support are created.  Apply the inductive hypothesis that the Freedom of Action theorem applies to $C\ll A$ to produce
+a permutation $\pi'$ extending this local bijection $\pi'_0$ without creating exceptions outside its domain.   We argue that each litter $N$ in the support is mapped by $\pi'$ to the value
+already computed for $\pi(N)$.  Suppose otherwise:  let $N$ be the first counterexample in the strong support.  It follows that $[N]\in \tau^2_D$ in the support is sent to the same value by $\pi$ that it is by $\pi'$ because $\pi$ and $\pi'$ agree on a $C$-support of $\Pi_D([N])$ (or in one odd case at a $C_1$-support, but this also works).  If $\pi(N)$ is not the same as $\pi'(N)$ there must be exceptions of either $\pi$ or $\pi'$ at which the two maps do not agree.  But in fact $\pi$ and $\pi'$ agree on all exceptions of either of the two maps (all elements of the domains of either local bijection) which lie in or are mapped into the litter $N$ ($\pi$ and $\pi'$ may disagree at some exceptions of $\pi'$ which are neither in $N$ nor mapped into $N$).
+
+It is then clear that $\pi'(\Pi_B([N]))$ is the only possible value for  $\pi(\Pi_B([N]))$
+
+We need to verify that it doesn't matter which strong support of $x$ we use for this computation.  Consider the first element of the strong support given for
+$x$ at which different computations of values of $\pi$ are possible.  It must be a near-litter, as an atom is preceded by the litter containing it and the computation at a litter
+uniquely determines the value we get at each of its elements.  Suppose the litter $N$ admits more than one computation.  Take the support $S$ for $[N]$ extracted
+from the current computation and the alternative support $T$ from which the supposed alternative computation is obtained.  Construct the support obtained by
+following $T$ with $S$ and deleting duplicates in $S$ already found in $T$.  Computation along this support must give a value for $[N]$ agreeing with the computation
+along $T$ for values of $\pi$ on the domain of $T$ (because $T$ is considered first), and it must also give a value agreeing with the computation along $S$ for values on $S$ (because values on $S$ are unique), so the values obtained at $[N]$ must be the same (because the permutation $\pi'$ obtained as above from the long support is forced to give values at $[N]$ which agree with values computed along $S$ or $T$).  Once the value at $[N]$ is determined, the value at $N$ is determined.
+
+
+\newpage
+
+\subsubsection{The power set of $\tau^0_A$ is $\tau^1_A$ in suitable FM interpretations}
+
+We show that if $A=B$ or $A \ll B$, then the power set of $\tau^0_A$ in the FM interpretation based on $B$-allowable permutations is $\tau^0_A$.
+
+Clearly a set $X$ in $\tau^1_A$ has a $B$-support:  $X$ is either $\bigcup Y \Delta Z$ or $(\tau^0_A \setminus \bigcup Y) \Delta Z$, where $Y$ is a small set
+of litters included in $\tau^0_A$ and $Z$ is a small subset of $\tau^0_A$.  Clearly $Y \bigcup Z$ is a $B$-support of $X$, and also an $A$-support.
+
+Now suppose that a set $X \subseteq \tau^0_A$ has a $B$-support $S$, and so has a strong $B$-support $S$.
+
+We argue that the intersection of $X$ with any llitter $L$ must be small or a co-small subset of $L$.  Suppose otherwise:  that $L \cap X$ and $L \setminus X$ are both large.
+Let $S$ be a strong support extending the well ordering obtained from a strong support $T$ of $X$ by appending $L$ to it if it is not already present.  Choose $a$ from $L \cap X$ and $b$ from $L \setminus X$, neither appearing in the domain of $S$.  Define a local bijection swapping $a$ and $b$ and fixing each atomic element of the domain of $S$.  Extend this local bijection to
+a $B$-allowable permutation with no exceptions not in the domain of the local bijection.  This permutation will fix each litter $M$ in $S$ because it fixes a support of the local cardinal of the litter
+and it has no exception mapped into or out of $M$ because each of its exceptions is either fixed or mapped to another element of the same litter $L$ (in the case of $a,b$).
+So this allowable permutation must fix $L \setminus X$ and $L \cap X$, because it fixes a support thereof, but at the same time it clearly moves these sets.  This is impossible,
+so $X$ must intersect any litter $L$ in a small or co-small subset of $L$.
+
+We show that $X$ cannot cut a large collection of litters nontrivially.  Suppose otherwise.  Let $S$ be a strong $B$-support of $X$ .  Let $L$ be a litter which is cut by $X$
+and which does not belong to or meet the domain of $S$.  Let $a$ belong to $L \cap X$ and $b$ belong to $L \setminus X$.  Consider a local bijection swapping $a$ and $b$ and fixing each atomic element of the domain of $S$.  Extend it to an allowable permutation with no exceptions outside the domain of the local bijection.  This allowable permutation fixes each litter
+element of $S$, and so fixes $X$.  But it clearly does not fix $X$.  So the collection of litters nontrivially cut by $X$ must be small.
+
+We show that the collection of litters meeting $X$ and the collection of litters disjoint from $X$ cannot both be large.  Suppose otherwise.  Let $S$ be a strong $B$-support of $X$.
+Choose a litter $L$ included in $X$ and a litter $M$ disjoint from $X$ and included in $\tau^0_A$  and $a \in L$ and $b \in M$, none of these belonging to the domain of $S$.  Define a local bijection swapping $a$ and $b$ and fixing each atomic element of $S$.  Extend it to a $B$-allowable permutation with no exceptions other than elements of the domain.  This will fix
+each litter in $S$ (it has no exceptions which are moved and belong to elements of $S$) and so must fix $X$, but clearly does not.
+
+From these results it follows that $X$ must have small symmetric difference from a small or co-small union of litters included in $\tau^0_A$, that is, it must belong to $\tau^1_A$.
+
+Notice that this means that local cardinals of litters actually are subsets of the Scott cardinals of those litters.
+
+\newpage
+
+\subsubsection{The power set of $\tau^1_A$ is the same for $A$- and $\emptyset$-allowable permutations.}
+
+The power set of $\tau^1_A$ in the interpretation based on $A$-allowable permutations is $\tau^2_A$.  We claim that if $A \ll B$, the power set of  $\tau^1_A$ in
+the interpretation based on $B$-allowable permutations is also $\tau^2_A$.
+
+It is sufficient to argue that any subset $X$ of $\tau^1_A$ with a strong $B$-support $S$ also has a strong $A$-support.
+
+And in fact this support $S'$ is easy to describe:  it is simply the set of all elements of $S$ which are in a set $\tau^i_C$ with $C_i = A$ for some $i$ or $C=A_1$.
+
+Let $\pi$ be an $A_1$-allowable permutation which fixes each element of $S'$.  Our aim is to show that $\pi(X)=X$.
+
+Let $Y$ be an element of $X$.  Let $T$ be an $A$-strong support of $Y$ extending $S'$, not containing any element of $\tau^1_{A_1}$ (it is straightforward to establish that
+an element of $\tau^1_A$ has such a support).  Define a local bijection which sends each atomic element of $T$ and each exception of $\pi$ lying in or mapped into a litter in $T$ to its image under $\pi$
+and fixes each atomic element of $S \setminus S'$.  We claim that the $B$-allowable permutation $\pi'$ extending this local bijection with no exceptions outside the domain of the local bijection  agrees with $\pi$ on each element of $T$ and fixes each element of $S$.  Note that $\pi' \circ \pi^{-1}$ fixes each atomic element of $T$ and each exception of $\pi$ lying in or mapped into a litter in $T$, which forces it to fix the local cardinal of each litter in $T$ (consider the first counterexample and the support of its local cardinal), and also each litter by restrictions on exceptions. 
+
+We verify a claim made in the previous paragraph.  An element of $\tau^2_A$
+can have an element of $\tau^1_{A_1}$ in its support.  Consider a litter $L$ in $\tau^1_{A_1}$ and consider the union of the set of all local cardinals $[M]$ with $P_A([M]) \in L$.
+This is clearly a set in $\tau^2_A$ which essentially has $L$ in its support.  But a set in $\tau^1_A$ cannot need such a set in its support:  it has a support consisting
+of a small collection of elements of $\tau^0_{A_1}$, which don't generate any commitment to fixing any litter in $\tau^1_{A_1}$ and supports for elements of
+$\tau^2_{A \cup \{\delta\}}$ which will have litters in $\tau^2_A$ as their most complex components, which may further generate obligations concerning elements
+of $\tau^0_{A_1}$, their parents.  This allows us to avoid the conflict between $T$ and $S \setminus S'$ which could occur if we had litters in $T$ belonging to $\tau^1_{A_1}$ which might have parents in $\tau^0_{A_2}$ whose values under $\pi$ might conflict with the need to fix
+litters in $S \cap \tau^1_{A_2}$.
+
+Thus $\pi(Y) = \pi'(Y)$.  Further,
+$\pi'$ fixes each element of $S$:  all we need to show is that it fixes litters in $S \setminus S'$.  It fixes their local cardinals:  consider the first counterexample and consider the action of
+$\pi'$ on its support; and exception discipline prevents it from moving the litters themselves because $\pi'$ has no exceptions in relevant $\tau^0_C$'s but fixed points.
+Thus $\pi'(X)=X$, from which it follows that $\pi(Y) \in X$ so $\pi(X) \subseteq X$.  Applying the same argument to $\pi^{-1}$ shows that $\pi(X)=X$ as desired.
+
+\newpage
+
+\subsubsection{The size of sets $\tau^2_A$ is $\mu$}
+
+The map $\Pi_A$ cannot be defined unless  $\Pi_{A \setminus A_2}$ can be defined, which requires that $\tau^0_{(A \setminus A_2)_1}$ be of size $\mu$ in the ambient set theory (true)
+and that $\tau^2_{(A \setminus A_2) \cup \{\delta\}}$ be of size $\mu$ in the ambient set theory, where $\delta <{\tt min}(A)$:  for this it is sufficient that $\tau^2_{{\tt min}(A),\delta}$ be
+of size $\mu$ for each $\delta<{\tt min}(A)$, since this set is the same size (a fact witnessed by a $\chi$ map).  This gives us enough information to establish
+that $\tau^2_A$ {\em exists\/}.  To complete an argument by induction that everything works correctly, we need to show further that $\tau^2_A$ is of size $\mu$ in the ambient set theory.
+
+There are $\mu$ subsets of size $<\kappa$ of a set of size $\mu$ (the cofinality of the strong limit cardinal $\mu$ being at least $\kappa$).  There are $\mu$ litters
+in any $\tau^1_B$ (obvious).  There are $\mu$ small sets of these litters and there are $\mu$ small subsets of $\tau^0_B$ as already noted, so there are $\mu$ elements of
+$\tau^1_B$, by the description of elements of $\tau^1_B$ already given.  There are $<\mu$ finite subsets of $\lambda$.  So it follows that there are $\mu$ $A$-supports
+for each $A$ (and $\mu$ supports in total).
+
+We introduce another special kind of support.  A nice $A$-support is a strict $A$-support in which each atom in the domain either belongs to no near-litter in the domain
+or is preceded by a near-litter containing it, in which distinct near-litters in the domain are disjoint, and in which each litter $L$ belonging to a $\tau^1_B$, $B \ll A$, is preceded by a $B$-support of $\Pi_B([L])$.  There is a certain general similarity to strong supports, but notice that litters in a nice support do not have to be near-litters, and that the image of a nice $A$-support under an $A$-allowable permutation is actually a nice support.
+
+If $S$ is a support of $x$, we define the coding function $\xi_{x,S}$ so that $\pi(x) = \xi_{x,S}(\pi(S))$ for each $A$-allowable permutation $\pi$.  Notice that if $\pi(S)=\pi'(S)$ then $\pi'\circ \pi^{-1}$ fixes $S$ and thus fixes $x$, so $\pi(x) = \pi'(x)$.  The coding function $\xi_{x,S}$  is a bijection from the orbit of $S$ under $A$-allowable permutations to the orbit of $x$.
+
+Our strategy is to show that there is a covering set of coding functions of size $<\mu$ for elements of $\tau^2_A$  for each $A$ (that is, a set of coding functions
+such that every element of $\tau^2(A)$ is a value of a coding function in this set).  Since there are $\mu$ supports, this establishes the desired result.
+
+We describe a combinatorial object associated with a nice $A$-support $S$ called its $A$-format:  replace each atom in $\tau^1_B$ in the support with $(\alpha,(1,B,\beta))$ where
+$\alpha$ is the ordinal position of the item and $\beta$ is the ordinal position of a near-litter $N$ including the atom if there is one ($\beta <\alpha$ in this case) or $\kappa$ if
+there is no such occurrence;  replace each near-litter in $\tau^1_B$ with $(\alpha,(2,\beta))$ if $\alpha$ is the position of the litter, $B \ll A_1$, and $\beta$ is the position of the
+atom $\Pi(B)([N^{\circ}])$ in the support, with $(\alpha,(3,\chi))$ if $B\ll A_1$ and $\chi(S^L_B) = L$, where $\chi$ is a coding function and $S^L_B$ is the maximal strict $B$-support
+included in the segment in $S$ before $L$, and with $(\alpha,(4,\emptyset))$ if $B = A_1$.  We assume that coding functions $\chi$ are taken from small covering sets of coding
+functions assumed to exist by inductive hypothesis.  It should be clear that when we set to work on $A$, we already know that there are $<\mu$ $B$-formats for each $B \ll A$, because we know by ind hyp that covering families are small, and otherwise they are structures of cardinality small relative to $\mu$ made up of components taken from sets of size suitably small relative to $\mu$.
+
+Formats of $A$-supports correspond precisely to orbits in $A$-allowable permutations of supports.
+
+Clearly, if an $A$-support has a certain format, its image under an $A$-allowable permutation will have the same format.  All the conditions describing the format
+are invariant under application of an allowable permutation of sufficient index.
+
+Now suppose that supports $S$ and $T$ have the same format.  Define a local bijection sending $S$ to $T$ in a natural sense:  each atom in $S$ should be mapped to the atom in the corresponding position in $T$.  This has the effect of ensuring that local cardinals of litters in $S$ are mapped to the corresponding litters in $T$ by a permutation extending the local bijection, if all earlier items in $S$ have been successfully mapped to the corresponding items in $T$, because a support for the local cardinal has been handled correctly.  We do a little extra work to ensure that near-litters in corresponding positions are mapped exactly to each other.   If $L$ corresponds to $M$, we have $[L]$ mapped to $[M]$.  Consider a specific object $x$ in
+$L \setminus L^\circ$.  Choose a sequence $x_0, x_1\ldots$ of items in $L^\circ$ and a sequence $x'_0,x'_1$ of items in $M^\circ$, none of these lying in the domain of the local bijection.
+Augment the local bijection to map $x$ to $x'_0$ and each $x_i$ to $x'_{i+1}$.   Similarly, if $y \in M\setminus M^\circ$, choose (for each such $y$) sequences $y_i$ in $M^\circ$ and
+$y'_i$ in $L^\circ$, and arrange for $y'_0$ to be mapped to $y$ and for $y'_{i+1}$ to be mapped to $y_i$.  Each new orbit then needs to be completed in a way which creates no new exceptions in litters in $S$ or $T$.  An $A$-allowable permutation extending the resulting local bijection and having no exceptions outside its domain sends $S$ exactly to $T$, so indeed the formats capture the
+orbits in $A$-supports determined by $A$-allowable permutations.
+
+We develop a representation for an $X \in \tau^2_A$.  For each element $Y$ of $X$, choose a small support consisting of atoms in $\tau^0_A$ and litters in $\tau^1_A$.
+For each litter $L$ in the support such that $\Pi_A([L]) \in \tau^2_B$, choose a $B$-nice support $T$ such that $\xi_{\Pi_A([L]),T}$ is in the appropriate covering set of coding functions
+of size $<\mu$.  For each other litter in the support, we get $\Pi_A([L])$ an atom in $\tau^0_{A_1}$.
+
+Merge all of this data into a nice support $S_Y$ for $Y$ with $S$ as an initial segment.  Notice that we can ensure that $<\mu$ formats for supports $S_Y$ are used:
+the exact data is a small sequence of atoms (information about which in the format is coded by a very limited range of ordinals) and a small sequence of nice $B$-supports as above, taken from small covering sets, and a further small sequence of atoms from $\tau^0_{A_1}$, and $S$.  Place $S$ initially, arrange the others in whatever order desired then remove duplicates.
+
+Now we claim that a coding function for $X$ is determined by two items, the support $S$ and 
+
+\newpage
+
+\section{Conclusions}
+
+
+
+
+
+
+
+
+\end{document}
