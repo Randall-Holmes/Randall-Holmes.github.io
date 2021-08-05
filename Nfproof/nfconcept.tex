@@ -1,0 +1,353 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb}
+
+\title{Another idea about tangled type theory}
+
+\author{Randall Holmes}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{Development of relevant theories}
+
+\subsection{The simple theory of types TST and TSTU}
+
+We introduce a theory which we call the simple typed theory of sets or TST, a name favored by the school of Belgian logicians who studied NF ({\em th\'eorie simple de types}).  This is not the same as the simple type theory of Ramsey and it is most certainly not Russell's type theory  (see historical remarks below).
+
+TST is a first order multi-sorted theory with sorts (types) indexed by the nonnegative integers.  The primitive predicates of TST are equality and membership.
+
+The type of a variable $x$ is written ${\tt type}($`$x$'$)$:  this will be a nonnegative integer.   A countably infinite supply of variables of each type is supposed.  An atomic equality sentence `$x=y$' is well-formed iff ${\tt type}($`$x$'$)={\tt type}($`$y$'$)$.
+An atomic membership sentence `$x \in y$' is well-formed iff ${\tt type}$`$(x$'$)+1 = {\tt type}($`$y$'$)$.
+
+The axioms of TST are extensionality axioms and comprehension axioms.
+
+The extensionality axioms are all the well-formed assertions of the shape $(\forall xy:x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z\in y))$.  For this to be well typed, the variables
+$x$ and $y$ must be of the same type, one type higher than the type of $z$.
+
+The comprehension axioms are all the well-formed assertions of the shape $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$, where $\phi$ is any formula in which $A$ does not occur free.
+
+The witness to $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$ is unique by extensionality, and we introduce the notation $\{x:\phi\}$ for this object.  Of course, $\{x:\phi\}$  is to be assigned type one higher than that of $x$;  in general, term constructions will have types as variables do.
+
+The modification which gives TSTU (the simple type theory of sets with urelements) replaces the extensionality axioms with the formulas of the shape $$(\forall xyw:w \in x \rightarrow (x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z\in y))),$$  allowing many objects with no elements (called atoms or urelements)  in each positive type.  A technically useful refinement adds a constant $\emptyset^i$ of each positive type $i$ with no elements:  we can then address the problem that $\{x^i:\phi\}$ is not uniquely defined when $\phi$ is uniformly false by defining $\{x^i:\phi\}$ as $\emptyset^{i+1}$.
+
+\subsubsection{Typical ambiguity}
+
+TST exhibits a symmetry which is important in the sequel.
+
+Provide a bijection $(x \mapsto x^+)$ from variables to variables of positive type satisfying   ${\tt type}($`$x^+$'$)$ = ${\tt type}($`$x$'$)+1$.
+
+If $\phi$ is a formula, define $\phi^+$ as the result of replacing every variable $x$ (free and bound) in $\phi$ with $x^+$.  It should be evident that if $\phi$ is well-formed, so is $\phi^+$,
+and that if $\phi$ is a theorem, so is $\phi^+$ (the converse is not the case).  Further, if we define a mathematical object as a set abstract $\{x:\phi\}$ we have an analogous
+object $\{x^+:\phi^+\}$ of the next higher type (this process can be iterated).
+
+The axiom scheme asserting $\phi \leftrightarrow \phi^+$ for each closed formula $\phi$ is called the Ambiguity Scheme.   Notice that this is a stronger assertion than is warranted by the symmetry of proofs described above.
+
+\subsubsection{Historical remarks}
+
+TST is not the type theory of the {\em Principia Mathematica\/} of Russell and Whitehead, though a description of TST is a common careless description of Russell's theory of types.
+
+Russell described something like TST informally in his 1904 {\em Principles of Mathematics\/}.  The obstruction to giving such an account in {\em Principia Mathematica\/} was that
+Russell and Whitehead did not know how to describe ordered pairs as sets.  As a result, the system of {\em Principia Mathematica\/} has an elaborate system of  complex
+types inhabited by $n$-ary relations with arguments of specified previously defined types, further complicated by predicativity restrictions (which are cancelled by an axiom of reducibility).
+The simple theory of types of Ramsey eliminates the predicativity restrictions and the axiom of reducibility, but is still a theory with complex types inhabited by $n$-ary relations.
+
+Russell noticed a phenomenon like the typical ambiguity of TST in the more complex system of {\em Principia Mathematica\/}, which he refers to as ``systematic ambiguity".
+
+In 1914, Norbert Wiener gave a definition of the ordered pair as a set (not the one now in use) and seems to have recognized that the type theory of {\em Principia Mathematica\/} could be simplified to something like TST, but he did not give a formal description.  The theory we call TST was apparently first described by Tarski in 1930.
+
+It is worth observing that the axioms of TST look exactly like those of ``naive set theory", the restriction preventing paradox being embodied in the restriction of the language by the type system.
+For example, the Russell paradox is averted because one cannot have $\{x:x \not\in x\}$ because $x \in x$ (and so its negation $\neg x \in x$) cannot be a well-formed formula.
+
+It was shown around 1950 that Zermelo set theory proves the consistency of TST with the axiom of infinity;  TST + Infinity has the same consistency strength as
+Zermelo set theory with separation restricted to bounded formulas.
+
+
+\newpage
+
+\subsection{Some mathematics in TST;  the theories TST$_n$ and their natural models}
+
+We briefly discuss some mathematics in TST.
+
+We indicate how to define the natural numbers.  We use the definition of Frege ($n$ is the set of all sets with $n$ elements).  0 is $\{\emptyset\}$ (notice that we get a natural number 0 in each type $i+2$;  we will be deliberately ambiguous in this discussion, but we are aware that anything we define is actually not unique, but reduplicated in each type above the lowest one in which it can be defined).  For any set $A$ at all we define $\sigma(A)$ as $\{a \cup \{x\}:a \in A \wedge x \not\in a\}$.  This is definable for any $A$ of type $i+2$ ($a$ being of type $i+1$ and $x$ of type $i$).  Define 1 as $\sigma(0)$, 2 as $\sigma(1)$,  3 as $\sigma(2)$, and so forth.  Clearly we have successfully defined 3 as the set of all sets with three elements, without circularity.
+But further, we can define $\mathbb N$ as $\{n:(\forall I:0 \in I \wedge (\forall x \in I:\sigma(x) \in I) \rightarrow n \in I\}$, that is, as the intersection of all inductive sets.
+$\mathbb N$ is again a typically ambiguous notation:  there is an object defined in this way in each type $i+3$.
+
+The collection of all finite sets can be defined as $\bigcup \mathbb N$.  The axiom of infinity can be stated as $V \not\in \bigcup \mathbb N$ (where $V= \{x:x=x\}$ is the typically ambiguous symbol for the type $i+1$ set of all type $i$ objects).  It is straightforward to show that the natural numbers in each type of a model of TST with Infinity are isomorphic in a way representable in the theory.
+
+Ordered pairs can be defined following Kuratowski and a quite standard theory of functions and relations can be developed.  Cardinal and ordinal numbers can be defined as Frege or Russell would have defined them, as isomorphism classes of sets under equinumerousness and isomorphism classes of well-orderings under similarity.  
+
+The Kuratowski pair $(x,y) = \{\{x\},\{x,y\}\}$ is of course two types higher than its projections, which must be of the same type.  There is an alternative definition (due to Quine) of an ordered pair
+$\left< x,y\right>$ in TST + Infinity which is of the same type as its projections $x,y$.  This is a considerable technical convenience but we will not need to define it here.  Note for example that if we use the Kuratowski pair the cartesian product $A \times B$ is two types higher than $A,B$, so we cannot define $|A| \cdot |B|$ as $|A \times B|$ if we want multiplication of cardinals to be a sensible operation.  Let $\iota$ be the singleton operation and define $T(|A|)$ as $|\iota``A|$ (this is a very useful operation sending cardinals of a given type to cardinals in the next higher type which seem intuitively to be the same).  The definition of cardinal multiplication if we use the Kuratowski pair is then $|A| \cdot |B| =T^{-2}(|A\times B|)$.  If we use the Quine pair this becomes the usual definition $|A| \cdot |B| =|A\times B|$.  Use of the Quine pair simplifies matters in this case, but it should be noted that the T operation remains quite important (for example it provides the internally representable isomorphism between the systems of natural numbers in each sufficiently high type).
+
+Note that the form of Cantor's Theorem in TST is not $|A| < |{\cal P}(A)|$, which would be ill-typed, but $|\iota``A|<|{\cal P}(A)|$:  a set has fewer unit subsets than subsets.  The exponential map $\exp(|A|) = 2^{|A|}$ is not defined as $|{\cal P}(A)||$, which would be one type too high, but as $T^{-1}(|{\cal P}(A))$, the cardinality of a set $X$ such that $|\iota``X| = |{\cal P}(A)|$;   notice that this is partial.  For example
+$2^{|V|}$ is not defined (where $V=\{x:x=x\}$, an entire type), because there is no $X$ with $|\iota``X|=|{\cal P}(V)|$, because $|\iota``V|<|{\cal P}(V)| \leq |V|$, and of course there is no set larger than $V$ in its type.
+
+For each natural number $n$, the theory TST$_n$ is defined as the subtheory of TST with vocabulary restricted to use variables only of types less than $n$ (TST with $n$ types).
+In ordinary set theory TST and each theory TST$_n$ have natural models, in which type 0 is implemented as a set $X$ and each type $i$ in use is implemented as ${\cal P}^i(X)$.  It should be clear that each TST$_n$ has natural models in bounded Zermelo set theory, and TST has natural models in a modestly stronger fragment of ZFC.
+
+Further, each TST$_n$ has natural models in TST itself, though some care must be exercised in defining them.  Let $X$ be a set.  Implement type $i$ for each $i<n$ as
+$\iota^{(n-1)-i}``{\cal P}^i(X)$.  If $X$ is in type $j$, each of the types of this interpretation of TST$_n$ is a set in the same type $j+n-1$.  For any relation $R$, define
+$R^{\iota}$ as $\{(\{x\},\{y\}):x R y\}$.  The membership relation of type $i-1$ in type $i$ in the interpretation described is the restriction of $\subseteq^{\iota^{(n-1)-i}}$ to
+the product of the sets implementing type $i-1$ and type $i$.
+
+Notice then that we can define truth for formulas in these natural models of TST$_n$ for each $n$ in TST, though not in a uniform way which would allow us to define truth for formulas
+in TST in TST.
+
+Further, both in ordinary set theory and in TST, observe that truth of sentences in models of TST$_n$ is completely determined by the cardinality of the set used as type 0.
+since two natural models of TST or TST$_n$ with base types implemented by sets of the same cardinality are clearly isomorphic. 
+
+\newpage
+
+\subsection{New Foundations and NFU}
+
+In 1937, Willard van Orman Quine proposed a set theory motivated by the typical ambiguity of TST described above.  The paper in which he did this was titled ``New foundations for mathematical logic", and the set theory it introduces is called ``New Foundations" or NF, after the title of the paper.
+
+Quine's observation is that since any theorem $\phi$ of TST is accompanied by theorems $\phi^+, \phi^{++}, \phi^{+++}, \ldots$ and every defined object $\{x:\phi\}$ is accompanied by
+$\{x^+:\phi^+\},\{x^{++}:\phi^{++}\},\{x^{+++}:\phi^{+++}\}$, so the picture of what we can prove and construct in TST looks rather like a hall of mirrors, we might reasonably suppose that the types are all the same.
+
+The concrete implementation follows.  NF is the first order unsorted theory with equality and membership as primitive with an axiom of extensionality $(\forall xy:x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z\in y))$ and an axiom of comprehension $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$ for each formula $\phi$ in which $A$ is not free which can be obtained from a formula of TST by dropping all distinctions of type.  We give a precise formalization of this idea:  provide a bijective map $(x \mapsto x^*)$ from the countable supply of variables (of all types) of TST onto the countable supply of variables of the language of NF.  Where $\phi$ is a formula of the language of TST, let $\phi^*$ be the formula obtained by replacing every veriable $x$, free and bound,
+in $\phi$ with $x^*$. For each formula $\phi$ of the language of TST in which $A$ is not free in $\phi^*$, an axiom of comprehension of NF asserts $(\exists A:(\forall x:x \in A \leftrightarrow \phi^*))$.
+
+In the original paper, this is expressed in a way which avoids explicit dependence on the language of another theory.  Let $\phi$ be a formula of the language of
+NF.  A function $\sigma$ is a stratification of $\phi$ if it is a (possibly partial) map from variables to non-negative integers such that for each atomic subformula
+`$x=y$'  of $\phi$ we have $\sigma($`$x$'$)=\sigma($`$y$'$)$ and for each atomic subformula `$x \in y$' of $\phi$ we have $\sigma($`$x$'$)+1 = \sigma($`$y$'$)$.
+A formula $\phi$ is said to be stratified iff there is a stratification of $\phi$.  Then for each stratified formula $\phi$ of the language of NF we have an axiom $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$.  The stratified formulas are exactly the formulas $\phi^*$ up to renaming of variables.
+
+NF has been dismissed as a ``syntactical trick" because of the way it is defined.  It might go some way toward dispelling this impression to note that the stratified comprehension scheme is equivalent to a finite collection of its instances, so the theory can be presented in a way which makes no reference to types at all.  This is a result of Hailperin, refined by others.  One obtains a finite axiomatization of NF by analogy with the method of finitely axiomating von Neumann-G\"odel-Bernays predicate class theory.  It should further be noted that the first thing one does with the finite axiomatization is prove stratified comprehension as a meta-theorem, in practice, but it remains significant that the theory can be axiomatized with no reference to types at all.
+
+For each stratified formula $\phi$, there is a unique witness to $$(\exists A:(\forall x:x \in A \leftrightarrow \phi))$$ (uniqueness follows by extensionality) whch we denote by $\{x:\phi\}$.
+
+Jensen in 1969 proposed the theory NFU which replaces the extensionality axiom of NF with $$(\forall xyw:w \in x \rightarrow (x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z\in y))),$$  allowing many atoms or urelements.  One can reasonably add an elementless constant $\emptyset$, and define $\{x:\phi\}$ as $\emptyset$ when $\phi$ is false for all $x$.
+
+Jensen showed that NFU is consistent and moreoever NFU + Infinity + Choice is consistent.  We will give an argument similar in spirit though not the same in detail for the consistency of NFU in the next section.
+
+An important theorem of Specker (1962) is that NF is consistent if and only if TST + the Ambiguity Scheme is consistent.  His method of proof adapts to show that  NFU is consistent if and only if TSTU + the Ambiguity Scheme is consistent.  Jensen used this fact in his proof of the consistency of NFU.  We indicate a proof of Specker's result using concepts from this paper below.
+
+In 1954, Specker had shown that NF disproves Choice, and so proves Infinity.  At this point if not before it was clear that there is a serious issue of showing that NF is consistent relative to some set theory in which we have confidence.  There is no evidence that NF is any stronger than TST + Infinity, the lower bound established by Specker's result.
+
+Note that NF or NFU supports the implementation of mathematics in the same style as TST, but with the representations of mathematical concepts losing their ambiguous character.  The number 3 really is realized as the unique set of all sets with three elements, for example.  The universe is a set and sets make up a Boolean algebra.   Cardinal and ordinal numbers can be defined
+in the manner of Russell and Whitehead.
+
+The apparent vulnerability to the paradox of Cantor is an illusion.  Applying Cantor's theorem to the cardinality of the universe in NFU gives $|\iota``V| < |{\cal }(V)| \leq |V|$ (the last inequality would be an equation in NF), from which we conclude that there are fewer singletons of objects than objects in the universe.  The operation $(x \mapsto \{x\})$ is not a set function, and there is every reason to expect it not to be, as its definition is unstratified.  The resolution of the Burali-Forti paradox is also weird and wonderful in NF(U), but would take us too far afield.
+
+\newpage
+
+\subsection{Tangled type theory TTT and TTTU}
+
+In 1995, this author described a reduction of the NF consistency problem to consistency of a typed theory and of a kind of extension of bounded Zermelo theory, both motivated by reverse engineering from Jensen's method of proving the consistency of NFU.
+
+Let $\lambda$ be a limit ordinal.  It can be $\omega$ but it does not have to be.  
+
+In the theory TTT (tangled type theory) which we develop, each variable $x$ is supplied with a type ${\tt type}($`$x$'$) <\lambda$;  we are provided with countably many distinct variables of each type.
+
+For any formula $\phi$ of the language of TST and any strictly increasing sequence $s$ in $\lambda$, let $\phi^s$ be the formula obtained by replacing each variable
+of type $i$ with a variable of type $s(i)$.  To make this work rigorously, we suppose that we have a bijection from type $i$ variables of the language of TST to type $\alpha$ variables
+of the language of TTT for each natural number $i$ and ordinal $\alpha<\lambda$.
+
+TTT is then the first order theory with types indexed by the ordinals below $\lambda$ whose well formed atomic sentences `$x=y$' have ${\tt type}($`$x$'$) = {\tt type}($`$y$'$)$ and whose atomic sentences `$x \in y$' satisfy ${\tt type}($`$x$'$) < {\tt type}($`$y$'$)$, and whose axioms are the sentences $\phi^s$ for each axiom $\phi$ of TST and each strictly increasing sequence $s$ in $\lambda$.  TTTU has the same relation to TSTU (with the addition of constants $\emptyset^{\alpha,\beta}$ for each $\alpha<\beta<\lambda$  such that $(\forall {\bf x}_0^{\alpha} :{\bf x}_0^{\alpha}\not\in \emptyset^{\alpha,\beta})$ is an axiom).
+
+It is important to notice how weird a theory TTT is.  This is not cumulative type theory.  Each type $\beta$ is being interpreted as a power set of {\em each\/} lower type $\alpha$.  Cantor's theorem in the metatheory makes it clear that most of these power set interpretations cannot be honest.
+
+There is now a striking
+
+\begin{description}
+
+\item[Theorem (Holmes):]  TTT(U) is consistent iff NF(U) is consistent.
+
+\item[Proof:]  Suppose NF(U) is consistent.  Let $(M,E)$ be a model of NF(U) (a set $M$ with a membership relation $E$).  Implement type $\alpha$ as $M \times \{\alpha\}$ for
+each $\alpha<\lambda$.  Define $E_{\alpha,\beta}$ for $\alpha<\beta$ as $\{((x,\alpha),(y,\beta)):xEy\}$.  This gives a model of TTT(U).   Empty sets in TTTU present no essential additional difficulties.
+
+Suppose TTT(U) is consistent, and so we can assume we are working with a fixed model of TTT(U).  Let $\Sigma$ be a finite set of sentences in the language of TST(U).  Let $n$ be the smallest type such that no type $n$ variable occurs in any sentence in $\Sigma$.  We define a partition of the $n$-element subsets of $\lambda$.  Each $A \in [\lambda]^n$ is put in a compartment
+determined by the truth values of the sentences $\phi^s$ in our model of TTT(U), where $\phi \in \Sigma$ and ${\tt rng}(s \lceil \{0,\ldots,n-1\}) = A$.  By Ramsey's theorem, there is a homogeneous set $H \subseteq \lambda$ for this partition, which includes the range of a strictly increasing sequence $h$.  There is a complete extension of TST(U) which includes
+$\phi$ iff the theory of our model of TTT(U) includes $\phi^h$.  This extension satisfies $\phi \leftrightarrow \phi^+$ for each $\phi \in \Sigma$.  But this implies by compactness that the full Ambiguity Scheme $\phi \leftrightarrow \phi^+$ is consistent with TST(U), and so that NF(U) is consistent by the 1962 result of Specker.
+
+We note that we can give a treatment of the result of Specker (rather different from Specker's own) using TTT(U).  Note that it is easy to see that if we have a model of TST(U) augmented with a Hilbert symbol (a primitive term construction $(\epsilon x:\phi)$ (same type as $x$) with axiom scheme $\phi[(\epsilon x:\phi)/x] \leftrightarrow (\exists x:\phi)$) which cannot appear in instances of comprehension (the quantifiers are not defined in terms of the Hilbert symbol, because they do need to appear in instances of comprehension) and Ambiguity (for all formulas, including those which mention the Hilbert symbol) then we can readily get a model of NF, by constructing a term model using the Hilbert symbol in the natural way, then identifying all terms with their type-raised versions.  All statements in the resulting type-free theory can be decided by raising types far enough (the truth value of an atomic sentence $(\epsilon x:\phi) \,R\, (\epsilon y:\psi)$ in the model of NF is determined by raising the type of both sides until the formula is well-typed in TST and reading the truth value of the type raised version;  $R$ is either = or $\in$).  Now observe that a model of TTT(U) can readily be equipped with a Hilbert symbol if this creates no obligation to add instances of comprehension
+containing the Hilbert symbol (use a well-ordering of the set implementing each type to interpret a Hilbert symbol  $(\epsilon x:\phi)$ in that type as the first $x$ such that $\phi$), and the argument above for consistency of TST(U) plus Ambiguity with the Hilbert symbol goes through.
+
+\item[Theorem (essentially due to Jensen):]  NFU is consistent.
+
+\item[Proof:]  It is enough to exhibit a model of TTTU.  Suppose $\lambda>\omega$.  Represent type $\alpha$ as $V_{\omega+\alpha} \times \{\alpha\}$ for each $\alpha<\lambda$ ($V_{\omega+\alpha}$ being a rank of the usual cumulative hierarchy).  Define $\in_{\alpha,\beta}$ for
+$\alpha<\beta<\lambda$ as $$\{((x,\alpha),(y,\beta)):x \in V_{\omega+\alpha} \wedge y \in V_{\omega+\alpha+1} \wedge x \in y\}.$$  This gives a model of TTTU in which the membership of
+type $\alpha$ in type $\beta$ interprets each $(y,\beta)$ with $y \in V_{\omega+\beta} \setminus V_{\omega+\alpha+1}$ as an urelement.
+
+Our use of $V_{\omega+\alpha}$ enforces Infinity in the resulting models of NFU (note that we did not have to do this:  if we set $\lambda=\omega$ and interpret type $\alpha$ using $V_\alpha$ we prove the consistency of NFU with the negation of Infinity).  It should be clear that Choice holds in the models of NFU eventually obtained if it holds in the ambient set theory.
+
+This shows in fact that mathematics in NFU is quite ordinary (with respect to stratified sentences), because mathematics in the models of TSTU embedded in the indicated model of TTTU is quite ordinary.  The notorious ways in which NF evades the paradoxes of Russell, Cantor and Burali-Forti can be examined in actual models and we can see how they work (since they work in NFU in the same way they work in NF).
+
+\end{description}
+
+Of course Jensen did not phrase his argument in terms of tangled type theory.  Our contribution here was to reverse engineer from Jensen's original argument for the consistency of NFU an argument for the consistency of NF itself, which requires additional input which we did not know how to supply (a proof of the consistency of TTT itself).  An intuitive way to say what is happening here is that Jensen noticed that it is possible to skip types in a certain sense in TSTU in a way which is not obviously possible in TST itself;  to suppose that TTT might be consistent is to suppose that such type skipping is also possible in TST.
+
+\subsubsection{How internal type representations unfold in TTT}
+
+We have seen above that TST can internally represent TST$_n$.   An attempt to represent types of TTT internally to TTT has stranger results.
+
+In TST the strategy for representing type $i$ in type $n\geq i$  is to use the $n-i$-iterated singleton of any type $i$ object $x$ to represent $x$;  then membership of representations of type $i-1$ objects in type
+$i$ objects is represented by the relation on $n-i$-iterated singletons induced by the subset relation and with domain restricted to $n-(i+1)$-fold singletons.  This is described more formally above.
+
+In TTT the complication is that there are numerous ways to embed type $\alpha$ into type $\beta$ for $\alpha<\beta$ along the lines just suggested.    We define a generalized
+iterated singleton operation:  where $A$ is a finite subset of $\lambda$, $\iota_A$ is an operation defined on objects of type ${\tt min}(A)$.  $\iota_{\{\alpha\}}(x)=x$.
+If $A$ has $\alpha<\beta$ as its two smallest elements, $\iota_A(x)$ is  $\iota_{A_1}(\iota_{\alpha,\beta}(x))$, where $A_1$ is defined as $A \setminus \{{\tt min}(A)\}$ (a notation we will continue to use) and $\iota_{\alpha,\beta}(x)$ is the unique type $\beta$ object whose only type $\alpha$ element is $x$.
+
+Now for any nonempty finite $A \subseteq \lambda$ with minimum $\alpha$ and maximum $\beta$. the range of $\iota_A$ is a set, and a representation of type $\alpha$ in
+type $\beta$.  For simplicity we carry out further analysis in types $\beta, \beta+1,\beta+2\ldots$ though it could be done in more general increasing sequences.  Use the notation
+$\tau_A$ for the range of $\iota_A$, for each set $A$ with $\beta$ as its maximum.  Each such set has a cardinal $|\tau_A|$ in type $\beta+2$.  It is a straightforward
+argument in the version of TST with types taken from $A$ and a small finite number of types $\beta+i$ that $2^{|\tau_A|} = |\tau_{A_1}|$ for each $A$ with at least two elements.
+The relevant theorem in TST is that $2^{|\iota^{n+1}``X|} = \iota^n``X$, relabelled with suitable types from $\lambda$.   We use the notation $\exp(\kappa)$ for $2^\kappa$ to support iteration.  Notice that for any $\tau_A$ we have $\exp^{|A|-1}(|\tau_A|) = |\tau_{\{\beta\}}|$, the cardinality of type $\beta$.  Now if $A$ and $A'$ have the same minimum $\alpha$ and maximum $\beta$ 
+but are of different sizes, we see that $|\tau_A| \neq |\tau_{A'}|$, since one has its $|A|-1$-iterated exponential equal to $|\tau_{\{\beta\}}|$ and the other has its $|A'|-1$-iterated exponential equal to $|\tau_{\{\beta\}}|$.  This is odd because there is an obvious external bijection between the sets $\tau_A$ and $\tau_{A'}$:  we see that this external bijection cannot be realized as a set.  $\tau_A$ and $\tau_{A'}$ are representations of the same type, but this is not obvious from inside TTT.  We recall that we denote $A \setminus \{{\tt min}(A)\}$ by $A_1$;  we further denote $(A_i)_1$ as $A_{i+1}$.  Now suppose that $A$ and $B$ both have maximum $\beta$ and $A \setminus A_i = B \setminus B_i$, where $i<|A| \leq |B|$.
+We observe that for any concrete sentence $\phi$  in the language of TST$_i$, the truth value of $\phi$ in natural models with base type of sizes $|\tau_A|$ and $|\tau_B|$ will be the same, because the truth values we read off are the truth values in the model of TTT of versions of $\phi$ in exactly the same types of the model (truth values of $\phi^s$ for
+any $s$ having $A \setminus A_i = B\setminus B_i$ as the range of an initial segment).  This much information telling us that $\tau_{A_j}$ and $\tau_{B_j}$ for $j<i$ are representations of the same type  is visible to us internally, though the external isomorphism is not.  We can conclude that the full first-order theories of natural models of TST$_i$ with base types $|\tau_A|$ and $|\tau_B|$ are
+the same as seen inside the model of TTT, if we assume that the natural numbers of our model of TTT are standard.
+
+\newpage
+
+\section{Construction of a model of tangled type theory}
+\begin{description}
+
+\item[cardinal parameters:]  Let $\lambda$ be a limit ordinal.  Type $\alpha$ in TTT will be represented by level $1+\alpha$ in the structure we build (level 0 has a special role).
+
+Let $\kappa>\lambda$ be a regular uncountable cardinal.  Sets of size $<\kappa$ are referred to as small, others as large.
+
+We work in ZFCA, assuming $\mu$ atoms, where $\mu >\kappa$ is a strong limit cardinal with cofinality at least $\kappa$.
+
+\item[starting the construction:  structure of level 0, litters and near-litters:]
+
+Level 0 of the structure we build is the set of atoms.
+
+The set of atoms is  partitioned into sets of size $\kappa$ which we call litters.
+
+A set of atoms with small symmetric difference from a litter is called a near-litter.  
+
+If $N$ is a near-litter then $N^{\circ}$ is the litter with small symmetric difference from $N$.
+If $L$ is a litter, $[L]$, the local cardinal of $L$, is the set of all near litters with small symmetric difference from $L$.
+
+\item[preliminary description of positive levels:]
+
+Level $1+\alpha$ of the structure consists of triples $(1+\alpha,\beta,B)$ where $\beta <1+\alpha$ and $B$ is a subset of level $\beta$.  Not all such triples are elements
+of level $1+\alpha$.
+
+\item[coding of types by litters in other types:]
+
+We assume that all levels are of size $\mu$.  A typed (near-)litter of level $1+\alpha$ is a triple $(1+\alpha,0,N)$ where $N$ is a (near-)litter.  These triples will belong to level $1+\alpha$.  We write $(1+\alpha,0,N)^{\circ}$ for
+$(1+\alpha,0,N^{\circ})$.  We write $[(1+\alpha,0,N)]$ for $\{(1+\alpha,0,N'):N^\circ = N'^\circ\}$:  we call such sets typed local cardinals.  We will construct (in an appropriate order) injections $\xi_{1+\alpha,\beta}$ from level $\beta$ to the set of litters of type $1+\alpha$ ($\beta \neq 1+\alpha$).  If $\beta$ and $\gamma$ are distinct, the ranges of $\xi_{1+\alpha,\beta}$ and $\xi_{1+\alpha,\gamma}$ are disjoint.  We note that we can arrange for this by choosing the ranges before the construction
+ever starts.
+
+\item[description of the TTT membership relation:]
+
+We define a relation $E$ which will implement the membership of the model.   If $x$ is in type $1+\gamma<1+\alpha$ we define
+$x E (1+\alpha,\beta,B)$ as $X \subseteq B$, where if $1+\gamma=\beta$ we have $X = \{x\}$ and otherwise $X$ is the set of all near-litters $N$ of type $\beta$ such that
+$N^{\circ}=\xi_{1+\gamma,\beta}(x)$.
+
+\item[side conditions to enforce extensionality in TTT:]
+
+To enforce extensionality, we provide that in a triple $(1+\alpha,\beta,B)$, $B$ will be nonempty if $\beta \neq 0$ and $B$ will not be a union of typed local cardinals included in the range of a single $\xi_{\beta,\gamma}$.  This ensures that these particular kinds of $E$-extension occur only once.
+
+\item[definition of allowable permutations:]
+
+We stipulate that $(1+\alpha,\beta,B)$ will always belong to level $1+\alpha$ if $B$ is a one-element subset of level $\beta$.
+
+An $\alpha$-allowable permutation is a permutation $\pi$ of level $\alpha$ which if $\alpha=0$, satisfies the condition that if $N$ is a near-litter, $\pi``N$ is a near-litter,
+and if $\alpha>0$, satisfies the condition that $\pi((\alpha,\beta,B)) = (\alpha,\beta,\pi_{\beta}``B)$ where $\pi_{\beta}$, defined implicitly by the equation $\pi((1+\alpha,\beta,\{b\})) =(1+\alpha,\beta,\{\pi_{\beta}(b)\})$ is a $\beta$-allowable permutation.  There is a further side condition that if $x$ is in level $1+\beta$ and $y$ is in level $1+\alpha$ then $x E y$ iff
+$\pi_{1+\beta}(x) E \pi(y)$.
+
+Note that an  $\alpha$-allowable permutation is in effect definable on a triple $(\alpha,\beta,B)$ where $\beta<\alpha$ and $B$ is a subset of level $\beta$, whether the triple actually belongs to level $\alpha$ or not.
+
+\item[coherence conditions on allowable permutations deduced:]  We unfold the consequences of the side condition.  Assume $xEy$.  Assume $x$ is in level $1+\beta$.  If $y$ is of the form $(1+\alpha,1+\beta,B)$ then $\pi((1+\alpha,1+\beta,B)) = (1+\alpha,1+\beta,\pi_\beta``B)$,
+and since we have $x E (1+\alpha,1+\beta,B)$ whence $x \in B$, whence $\pi_\beta(x) \in \pi_\beta``B$ so $$\pi_\beta(x) E \pi(y) = \pi((1+\alpha,1+\beta,B)) = (1+\alpha,1+\beta,\pi_\beta``B),$$ without any appeal to the side condition.  The side condition comes into play when $y =  (1+\alpha,\gamma,G)$ with $\gamma\neq 1+\beta$.  Now the condition
+$x Ey$ holds just in case $x$ is of the form $(1+\beta,0,N)$ with $N^{\circ} \in \xi_{1+\beta,\gamma}``G$.  Now the side condition tells us that
+$\pi_{1+\beta}(x) E \pi(y)$, thus $(1+\beta,0,\pi_{\beta,0}``N) E  (1+\alpha,\gamma,\pi_\gamma``G)$, thus $\pi_{\beta,0}``N^{\circ} \in \xi_{1+\beta,\gamma}``\pi_\gamma``G$.  Specialize $G$ to a singleton $\{g\}$, so we have $N^{\circ}= \xi_{1+\beta,\gamma}(g)$.  We then have $(\pi_{1+\beta,0}``\xi_{1+\beta,\gamma}(g))^{\circ} = \xi_{1+\beta,\gamma}(\pi_\gamma(g))$ for any $g$ in level $\gamma$, which seems quite a natural coherence condition (which also implies the side condition in its turn).
+
+\item[Notation for derived permutations of a given permutation at lower types:]
+
+We introduce general notation for permutations of lower levels determined by an allowable permutation of a given level.
+
+If $A$ is a nonempty subset of $\lambda$ define $A_1$ as $A \setminus \{{\tt min}(A)\}$.  If $\pi$ is an $\alpha$-allowable permutation, we define $\pi_{\{\alpha\}}$ as $\pi$ and
+$\pi_A$ as $(\pi_{A_1})_{{\tt min}(A)}$ for any $A$ with ${\tt max}(A)=\alpha$.
+
+\item[Supports:]
+
+We define an $1+\alpha$-support as a well-ordering of triples $(x,A,\gamma)$ where $A$ is a finite subset of $\lambda$ with $1+\alpha$ as maximum and the level to which $x$ belongs as minimum and $\gamma$ is an ordinal belonging to $A$ and $\geq$ the index of the level to which $x$ belongs,
+with the further restriction that $x$ must be an atom, or a typed near-litter in a level (of the form $(1+\beta,0,N)$).  We say that $X$ has support
+$S$ (or $S$ is a support of $X$) if an allowable permutation $\pi$ must fix $X$ if $\pi_A(x)=x$ for each $(x,A,\gamma)$ in the domain of $S$.
+
+A modified $1+\alpha$-support $S$ [of $X$] is obtained from a $1+\alpha$-support $S_0$ [of $X$] by choosing a fixed $C$ whose minimum is greater than $1+\alpha$ and defining $S$ as $\{(x,C \cup A,\gamma):(x,A,\gamma) \in S_0\}$.
+
+\item[The exact definition of level $1+\alpha$ using symmetry:]
+
+We then provide that $(1+\alpha,\beta,B)$ is an element of level $B$ as long as it meets the extensionality conditions detailed above and it has a $1+\alpha$-support.
+
+\item[Definition of strong support:]
+
+A $\chi$-strong support is a $\chi$-support (a well-ordering of triples as above) with certain additional properties.  If $(x,A,\gamma)$ is in the domain of $S$ with $x$ an atom, then some
+$(({\tt min}(A_1),0,L),A_1,\delta)$ appears in $S$ before $(x,A,\gamma)$  where $L$ is the litter containing $x$ and $\delta \geq \gamma$.  If $((1+\delta,0,N),A,\gamma)$ occurs
+in the domain of $S$, with $1+\delta<\gamma$, then the intial segment in $S$ determined by $((1+\delta,0,N),A,\gamma)$ includes a modified $\alpha$-support of $\xi_{1+\delta,\alpha}^{-1}((1+\delta,0,N))$ where $\alpha< \gamma$, if this exists (there is at most one such inverse image), each element of which has third projection at least $\gamma$ and second projection a downward extension of $A_1 \cup \{\alpha\}$.
+
+\item[Existence of strong supports:]
+
+Note that any $\chi$-support can be converted to one all of whose first projections of domain elements are typed litters, by replacing each $((\alpha,0,N),A,\gamma)$ with
+$((\alpha,0,N^\circ),A,\gamma)$ along with each $(x,A\cup\{0\},\gamma)$ for $x \in N \Delta N^\circ$.
+
+Every $\chi$-support all of whose first projections of domain elements that are typed near-litters are in fact typed litters can be extended to a strong $\chi$-support.  For each $(x,A,\gamma)$ in the support
+with $x$ an atom, insert $(({\tt min}(A_1),0,L),A_1,\gamma)$ immediately before it.  
+
+For each $((1+\delta,0,N),A,\gamma)$ in the support, $1+\delta<\gamma$, insert immediately before it a modified  $\alpha$-support of the unique $\xi_{1+\delta,\alpha}^{-1}((1+\delta,0,N))$ with $\alpha<\gamma$ which exists, if there is one.  The third projection of each element of the domain of the modified support inserted will be $\alpha<\gamma$.  The second projection of each
+element of the domain of the modified support inserted will be a downward extension of $A_1 \cup \{\alpha\}$.
+
+  Repeat this process as necessary (through $\omega$ steps).  It is not possible for an infinite descending sequence of items to be added, because of the way third projections are managed, so a well-ordering will be obtained which is a strong $\chi$-support.   We take no pains to eliminate duplicate items here (items in the order in different positions with the same first and second projection), and indeed it seems to complicate matters to do so.
+
+\item[Freedom of action of allowable permutations:]  Let an $\alpha$-local bijection be a collection of maps $\pi^0_A$ where the maximum of $A$ is $\alpha$ and the minimum of $A$ is 0,
+each $\pi^0_A$  being an injective map with domain equal to its range, a set of atoms with small intersection with each litter (empty being a case of small).  We show that there is an $\alpha$-allowable permutation
+$\pi$ such that $\pi_A$ extends $\pi^0_A$ for each $A$, satisfying an additional technical condition.  We say that an atom $x$ is an exception of $\pi_A$ if $x$ belongs to a litter $L$ and either $\pi_A(x) \not\in (\pi_A``L)^\circ$ or $\pi_A^{-1}(x) \not\in (\pi_A^{-1}``L)^\circ$.  The technical condition is that all exceptions of each $\pi_A$ will belong to the domain of the local bijection component $\pi^0_A$.
+
+Given the local $\alpha$-bijection with components $\pi^0_A$, we indicate how to compute $\pi_A(x)$ for any atom $x$ and suitable $A$.  We do this by constructing a strong support
+containing $(x,A,\alpha)$ and describing a procedure for computing $\pi_C(z)$ for each $(z,C,\gamma)$ in the domain of a strong support given that this has been done for each previous domain element in the support.
+
+We provide a well-ordering $<_L$ of each litter of order type $\kappa$.
+
+Suppose $(z,C,\gamma)$ is the first item in the support for which we have not computed $\pi_C(z)$.  
+
+If $z$ is an atom, and $z$ is in the domain of $\pi^0_C$, compute $\pi_C(z)$ as
+$\pi^0_C(z)$.
+
+If $z$ is an atom and not in the domain of $\pi^0_C$, we are given that $\pi_{C_1}(({\tt min}(C_1),0,L)))=(C_1,0,N)$ has been computed, by the hypothesis of the recursion, where $L$ is the litter containing $x$.  We stipulate
+that $\pi_C$ maps $L \setminus {\tt dom}(\pi^0_C)$ to $N^\circ \setminus {\tt dom}(\pi^0_C)$ by the unique bijective map which sends each item in the restriction of $<_L$ to  $L \setminus {\tt dom}(\pi^0_C)$ to the item in the same ordinal position in the restrictin of $<_{N^\circ}$ to $N^\circ \setminus {\tt dom}(\pi^0_C)$.
+
+Notice that this method ensures that the technical condition will hold:  exceptions of $\pi_C$ not in the domain of $\pi^0_C$ are prevented.
+
+If $z$ is a litter in a type, $(1+\delta,0,L)$, and there is no $\xi^{-1}_{1+\delta,\epsilon}((1+\delta,0,L))$ with $1+\delta$ and $\epsilon$ less than $\gamma$ then $\pi_C((1+\delta,0,L)$ has as third
+component $$L \setminus (\pi^0_{C\cup \{0\}}``({\bf A} \setminus L) \cap L) \cup \pi^0_{C\cup \{0\}}``L,$$ where ${\bf A}$ is the set of all atoms:  the idea here is that $L$ is fixed except insofar as the exceptions induced by the local bijection are active.
+
+If $z$ is a litter in a type, $(1+\delta,0,L)$, and there is $\xi^{-1}_{1+\delta,\epsilon}((1+\delta,0,L))$, with $1+\delta$ and $\epsilon$ less than $\gamma$, then appropriate computations have
+already been carried out on a modfied $\epsilon$-support of $\xi^{-1}_{1+\delta,\epsilon}((1+\delta,0,L))$.   Note that $\epsilon <\alpha$:  we may apply the inductive hypothesis that the theorem is already established for ordinals $<\alpha$ to show that there is an $\epsilon$-allowable permutation with correct values at support elements of $\xi^{-1}_{1+\delta,\epsilon}((1+\delta,0,L))$ already recursively computed:  we construct an $\epsilon$-local bijection with correct values at the atoms in the support for $\pi_{C_1 \cup \{\epsilon\}}$;  to do this it is necessary to extend the values already computed for atoms in the support for derivatives of $\pi_{C_1 \cup \{\epsilon\}}$ to more values (making up complete orbits containing each atoms in the support) in such a way that no exceptions are forced relative to near-litters for which values have been computed.  The $\epsilon$-allowable permutation extending this
+local bijection will agree with computed values at litters as well as at atoms:  if there were a first litter value in the support at which it did not agree, the disagreement could only arise by the permutation having an exception in that litter or mapped into that litter which is not in the domain of the local bijection, which by inductive hypothesis it does not.  Then the value $y$ of this
+$\epsilon$-permutation at $\xi^{-1}_{1+\delta,\epsilon}((1+\delta,0,L))$ is the only possible value of $\pi_{C_1 \cup \{\epsilon\}}$ at $\xi^{-1}_{1+\delta,\epsilon}((1+\delta,0,L))$ by properties of supports.  Let $M$ be $\xi_{1+\delta,\epsilon}(y)$.  Then $\pi_C(z)$ has as its third component $$M \setminus (\pi^0_{C\cup\{0\}}``({\bf A} \setminus L) \cap M) \cup \pi^0_{C\cup \{0\}}``L.$$
+
+An argument is needed that this computation procedure does not depend on the choice of strong support containing $(z,C,A)$.  Suppose it did.  Consider the first item in a given strong support which has different results along different supports.  Merge the segment in the original support up to that item with any other support and compute along it, and in fact
+the same value must be obtained, contradicting the hypothesis that an alternative computation is possible.
+
+\item[Verfication that each level is of cardinality $\mu$ in the ambient set theory:]
+
+
+
+
+
+\end{description}
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
