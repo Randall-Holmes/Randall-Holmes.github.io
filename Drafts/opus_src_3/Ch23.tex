@@ -1,0 +1,713 @@
+\chapter[Stratified Lambda-Calculus]{Taking ``Function'' Rather
+than\\ ``Set'' as Primitive:\\  a Stratified
+$\lambda$-Calculus}
+\index{stratification}\index{function}\index{stratification}
+
+
+
+\section[Abstraction and Comprehension]{Axioms,
+Abstraction, and Stratified\\ Comprehension}
+\index{function!abstraction}\index{comprehension}
+\index{Stratified Comprehension Theorem}
+
+In this section, we introduce an approach to the foundations of
+mathematics based on different primitives.  We will take the notions
+of {\itshape function\index{function}\/} and {\itshape application\/} to be
+primitive, rather than the notions of {\itshape set\/} and {\itshape
+membership\index{membership}\/}.
+
+For any two objects $x$ and $y$ we introduce the notation $x(y)$ for
+the application of $x$ to $y$.  Just as in our set theory, where we
+did not expect all objects to be sets, we regard some of our objects
+as {\itshape functions\/} and some of our objects as {\itshape
+atoms\index{atoms}\/}.
+
+We had a default extension to assign to a non-set; it is less clear
+what to do about defining the extension of a non-function\index{function}.  We
+commit 
+ourselves to the proposition that any extension which is realized by
+any object is realized by some function:
+
+\begin{axiom}{Axiom of Functionality}
+ $\Fn$ is a specific object of our theory.
+ For all $x$, $\Fn(a)(x) = a(x)$, and for all $a$, $\Fn(\Fn(a)) =
+ \Fn(a)$.
+\end{axiom}
+
+\begin{definition}
+ An object $a$ is said to be a {\upshape function} if\/
+ $\Fn(a) = a$.  An object which is not a function is said to be an
+ {\upshape atom\/}.  Notice that the axiom of functionality allows us to
+ assert that $\Fn(a)$ is a function with the same extension as $a$, for each $a$.
+\end{definition}
+
+We have an
+
+\begin{axiom}{Axiom of Extensionality\index{extensionality!axiom for
+$\lambda$-calculus}}
+ If $f$ and $g$ are functions\index{function}, then
+ $f=g$ iff for all $x$, $f(x)=g(x)$.
+\end{axiom}
+
+
+Just as a set is completely determined by its elements, a function is
+completely determined by its values.
+
+Just as in our set theory, we have a primitive ordered pair\index{ordered pair}
+construction: if $x$ and $y$ are objects, we have a pair $(x,y)$.  We
+also have a primitive construction which gives us a constant function $K[x]$
+for each object $x$; note that we do not introduce a function $K$.  We
+state some axioms.
+
+\begin{axiom}{Axiom of Projections\index{projections!axiom of}}
+ $\pi_1$ and $\pi_2$ are distinct functions
+ such that for all $x_1$, $x_2$, $\pi_i(x_1,x_2) = x_i$ (where $i$
+ stands for either 1 or 2).
+\end{axiom}
+
+\begin{axiom}{Axiom of Products\index{products, axiom of}}
+ For all $x$, $y$, $z$, $(x,y)(z)$ =
+ $(x(z),y(z))$ and $\Fn(x,y) = (\Fn(x),\Fn(y))$.
+\end{axiom}
+
+\begin{axiom}{Axiom of Identity\index{identity, axiom of}}
+ $\Id$ is a function\index{function} and for all $x$, $\Id(x) = x$. 
+\end{axiom}
+
+\begin{axiom}{Axiom of Constant Functions\index{constant functions, axiom of}}
+ For each $x$, $K[x]$ is a function
+ and for all $y$, $K[x](y) = x$.
+\end{axiom}
+
+\begin{axiom}{Axiom of
+Abstraction\index{function!abstraction}\index{abstraction!axiom of}}
+ $\Abst$ is an object of our theory.  For all
+ $x$, $y$, $z$, $\Abst(x)(y)$ is a function and $\Abst(x)(y)(z) =
+ x(K[z])(y(z))$.
+\end{axiom}
+
+\begin{axiom}{Axiom of Equality\index{equality, axiom of}}
+ $\Eq$ is a function and for all $x$, $y$, if
+ $x=y$, $\Eq(x,y) = \pi_1$ and if $x\neq y$, $\Eq(x,y) = \pi_2$.
+\end{axiom}
+
+
+We would like to be able to define functions using the
+function-builder\index{function-builder notation} notation $(x \mapsto T)$,
+where $T$ is an arbitrary
+expression.  Unfortunately, this is not possible in general.
+
+Let us consider the ``function'' $R$ = $(x \mapsto $Eq$(x(x),\pi_2))$.  It
+would follow from the existence of $R$ that $R(R) = \Eq(R(R),\pi_2)$,
+so $R(R) = \pi_1$ iff $R(R)=\pi_2$ and $R(R) = \pi_2$ iff $R(R) \neq
+\pi_2$ (by the axiom characterizing $\Eq$).  This is absurd, of course.
+This contradiction, a version of Curry's paradox\index{paradoxes!Curry}, is the
+result of a 
+natural coding of Russell's paradox\index{paradoxes!Russell} into a theory with
+functions\index{function} as primitive.
+
+Just as in our set theory, it turns out that we can make sense of $(x
+\mapsto T)$ for a large class of expressions $T$.  The expressions $T$ for
+which we can do this are called ``stratified\index{stratification}''
+expressions, and the notion of stratification we use is quite analogous to that
+found above, except that we work with expressions rather than sentences.
+
+The usual notation for functions in a theory of the kind we are
+developing is not $(x \mapsto T)$ but $(\lambda x.T)$; such theories
+are usually called ``$\lambda$-calculi''.  Another notational
+deviation traditional in this field is the use of $(fx)$ rather than
+the more usual $f(x)$ to represent function application.  However, we
+will continue to use the notation we have used in the rest of the
+book, which is probably familiar to more potential readers.
+
+\begin{definition}
+ Let $T$ be an expression.  We assign an integer to each
+ occurrence of a subexpression of $T$ which we call its {\upshape relative
+ type\index{types (relative)!definition in $\lambda$-calculus}}.
+ The definition is inductive.
+ \begin{enumerate}
+  \item  The relative type of the occurrence of $T$ is 0.
+  \item If the relative type of an occurrence of $(x,y)$ is $n$, the
+    relative types\index{types (relative)} of the obvious occurrences of $x$
+    and $y$ are also $n$. 
+  \item If the relative type of an occurrence of $x(y)$ is $n$, the
+    relative types of the obvious occurrences of $x$ and $y$ are $n+1$ and
+    $n$, respectively.
+  \item If the relative type of an occurrence of $K[x]$ is $n$, the
+    relative type of the obvious occurrence of $x$ is $n-1$.
+ \end{enumerate}
+\end{definition}
+
+Relative typing in the stratified $\lambda$-calculus appears more
+rigid than in the set theory presented in the rest of the book;
+assigning a type to a whole expression forces the assignment of types
+to all of its subexpressions.  We will introduce devices below which
+allow typing of subexpressions to have more freedom.  The use of type
+0 as the top type, with the attendant likelihood of using negative
+types, is merely a technical convenience: we could rephrase all the
+results in the chapter in such a way as to allow only non-negative
+types.
+
+\pagebreak
+
+\begin{definition}
+ Let $T$ be an expression.  We say that $T$ is {\upshape
+ stratified\index{stratification} relative to $x$} iff $x$ does not occur in
+ $T$ with any type\index{types (relative)} other than 0.
+\end{definition}
+
+\begin{Thm}{Abstraction\index{function!abstraction} Theorem}
+ Let $T$ be an expression which is stratified
+ relative to $x$.  It follows that $(x \mapsto T)$ exists, i.e., there 
+ is a function\index{function} $f$ such that ``for all $x$, $f(x) = T$'' is a
+ theorem. 
+\end{Thm}
+
+\preuve\ The proof is by induction\index{induction!structural} on the structure
+of $T$.
+
+We can assume without loss of generality that any subexpression $K[A]$
+of $T$ is of the form $K^n[z]$, with $z$ an atomic expression
+(variable or atomic constant).  $K[(U,V)] = (K[U],K[V])$ and
+$K[U(V)] = \Abst(K[U])(K[V])$ follow immediately from the Axioms of
+Products or Abstraction, respectively, and
+Extensionality\index{extensionality}.  These 
+theorems can be used to eliminate any application of the $K$ operator to
+a pair\index{ordered pair} or application expression.
+
+\begin{enumerate}
+ \item If $T$ is the variable $x$, we can let $(x \mapsto T) =$ Id.
+   Note that $(x \mapsto T)$ is a function.
+ \item If $T$ is an atomic expression $a$ distinct from $x$ (or any expression
+   in which $x$ does not occur), we can let $(x \mapsto T) =  K[a]$.  Note
+   that $(x \mapsto T)$ is a function\index{function}.
+ \item If $T$ is of the form $(U,V)$, it should be clear that $U$ and
+   $V$ are stratified\index{stratification} with respect to $x$, so we can let
+   $(x \mapsto T) = ((x \mapsto U),(x \mapsto V))$ (applying the Axiom of
+   Products).  Note that $(x \mapsto T)$ is a function.
+ \item If $T$ is of the form $K^n[z]$, $z$ an atomic expression, $n>0$, $z$
+   must be distinct from $x$, because its relative type\index{types
+   (relative)} is wrong, so we can let $(x \mapsto T) =
+   K^{n+1}[z]$.  Note that $(x \mapsto T)$ is a function.
+ \item If $T$ is of the form $U(V)$, it should be clear that $V$ is
+   stratified\index{stratification} with respect to $x$.  It should also be
+   clear that all occurrences of $x$ in $U$ must be in the context $K[x]$,
+   since the relative type\index{types (relative)} of $x$ in $U$ is $-1$, the
+   $K$
+   construction is the only type-lowering\index{type-lowering operation}
+   construction, and it is only applied (possibly repeatedly) to atoms in $T$.
+   The type of any occurrence of $K[x]$ in 
+   $U$ must be 0; thus, if we replace $K[x]$ with a new variable $u$ in
+   $U$, the resulting expression $U'$ will be stratified relative to $u$.  We
+   can then let $(x \mapsto T) =  \Abst(u \mapsto U')(x \mapsto V)$.
+   Note that $(x \mapsto T)$ is a function\index{function}.
+\end{enumerate}
+
+The proof of the Abstraction\index{function!abstraction} Theorem is complete.
+\finpreuve
+
+\begin{definition}
+ We define $(x \mapsto T)$ as the expression whose
+ construction is outlined in the proof of the Abstraction Theorem.
+\end{definition}
+
+\begin{ThmEtc}{Observation.}
+ We observe that each occurrence of an atomic
+ subexpression $y$ (other than $x$) of $T$ with type\index{types (relative)}
+ $n$ corresponds to an occurrence of the same atomic subexpression $y$ with
+ type $n-1$ in $(x \mapsto T)$.  $x$ does not occur in $(x \mapsto T)$.  It is 
+ straightforward to verify this.
+\end{ThmEtc}
+
+The observation allows us to add the following clause to the
+definition of relative type\index{types (relative)} (and thus of
+stratification\index{stratification}):
+
+\begin{definition}
+ If $(x \mapsto U)$ occurs in $T$ with relative type
+ $n$, we assign relative type $n-1$ to the obvious occurrence of $U$.
+\end{definition}
+
+This extension of the definition of stratification\index{stratification} is
+safe because the notion of stratification depends only on the typing of atomic
+subexpressions.
+
+A further theorem vital to the usefulness of the notation $(x \mapsto T)$ is
+
+\begin{thm}
+ If $S = T$ is a theorem, so is $(x \mapsto S) = (x
+ \mapsto T)$, if the functions\index{function} exist.
+\end{thm}
+
+\preuve\ Since $(x \mapsto S)(x) = S = T = (x\mapsto T)(x)$ will
+hold for any $x$, and since any object $(u \mapsto U)$ is a function,
+we have the desired equality by extensionality\index{extensionality}.
+\finpreuve
+
+This theorem allows substitutions of equals for equals in function
+abstraction\index{function!abstraction} expressions, for example.
+
+Another refinement:
+
+\begin{definition}
+ We define $((x,y) \mapsto T)$ as $(u \mapsto T')$,
+ where $u$ is a variable not occurring in $T$ and $T'$ is obtained from
+ $T$ by replacing each occurrence of $x$ with $\pi_1(u)$ and each
+ occurrence of $y$ with $\pi_2(u)$.  It should be clear that
+ $((x,y)\mapsto T)(x,y) = T$ is true for all $x$ and $y$.  Similar
+ extensions of notation to more complex finite\index{finite!structures}
+ structures are defined in the obvious way.
+\end{definition}
+
+It would be possible to take the function\index{function} abstraction
+construction as primitive (in which case the constant function
+construction would not be needed as a primitive).  Function
+abstraction\index{function!abstraction} expressions would then be
+well-formed iff they were stratified\index{stratification}, and the
+notion of stratification would have to be defined by a mutual
+recursion with the notion of well-formedness for function expressions.
+Such a system would properly be called ``stratified
+$\lambda$-calculus\index{stratified $\lambda$-calculus}''; a system
+like the one presented here in which the ``$\lambda$-terms''
+(functional abstraction expressions $(x \mapsto T)$, which would
+traditionally be written $(\lambda x.T)$) are built from a finite set
+of basic constructions is called a ``(synthetic) combinatory
+logic\index{combinatory logic}''.  We believe that the present
+approach is easier to motivate, and leaves one in the end with the
+same freedom to reason about abstraction expressions.  It is also
+closely analogous to the way that we developed Stratified
+Comprehension\index{Stratified Comprehension Theorem} from a finite
+set of basic constructions in the rest of the book.
+
+In a development based upon the primitive notions of set and
+membership\index{membership}, we eventually found it necessary to define the
+notions of function\index{function} and application; an analogous condition
+holds here!  We will now define the notions of set and membership:
+
+\begin{definition}
+ A {\upshape set\/} is a function $f$ such that for all
+ $x$, $f(x)=\pi_1$ or\linebreak $f(x) = \pi_2$.
+\end{definition}
+
+\begin{definition}
+ For any objects $x$ and $y$, we understand the
+ sentence $x \in y$ to mean ``$\,y$ is a set and $y(x) = \pi_1\!$''.
+\end{definition}
+
+\begin{definition}
+ For $\phi$ any sentence in the language of set theory, we understand
+ $\{x\mid\phi\}$ to be the set $A$ such that for all $x$, $x \in A$ iff
+ $\phi$ ($\phi$ cannot mention $A$).
+\end{definition}
+
+The basic idea is that we are using projection operators to represent
+truth values and representing a set as a function from the
+universe\index{universe, universal set} to 
+truth values (a kind of characteristic
+function\index{function!characteristic}). 
+
+We make a crucial observation allowing us to relax our definition of
+stratification\index{stratification} for expressions coding sentences:
+
+\begin{lemme}
+ The relative type\index{types (relative)} of any occurrence of an expression
+ $T$ such that the value of $T$ must be either $\pi_1$ or $\pi_2$ can be raised
+ and lowered freely.
+\end{lemme}
+
+\preuve\ $\pi_i = \pi_i(\pi_1,\pi_2)$, so $T =
+T(\pi_1,\pi_2)$; this raises the type of $T$.  $\pi_i =
+\Eq(K[\pi_i],K[\pi_1])$, so $T = \Eq(K[T],K[\pi_1])$ ; this
+lowers the type of $T$.
+\finpreuve
+
+Note that an application of the Lemma raises or lowers the types\index{types
+(relative)} of all subexpressions of the expression $T$ by the same amount.
+
+We now show that we have the same facility for constructing sets that
+we have in the theory of the rest of this book:
+
+\begin{Thm}{Stratified Comprehension Theorem\index{Stratified Comprehension
+Theorem}}
+ For each stratified sentence
+ $\phi$, the set $\{x\mid\phi\}$ exists.
+\end{Thm}
+
+\preuve\ Our argument is inductive.  We first describe a coding
+of stratified sentences of our set theory as expressions of value either
+$\pi_1$ or $\pi_2$.  We assume that we are given a fixed assignment of
+types\index{types (relative)} to variables witnessing the
+stratification\index{stratification} of the sentence 
+$\phi$ (in the sense of our set theory).
+
+\begin{enumerate}
+ \item We initially code $x \mathrel{\pi_i} y$ as Eq$(\pi_i(x),y)$ for $i$ =
+   1,2.
+   We code $x = y$ as Eq$(x,y)$.  We then use the Lemma to raise or lower
+   relative types of $x$ and $y$ in these expressions to the types assigned to
+   them in the stratified\index{stratification} sentence $\phi$ being coded.
+   This is possible because $x$ and $y$ have the same relative
+   types\index{types (relative)} in these expressions.
+ \item If we have coded $\psi$ and $\xi$ by $T$ and $U$, we code
+   ``$\psi$ and $\xi$'' by 
+   $$
+    \Eq((T,U),(\pi_1,\pi_1))
+   $$
+   and ``not $\phi$''
+   by $\Eq(T,\pi_2)$.  This construction does not perturb relative types
+   of variables.
+ \item We initially code $x \in y$ by the code of
+   \begin{center}
+    ``$y(x)=\pi_1$ and $y = (u \mapsto \Eq(y(u),\pi_1))$''.
+   \end{center}
+   We have already seen how to code
+   equations and conjunctions; the second clause of the conjunction codes
+   ``$y$ is a set''.  We then use the Lemma to raise or lower the
+   types\index{types (relative)} 
+   of $x$ and $y$ to the types assigned to them in the
+   stratified\index{stratification} 
+   sentence being coded.  This is possible because $x$ has type one lower
+   than the type of $y$ in the one (code of a) conjunct in which they
+   occur together; the type of $y$ in the other conjunct can be
+   manipulated freely.
+ \item If we have coded $\psi$ by $T$, an expression in which $y$ appears with
+   the same relative type\index{types (relative)} everywhere (not necessarily
+   0), then we can 
+   apply the Lemma (since $T$ will have only projection operators as
+   values) to change the expression $T$ to an expression $T'$ with the same
+   value in which $y$ has type 0 everywhere, and code ``for all $y$, $\psi$''
+   by
+   $$
+     \Eq((y \mapsto T'),K[\pi_1]).
+   $$
+   The existential quantifier can be
+   defined in terms of the universal quantifier.  Then use the Lemma to
+   reset relative types of variables in the resulting expression to the types
+   assigned them in the stratification\index{stratification} of the sentence
+   $\phi$ being coded.
+\end{enumerate}
+
+It is straightforward to verify that the coding scheme described
+succeeds in coding true sentences by $\pi_1$ and false sentences by
+$\pi_2$.  Now consider any stratified sentence $\phi$.  It will be
+coded by an expression $T$ in which the variable $x$ will appear with exactly
+one type\index{types (relative)}, not necessarily 0.  This expression will have
+only projection 
+operators as values, so it is equivalent by the Lemma to an expression $T'$
+in which the types of all variables have been uniformly raised or
+lowered in such a way that the type of $x$ becomes 0.  $(x \mapsto
+T')$ is the desired function\index{function} $\{x \mid \phi\}$.  The proof of
+the Stratified Comprehension\index{Stratified Comprehension Theorem} Theorem is
+complete. 
+\finpreuve
+
+Because we have now coded the basic concepts of the rest of the book
+into our theory of functions, we can now see that the development here
+is an alternative foundation for the entire book.
+
+We state a final axiom for this subsection which is technically
+useful, does not follow from our axioms, but does not strengthen the
+theory essentially:
+
+\begin{axiom}{Axiom of Definite Description\index{definite description, axiom
+of}}
+ If $\phi$ is any stratified\index{stratification}
+ sentence in which $x$ and $y$ can be assigned the same type\index{types
+ (relative)} such that for each $x$ there is exactly one $y$ such that $\phi$,
+ then there is a function\index{function} $f$ such that for all $x$,
+ $\phi[f(x)/y]$.
+\end{axiom}
+
+If we replace ``there is exactly one $y$'' with ``there is some $y$'',
+we obtain a form of the Axiom of Choice\index{axiom of choice} appropriate to
+this theory, 
+but we do not officially adopt this axiom.
+
+
+
+
+
+
+
+
+
+\section{Strongly Cantorian Sets as Types}
+
+We redefine the notion of ``strongly Cantorian'' from above:
+
+\begin{definition}
+ Let $A$ be a set.  We say that $A$ is {\upshape strongly
+ Cantorian\index{Cantorian, strongly!set|textbf}} if there is a
+ function\index{function} $(K \lceil A)$ such that for all 
+ $a \in A$, $(K \lceil A)(a) = K[a]$.
+\end{definition}
+
+It should be clear that this definition is essentially equivalent to
+the definition in the set theory of the previous chapters; the
+constant function\index{function} construction, like the
+singleton\index{singleton} construction, 
+raises type\index{types (relative)} by one.
+
+\begin{thm}
+ The relative type of an occurrence of an expression whose
+ value must belong to a fixed strongly Cantorian set $A$ can be raised
+ or lowered freely.
+\end{thm}
+
+\preuve\ Such an expression $T$ may be replaced by the expression
+$(K\lceil A)(T)(\Id)$, in which it appears with type\index{types (relative)}
+raised by one; this can be 
+iterated as needed.  The Axiom of Definite Descriptions can be used to
+prove that there is a function $(K\lceil A)^{-1}$ such that for each
+$a \in A$, $(K\lceil A)^{-1}(K[a]) = a$.  The expression $T$ may be replaced
+by $(K\lceil A)^{-1}(K[T])$, in which it appears with type lowered by
+one, and this may be iterated as needed.
+\finpreuve
+
+We pause to develop a version of the natural\index{natural number} numbers
+appropriate to a theory of functions\index{function} (the {\itshape Church
+numerals\index{Church numerals}\/}).
+
+\begin{definition}
+ We define each natural number $n$ as $(f \mapsto (x
+ \mapsto f^n(x)))$.  Of course, this definition is informal; it only
+ succeeds for concrete natural numbers.  We make it rigorous: we define
+ 0 as K$[$Id$]$ and $\Inc$ (the successor\index{successor!natural number}
+ operation) as $(n \mapsto (f \mapsto (x \mapsto f(n(f)(x)))))$.  We then
+ develop the definition of the set $\cal N$ exactly as we did earlier (it is
+ the intersection\index{intersection!set} of all sets containing 0 and closed
+ under $\Inc$).
+\end{definition}
+
+We introduce the familiar (though differently phrased)
+
+\begin{axiom}{Axiom of Counting\index{Axiom of Counting}}
+  $\cal N$ is a strongly Cantorian set.
+\end{axiom}
+
+We now develop an alternative representation of sets, which we will
+use only for strongly Cantorian sets.
+
+\begin{definition}
+ A function\index{function} $\tau$ such that $\tau(\tau(x)) =
+ \tau(x)$ is called a {\upshape retraction}.
+\end{definition}
+
+\begin{thm}
+ Every nonempty set $A$ is the range of some retraction
+ $\sigma$.  
+\end{thm}
+
+\preuve\ Choose an element $a$ of $A$: $\sigma$ sends each
+element of $A$ to itself and each non-element of $A$ to $a$.  It is
+easy to see that $\sigma$ must exist (it is possible to write a
+function abstraction\index{function!abstraction} expression representing it),
+and also that $\sigma$ is a retraction.
+\finpreuve
+
+We adopt a special notation in connection with retractions with
+strongly Cantorian\index{Cantorian, strongly!set} range:
+
+\begin{definition}
+ If $\tau$ is a retraction with strongly Cantorian
+ range, we define $\tau : x$ as $\tau(x)$.
+\end{definition}
+
+We interpret the retraction $\tau$ written in this way as a ``type
+label''.  Observe that an expression $\tau : x$, since its value must belong
+to the strongly Cantorian set $\rng(\tau)$, can have its type freely
+raised or lowered as desired for purposes of
+stratification\index{stratification}.  This 
+allows us to regard a wider class of expressions as
+stratified\index{stratification}.
+
+Strongly Cantorian sets are closed under certain basic constructions;
+we exhibit these constructions, expressed in terms of retractions.
+
+\begin{definition}
+ If $\sigma$ and $\tau$ are retractions with
+ strongly Cantorian\index{Cantorian, strongly!set} range, we define $\sigma
+ \times \tau$ as $((x,y) \mapsto (\sigma : x,\tau :y))$.
+\end{definition}
+
+\begin{ThmEtc}{Observation.}
+ $\sigma \times \tau$ is a retraction and its range
+ is the Cartesian\index{Cartesian product} product of the ranges of $\sigma$
+ and $\tau$, and is strongly Cantorian, so the notation $(\sigma \times
+ \tau):(x,y)$ is justified.
+\end{ThmEtc}
+
+\begin{definition}
+ If $\sigma$ and $\tau$ are retractions with
+ strongly Cantorian range, we define $[\sigma \rightarrow \tau]$ as
+ $(f \mapsto (x \mapsto (\tau: f(\sigma: x))))$.
+\end{definition}
+
+\begin{ThmEtc}{Observation.}
+ $[\sigma \rightarrow \tau]$ is a retraction and
+ its range is the set of all functions\index{function} from the range of
+ $\sigma$ to the range of $\tau$, which is strongly Cantorian, so the notation
+ $[\sigma \rightarrow \tau]: f$ is justified.
+\end{ThmEtc}
+
+\begin{definition}
+ We define $((\tau:x) \mapsto T)$ as $(x
+ \mapsto T[(\tau:x)/x])$.  
+\end{definition}
+
+\begin{ThmEtc}{Observation.}
+ It should be clear that an expression of the form $((\tau
+ : x) \mapsto \sigma : T)$ is in the range of $[\sigma \rightarrow
+ \tau]$.  It should also be clear that the formation of a function
+ $((\tau:x) \mapsto T)$ will not be restricted by
+ stratification\index{stratification}; all 
+ occurrences of $x$ are in the context $\tau:x$, whose type\index{types
+ (relative)} can be 
+ freely raised or lowered as desired.  Note that this is only true if
+ $\tau$ itself is a constant, or at least does not contain any variable
+ parameter whose relative type needs to be taken into account; $K[x]$,
+ for example, is a retraction with strongly Cantorian\index{Cantorian,
+ strongly!set} range, and so 
+ $K[x]:x$ is a sensible piece of notation, but it would be disastrous
+ to allow the type of this expression (whose value is just $x$) to be freely
+ raised and lowered!
+\end{ThmEtc}
+
+If we provide ourselves (as we easily can) with retractions $\beta$
+and $\nu$ onto\index{onto map} the two-element set of projection operators
+(which we view as ``truth values'') and the set of natural
+numbers\index{natural number}, 
+respectively, then we have provided ourselves with a system of data
+types\index{data types!strongly Cantorian sets as} which is adequate for most
+purposes of theoretical computer 
+science.  The Axiom of Counting\index{Axiom of Counting} is needed to ensure
+that the range of 
+$\nu$ is strongly Cantorian.  The subset of our system in which all
+expressions are decorated with type labels looks like the ``typed
+$\lambda$-calculus'' used in theoretical computer science.  More
+refined type systems can be constructed, including recursive and
+polymorphic type systems, but this seems like an adequate sample of
+the possibilities.
+
+We close with a warning: before attempting to investigate more
+advanced type theories which involve abstraction\index{function!abstraction}
+over types, notice 
+that expressions of the form $(\tau \mapsto T)$ where $\tau$ is a type label
+(retraction onto a strongly Cantorian\index{Cantorian, strongly!set} set) are
+{\em not\/} justified by the 
+development so far, because the class of retractions onto\index{onto map}
+strongly 
+Cantorian sets which would be the domain\index{domain} of such a
+``function\index{function}'' is not 
+a set!  One way one can go in this direction is to restrict the type
+labels used to be elements of {\em sets\/} of retractions closed under
+suitable operations; for example, one might postulate the existence of
+a set of ``types'' containing $\nu$ and $\beta$ and closed under the
+product and power constructions.  The existence of such a set of
+retractions does follow from the Axiom of Counting\index{Axiom of Counting},
+but further 
+strength is needed to ensure that all retractions in such a set have
+strongly Cantorian range.  The strong axioms we adjoin to our set
+theory provide more than enough strength to justify such
+constructions!
+
+We have designed and implemented an automated reasoning system whose
+higher-order logic is based on stratified\index{stratification}
+function\index{function} abstraction\index{function!abstraction}, with 
+built-in support for subversion\index{subversion of stratification} of
+stratification for expressions decorated 
+with type labels standing for retractions with strongly
+Cantorian\index{Cantorian, strongly!set} 
+range.
+
+
+
+\section{Programming and Our Metaphor}
+
+In an earlier chapter, we developed a metaphor for set theory in an
+attempt to motivate stratified\index{stratification}
+comprehension\index{comprehension}.  Here, we will briefly 
+develop a metaphor for a theory of functions\index{function} with the
+applications to 
+computer science suggested in the last subsection in mind.
+
+We develop an extremely abstract model of programming.  We have a set
+$\cal D$ of objects which we view as data or addresses
+(indifferently).  An abstract program in our model is a function
+sending data to data (or, equivalently addresses to addresses), i.e.,
+an element of $[{\cal D} \rightarrow {\cal D}]$.
+
+A state of our machine is a way of storing abstract programs in
+addresses: a state is a function $\sigma: {\cal D} \rightarrow [{\cal
+D} \rightarrow {\cal D}]$; for each $d \in {\cal D}$, $\sigma(d)$ is
+the program stored in $d$.  To complete the analogy with our system of
+this chapter, we suppose that we have an association of pairs of
+addresses with addresses: with each pair of addresses $d$, $e$, we
+associate another address $\left<d,e\right>$\index{ordered pair} from which $d$
+and $e$ can be uniquely determined.
+
+An operation of application on addresses can be defined: $d(e)$ means
+``the result of applying the program stored in $d$ to $e$'', more
+briefly $\sigma(d)(e)$, where $\sigma$ is the state of our machine.
+
+The ``data type security''\index{data types!safety of abstract} motivation
+suggested above for 
+stratification\index{stratification} in set theory manifests itself now as the
+observation 
+that an operation on the data type ``program'' should not use details
+of the implementation of abstract programs (functions\index{function} in
+$[{\cal D} 
+\rightarrow {\cal D}]$) as concrete programs (functions in $[{\cal D}
+\rightarrow {\cal D}]$ associated with specific elements of $\cal D$).
+
+For example, a program which we might denote as $(d \rightarrow
+d(d))$, which would send each address $d$ to the result $\sigma(d)(d)$
+of applying the program stored in $d$ to $d$ itself, should not be
+regarded as legitimate (although it is not paradoxical\index{paradoxes}).  This
+is 
+clearly intended as an operation on the program represented by $d$,
+but the actual address $d$ is not a feature of the abstract program
+implemented by $d$ and should not be accessed by an operation on
+programs.  The same stricture against self-application in function
+definitions rules out the paradoxical function of Curry's paradox.
+
+A hierarchy of ways of viewing addresses is seen: an address can be
+interpreted as a bare object, as a function from objects to objects
+(an abstract program), but also as a function from abstract programs
+to abstract programs, and so on through a hierarchy of levels indexed
+by the natural\index{natural number} numbers, in which level $n+1$ is the set
+of functions\index{function} 
+from level $n$ to level $n$.  This is precisely analogous to the
+hierarchy of ``roles'' seen in our motivation of
+stratified\index{stratification} 
+comprehension\index{comprehension} in set theory.  A reasonable criterion for
+``type 
+safety'' of function definitions is that each object mentioned in a
+specification should appear at a unique level, and this leads to the
+criterion of stratification expressed by the
+Abstraction\index{function!abstraction} Theorem. 
+
+The subversion\index{subversion of stratification} of stratification
+requirements on strongly Cantorian\index{Cantorian, strongly!set} 
+domains has an interesting interpretation in terms of this metaphor.
+The function $K \lceil A$ can be viewed as allowing us to get access
+to the restriction of the state $\sigma$ to $A$.  Knowledge of the
+details of $\sigma$ (how abstract programs are assigned to addresses)
+is exactly what stratification\index{stratification} is designed to prevent.
+The function 
+$K \lceil A$ gives us this information on the domain $A$; in terms of
+our metaphor, we know how programs in $A$ are ``stored in memory'',
+and this seems a reasonable description on this level of abstraction
+of what it means for $A$ to be a ``data type\index{data types!strongly
+Cantorian sets as}''.  Our suggestion is 
+that ``strongly Cantorian set'' translates to ``data type'' via our
+metaphor; this appears reasonable, given the results of the previous
+subsection.
+
+Finally, it seems striking that two notions of type, both historically
+related to Russell's original notion of type, the ``relative types\index{types
+(relative)}'' 
+of stratification\index{stratification} and the ``data types'' of computer
+science, turn out 
+to be orthogonal in this interpretation: a data type is a domain on
+which relative types can be ignored!

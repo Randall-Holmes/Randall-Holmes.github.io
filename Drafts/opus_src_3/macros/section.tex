@@ -1,0 +1,121 @@
+%
+\makeatletter
+\def\firstsection{\@startsection {section}{1}{\z@}{-0.0001pt}%
+{1ex}{\fsection}}
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex \@plus -2pt \@minus 
+ -.2ex}{1ex}{\fsection}}
+\def\subsection{\@startsection{subsection}{2}{\z@}{-3.25ex \@plus -1pt \@minus 
+ -.2ex}{1ex}{\fsubsection}}
+\def\subsubsection{\@startsection{subsubsection}{3}{\z@}{-2ex \@plus 
+ -1pt \@minus -.2ex}{.5ex}{\fsubsubsection}}
+\def\paragraph{\@startsection{paragraph}{4}{\z@}{3.25ex plus1ex
+minus.2ex}{-0.01pt}{\fparagraph}}
+%
+\let\ps@plain\ps@empty
+%
+\def\@seccntformat#1{\csname the#1\endcsname.\hskip 1em}
+%
+\def\@makechapterhead#1{%
+  \vspace*{-\headsep}\vspace*{-\headheight}\vspace*{-\baselineskip}\par
+  \noindent\mbox{%
+\vbox to8cm{%
+\hbox{\fcahiers Cahiers du Centre de logique}%
+\hbox{\small\fcahiers Volume 10}%
+\vfill
+\hbox{\ftitre\kern\decalageG
+\begin{tabular}{@{}l}
+    \ifnum \c@secnumdepth >\m@ne
+      \if@mainmatter
+        \fchapitre \@chapapp{} \thechapter\\[1cm]
+      \fi
+    \fi
+    #1
+\end{tabular}
+}\vfill}}}
+%
+% 10.06.97 Modifier la definition qui suit pour la faire ressembler a la
+%          precedente.
+%
+%\def\@makeschapterhead#1{%
+%  \vspace*{50\p@}%
+%  {\parindent \z@ \raggedright
+%    \reset@font
+%    \interlinepenalty\@M
+%    \Huge \bfseries  #1\par\nobreak
+%    \vskip 40\p@
+%  }}
+\def\@makeschapterhead#1{%
+  \vspace*{-\headsep}\vspace*{-\headheight}\vspace*{-\baselineskip}\par
+  \noindent\mbox{%
+\vbox to8cm{%
+\hbox{\fcahiers Cahiers du Centre de logique}%
+\hbox{\small\fcahiers Volume 10}%
+\vfill
+\hbox{\ftitre\kern\decalageG
+\begin{tabular}{@{}l}
+    #1
+\end{tabular}
+}\vfill}}\par}
+%
+\def\pourindex#1{%
+%  \vspace*{-\headsep}\vspace*{-\headheight}\vspace*{-\baselineskip}\par
+  \noindent\mbox{%
+\vbox to8cm{%
+\hbox{\fcahiers Cahiers du Centre de logique}%
+\hbox{\small\fcahiers Volume 10}%
+\vfill
+\hbox{\ftitre\kern\decalageG
+\begin{tabular}{@{}l}
+    #1
+\end{tabular}
+}\vfill}}\par}
+%
+\renewenvironment{theindex}
+               {\chapter*{\indexname}\markboth{\indexname}{\indexname}
+	        \addcontentsline{toc}{chapter}{\string\numberline{}\indexname}
+	        \parindent\z@
+                \parskip\z@ \@plus .3\p@\relax
+                \let\item\@idxitem
+	        \begin{multicols}{2}}
+               {\end{multicols}}
+%
+\renewcommand{\tableofcontents}{%
+    \if@twocolumn
+      \@restonecoltrue\onecolumn
+    \else
+      \@restonecolfalse
+    \fi
+    \chapter*{\contentsname}
+        \markboth{\contentsname}{\contentsname}%
+    \@starttoc{toc}%
+    \if@restonecol\twocolumn\fi
+    }
+%
+\renewenvironment{thebibliography}[1]
+     {\chapter*{\bibname}
+        \markboth{\bibname}{\bibname}%
+        \addcontentsline{toc}{chapter}{\string\numberline{}\bibname}
+      \list{\@biblabel{\arabic{enumiv}}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \if@openbib
+              \advance\leftmargin\bibindent
+              \itemindent -\bibindent
+              \listparindent \itemindent
+              \parsep \z@
+            \fi
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand{\theenumiv}{\arabic{enumiv}}}%
+      \if@openbib
+        \renewcommand{\newblock}{\par}
+      \else
+        \renewcommand{\newblock}{\hskip .11em \@plus.33em \@minus.07em}%
+      \fi
+      \sloppy\clubpenalty4000\widowpenalty4000%
+      \sfcode`\.=\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\makeatother
