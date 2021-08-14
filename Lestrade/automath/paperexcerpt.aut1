@@ -1,0 +1,217 @@
+00  p   EB   prop
+
+% (p:prop)
+# declare a proposition variable p
+
+p     q    EB  prop
+
+% (p:prop,q:prop)
+# declare a proposition variable q,
+# and create a context (p,q)
+
+q     and  PN  prop
+
+%Mon Mar 19 13:08:45 2018
+
+%1. and(p:prop,q:prop) = PN : prop
+# declare a primitive operation
+# and which takes arguments (p,q)
+# and returns a proposition.
+
+q     pp    EB   p
+
+% (p:prop,q:prop,pp:p)
+# declare a variable pp representing
+# a proof of p (p is a sort, with
+# its inhabitants being its proofs.
+# The context pp is (p,q,pp)
+
+pp   qq    EB   q
+
+% (p:prop,q:prop,pp:p,qq:q)
+# declare a variable qq representing
+# a proof of q.
+# the context qq is (p,q,pp,qq)
+
+qq   conj  PN  and(p,q)
+
+%Mon Mar 19 13:08:45 2018
+
+%2. conj(p:prop,q:prop,pp:p,qq:q) = PN : and
+# declare a primitive operation
+# conj which takes arguments
+# (p,q,pp,qq) and returns
+# a proof of and(p,q)
+# [I could have just written
+# and instead of and(p,q),
+# but that would seem opaque]
+# this is the rule of conjunction
+
+q    rr    EB   and(p,q)
+
+% (p:prop,q:prop,rr:and)
+# in the context q=(p,q)
+# declare a variable rr of type
+# and(p,q) (a proof of p and q).
+#the context rr = (p,q,rr)
+
+rr   simp1  PN  p
+
+%Mon Mar 19 13:08:45 2018
+
+%3. simp1(p:prop,q:prop,rr:and) = PN : p
+
+rr   simp2  PN  q
+
+%Mon Mar 19 13:08:45 2018
+
+%4. simp2(p:prop,q:prop,rr:and) = PN : q
+# declare primitive notions simpl
+# and simp2, both taking 
+# argument lists (p,q,rr)
+# and returning proofs of p
+# and q respectively:
+# the rules of simplification.
+
+q    implies  PN prop
+
+%Mon Mar 19 13:08:45 2018
+
+%5. implies(p:prop,q:prop) = PN : prop
+# declare the primitive
+# construction if(p,q).
+
+pp   pthenq EB  implies(p,q)
+
+% (p:prop,q:prop,pp:p,pthenq:implies)
+# add a variable representing
+# a proof of if(p,q)
+
+pthenq  mp  PN  q
+
+%Mon Mar 19 13:08:45 2018
+
+%6. mp(p:prop,q:prop,pp:p,pthenq:implies) = PN : q
+# This is the rule of modus
+# ponens.  You should be able
+# to provide your own analysis.
+
+q    ded0   EB   [pp:p]q
+
+% (p:prop,q:prop,ded0:[pp:p]q)
+#  we define a variable ded0
+# which is of type a function from
+# proofs of p to proofs of q.
+# The expression [pp:p]q
+# represents this sort.
+
+ded0  ded   PN  implies(p,q)
+
+%Mon Mar 19 13:08:45 2018
+
+%7. ded(p:prop,q:prop,ded0:[pp:p]q) = PN : implies
+# this is the rule of deduction:
+# from the context (p,q,ded0)
+# where p and q are propositions
+# and ded0 is a function from proofs
+# of p to proofs of q, produce
+# a proof of if(p,q)
+# (again, the sort here could
+# have been written just if,
+# but that would be 
+# mysterious).
+# Now we prove 
+# that and(p,q) implies
+# and(q,p)
+
+q   hyp1  EB  and(p,q)
+
+% (p:prop,q:prop,hyp1:and)
+# introduce a variable hyp1,
+# a proof of and(p,q)
+# [the context being
+# (p,q, hyp1)]
+
+hyp1  line1 simp1(hyp1)  p
+
+%Mon Mar 19 13:08:45 2018
+
+%8. line1(p:prop,q:prop,hyp1:and) = simp1 : p
+# present proof of p
+
+hyp1  line2  simp2(hyp1)  q
+
+%Mon Mar 19 13:08:45 2018
+
+%9. line2(p:prop,q:prop,hyp1:and) = simp2 : q
+# present proof of q
+
+hyp1  line3   conj(q,p,line2,line1)  and(q,p)
+
+%Mon Mar 19 13:08:45 2018
+
+%10. line3(p:prop,q:prop,hyp1:and) = conj(q,p,line2,line1) : and(q,p)
+# present proof of and(q,p)
+
+q   thm  ded(and(p,q),and(q,p),[hyp1:and(p,q)]line3(hyp1))       implies(and(p,q),and(q,p))
+
+# Now present the function which actually
+# witnesses this proof.  The environment is
+# now just p and q.  the object thm
+# is defined as the result of applying
+# the primitive construction  ded
+# to the function ([hyp1:and(p,q)]line3(hyp1)
+# thus obtaining a proof of if(p,q)
+# We are too used to our approach in Lestrade
+# (or a more conservative older approach in Automath).
+# The operation if does not have to be declared as a primitive.  The 
+# following alternative declarations work (they depend
+# on the subtyping).
+
+q  If   [pp:p]q  [pp:p]prop
+
+%Mon Mar 19 13:08:45 2018
+
+%11. If(p:prop,q:prop) = [pp:p]q : [pp:p]prop
+# the computed type of [pp:p]q is actually
+# [pp:p]prop, but this is regarded as
+# a subtype of prop.
+
+pp Pthenq  EB  If(p,q)
+
+% (p:prop,q:prop,pp:p,Pthenq:If)
+# introduce a proof of If(p,q)
+
+Pthenq Mp <pp>Pthenq  q
+
+%Mon Mar 19 13:08:45 2018
+
+%12. Mp(p:prop,q:prop,pp:p,Pthenq:If) = <pp>Pthenq : q
+# the environment is
+# (p,q,pp,Pthenq):
+# apply Pthenq to pp
+# and a proof of q results.
+# No declaration of ded is needed
+# at all:  a function such as ded0 above
+# just *is* a proof of If(p,q).
+
+q Ded0 EB [pp:p]q
+
+% (p:prop,q:prop,Ded0:[pp:p]q)
+
+Ded0 Ded Ded0 If(p,q)
+
+%Mon Mar 19 13:08:45 2018
+
+%13. Ded(p:prop,q:prop,Ded0:[pp:p]q) = Ded0 : If
+# the Automath lines above express this thought.
+# Notice that the type checker needs to be able
+# to use definitional expansion (and the bit
+# of subtyping that we have) to check that
+# types are actually the same.  Equivalence
+# of function or function type terms
+# [x:s]T will also need to take into account
+# equivalence up to renaming of bound
+# variables.
+
+quit

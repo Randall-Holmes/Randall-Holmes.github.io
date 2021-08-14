@@ -1,0 +1,878 @@
+
++LOGIC
+% AUTOMATH: Now in paragraph LOGIC
+
+00 A EB prop
+
+% (A:prop)
+
+A  B EB prop
+
+% (A:prop,B:prop)
+
+B Imp [T:A]B prop
+
+%1. Imp(A:prop,B:prop) = [T:A]B : prop
+
+00 Con PN prop
+
+%2. Con = PN : prop
+
+A Not Imp(A,Con) prop
+
+%3. Not(A:prop) = Imp(A,Con) : prop
+
+B I EB Imp(A,B)
+
+% (A:prop,B:prop,I:Imp(A,B))
+
+I N EB Not(B)
+
+% (A:prop,B:prop,I:Imp(A,B),N:Not(B))
+
+N Contrapos [T:A]<<T>I>N  Not(A)
+
+%4. Contrapos(A:prop,B:prop,I:Imp(A,B),N:Not(B)) = [T:A]<<T>I>N : Not(A)
+
+A A0 EB A
+
+% (A:prop,A0:A)
+
+A0 Th1 [T:Not(A)]<A0>T Not(Not(A))
+
+%5. Th1(A:prop,A0:A) = [T:Not(A)]<A0>T : Not(Not(A))
+
+A N EB Not(Not(A))
+
+% (A:prop,N:Not(Not(A)))
+
+N Dblneglaw PN A
+
+%6. Dblneglaw(A:prop,N:Not(Not(A))) = PN : A
+
+B I EB Imp(A,B)
+
+% (A:prop,B:prop,I:Imp(A,B))
+
+I J EB Imp(Not(A),B)
+
+% (A:prop,B:prop,I:Imp(A,B),J:Imp(Not(A),B))
+
+J Anycase Dblneglaw(B,[T:Not(B)]<<Contrapos(A,B,I,T)>J>T)  B
+
+%7. Anycase(A:prop,B:prop,I:Imp(A,B),J:Imp(Not(A),B)) = Dblneglaw(B,[T:Not(B)]<<Contrapos(A,B,I,T)>J>T) : B
+
+B N EB Not(A)
+
+% (A:prop,B:prop,N:Not(A))
+
+N Th2 [T:A]Dblneglaw(B,[U:Not(B)]<T>N) Imp(A,B)
+
+%8. Th2(A:prop,B:prop,N:Not(A)) = [T:A]Dblneglaw(B,[U:Not(B)]<T>N) : Imp(A,B)
+
+B A0  EB A
+
+% (A:prop,B:prop,A0:A)
+
+A0 N EB Not(B)
+
+% (A:prop,B:prop,A0:A,N:Not(B))
+
+N Th3 [T:Imp(A,B)]<<A0>T>N  Not(Imp(A,B))
+
+%9. Th3(A:prop,B:prop,A0:A,N:Not(B)) = [T:Imp(A,B)]<<A0>T>N : Not(Imp(A,B))
+
+B N EB Not(Imp(A,B))
+
+% (A:prop,B:prop,N:Not(Imp(A,B)))
+
+N Th4 Dblneglaw(A,[T:Not(A)]<Th2(A,B,T)>N)  A
+
+%10. Th4(A:prop,B:prop,N:Not(Imp(A,B))) = Dblneglaw(A,[T:Not(A)]<Th2(A,B,T)>N) : A
+
+N Th5  [T:B]<[U:A]T>N  Not(B)
+
+%11. Th5(A:prop,B:prop,N:Not(Imp(A,B))) = [T:B]<[U:A]T>N : Not(B)
+# begin page 11
+
+B Or Imp(Not(A),B)  prop
+
+%12. Or(A:prop,B:prop) = Imp(Not(A),B) : prop
+
+B A0 EB A
+
+% (A:prop,B:prop,A0:A)
+
+A0 Ori1 Th2(Not(A),B,Th1(A,A0)) Or(A,B)
+
+%13. Ori1(A:prop,B:prop,A0:A) = Th2(Not(A),B,Th1(A,A0)) : Or(A,B)
+
+B B0 EB B
+
+% (A:prop,B:prop,B0:B)
+
+B0 Ori2 [T:Not(A)]B0  Or(A,B)
+
+%14. Ori2(A:prop,B:prop,B0:B) = [T:Not(A)]B0 : Or(A,B)
+
+B O  EB  Or(A,B)
+
+% (A:prop,B:prop,O:Or(A,B))
+
+O N  EB  Not(A)
+
+% (A:prop,B:prop,O:Or(A,B),N:Not(A))
+
+N Notcase1 <N>O  B
+
+%15. Notcase1(A:prop,B:prop,O:Or(A,B),N:Not(A)) = <N>O : B
+
+O  N  EB  Not(B)
+
+% (A:prop,B:prop,O:Or(A,B),N:Not(B))
+
+N Notcase2 Dblneglaw(A,Contrapos(Not(A),B,O,N))  A
+
+%16. Notcase2(A:prop,B:prop,O:Or(A,B),N:Not(B)) = Dblneglaw(A,Contrapos(Not(A),B,O,N)) : A
+
+B C  EB  prop
+
+% (A:prop,B:prop,C:prop)
+
+C O EB  Or(A,B)
+
+% (A:prop,B:prop,C:prop,O:Or(A,B))
+
+O I EB  Imp(A,C)
+
+% (A:prop,B:prop,C:prop,O:Or(A,B),I:Imp(A,C))
+
+I J EB  Imp(B,C)
+
+% (A:prop,B:prop,C:prop,O:Or(A,B),I:Imp(A,C),J:Imp(B,C))
+
+J Ore Anycase(A,C,I,[T:Not(A)]<<T>O>J)  C
+
+%17. Ore(A:prop,B:prop,C:prop,O:Or(A,B),I:Imp(A,C),J:Imp(B,C)) = Anycase(A,C,I,[T:Not(A)]<<T>O>J) : C
+
+B And  Not(Imp(A,Not(B))) prop
+
+%18. And(A:prop,B:prop) = Not(Imp(A,Not(B))) : prop
+
+B A0  EB  A
+
+% (A:prop,B:prop,A0:A)
+
+A0 B0 EB  B
+
+% (A:prop,B:prop,A0:A,B0:B)
+
+B0 Andi  Th3(A,Not(B),A0,Th1(B,B0))  And(A,B)
+
+%19. Andi(A:prop,B:prop,A0:A,B0:B) = Th3(A,Not(B),A0,Th1(B,B0)) : And(A,B)
+
+B A1  EB  And(A,B)
+
+% (A:prop,B:prop,A1:And(A,B))
+
+A1 Ande1 Th4(A,Not(B),A1)  A
+
+%20. Ande1(A:prop,B:prop,A1:And(A,B)) = Th4(A,Not(B),A1) : A
+
+A1 Ande2  Dblneglaw(B,Th5(A,Not(B),A1))  B
+
+%21. Ande2(A:prop,B:prop,A1:And(A,B)) = Dblneglaw(B,Th5(A,Not(B),A1)) : B
+# begin page 12
+
+00 Nat PN type
+
+%22. Nat = PN : type
+
+00 P EB [X:Nat]prop
+
+% (P:[X:Nat]prop)
+
+P All P prop
+
+%23. All(P:[X:Nat]prop) = P : prop
+
+P Some Not(All([X:Nat]Not(<X>P))) prop
+
+%24. Some(P:[X:Nat]prop) = Not(All([X:Nat]Not(<X>P))) : prop
+
+P K EB Nat
+
+% (P:[X:Nat]prop,K:Nat)
+
+K Kp EB <K>P
+
+% (P:[X:Nat]prop,K:Nat,Kp:<K>P)
+
+Kp Somei  [T:[X:Nat]Not(<X>P)]<Kp><K>T  Some(P)
+
+%25. Somei(P:[X:Nat]prop,K:Nat,Kp:<K>P) = [T:[X:Nat]Not(<X>P)]<Kp><K>T : Some(P)
+
+P  A  EB  prop
+
+% (P:[X:Nat]prop,A:prop)
+
+A S  EB  Some(P)
+
+% (P:[X:Nat]prop,A:prop,S:Some(P))
+
+S A0  EB [X:Nat][T:<X>P]A
+
+% (P:[X:Nat]prop,A:prop,S:Some(P),A0:[X:Nat][T:<X>P]A)
+
++1
+% AUTOMATH: Now in paragraph 1
+
+A0 N EB Not(A)
+
+% (P:[X:Nat]prop,A:prop,S:Some(P),A0:[X:Nat][T:<X>P]A,N:Not(A))
+
+N K EB Nat
+
+% (P:[X:Nat]prop,A:prop,S:Some(P),A0:[X:Nat][T:<X>P]A,N:Not(A),K:Nat)
+
+K T1 Contrapos(<K>P,A,<K>A0,N) Not(<K>P)
+
+%26. T1(P:[X:Nat]prop,A:prop,S:Some(P),A0:[X:Nat][T:<X>P]A,N:Not(A),K:Nat) = Contrapos(<K>P,A,<K>A0,N) : Not(<K>P)
+
+N T2 <[X:Nat]T1(X)>S  Con
+
+%27. T2(P:[X:Nat]prop,A:prop,S:Some(P),A0:[X:Nat][T:<X>P]A,N:Not(A)) = <[X:Nat]T1(P,A,S,A0,N,X)>S : Con
+
+-1
+% AUTOMATH: Now in paragraph LOGIC
+
+A0 Somee Dblneglaw(A,[T:Not(A)]T2(T)) A
+
+%28. Somee(P:[X:Nat]prop,A:prop,S:Some(P),A0:[X:Nat][T:<X>P]A) = Dblneglaw(A,[T:Not(A)]T2(P,A,S,A0,T)) : A
+
+00 K EB Nat
+
+% (K:Nat)
+
+K L EB Nat
+
+% (K:Nat,L:Nat)
+
+L Is PN prop
+
+%29. Is(K:Nat,L:Nat) = PN : prop
+
+K Refleq PN Is(K,K)
+
+%30. Refleq(K:Nat) = PN : Is(K,K)
+
+L I EB Is(K,L)
+
+% (K:Nat,L:Nat,I:Is(K,L))
+
+I P EB [X:Nat]prop
+
+% (K:Nat,L:Nat,I:Is(K,L),P:[X:Nat]prop)
+
+P Kp EB <K>P
+
+% (K:Nat,L:Nat,I:Is(K,L),P:[X:Nat]prop,Kp:<K>P)
+
+Kp Eqpred1 PN <L>P
+
+%31. Eqpred1(K:Nat,L:Nat,I:Is(K,L),P:[X:Nat]prop,Kp:<K>P) = PN : <L>P
+
+## there was a problem I had to solve here:  this is where I
+# discovered that all construction terms need their argument lists
+# expanded before the experimental additional declarations are
+# executed.
+
+I Symeq Eqpred1([X:Nat]Is(X,K),Refleq(K)) Is(L,K)
+
+%32. Symeq(K:Nat,L:Nat,I:Is(K,L)) = Eqpred1(K,L,I,[X:Nat]Is(X,K),Refleq(K)) : Is(L,K)
+
+%33. Symeq@ = [K:Nat][L:Nat][I:Is(K,L)]Is(L,K) : [K:Nat][L:Nat][I:Is(K,L)]prop
+
+%34. Symeq! = [K:Nat][L:Nat][I:Is(K,L)]Eqpred1(K,L,I,[X:Nat]Is(X,K),Refleq(K)) : Symeq@
+
+## Symeq1 = [K:Nat][L:Nat][I:Is(K,L)]Is(L,K) : [K:Nat][L:Nat][I:Is(K,L)]prop
+# I Symeq Eqpred1(K,L,I,[X:Nat]Is(X,K),Refleq(K)) Is(L,K)
+
+P Lp EB <L>P
+
+% (K:Nat,L:Nat,I:Is(K,L),P:[X:Nat]prop,Lp:<L>P)
+
+Lp Eqpred2 Eqpred1(L,K,Symeq(K,L,I),P,Lp) <K>P
+
+%35. Eqpred2(K:Nat,L:Nat,I:Is(K,L),P:[X:Nat]prop,Lp:<L>P) = Eqpred1(L,K,Symeq(K,L,I),P,Lp) : <K>P
+
+L M EB Nat
+
+% (K:Nat,L:Nat,M:Nat)
+
+M I EB Is(K,L)
+
+% (K:Nat,L:Nat,M:Nat,I:Is(K,L))
+
+I J  EB Is(L,M)
+
+% (K:Nat,L:Nat,M:Nat,I:Is(K,L),J:Is(L,M))
+
+J Treq Eqpred1(L,M,J,[X:Nat]Is(K,X),I) Is(K,M)
+
+%36. Treq(K:Nat,L:Nat,M:Nat,I:Is(K,L),J:Is(L,M)) = Eqpred1(L,M,J,[X:Nat]Is(K,X),I) : Is(K,M)
+
+%37. Treq@ = [K:Nat][L:Nat][M:Nat][I:Is(K,L)][J:Is(L,M)]Is(K,M) : [K:Nat][L:Nat][M:Nat][I:Is(K,L)][J:Is(L,M)]prop
+
+%38. Treq! = [K:Nat][L:Nat][M:Nat][I:Is(K,L)][J:Is(L,M)]Eqpred1(L,M,J,[X:Nat]Is(K,X),I) : Treq@
+
+M I EB Is(K,M)
+
+% (K:Nat,L:Nat,M:Nat,I:Is(K,M))
+
+I J EB Is(L,M)
+
+% (K:Nat,L:Nat,M:Nat,I:Is(K,M),J:Is(L,M))
+
+J Conveq Treq(K,M,L,I,Symeq(L,M,J))  Is(K,L)
+
+%39. Conveq(K:Nat,L:Nat,M:Nat,I:Is(K,M),J:Is(L,M)) = Treq(K,M,L,I,Symeq(L,M,J)) : Is(K,L)
+
+%40. Conveq@ = [K:Nat][L:Nat][M:Nat][I:Is(K,M)][J:Is(L,M)]Is(K,L) : [K:Nat][L:Nat][M:Nat][I:Is(K,M)][J:Is(L,M)]prop
+
+%41. Conveq! = [K:Nat][L:Nat][M:Nat][I:Is(K,M)][J:Is(L,M)]Treq(K,M,L,I,Symeq(L,M,J)) : Conveq@
+
+M N EB Nat
+
+% (K:Nat,L:Nat,M:Nat,N:Nat)
+
+N I EB Is(K,L)
+
+% (K:Nat,L:Nat,M:Nat,N:Nat,I:Is(K,L))
+
+I J EB Is(L,M)
+
+% (K:Nat,L:Nat,M:Nat,N:Nat,I:Is(K,L),J:Is(L,M))
+
+J I0 EB Is(M,N)
+
+% (K:Nat,L:Nat,M:Nat,N:Nat,I:Is(K,L),J:Is(L,M),I0:Is(M,N))
+
+I0 Treq3 Treq(K,M,N,Treq(K,L,M,I,J),I0) Is(K,N)
+
+%42. Treq3(K:Nat,L:Nat,M:Nat,N:Nat,I:Is(K,L),J:Is(L,M),I0:Is(M,N)) = Treq(K,M,N,Treq(K,L,M,I,J),I0) : Is(K,N)
+
+%43. Treq3@ = [K:Nat][L:Nat][M:Nat][N:Nat][I:Is(K,L)][J:Is(L,M)][I0:Is(M,N)]Is(K,N) : [K:Nat][L:Nat][M:Nat][N:Nat][I:Is(K,L)][J:Is(L,M)][I0:Is(M,N)]prop
+
+%44. Treq3! = [K:Nat][L:Nat][M:Nat][N:Nat][I:Is(K,L)][J:Is(L,M)][I0:Is(M,N)]Treq(K,M,N,Treq(K,L,M,I,J),I0) : Treq3@
+# begin page 14
+
+00 P EB [X:Nat]prop
+
+% (P:[X:Nat]prop)
+
+P Nottwo [X:Nat][Y:Nat][T:<X>P][U:<Y>P]Is(X,Y) prop
+
+%45. Nottwo(P:[X:Nat]prop) = [X:Nat][Y:Nat][T:<X>P][U:<Y>P]Is(X,Y) : prop
+
+P One  And(Some(P),Nottwo(P)) prop
+
+%46. One(P:[X:Nat]prop) = And(Some(P),Nottwo(P)) : prop
+# original doesn't have One(P), just One.
+# why doesn't it expand?
+
+P O EB One
+
+% (P:[X:Nat]prop,O:One(P))
+
+O Individual PN Nat
+
+%47. Individual(P:[X:Nat]prop,O:One(P)) = PN : Nat
+
+O Axindividual PN <Individual>P
+
+%48. Axindividual(P:[X:Nat]prop,O:One(P)) = PN : <Individual(P,O)>P
+
+00 A EB prop
+
+% (A:prop)
+
+A K EB Nat
+
+% (A:prop,K:Nat)
+
+K L EB Nat
+
+% (A:prop,K:Nat,L:Nat)
+
++3
+% AUTOMATH: Now in paragraph 3
+
+L N EB Nat
+
+% (A:prop,K:Nat,L:Nat,N:Nat)
+
+N Prop1 Imp(A,Is(N,K)) prop
+
+%49. Prop1(A:prop,K:Nat,L:Nat,N:Nat) = Imp(A,Is(N,K)) : prop
+
+N Prop2 Imp(Not(A),Is(N,L)) prop
+
+%50. Prop2(A:prop,K:Nat,L:Nat,N:Nat) = Imp(Not(A),Is(N,L)) : prop
+
+N Prop3 And(Prop1,Prop2) prop
+
+%51. Prop3(A:prop,K:Nat,L:Nat,N:Nat) = And(Prop1(A,K,L,N),Prop2(A,K,L,N)) : prop
+
+L A0 EB A
+
+% (A:prop,K:Nat,L:Nat,A0:A)
+# I am avoiding paragraph issues
+
+A0 T1 Andi(Prop1(K),Prop2(K),[T:A]Refleq(K),Th2(Not(A),Is(K,L),Th1(A,A0)))  Prop3(K)
+% AUTOMATH:  previously defined constructor overwritten
+% 26. T1(P:[X:Nat]prop,A:prop,S:Some(P),A0:[X:Nat][T:<X>P]A,N:Not(A),K:Nat) = Contrapos(<K>P,A,<K>A0,N) : Not(<K>P)
+
+%52. T1(A:prop,K:Nat,L:Nat,A0:A) = Andi(Prop1(A,K,L,K),Prop2(A,K,L,K),[T:A]Refleq(K),Th2(Not(A),Is(K,L),Th1(A,A0))) : Prop3(A,K,L,K)
+
+A0 T2 Somei([X:Nat]Prop3(X),K,T1)  Some([X:Nat]Prop3(X))
+% AUTOMATH:  previously defined constructor overwritten
+% 27. T2(P:[X:Nat]prop,A:prop,S:Some(P),A0:[X:Nat][T:<X>P]A,N:Not(A)) = <[X:Nat]T1.26(P,A,S,A0,N,X)>S : Con
+
+%53. T2(A:prop,K:Nat,L:Nat,A0:A) = Somei([X:Nat]Prop3(A,K,L,X),K,T1(A,K,L,A0)) : Some([X:Nat]Prop3(A,K,L,X))
+
+L A1 EB Not(A)
+
+% (A:prop,K:Nat,L:Nat,A1:Not(A))
+
+A1 T3 Andi(Prop1(L),Prop2(L),Th2(A,Is(L,K),A1),[T:Not(A)]Refleq(L)) Prop3(L)
+
+%54. T3(A:prop,K:Nat,L:Nat,A1:Not(A)) = Andi(Prop1(A,K,L,L),Prop2(A,K,L,L),Th2(A,Is(L,K),A1),[T:Not(A)]Refleq(L)) : Prop3(A,K,L,L)
+
+A1 T4 Somei([X:Nat]Prop3(X),L,T3)  Some([X:Nat]Prop3(X))
+
+%55. T4(A:prop,K:Nat,L:Nat,A1:Not(A)) = Somei([X:Nat]Prop3(A,K,L,X),L,T3(A,K,L,A1)) : Some([X:Nat]Prop3(A,K,L,X))
+
+L Existence Anycase(A,Some([X:Nat]Prop3(X)),[T:A]T2(T),[T:Not(A)]T4(T))  Some([X:Nat]Prop3(X))
+
+%56. Existence(A:prop,K:Nat,L:Nat) = Anycase(A,Some([X:Nat]Prop3(A,K,L,X)),[T:A]T2(A,K,L,T),[T:Not(A)]T4(A,K,L,T)) : Some([X:Nat]Prop3(A,K,L,X))
+
+L M EB Nat
+
+% (A:prop,K:Nat,L:Nat,M:Nat)
+
+M P EB Prop3(M)
+
+% (A:prop,K:Nat,L:Nat,M:Nat,P:Prop3(A,K,L,M))
+
+P A0 EB A
+
+% (A:prop,K:Nat,L:Nat,M:Nat,P:Prop3(A,K,L,M),A0:A)
+
+A0 T5 <A0>Ande1(Prop1(M),Prop2(M),P) Is(M,K)
+
+%57. T5(A:prop,K:Nat,L:Nat,M:Nat,P:Prop3(A,K,L,M),A0:A) = <A0>Ande1(Prop1(A,K,L,M),Prop2(A,K,L,M),P) : Is(M,K)
+
+P A1 EB Not(A)
+
+% (A:prop,K:Nat,L:Nat,M:Nat,P:Prop3(A,K,L,M),A1:Not(A))
+
+A1 T6 <A1>Ande2(Prop1(M),Prop2(M),P) Is(M,L)
+
+%58. T6(A:prop,K:Nat,L:Nat,M:Nat,P:Prop3(A,K,L,M),A1:Not(A)) = <A1>Ande2(Prop1(A,K,L,M),Prop2(A,K,L,M),P) : Is(M,L)
+
+M N EB Nat
+
+% (A:prop,K:Nat,L:Nat,M:Nat,N:Nat)
+
+N P EB Prop3(M)
+
+% (A:prop,K:Nat,L:Nat,M:Nat,N:Nat,P:Prop3(A,K,L,M))
+
+P Q EB Prop3(N)
+
+% (A:prop,K:Nat,L:Nat,M:Nat,N:Nat,P:Prop3(A,K,L,M),Q:Prop3(A,K,L,N))
+
+Q A0 EB A
+
+% (A:prop,K:Nat,L:Nat,M:Nat,N:Nat,P:Prop3(A,K,L,M),Q:Prop3(A,K,L,N),A0:A)
+
+A0 T7 Conveq(M,N,K,T5(M,P,A0),T5(N,Q,A0))  Is(M,N)
+
+%59. T7(A:prop,K:Nat,L:Nat,M:Nat,N:Nat,P:Prop3(A,K,L,M),Q:Prop3(A,K,L,N),A0:A) = Conveq(M,N,K,T5(A,K,L,M,P,A0),T5(A,K,L,N,Q,A0)) : Is(M,N)
+
+Q A1 EB Not(A)
+
+% (A:prop,K:Nat,L:Nat,M:Nat,N:Nat,P:Prop3(A,K,L,M),Q:Prop3(A,K,L,N),A1:Not(A))
+
+A1 T8 Conveq(M,N,L,T6(M,P,A1),T6(N,Q,A1)) Is(M,N)
+
+%60. T8(A:prop,K:Nat,L:Nat,M:Nat,N:Nat,P:Prop3(A,K,L,M),Q:Prop3(A,K,L,N),A1:Not(A)) = Conveq(M,N,L,T6(A,K,L,M,P,A1),T6(A,K,L,N,Q,A1)) : Is(M,N)
+
+Q Unicity Anycase(A,Is(M,N),[T:A]T7(T),[T:Not(A)]T8(T)) Is(M,N)
+
+%61. Unicity(A:prop,K:Nat,L:Nat,M:Nat,N:Nat,P:Prop3(A,K,L,M),Q:Prop3(A,K,L,N)) = Anycase(A,Is(M,N),[T:A]T7(A,K,L,M,N,P,Q,T),[T:Not(A)]T8(A,K,L,M,N,P,Q,T)) : Is(M,N)
+
+L T9 Andi(Some([X:Nat]Prop3(X)),Nottwo([X:Nat]Prop3(X)),Existence,[X:Nat][Y:Nat][T:Prop3(X)][U:Prop3(Y)]Unicity(X,Y,T,U)) One([X:Nat]Prop3(X))
+
+%62. T9(A:prop,K:Nat,L:Nat) = Andi(Some([X:Nat]Prop3(A,K,L,X)),Nottwo([X:Nat]Prop3(A,K,L,X)),Existence(A,K,L),[X:Nat][Y:Nat][T:Prop3(A,K,L,X)][U:Prop3(A,K,L,Y)]Unicity(A,K,L,X,Y,T,U)) : One([X:Nat]Prop3(A,K,L,X))
+
+L N0 Individual([X:Nat]Prop3(X),T9) Nat
+
+%63. N0(A:prop,K:Nat,L:Nat) = Individual([X:Nat]Prop3(A,K,L,X),T9(A,K,L)) : Nat
+
+L T10 Axindividual([X:Nat]Prop3(X),T9)  Prop3(N0)
+
+%64. T10(A:prop,K:Nat,L:Nat) = Axindividual([X:Nat]Prop3(A,K,L,X),T9(A,K,L)) : Prop3(A,K,L,N0(A,K,L))
+
+-3
+% AUTOMATH: Now in paragraph LOGIC
+
+L Ifthenelse N0 Nat
+
+%65. Ifthenelse(A:prop,K:Nat,L:Nat) = N0(A,K,L) : Nat
+
+L A0 EB A
+
+% (A:prop,K:Nat,L:Nat,A0:A)
+
+A0 Then T5(N0,T10,A0) Is(Ifthenelse,K)
+
+%66. Then(A:prop,K:Nat,L:Nat,A0:A) = T5(A,K,L,N0(A,K,L),T10(A,K,L),A0) : Is(Ifthenelse(A,K,L),K)
+
+L A1 EB Not(A)
+
+% (A:prop,K:Nat,L:Nat,A1:Not(A))
+
+A1 Else T6(N0,T10,A1)  Is(Ifthenelse,L)
+
+%67. Else(A:prop,K:Nat,L:Nat,A1:Not(A)) = T6(A,K,L,N0(A,K,L),T10(A,K,L),A1) : Is(Ifthenelse(A,K,L),L)
+
+00 Set PN type
+
+%68. Set = PN : type
+
+00 K EB Nat
+
+% (K:Nat)
+
+K S EB Set
+
+% (K:Nat,S:Set)
+
+S In PN prop
+
+%69. In(K:Nat,S:Set) = PN : prop
+
+00 P EB [X:Nat]prop
+
+% (P:[X:Nat]prop)
+
+P Setof PN Set
+
+%70. Setof(P:[X:Nat]prop) = PN : Set
+
+P K EB Nat
+
+% (P:[X:Nat]prop,K:Nat)
+
+K Kp EB <K>P
+
+% (P:[X:Nat]prop,K:Nat,Kp:<K>P)
+
+Kp Ini PN In(K,Setof(P))
+
+%71. Ini(P:[X:Nat]prop,K:Nat,Kp:<K>P) = PN : In(K,Setof(P))
+
+K I EB In(K,Setof(P))
+
+% (P:[X:Nat]prop,K:Nat,I:In(K,Setof(P)))
+
+I Ine PN <K>P
+
+%72. Ine(P:[X:Nat]prop,K:Nat,I:In(K,Setof(P))) = PN : <K>P
+
++NATURALS
+% AUTOMATH: Now in paragraph NATURALS
+
+00 1 PN Nat
+
+%73. 1 = PN : Nat
+
+00 K EB Nat
+
+% (K:Nat)
+
+K Suc PN Nat
+
+%74. Suc(K:Nat) = PN : Nat
+
+K L EB Nat
+
+% (K:Nat,L:Nat)
+
+L I EB Is(K,L)
+
+% (K:Nat,L:Nat,I:Is(K,L))
+
+I Ax2 Eqpred1(K,L,I,[X:Nat]Is(Suc(K),Suc(X)),Refleq(Suc(K))) Is(Suc(K),Suc(L))
+
+%75. Ax2(K:Nat,L:Nat,I:Is(K,L)) = Eqpred1(K,L,I,[X:Nat]Is(Suc(K),Suc(X)),Refleq(Suc(K))) : Is(Suc(K),Suc(L))
+
+%76. Ax2@ = [K:Nat][L:Nat][I:Is(K,L)]Is(Suc(K),Suc(L)) : [K:Nat][L:Nat][I:Is(K,L)]prop
+
+%77. Ax2! = [K:Nat][L:Nat][I:Is(K,L)]Eqpred1(K,L,I,[X:Nat]Is(Suc(K),Suc(X)),Refleq(Suc(K))) : Ax2@
+
+K Ax3 PN Not(Is(Suc(K),1))
+
+%78. Ax3(K:Nat) = PN : Not(Is(Suc(K),1))
+
+L I EB Is(Suc(K),Suc(L))
+
+% (K:Nat,L:Nat,I:Is(Suc(K),Suc(L)))
+
+I Ax4 PN Is(K,L)
+
+%79. Ax4(K:Nat,L:Nat,I:Is(Suc(K),Suc(L))) = PN : Is(K,L)
+
+00 S EB Set
+
+% (S:Set)
+
+S Progressive All([X:Nat]Imp(In(X,S),In(Suc(X),S)))  prop
+
+%80. Progressive(S:Set) = All([X:Nat]Imp(In(X,S),In(Suc(X),S))) : prop
+
+%81. Progressive@ = [S:Set]All([X:Nat]Imp(In(X,S),In(Suc(X),S))) : [S:Set]prop
+
+S P EB Progressive(S)
+
+% (S:Set,P:Progressive(S))
+
+P I EB In(1,S)
+
+% (S:Set,P:Progressive(S),I:In(1,S))
+
+I K EB Nat
+
+% (S:Set,P:Progressive(S),I:In(1,S),K:Nat)
+
+K Ax5 PN In(K,S)
+
+%82. Ax5(S:Set,P:Progressive(S),I:In(1,S),K:Nat) = PN : In(K,S)
+
+00 P EB [X:Nat]prop
+
+% (P:[X:Nat]prop)
+
+P P1 EB <1>P
+
+% (P:[X:Nat]prop,P1:<1>P)
+
+P1 A EB  All([X:Nat]Imp(<X>P,<Suc(X)>P))
+
+% (P:[X:Nat]prop,P1:<1>P,A:All([X:Nat]Imp(<X>P,<Suc(X)>P)))
+
+A K EB Nat
+
+% (P:[X:Nat]prop,P1:<1>P,A:All([X:Nat]Imp(<X>P,<Suc(X)>P)),K:Nat)
+
++0
+% AUTOMATH: Now in paragraph 0
+
+A S0 Setof(P) Set
+
+%83. S0(P:[X:Nat]prop,P1:<1>P,A:All([X:Nat]Imp(<X>P,<Suc(X)>P))) = Setof(P) : Set
+
+A T1 Ini(P,1,P1) In(1,S0)
+% AUTOMATH:  previously defined constructor overwritten
+% 52. T1(A:prop,K:Nat,L:Nat,A0:A) = Andi(Prop1(A,K,L,K),Prop2(A,K,L,K),[T:A]Refleq(K),Th2(Not(A),Is(K,L),Th1(A,A0))) : Prop3(A,K,L,K)
+
+%84. T1(P:[X:Nat]prop,P1:<1>P,A:All([X:Nat]Imp(<X>P,<Suc(X)>P))) = Ini(P,1,P1) : In(1,S0(P,P1,A))
+
+K I EB In(K,S0)
+
+% (P:[X:Nat]prop,P1:<1>P,A:All([X:Nat]Imp(<X>P,<Suc(X)>P)),K:Nat,I:In(K,S0(P,P1,A)))
+
+I T2 Ini(P,Suc(K),<Ine(P,K,I)><K>A)  In(Suc(K),S0)
+% AUTOMATH:  previously defined constructor overwritten
+% 53. T2(A:prop,K:Nat,L:Nat,A0:A) = Somei([X:Nat]Prop3(A,K,L,X),K,T1.52(A,K,L,A0)) : Some([X:Nat]Prop3(A,K,L,X))
+
+%85. T2(P:[X:Nat]prop,P1:<1>P,A:All([X:Nat]Imp(<X>P,<Suc(X)>P)),K:Nat,I:In(K,S0(P,P1,A))) = Ini(P,Suc(K),<Ine(P,K,I)><K>A) : In(Suc(K),S0(P,P1,A))
+
+-0
+% AUTOMATH: Now in paragraph NATURALS
+
+K Induction Ine(P,K,Ax5(S0,[X:Nat][T:In(X,S0)]T2(X,T),T1,K)) <K>P
+
+%86. Induction(P:[X:Nat]prop,P1:<1>P,A:All([X:Nat]Imp(<X>P,<Suc(X)>P)),K:Nat) = Ine(P,K,Ax5(S0(P,P1,A),[X:Nat][T:In(X,S0(P,P1,A))]T2(P,P1,A,X,T),T1(P,P1,A),K)) : <K>P
+
+00 K EB Nat
+
+% (K:Nat)
+
+K L EB Nat
+
+% (K:Nat,L:Nat)
+
+L Le [S:Set][T:Progressive(S)]Imp(In(K,S),In(L,S)) prop
+
+%87. Le(K:Nat,L:Nat) = [S:Set][T:Progressive(S)]Imp(In(K,S),In(L,S)) : prop
+
+%88. Le@ = [K:Nat][L:Nat][S:Set][T:Progressive(S)]Imp(In(K,S),In(L,S)) : [K:Nat][L:Nat]prop
+
+K Reflle [S:Set][T:Progressive(S)][U:In(K,S)]U  Le(K,K)
+
+%89. Reflle(K:Nat) = [S:Set][T:Progressive(S)][U:In(K,S)]U : Le(K,K)
+
+%90. Reflle@ = [K:Nat]Le(K,K) : [K:Nat]prop
+
+%91. Reflle! = [K:Nat][S:Set][T:Progressive(S)][U:In(K,S)]U : Reflle@
+
+L M EB Nat
+
+% (K:Nat,L:Nat,M:Nat)
+
+M L1 EB Le(K,L)
+
+% (K:Nat,L:Nat,M:Nat,L1:Le(K,L))
+
+L1 L2 EB Le(L,M)
+
+% (K:Nat,L:Nat,M:Nat,L1:Le(K,L),L2:Le(L,M))
+
++*0
+% AUTOMATH: Now in paragraph 0
+
+L2 S EB Set
+
+% (K:Nat,L:Nat,M:Nat,L1:Le(K,L),L2:Le(L,M),S:Set)
+
+S P EB Progressive(S)
+
+% (K:Nat,L:Nat,M:Nat,L1:Le(K,L),L2:Le(L,M),S:Set,P:Progressive(S))
+
+P I EB In(K,S)
+
+% (K:Nat,L:Nat,M:Nat,L1:Le(K,L),L2:Le(L,M),S:Set,P:Progressive(S),I:In(K,S))
+
+I T3 <I><P><S>L1 In(L,S)
+% AUTOMATH:  previously defined constructor overwritten
+% 54. T3(A:prop,K:Nat,L:Nat,A1:Not(A)) = Andi(Prop1(A,K,L,L),Prop2(A,K,L,L),Th2(A,Is(L,K),A1),[T:Not(A)]Refleq(L)) : Prop3(A,K,L,L)
+
+%92. T3(K:Nat,L:Nat,M:Nat,L1:Le(K,L),L2:Le(L,M),S:Set,P:Progressive(S),I:In(K,S)) = <I><P><S>L1 : In(L,S)
+
+%93. T3@ = [K:Nat][L:Nat][M:Nat][L1:Le(K,L)][L2:Le(L,M)][S:Set][P:Progressive(S)][I:In(K,S)]In(L,S) : [K:Nat][L:Nat][M:Nat][L1:Le(K,L)][L2:Le(L,M)][S:Set][P:Progressive(S)][I:In(K,S)]prop
+
+%94. T3! = [K:Nat][L:Nat][M:Nat][L1:Le(K,L)][L2:Le(L,M)][S:Set][P:Progressive(S)][I:In(K,S)]<I><P><S>L1 : T3@
+
+I T4 <T3><P><S>L2 In(M,S)
+% AUTOMATH:  previously defined constructor overwritten
+% 55. T4(A:prop,K:Nat,L:Nat,A1:Not(A)) = Somei([X:Nat]Prop3(A,K,L,X),L,T3.54(A,K,L,A1)) : Some([X:Nat]Prop3(A,K,L,X))
+
+%95. T4(K:Nat,L:Nat,M:Nat,L1:Le(K,L),L2:Le(L,M),S:Set,P:Progressive(S),I:In(K,S)) = <T3(K,L,M,L1,L2,S,P,I)><P><S>L2 : In(M,S)
+
+%96. T4@ = [K:Nat][L:Nat][M:Nat][L1:Le(K,L)][L2:Le(L,M)][S:Set][P:Progressive(S)][I:In(K,S)]In(M,S) : [K:Nat][L:Nat][M:Nat][L1:Le(K,L)][L2:Le(L,M)][S:Set][P:Progressive(S)][I:In(K,S)]prop
+
+%97. T4! = [K:Nat][L:Nat][M:Nat][L1:Le(K,L)][L2:Le(L,M)][S:Set][P:Progressive(S)][I:In(K,S)]<T3(K,L,M,L1,L2,S,P,I)><P><S>L2 : T4@
+
+-0
+% AUTOMATH: Now in paragraph NATURALS
+
+L2 Trle  [S:Set][T:Progressive(S)][U:In(K,S)]T4(S,T,U)  Le(K,M)
+
+%98. Trle(K:Nat,L:Nat,M:Nat,L1:Le(K,L),L2:Le(L,M)) = [S:Set][T:Progressive(S)][U:In(K,S)]T4(K,L,M,L1,L2,S,T,U) : Le(K,M)
+
+%99. Trle@ = [K:Nat][L:Nat][M:Nat][L1:Le(K,L)][L2:Le(L,M)]Le(K,M) : [K:Nat][L:Nat][M:Nat][L1:Le(K,L)][L2:Le(L,M)]prop
+
+%100. Trle! = [K:Nat][L:Nat][M:Nat][L1:Le(K,L)][L2:Le(L,M)][S:Set][T:Progressive(S)][U:In(K,S)]T4(K,L,M,L1,L2,S,T,U) : Trle@
+
+K Th1 [S:Set][T:Progressive(S)]<K>T Le(K,Suc(K))
+% AUTOMATH:  previously defined constructor overwritten
+% 5. Th1(A:prop,A0:A) = [T:Not(A)]<A0>T : Not(Not(A))
+
+%101. Th1(K:Nat) = [S:Set][T:Progressive(S)]<K>T : Le(K,Suc(K))
+
+%102. Th1@ = [K:Nat]Le(K,Suc(K)) : [K:Nat]prop
+
+%103. Th1! = [K:Nat][S:Set][T:Progressive(S)]<K>T : Th1@
+
+L L1 EB Le(K,L)
+
+% (K:Nat,L:Nat,L1:Le(K,L))
+
+L1 Cor1 Trle(K,L,Suc(L),L1,Th1(L)) Le(K,Suc(L))
+
+%104. Cor1(K:Nat,L:Nat,L1:Le(K,L)) = Trle(K,L,Suc(L),L1,Th1(L)) : Le(K,Suc(L))
+
+%105. Cor1@ = [K:Nat][L:Nat][L1:Le(K,L)]Le(K,Suc(L)) : [K:Nat][L:Nat][L1:Le(K,L)]prop
+
+%106. Cor1! = [K:Nat][L:Nat][L1:Le(K,L)]Trle(K,L,Suc(L),L1,Th1(L)) : Cor1@
+
+L L1 EB Le(Suc(K),Suc(L))
+
+% (K:Nat,L:Nat,L1:Le(Suc(K),Suc(L)))
+
++2
+% AUTOMATH: Now in paragraph 2
+
+L1 S EB Set
+
+% (K:Nat,L:Nat,L1:Le(Suc(K),Suc(L)),S:Set)
+
+S P EB Progressive(S)
+
+% (K:Nat,L:Nat,L1:Le(Suc(K),Suc(L)),S:Set,P:Progressive(S))
+
+P M EB Nat
+
+% (K:Nat,L:Nat,L1:Le(Suc(K),Suc(L)),S:Set,P:Progressive(S),M:Nat)
+
+M N EB Nat
+
+% (K:Nat,L:Nat,L1:Le(Suc(K),Suc(L)),S:Set,P:Progressive(S),M:Nat,N:Nat)
+
+N Prop1 And(In(N,S),Is(Suc(N),M)) prop
+% AUTOMATH:  previously defined constructor overwritten
+% 49. Prop1(A:prop,K:Nat,L:Nat,N:Nat) = Imp(A,Is(N,K)) : prop
+
+%107. Prop1(K:Nat,L:Nat,L1:Le(Suc(K),Suc(L)),S:Set,P:Progressive(S),M:Nat,N:Nat) = And(In(N,S),Is(Suc(N),M)) : prop
+
+%108. Prop1@ = [K:Nat][L:Nat][L1:Le(Suc(K),Suc(L))][S:Set][P:Progressive(S)][M:Nat][N:Nat]And(In(N,S),Is(Suc(N),M)) : [K:Nat][L:Nat][L1:Le(Suc(K),Suc(L))][S:Set][P:Progressive(S)][M:Nat][N:Nat]prop
+
+P S0 Setof([X:Nat]Some([Y:Nat]Prop1(X,Y)))  Set
+% AUTOMATH:  previously defined constructor overwritten
+% 83. S0(P:[X:Nat]prop,P1:<1>P,A:All([X:Nat]Imp(<X>P,<Suc(X)>P))) = Setof(P) : Set
+
+%109. S0(K:Nat,L:Nat,L1:Le(Suc(K),Suc(L)),S:Set,P:Progressive(S)) = Setof([X:Nat]Some([Y:Nat]Prop1(K,L,L1,S,P,X,Y))) : Set
+
+%110. S0@ = [K:Nat][L:Nat][L1:Le(Suc(K),Suc(L))][S:Set][P:Progressive(S)]Set : [K:Nat][L:Nat][L1:Le(Suc(K),Suc(L))][S:Set][P:Progressive(S)]type
+
+%111. S0! = [K:Nat][L:Nat][L1:Le(Suc(K),Suc(L))][S:Set][P:Progressive(S)]Setof([X:Nat]Some([Y:Nat]Prop1(K,L,L1,S,P,X,Y))) : S0@
+
+P M EB Nat
+
+% (K:Nat,L:Nat,L1:Le(Suc(K),Suc(L)),S:Set,P:Progressive(S),M:Nat)
+
+M I EB In(M,S0)
+
+% (K:Nat,L:Nat,L1:Le(Suc(K),Suc(L)),S:Set,P:Progressive(S),M:Nat,I:In(M,S0(K,L,L1,S,P)))
+
+I N EB Nat
+
+% (K:Nat,L:Nat,L1:Le(Suc(K),Suc(L)),S:Set,P:Progressive(S),M:Nat,I:In(M,S0(K,L,L1,S,P)),N:Nat)
+
+N Q EB Prop1(M,N)
+
+% (K:Nat,L:Nat,L1:Le(Suc(K),Suc(L)),S:Set,P:Progressive(S),M:Nat,I:In(M,S0(K,L,L1,S,P)),N:Nat,Q:Prop1(K,L,L1,S,P,M,N))
+
+Q T2 <Ande1(In(N,S),Is(Suc(N),M),Q)><N>P  In(Suc(N),S)
+% AUTOMATH:  previously defined constructor overwritten
+% 85. T2(P:[X:Nat]prop,P1:<1>P,A:All([X:Nat]Imp(<X>P,<Suc(X)>P)),K:Nat,I:In(K,S0.83(P,P1,A))) = Ini(P,Suc(K),<Ine(P,K,I)><K>A) : In(Suc(K),S0.83(P,P1,A))
+
+%112. T2(K:Nat,L:Nat,L1:Le(Suc(K),Suc(L)),S:Set,P:Progressive(S),M:Nat,I:In(M,S0(K,L,L1,S,P)),N:Nat,Q:Prop1(K,L,L1,S,P,M,N)) = <Ande1(In(N,S),Is(Suc(N),M),Q)><N>P : In(Suc(N),S)
+
+%113. T2@ = [K:Nat][L:Nat][L1:Le(Suc(K),Suc(L))][S:Set][P:Progressive(S)][M:Nat][I:In(M,S0(K,L,L1,S,P))][N:Nat][Q:Prop1(K,L,L1,S,P,M,N)]In(Suc(N),S) : [K:Nat][L:Nat][L1:Le(Suc(K),Suc(L))][S:Set][P:Progressive(S)][M:Nat][I:In(M,S0(K,L,L1,S,P))][N:Nat][Q:Prop1(K,L,L1,S,P,M,N)]prop
+
+%114. T2! = [K:Nat][L:Nat][L1:Le(Suc(K),Suc(L))][S:Set][P:Progressive(S)][M:Nat][I:In(M,S0(K,L,L1,S,P))][N:Nat][Q:Prop1(K,L,L1,S,P,M,N)]<Ande1(In(N,S),Is(Suc(N),M),Q)><N>P : T2@
+quit

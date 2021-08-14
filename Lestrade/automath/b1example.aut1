@@ -1,0 +1,260 @@
+# sample logic declarations on pp. 268-70 in the yellow book.
+# the language used is almost the same as that in the original.
+#1:  prop cannot be used for the degree 2 notion here, as MANIAC reserves it, so we use Prop
+#2:  declarations of infix or prefix operators do not have arguments in the identifier part.
+#3:  we are sometimes able to use fewer parentheses in prefix or infix terms.
+
+@ Prop := PN : type
+
+%1. Prop = PN : type
+
+[p:Prop][q:Prop][r:Prop]
+
+% (p:Prop)
+
+% (p:Prop,q:Prop)
+
+% (p:Prop,q:Prop,r:Prop)
+
+p @ Pr := PN : type
+
+%2. Pr(p:Prop) = PN : type
+
+@ [A:type]
+
+% (A:type)
+
+pred := [x:A]Prop : type
+
+%3. pred(A:type) = [x:A]Prop : type
+
+[P:pred(A)]
+
+% (A:type,P:pred(A))
+
+All := PN : Prop
+
+%4. All(A:type,P:pred(A)) = PN : Prop
+
+[u:[x:A]Pr(<x>P)]
+
+% (A:type,P:pred(A),u:[x:A]Pr(<x>P))
+
+All_in := PN : Pr(All(A,P))
+
+%5. All_in(A:type,P:pred(A),u:[x:A]Pr(<x>P)) = PN : Pr(All(A,P))
+
+P @ [u:Pr(All(A,P))][a:A]
+
+% (A:type,P:pred(A),u:Pr(All(A,P)))
+
+% (A:type,P:pred(A),u:Pr(All(A,P)),a:A)
+
+All_el := PN : Pr(<a>P)
+
+%6. All_el(A:type,P:pred(A),u:Pr(All(A,P)),a:A) = PN : Pr(<a>P)
+
+spec := All_el(u,a) : Pr(<a>P)
+
+%7. spec(A:type,P:pred(A),u:Pr(All(A,P)),a:A) = All_el(A,P,u,a) : Pr(<a>P)
+
+q  @ '->' := All(Pr(p),[x:Pr(p)]q) : Prop
+
+%8. '->'(p:Prop,q:Prop) = All(Pr(p),[x:Pr(p)]q) : Prop
+
+[u:[x:Pr(p)]Pr(q)]
+
+% (p:Prop,q:Prop,u:[x:Pr(p)]Pr(q))
+
+Imp_in := All_in(Pr(p),[x:Pr(p)]q,u) : Pr(p'->'q) : Prop
+
+%9. Imp_in(p:Prop,q:Prop,u:[x:Pr(p)]Pr(q)) = All_in(Pr(p),[x:Pr(p)]q,u) : Pr(p'->'q)
+
+q @ [u:Pr(p'->'q)][v:Pr(p)]
+
+% (p:Prop,q:Prop,u:Pr(p'->'q))
+
+% (p:Prop,q:Prop,u:Pr(p'->'q),v:Pr(p))
+
+Imp_el := All_el(Pr(p),[x:Pr(p)]q,u,v) : Pr(q)
+
+%10. Imp_el(p:Prop,q:Prop,u:Pr(p'->'q),v:Pr(p)) = All_el(Pr(p),[x:Pr(p)]q,u,v) : Pr(q)
+
+mod_pon := Imp_el(u,v) : Pr(q)
+
+%11. mod_pon(p:Prop,q:Prop,u:Pr(p'->'q),v:Pr(p)) = Imp_el(p,q,u,v) : Pr(q)
+
+p @ refl_Imp := Imp_in(p,p,[x:Pr(p)]x) : Pr(p'->'p)
+
+%12. refl_Imp(p:Prop) = Imp_in(p,p,[x:Pr(p)]x) : Pr(p'->'p)
+
+r @ [u:Pr(p'->'q)][v:Pr(q'->'r)]
+
+% (p:Prop,q:Prop,r:Prop,u:Pr(p'->'q))
+
+% (p:Prop,q:Prop,r:Prop,u:Pr(p'->'q),v:Pr(q'->'r))
+
+trans_Imp := Imp_in(p,r,[x:Pr(p)]Imp_el(q,r,v,Imp_el(p,q,u,x))) : Pr(p'->'r)
+
+%13. trans_Imp(p:Prop,q:Prop,r:Prop,u:Pr(p'->'q),v:Pr(q'->'r)) = Imp_in(p,r,[x:Pr(p)]Imp_el(q,r,v,Imp_el(p,q,u,x))) : Pr(p'->'r)
+
+@ Fls := All(Prop,[x:Prop]x) : Prop
+
+%14. Fls = All(Prop,[x:Prop]x) : Prop
+
+p @ [u:Pr(Fls)]
+
+% (p:Prop,u:Pr(Fls))
+
+Fls_el := All_el(Prop,[x:Prop]x,u,p) : Pr(p)
+
+%15. Fls_el(p:Prop,u:Pr(Fls)) = All_el(Prop,[x:Prop]x,u,p) : Pr(p)
+
+p @ '-' := p'->'Fls : Prop
+
+%16. '-'(p:Prop) = p'->'Fls : Prop
+
+[u:[x:Pr(p)]Pr(Fls)]
+
+% (p:Prop,u:[x:Pr(p)]Pr(Fls))
+
+Not_in := Imp_in(p,Fls,u) : Pr('-'p)
+
+%17. Not_in(p:Prop,u:[x:Pr(p)]Pr(Fls)) = Imp_in(p,Fls,u) : Pr('-'p)
+
+q @ [u:Pr('-'p)][v:Pr(p)]
+
+% (p:Prop,q:Prop,u:Pr('-'p))
+
+% (p:Prop,q:Prop,u:Pr('-'p),v:Pr(p))
+
+Not_el := Fls_el(q,Imp_el(p,Fls,u,v)) : Pr(q)
+
+%18. Not_el(p:Prop,q:Prop,u:Pr('-'p),v:Pr(p)) = Fls_el(q,Imp_el(p,Fls,u,v)) : Pr(q)
+
+q @ [u:Pr('-'p)]
+
+% (p:Prop,q:Prop,u:Pr('-'p))
+
+n_antec_so_Imp := Imp_in([x:Pr(p)]Not_el(p,q,u,x)) : Pr(p'->'q)
+
+%19. n_antec_so_Imp(p:Prop,q:Prop,u:Pr('-'p)) = Imp_in(p,q,[x:Pr(p)]Not_el(p,q,u,x)) : Pr(p'->'q)
+
+q @ [u:Pr(q)]
+
+% (p:Prop,q:Prop,u:Pr(q))
+
+conseq_so_Imp := Imp_in([x:Pr(p)]u) : Pr(p'->'q)
+
+%20. conseq_so_Imp(p:Prop,q:Prop,u:Pr(q)) = Imp_in(p,q,[x:Pr(p)]u) : Pr(p'->'q)
+
+p @ [u:Pr('-''-'p)]
+
+% (p:Prop,u:Pr('-''-'p))
+
+dbl_neg_law := PN : Pr(p)
+
+%21. dbl_neg_law(p:Prop,u:Pr('-''-'p)) = PN : Pr(p)
+
+q @ [u:Pr(p'->'q)][v:Pr('-'q)]
+
+% (p:Prop,q:Prop,u:Pr(p'->'q))
+
+% (p:Prop,q:Prop,u:Pr(p'->'q),v:Pr('-'q))
+
+mod_tol := trans_Imp(p,q,Fls,u,v) : Pr('-'p)
+
+%22. mod_tol(p:Prop,q:Prop,u:Pr(p'->'q),v:Pr('-'q)) = trans_Imp(p,q,Fls,u,v) : Pr('-'p)
+
+u @ contrapos_1 := Imp_in('-'q,'-'p,[x:Pr('-'q)]mod_tol(p,q,u,x)) : Pr(('-'q)'->''-'p)
+
+%23. contrapos_1(p:Prop,q:Prop,u:Pr(p'->'q)) = Imp_in('-'q,'-'p,[x:Pr('-'q)]mod_tol(p,q,u,x)) : Pr(('-'q)'->''-'p)
+
+q @ [u:Pr(('-'p)'->''-'q)]
+
+% (p:Prop,q:Prop,u:Pr(('-'p)'->''-'q))
+
+contrapos_2 := Imp_in(q,p,[x:Pr(q)]dbl_neg_law(p,Not_in('-'p,[y:Pr('-'p)]Imp_el(q,Fls,Imp_el('-'p,'-'q,u,y),x)))) : Pr(q'->'p)
+
+%24. contrapos_2(p:Prop,q:Prop,u:Pr(('-'p)'->''-'q)) = Imp_in(q,p,[x:Pr(q)]dbl_neg_law(p,Not_in('-'p,[y:Pr('-'p)]Imp_el(q,Fls,Imp_el('-'p,'-'q,u,y),x)))) : Pr(q'->'p)
+
+q @ 'V' := ('-'p)'->'q : Prop
+
+%25. 'V'(p:Prop,q:Prop) = ('-'p)'->'q : Prop
+
+[u:Pr(p)]
+
+% (p:Prop,q:Prop,u:Pr(p))
+
+Or_in_1 := Imp_in('-'p,q,[x:Pr('-'p)]Not_el(p,q,x,u)) : Pr(p'V'q)
+
+%26. Or_in_1(p:Prop,q:Prop,u:Pr(p)) = Imp_in('-'p,q,[x:Pr('-'p)]Not_el(p,q,x,u)) : Pr(p'V'q)
+
+q @ [u:Pr(q)]
+
+% (p:Prop,q:Prop,u:Pr(q))
+
+Or_in_2 := conseq_so_Imp('-'p,q,u) : Pr(p'V'q)
+
+%27. Or_in_2(p:Prop,q:Prop,u:Pr(q)) = conseq_so_Imp('-'p,q,u) : Pr(p'V'q)
+
+r @ [u:Pr(p'V'q)][v:[x:Pr(p)]Pr(r)][w:[x:Pr(q)]Pr(r)]
+
+% (p:Prop,q:Prop,r:Prop,u:Pr(p'V'q))
+
+% (p:Prop,q:Prop,r:Prop,u:Pr(p'V'q),v:[x:Pr(p)]Pr(r))
+
+% (p:Prop,q:Prop,r:Prop,u:Pr(p'V'q),v:[x:Pr(p)]Pr(r),w:[x:Pr(q)]Pr(r))
+
+Or_el := dbl_neg_law(r,Not_in('-'r,[x:Pr('-'r)]Imp_el(r,Fls,x,<Imp_el('-'p,q,u,Not_in(p,[y:Pr(p)]Imp_el(r,Fls,x,<y>v)))>w))) : Pr(r)
+
+%28. Or_el(p:Prop,q:Prop,r:Prop,u:Pr(p'V'q),v:[x:Pr(p)]Pr(r),w:[x:Pr(q)]Pr(r)) = dbl_neg_law(r,Not_in('-'r,[x:Pr('-'r)]Imp_el(r,Fls,x,<Imp_el('-'p,q,u,Not_in(p,[y:Pr(p)]Imp_el(r,Fls,x,<y>v)))>w))) : Pr(r)
+
+prf_by_cases := Or_el(u,v,w) : Pr(r)
+
+%29. prf_by_cases(p:Prop,q:Prop,r:Prop,u:Pr(p'V'q),v:[x:Pr(p)]Pr(r),w:[x:Pr(q)]Pr(r)) = Or_el(p,q,r,u,v,w) : Pr(r)
+
+q @ [u:Pr(p'V'q)]
+
+% (p:Prop,q:Prop,u:Pr(p'V'q))
+
+com_Or := Or_el(q'V'p,u,[x:Pr(p)]Or_in_2(q,p,x),[x:Pr(q)]Or_in_1(q,p,x)) : Pr(q'V'p)
+
+%30. com_Or(p:Prop,q:Prop,u:Pr(p'V'q)) = Or_el(p,q,q'V'p,u,[x:Pr(p)]Or_in_2(q,p,x),[x:Pr(q)]Or_in_1(q,p,x)) : Pr(q'V'p)
+
+q @ [u:[x:Pr('-'p)]Pr(q)]]
+
+% (p:Prop,q:Prop,u:[x:Pr('-'p)]Pr(q))
+
+Or_in_3 := Imp_in('-'p,q,u) : Pr(p'V'q)
+
+%31. Or_in_3(p:Prop,q:Prop,u:[x:Pr('-'p)]Pr(q)) = Imp_in('-'p,q,u) : Pr(p'V'q)
+
+q @ [u:[x:Pr('-'q)]Pr(p)]]
+
+% (p:Prop,q:Prop,u:[x:Pr('-'q)]Pr(p))
+
+Or_in_4 := com_Or(q,p,Or_in_3(q,p,u)) : Pr(p'V'q)
+
+%32. Or_in_4(p:Prop,q:Prop,u:[x:Pr('-'q)]Pr(p)) = com_Or(q,p,Or_in_3(q,p,u)) : Pr(p'V'q)
+
+q @ [u:Pr(p'V'q)][v:Pr('-'p)]
+
+% (p:Prop,q:Prop,u:Pr(p'V'q))
+
+% (p:Prop,q:Prop,u:Pr(p'V'q),v:Pr('-'p))
+
+not_case_1 := Imp_el('-'p,q,u,v) : Pr(q)
+
+%33. not_case_1(p:Prop,q:Prop,u:Pr(p'V'q),v:Pr('-'p)) = Imp_el('-'p,q,u,v) : Pr(q)
+
+q@ [u:Pr(p'V'q)][v:Pr('-'q)]
+
+% (p:Prop,q:Prop,u:Pr(p'V'q))
+
+% (p:Prop,q:Prop,u:Pr(p'V'q),v:Pr('-'q))
+
+not_case_2 := not_case_1(q,p,com_Or(u),v) : Pr(p)
+
+%34. not_case_2(p:Prop,q:Prop,u:Pr(p'V'q),v:Pr('-'q)) = not_case_1(q,p,com_Or(p,q,u),v) : Pr(p)
+quit

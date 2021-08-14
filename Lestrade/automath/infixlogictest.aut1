@@ -1,0 +1,247 @@
+
+00 p EB prop
+
+% (p:prop)
+
+p q EB prop
+
+% (p:prop,q:prop)
+
+q '->' [pp:p]q prop
+
+%Sun Mar 18 19:32:49 2018
+
+%1. '->'(p:prop,q:prop) = [pp:p]q : prop
+
+q imp [pp:p]q prop
+
+%Sun Mar 18 19:32:49 2018
+
+%2. imp(p:prop,q:prop) = [pp:p]q : prop
+
++partest
+
+p ImpRefl [pp:p]pp p'->'p
+
+%Sun Mar 18 19:32:49 2018
+
+%3. ImpRefl(p:prop) = [pp:p]pp : p'->'p
+
+-partest
+
+00 Con PN prop
+
+%Sun Mar 18 19:32:49 2018
+
+%4. Con = PN : prop
+
+p '~' p'->'Con prop
+
+%Sun Mar 18 19:32:49 2018
+
+%5. '~'(p:prop) = p'->'Con : prop
+
+p maybe EB  '~''~'p
+
+% (p:prop,maybe:'~''~'p)
+
+maybe Dneg PN p
+
+%Sun Mar 18 19:32:50 2018
+
+%6. Dneg(p:prop,maybe:'~''~'p) = PN : p
+
+q '&' '~'(p'->''~'q) prop
+
+%Sun Mar 18 19:32:50 2018
+
+%7. '&'(p:prop,q:prop) = '~'(p'->''~'q) : prop
+
+q pandq EB p'&'q
+
+% (p:prop,q:prop,pandq:p'&'q)
+
+## proving the first rule of simplification
+
++simp1
+
+pandq notp EB '~'(p)
+
+% (p:prop,q:prop,pandq:p'&'q,notp:'~'p)
+
+notp ifpnotq  [pp:p][qq:q]<pp>notp  p'->''~'q
+
+%Sun Mar 18 19:32:50 2018
+
+%8. ifpnotq(p:prop,q:prop,pandq:p'&'q,notp:'~'p) = [pp:p][qq:q]<pp>notp : p'->''~'q
+
+pandq notnotp [notp:'~'p]<ifpnotq(notp)>pandq '~''~'p
+
+%Sun Mar 18 19:32:50 2018
+
+%9. notnotp(p:prop,q:prop,pandq:p'&'q) = [notp:'~'p]<ifpnotq(p,q,pandq,notp)>pandq : '~''~'p
+
+-simp1
+
+pandq simp1 Dneg(notnotp) p
+
+%Sun Mar 18 19:32:50 2018
+
+%10. simp1(p:prop,q:prop,pandq:p'&'q) = Dneg(p,notnotp(p,q,pandq)) : p
+
+## proving the second rule of simplification
+
++simp2
+
+notq := EB '~'q
+
+% (p:prop,q:prop,pandq:p'&'q,notq:'~'q)
+
+notq ifpnotq2 [pp:p]notq p'->''~'q
+
+%Sun Mar 18 19:32:50 2018
+
+%11. ifpnotq2(p:prop,q:prop,pandq:p'&'q,notq:'~'q) = [pp:p]notq : p'->''~'q
+
+pandq notnotq [notq:'~'q]<ifpnotq2(notq)>pandq '~''~'q
+
+%Sun Mar 18 19:32:50 2018
+
+%12. notnotq(p:prop,q:prop,pandq:p'&'q) = [notq:'~'q]<ifpnotq2(p,q,pandq,notq)>pandq : '~''~'q
+
+-simp2
+
+pandq simp2 Dneg(q,notnotq) q
+
+%Sun Mar 18 19:32:50 2018
+
+%13. simp2(p:prop,q:prop,pandq:p'&'q) = Dneg(q,notnotq(p,q,pandq)) : q
+
+## prove the rule of conjunction
+
+q pp EB p
+
+% (p:prop,q:prop,pp:p)
+
+pp qq EB q
+
+% (p:prop,q:prop,pp:p,qq:q)
+
+qq conj [eh:p'->''~'q]<qq><pp>eh p'&'q
+
+%Sun Mar 18 19:32:50 2018
+
+%14. conj(p:prop,q:prop,pp:p,qq:q) = [eh:p'->''~'q]<qq><pp>eh : p'&'q
+
+q '<->' (p'->'q)'&'q'->'p  prop
+
+%Sun Mar 18 19:32:50 2018
+
+%15. '<->'(p:prop,q:prop) = (p'->'q)'&'q'->'p : prop
+
+## project:  prove ((p'&'q)'->'r)'<->'p'->'q'->'r
+
+q r EB prop
+
+% (p:prop,q:prop,r:prop)
+
++project
+
+## prove first implication
+
+r hyp1 EB (p'&'q)'->'r
+
+% (p:prop,q:prop,r:prop,hyp1:(p'&'q)'->'r)
+
+hyp1 hyp2 EB p
+
+% (p:prop,q:prop,r:prop,hyp1:(p'&'q)'->'r,hyp2:p)
+
+hyp2 hyp3 EB q
+
+% (p:prop,q:prop,r:prop,hyp1:(p'&'q)'->'r,hyp2:p,hyp3:q)
+
+hyp3 line1 conj(hyp2,hyp3) p'&'q
+
+%Sun Mar 18 19:32:50 2018
+
+%16. line1(p:prop,q:prop,r:prop,hyp1:(p'&'q)'->'r,hyp2:p,hyp3:q) = conj(p,q,hyp2,hyp3) : p'&'q
+
+hyp3 line2 <line1>hyp1 r
+
+%Sun Mar 18 19:32:50 2018
+
+%17. line2(p:prop,q:prop,r:prop,hyp1:(p'&'q)'->'r,hyp2:p,hyp3:q) = <line1(p,q,r,hyp1,hyp2,hyp3)>hyp1 : r
+
+hyp2 line3 [hyp3:q]line2 q'->'r
+
+%Sun Mar 18 19:32:50 2018
+
+%18. line3(p:prop,q:prop,r:prop,hyp1:(p'&'q)'->'r,hyp2:p) = [hyp3:q]line2(p,q,r,hyp1,hyp2,hyp3) : q'->'r
+
+hyp1 line4 [hyp2:p]line3 p'->'q'->'r 
+
+%Sun Mar 18 19:32:50 2018
+
+%19. line4(p:prop,q:prop,r:prop,hyp1:(p'&'q)'->'r) = [hyp2:p]line3(p,q,r,hyp1,hyp2) : p'->'q'->'r
+
+r part1 [hyp1:(p'&'q)'->'r]line4 ((p'&'q)'->'r)'->'p'->'q'->'r 
+
+%Sun Mar 18 19:32:50 2018
+
+%20. part1(p:prop,q:prop,r:prop) = [hyp1:(p'&'q)'->'r]line4(p,q,r,hyp1) : ((p'&'q)'->'r)'->'p'->'q'->'r
+
+## prove second implication
+
+r hyp1 EB p'->'q'->'r
+
+% (p:prop,q:prop,r:prop,hyp1:p'->'q'->'r)
+
+hyp1 hyp2 EB p'&'q
+
+% (p:prop,q:prop,r:prop,hyp1:p'->'q'->'r,hyp2:p'&'q)
+
+hyp2 line1 simp1(p,q,hyp2) p
+
+%Sun Mar 18 19:32:50 2018
+
+%21. line1(p:prop,q:prop,r:prop,hyp1:p'->'q'->'r,hyp2:p'&'q) = simp1(p,q,hyp2) : p
+
+hyp2 line2 <line1>hyp1 q'->'r
+
+%Sun Mar 18 19:32:50 2018
+
+%22. line2(p:prop,q:prop,r:prop,hyp1:p'->'q'->'r,hyp2:p'&'q) = <line1(p,q,r,hyp1,hyp2)>hyp1 : q'->'r
+
+hyp2 line3 simp2(p,q,hyp2) q
+
+%Sun Mar 18 19:32:50 2018
+
+%23. line3(p:prop,q:prop,r:prop,hyp1:p'->'q'->'r,hyp2:p'&'q) = simp2(p,q,hyp2) : q
+
+hyp2 line4 <line3>line2 r
+
+%Sun Mar 18 19:32:50 2018
+
+%24. line4(p:prop,q:prop,r:prop,hyp1:p'->'q'->'r,hyp2:p'&'q) = <line3(p,q,r,hyp1,hyp2)>line2(p,q,r,hyp1,hyp2) : r
+
+hyp1 line5 [hyp2:p'&'q]line4 (p'&'q)'->'r
+
+%Sun Mar 18 19:32:51 2018
+
+%25. line5(p:prop,q:prop,r:prop,hyp1:p'->'q'->'r) = [hyp2:p'&'q]line4(p,q,r,hyp1,hyp2) : (p'&'q)'->'r
+
+r part2 [hyp1:p'->'q'->'r]line5  (p'->'q'->'r)'->'(p'&'q)'->'r
+
+%Sun Mar 18 19:32:51 2018
+
+%26. part2(p:prop,q:prop,r:prop) = [hyp1:p'->'q'->'r]line5(p,q,r,hyp1) : (p'->'q'->'r)'->'(p'&'q)'->'r
+
+-project
+
+r projectthm conj(((p'&'q)'->'r)'->'p'->'q'->'r,(p'->'q'->'r)'->'((p'&'q)'->'r),part1,part2) ((p'&'q)'->'r)'<->'p'->'q'->'r 
+
+%Sun Mar 18 19:32:51 2018
+
+%27. projectthm(p:prop,q:prop,r:prop) = conj(((p'&'q)'->'r)'->'p'->'q'->'r,(p'->'q'->'r)'->'(p'&'q)'->'r,part1(p,q,r),part2(p,q,r)) : ((p'&'q)'->'r)'<->'p'->'q'->'r
+quit

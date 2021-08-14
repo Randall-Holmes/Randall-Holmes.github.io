@@ -1,0 +1,81 @@
+
+00 p EB prop
+
+% (p:prop)
+
+p q EB prop
+
+% (p:prop,q:prop)
+
+q And PN prop
+
+%1. And(p:prop,q:prop) = PN : prop
+
+q If [x:p]q [x:p]prop
+
+%2. If(p:prop,q:prop) = [x:p]q : [x:p]prop
+
+q pp EB p
+
+% (p:prop,q:prop,pp:p)
+
+pp rr EB If(p,q)
+
+% (p:prop,q:prop,pp:p,rr:If)
+
+rr Mp <pp>rr q
+
+%3. Mp(p:prop,q:prop,pp:p,rr:If) = <pp>rr : q
+
+q cc EB And(p,q)
+
+% (p:prop,q:prop,cc:And)
+
+cc Simp1 PN p
+
+%4. Simp1(p:prop,q:prop,cc:And) = PN : p
+
+cc Simp2 PN q
+
+%5. Simp2(p:prop,q:prop,cc:And) = PN : q
+
+q pp EB p
+
+% (p:prop,q:prop,pp:p)
+
+pp qq EB q
+
+% (p:prop,q:prop,pp:p,qq:q)
+
+qq Conj PN And(p,q)
+
+%6. Conj(p:prop,q:prop,pp:p,qq:q) = PN : And
+
+q r EB prop
+
+% (p:prop,q:prop,r:prop)
+
+r xx EB And(If(p,q),If(q,r))
+
+% (p:prop,q:prop,r:prop,xx:And(If,If(q,r)))
+
+xx pp EB p
+
+% (p:prop,q:prop,r:prop,xx:And(If,If(q,r)),pp:p)
+
+pp line1 Mp(pp,Simp1(If(p,q),If(q,r),xx)) q
+
+%7. line1(p:prop,q:prop,r:prop,xx:And(If,If(q,r)),pp:p) = Mp(pp,Simp1(If,If(q,r),xx)) : q
+
+pp line2 Mp(q,r,line1,Simp2(If(p,q),If(q,r),xx)) r
+
+%8. line2(p:prop,q:prop,r:prop,xx:And(If,If(q,r)),pp:p) = Mp(q,r,line1,Simp2(If,If(q,r),xx)) : r
+
+xx line3 [pp:p]line2(pp) If(p,r)
+
+%9. line3(p:prop,q:prop,r:prop,xx:And(If,If(q,r))) = [pp:p]line2(pp) : If(r)
+
+r Transimp [xx:And(If(p,q),If(q,r))]line3(xx) If(And(If(p,q),If(q,r)),If(p,r))
+
+%10. Transimp(p:prop,q:prop,r:prop) = [xx:And(If,If(q,r))]line3(xx) : If(And(If,If(q,r)),If(r))
+quit

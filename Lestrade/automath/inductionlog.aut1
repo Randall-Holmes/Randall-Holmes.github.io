@@ -1,0 +1,53 @@
+# Testing the comment feature
+00 Nat PN type
+%12. Nat = PN : type
+
+# The type of natural numbers
+00 0 PN Nat
+%13. 0 = PN : Nat
+
+# The primitive natural number constant zero
+00 n EB Nat
+%(n:Nat)
+
+# a natural number variable
+n Succ PN Nat
+%14. Succ(n:Nat) = PN : Nat
+
+# the primitive successor operation
+00 P EB [x:Nat]prop
+%(P:[x:Nat]prop)
+
+# we declare a variable ranging over properties
+
+% AUTOMATH:  Type contains inappropriate free variables (in DeclareContext)
+
+00 basis EB <0>P
+%ERROR 5
+
+
+P basis EB <0>P
+%(P:[x:Nat]prop,basis:<0>P)
+
+# the basis step of an induction proof
+
+% AUTOMATH:  Type contains inappropriate free variables (in DeclareContext)
+
+P indstep EB [prf:[x:Nat]<x>P]<Succ(x)>P
+%ERROR 5
+
+
+P indstep EB [x:Nat][indhyp:<x>P]<Succ(x)>P
+%(P:[x:Nat]prop,indstep:[x:Nat][indhyp:<x>P]<Succ(x)>P)
+
+
+basis indstep EB [x:Nat][indhyp:<x>P]<Succ(x)>P
+%(P:[x:Nat]prop,basis:<0>P,indstep:[x:Nat][indhyp:<x>P]<Succ(x)>P)
+
+
+indstep Induction PN [x:Nat]<x>P
+%15. Induction(P:[x:Nat]prop,basis:<0>P,indstep:[x:Nat][indhyp:<x>P]<Succ(x)>P) = PN : [x:Nat]<x>P
+
+# completing the development of the induction primitive at the prompt!
+
+quit

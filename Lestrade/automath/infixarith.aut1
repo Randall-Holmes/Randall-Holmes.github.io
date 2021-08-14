@@ -1,0 +1,411 @@
+# This file has a combination of intentions.  It is a test of the new infix notation
+# in the MANIAC checker.  It is also an exercise in introduction of basic concepts of
+# logic and arithmetic, a common thing to do with Automath :-)
+
+00 Nat PN type
+
+%Thu Mar 22 06:00:01 2018
+
+%1. Nat = PN : type
+
+## Mixing things up, I take 1 and addition as
+# primitives rather than successor.
+
+00 1 PN Nat
+
+%Thu Mar 22 06:00:01 2018
+
+%2. 1 = PN : Nat
+
+00 m EB Nat
+
+% (m:Nat)
+
+m n EB Nat
+
+% (m:Nat,n:Nat)
+
+n '+' PN Nat
+
+%Thu Mar 22 06:00:01 2018
+
+%3. '+'(m:Nat,n:Nat) = PN : Nat
+
+n '=' PN prop
+
+%Thu Mar 22 06:00:01 2018
+
+%4. '='(m:Nat,n:Nat) = PN : prop
+
+m Succ m'+'1 Nat
+
+%Thu Mar 22 06:00:01 2018
+
+%5. Succ(m:Nat) = '+'1 : Nat
+
+## It is rather fun to introduce induction without any specific
+# reference to logic as such.  Does this make some kind of point?
+
+00 P EB [x:Nat]prop
+
+% (P:[x:Nat]prop)
+
+P basis EB <1>P
+
+% (P:[x:Nat]prop,basis:<1>P)
+
+basis indstep EB [k:Nat][indhyp:<k>P]<Succ(k)>P
+
+% (P:[x:Nat]prop,basis:<1>P,indstep:[k:Nat][indhyp:<k>P]<Succ(k)>P)
+
+indstep N EB Nat
+
+% (P:[x:Nat]prop,basis:<1>P,indstep:[k:Nat][indhyp:<k>P]<Succ(k)>P,N:Nat)
+
+N Induction PN <N>P
+
+%Thu Mar 22 06:00:01 2018
+
+%6. Induction(P:[x:Nat]prop,basis:<1>P,indstep:[k:Nat][indhyp:<k>P]<Succ(k)>P,N:Nat) = PN : <N>P
+
+n eq EB m'='n
+
+% (m:Nat,n:Nat,eq:'=')
+
+eq P EB [x:Nat]prop
+
+% (m:Nat,n:Nat,eq:'=',P:[x:Nat]prop)
+
+P ex EB <m>P
+
+% (m:Nat,n:Nat,eq:'=',P:[x:Nat]prop,ex:<m>P)
+
+ex Subs PN <n>P
+
+%Thu Mar 22 06:00:01 2018
+
+%7. Subs(m:Nat,n:Nat,eq:'=',P:[x:Nat]prop,ex:<m>P) = PN : <n>P
+
+m Refl PN m'='m
+
+%Thu Mar 22 06:00:01 2018
+
+%8. Refl(m:Nat) = PN : '='m
+
+eq EqSym Subs(m,n,eq,[x:Nat]x'='m,Refl(m)) n'='m
+
+%Thu Mar 22 06:00:01 2018
+
+%9. EqSym(m:Nat,n:Nat,eq:'=') = Subs([x:Nat]x'='m,Refl) : n'='m
+
+n p EB Nat
+
+% (m:Nat,n:Nat,p:Nat)
+
+p eq1 EB m'='n
+
+% (m:Nat,n:Nat,p:Nat,eq1:'=')
+
+eq1 eq2 EB n'='p
+
+% (m:Nat,n:Nat,p:Nat,eq1:'=',eq2:n'='p)
+
+eq2 TransEq Subs(n,m,EqSym(eq1),[x:Nat]x'='p,eq2) m'='p
+
+%Thu Mar 22 06:00:01 2018
+
+%10. TransEq(m:Nat,n:Nat,p:Nat,eq1:'=',eq2:n'='p) = Subs(n,m,EqSym(eq1),[x:Nat]x'='p,eq2) : '='p
+
+## I suppose the arithmetic definition of the False is a piece of mathematical humor :-)
+
+00 False 1'='1'+'1 prop
+
+%Thu Mar 22 06:00:01 2018
+
+%11. False = (1)'='(1)'+'1 : prop
+
+00 p EB prop
+
+% (p:prop)
+
+p q EB prop
+
+% (p:prop,q:prop)
+
+q '->' [pp:p]q prop
+
+%Thu Mar 22 06:00:01 2018
+
+%12. '->'(p:prop,q:prop) = [pp:p]q : prop
+
+p '~' p'->'False prop
+
+%Thu Mar 22 06:00:01 2018
+
+%13. '~'(p:prop) = '->'False : prop
+
+p maybe EB '~''~'p
+
+% (p:prop,maybe:'~''~')
+
+maybe Dneg PN p
+
+%Thu Mar 22 06:00:01 2018
+
+%14. Dneg(p:prop,maybe:'~''~') = PN : p
+
+q '&' '~'(p'->''~'q) prop
+
+%Thu Mar 22 06:00:01 2018
+
+%15. '&'(p:prop,q:prop) = '~'('->''~'q) : prop
+
+q pandq EB p'&'q
+
+% (p:prop,q:prop,pandq:'&')
+
+## proving the first rule of simplification
+
++simp1
+
+pandq notp EB '~'(p)
+
+% (p:prop,q:prop,pandq:'&',notp:'~')
+
+notp ifpnotq  [pp:p][qq:q]<pp>notp  p'->''~'q
+
+%Thu Mar 22 06:00:01 2018
+
+%16. ifpnotq(p:prop,q:prop,pandq:'&',notp:'~') = [pp:p][qq:q]<pp>notp : '->''~'q
+
+pandq notnotp [notp:'~'p]<ifpnotq(notp)>pandq '~''~'p
+
+%Thu Mar 22 06:00:01 2018
+
+%17. notnotp(p:prop,q:prop,pandq:'&') = [notp:'~']<ifpnotq(notp)>pandq : '~''~'
+
+-simp1
+
+pandq simp1 Dneg(notnotp) p
+
+%Thu Mar 22 06:00:01 2018
+
+%18. simp1(p:prop,q:prop,pandq:'&') = Dneg(notnotp) : p
+
+## proving the second rule of simplification
+
++simp2
+
+notq := EB '~'q
+
+% (p:prop,q:prop,pandq:'&',notq:'~'q)
+
+notq ifpnotq2 [pp:p]notq p'->''~'q
+
+%Thu Mar 22 06:00:01 2018
+
+%19. ifpnotq2(p:prop,q:prop,pandq:'&',notq:'~'q) = [pp:p]notq : '->''~'q
+
+pandq notnotq [notq:'~'q]<ifpnotq2(notq)>pandq '~''~'q
+
+%Thu Mar 22 06:00:01 2018
+
+%20. notnotq(p:prop,q:prop,pandq:'&') = [notq:'~'q]<ifpnotq2(notq)>pandq : '~''~'q
+
+-simp2
+
+pandq simp2 Dneg(q,notnotq) q
+
+%Thu Mar 22 06:00:01 2018
+
+%21. simp2(p:prop,q:prop,pandq:'&') = Dneg(q,notnotq) : q
+
+## prove the rule of conjunction
+
+q pp EB p
+
+% (p:prop,q:prop,pp:p)
+
+pp qq EB q
+
+% (p:prop,q:prop,pp:p,qq:q)
+
+qq conj [eh:p'->''~'q]<qq><pp>eh p'&'q
+
+%Thu Mar 22 06:00:01 2018
+
+%22. conj(p:prop,q:prop,pp:p,qq:q) = [eh:'->''~'q]<qq><pp>eh : '&'
+
+q '<->' (p'->'q)'&'q'->'p  prop
+
+%Thu Mar 22 06:00:01 2018
+
+%23. '<->'(p:prop,q:prop) = ('->')'&'q'->'p : prop
+
+## project:  prove ((p'&'q)'->'r)'<->'p'->'q'->'r
+
+q r EB prop
+
+% (p:prop,q:prop,r:prop)
+
++project
+
+## prove first implication
+
+r hyp1 EB (p'&'q)'->'r
+
+% (p:prop,q:prop,r:prop,hyp1:('&')'->'r)
+
+hyp1 hyp2 EB p
+
+% (p:prop,q:prop,r:prop,hyp1:('&')'->'r,hyp2:p)
+
+hyp2 hyp3 EB q
+
+% (p:prop,q:prop,r:prop,hyp1:('&')'->'r,hyp2:p,hyp3:q)
+
+hyp3 line1 conj(hyp2,hyp3) p'&'q
+
+%Thu Mar 22 06:00:01 2018
+
+%24. line1(p:prop,q:prop,r:prop,hyp1:('&')'->'r,hyp2:p,hyp3:q) = conj(hyp2,hyp3) : '&'
+
+hyp3 line2 <line1>hyp1 r
+
+%Thu Mar 22 06:00:02 2018
+
+%25. line2(p:prop,q:prop,r:prop,hyp1:('&')'->'r,hyp2:p,hyp3:q) = <line1>hyp1 : r
+
+hyp2 line3 [hyp3:q]line2 q'->'r
+
+%Thu Mar 22 06:00:02 2018
+
+%26. line3(p:prop,q:prop,r:prop,hyp1:('&')'->'r,hyp2:p) = [hyp3:q]line2(hyp3) : q'->'r
+
+hyp1 line4 [hyp2:p]line3 p'->'q'->'r 
+
+%Thu Mar 22 06:00:02 2018
+
+%27. line4(p:prop,q:prop,r:prop,hyp1:('&')'->'r) = [hyp2:p]line3(hyp2) : '->'(q'->'r)
+
+r part1 [hyp1:(p'&'q)'->'r]line4 ((p'&'q)'->'r)'->'p'->'q'->'r 
+
+%Thu Mar 22 06:00:02 2018
+
+%28. part1(p:prop,q:prop,r:prop) = [hyp1:('&')'->'r]line4(hyp1) : (('&')'->'r)'->''->'(q'->'r)
+
+## prove second implication
+
+r hyp1 EB p'->'q'->'r
+
+% (p:prop,q:prop,r:prop,hyp1:'->'(q'->'r))
+
+hyp1 hyp2 EB p'&'q
+
+% (p:prop,q:prop,r:prop,hyp1:'->'(q'->'r),hyp2:'&')
+
+hyp2 line1 simp1(p,q,hyp2) p
+
+%Thu Mar 22 06:00:02 2018
+
+%29. line1(p:prop,q:prop,r:prop,hyp1:'->'(q'->'r),hyp2:'&') = simp1(hyp2) : p
+
+hyp2 line2 <line1>hyp1 q'->'r
+
+%Thu Mar 22 06:00:02 2018
+
+%30. line2(p:prop,q:prop,r:prop,hyp1:'->'(q'->'r),hyp2:'&') = <line1>hyp1 : q'->'r
+
+hyp2 line3 simp2(p,q,hyp2) q
+
+%Thu Mar 22 06:00:02 2018
+
+%31. line3(p:prop,q:prop,r:prop,hyp1:'->'(q'->'r),hyp2:'&') = simp2(hyp2) : q
+
+hyp2 line4 <line3>line2 r
+
+%Thu Mar 22 06:00:02 2018
+
+%32. line4(p:prop,q:prop,r:prop,hyp1:'->'(q'->'r),hyp2:'&') = <line3>line2 : r
+
+## this line is an example of omitted argument magic.  Notice though 
+# (if in short display mode) that the omitted argument
+# hyp2 is detected by the parser, since it adjusts the context as it works, but the display function
+# does not omit the argument hyp2 because the display function does not adjust context.  This is probably
+# a good combination of settings.
+
+hyp1 line5 [hyp2:p'&'q]line4 (p'&'q)'->'r
+
+%Thu Mar 22 06:00:02 2018
+
+%33. line5(p:prop,q:prop,r:prop,hyp1:'->'(q'->'r)) = [hyp2:'&']line4(hyp2) : ('&')'->'r
+
+r part2 [hyp1:p'->'q'->'r]line5  (p'->'q'->'r)'->'(p'&'q)'->'r
+
+%Thu Mar 22 06:00:02 2018
+
+%34. part2(p:prop,q:prop,r:prop) = [hyp1:'->'(q'->'r)]line5(hyp1) : ('->'(q'->'r))'->'('&')'->'r
+
+-project
+
+r projectthm conj(((p'&'q)'->'r)'->'p'->'q'->'r,(p'->'q'->'r)'->'((p'&'q)'->'r),part1,part2) ((p'&'q)'->'r)'<->'p'->'q'->'r 
+
+%Thu Mar 22 06:00:02 2018
+
+%35. projectthm(p:prop,q:prop,r:prop) = conj((('&')'->'r)'->''->'(q'->'r),('->'(q'->'r))'->'('&')'->'r,part1,part2) : (('&')'->'r)'<->''->'(q'->'r)
+# general notion of equality for any type
+
+00 TT EB type
+
+% (TT:type)
+
+TT u EB TT
+
+% (TT:type,u:TT)
+
+u v EB TT
+
+% (TT:type,u:TT,v:TT)
+
+v '=' PN prop
+
+%Thu Mar 22 06:00:02 2018
+
+%36. '='(TT:type,u:TT,v:TT) = PN : prop
+
+## Iteration as a primitive notion
+
+00 T EB [n:Nat]type
+
+% (T:[n:Nat]type)
+
+T F EB [k:Nat][x:<k>T]<Succ(k)>T
+
+% (T:[n:Nat]type,F:[k:Nat][x:<k>T]<Succ(k)>T)
+
+F X EB <1>T
+
+% (T:[n:Nat]type,F:[k:Nat][x:<k>T]<Succ(k)>T,X:<1>T)
+
+X Iter PN [k:Nat]<k>T
+
+%Thu Mar 22 06:00:02 2018
+
+%37. Iter(T:[n:Nat]type,F:[k:Nat][x:<k>T]<Succ(k)>T,X:<1>T) = PN : [k:Nat]<k>T
+
+X Iter1 PN (<1>T,<1>Iter)'='X
+
+%Thu Mar 22 06:00:02 2018
+
+%38. Iter1(T:[n:Nat]type,F:[k:Nat][x:<k>T]<Succ(k)>T,X:<1>T) = PN : (<1>T)'='(<1>Iter,X)
+
+X n EB Nat
+
+% (T:[n:Nat]type,F:[k:Nat][x:<k>T]<Succ(k)>T,X:<1>T,n:Nat)
+
+n Iter2 PN (<Succ(n)>T,<Succ(n)>Iter)'='<<n>Iter><n>F
+
+%Thu Mar 22 06:00:02 2018
+
+%39. Iter2(T:[n:Nat]type,F:[k:Nat][x:<k>T]<Succ(k)>T,X:<1>T,n:Nat) = PN : (<Succ(n)>T)'='(<Succ(n)>Iter,<<n>Iter><n>F)
+quit
