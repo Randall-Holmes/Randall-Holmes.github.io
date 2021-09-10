@@ -95,7 +95,7 @@ that sets up a proof of the validity of the rule of modus ponens:  the conjuncti
 
 \item Carry out the proof starting with 
 
-{\tt s p?Vq?)\&(r?V$\sim$p?)\&(s?V$\sim$q?)->(r?Vs?)}
+{\tt s (p?Vq?)\&(r?V$\sim$p?)\&(s?V$\sim$q?)->(r?Vs?)}
 
 Write out this theorem in standard propositional logic notation and write a paper proof.
 
@@ -108,7 +108,7 @@ Write out this theorem in standard propositional logic notation and write a pape
 The ideas that Marcel is based on are closely parallel to the proof strategies in the manual of logical style.  What Marcel does is take an argument, and simplify it, presenting one or two arguments whose validity is equivalent to the validity of the original argument.
 
 One comment which can be put here as well as anywhere is that it is the one line notation
-$P_1, P_2, \ldots, P_n \vdash C$ motivates the names of Marcel rules:  premises appear on the left and conclusions on the right, and this is why the rules acting on premises are {\bf l} and {\bf gl}, and the rule acting on conclusions is {\bf r}.
+$P_1, P_2, \ldots, P_n \vdash C$ for an argument which motivates the names of Marcel rules:  premises appear on the left and conclusions on the right, and this is why the rules acting on premises are {\bf l} and {\bf gl}, and the rule acting on conclusions is {\bf r}.
 
 \newpage
 
@@ -187,7 +187,7 @@ A & B
 
 \end{verbatim}
 
-is equivalent to both of 
+is equivalent to validity of both of 
 
 \begin{verbatim}
 
@@ -229,7 +229,7 @@ B
 
 \end{verbatim}
 
-being valid.  This corresponds to the strategy, to prove $A \wedge B$, first prove $A$, then prove $B$.
+This corresponds to the strategy, to prove $A \wedge B$, first prove $A$, then prove $B$.
 
 \newpage
 
@@ -400,7 +400,7 @@ A
 This is equivalent to an application of the contrapositive and double negation:  it's an indirect
 proof move converting proving $C$ given $\neg A$ to proving $A$ given $\neg C$.  Further, if C were itself
 a negation $\neg D$, we would get just $D$ rather than $\neg \neg D$.  Note the same comment in
-the rule for manipulation disjunctions as conclusions.
+the rule for manipulating disjunctions as conclusions.
 
 \newpage
 
@@ -582,4 +582,65 @@ $A$ and $A \rightarrow B$, and then the second part allows us to deduce $C$.
 The reason it is different is that Marcel is committed for the most part to a strategy of manipulating one premise or conclusion at a time, and the usual form of {\em modus ponens\/} acts on two premises.
 
 I am not at this point writing out the rules for the biconditional:  they will not be surprising to a student of my manual of style.
+
+\subsection{How to start, how to finish, and strategy while working}
+
+The activity in a Marcel session is to prove that some statement $P$ is a theorem (a tautology).  The {\bf s} (start) command (in the context ``{\bf s} $P$'' sets up the argument
+
+\begin{verbatim}
+
+
+-----------
+
+P
+
+
+\end{verbatim}
+
+This is valid if any situation which makes all the premises true makes the conclusion true...there aren't any premises, so this is really simply saying, the conclusion must be true (is a tautology).
+\newpage
+A proof ends (or part of a proof ends) when the conclusion is the same as one of the premises.
+
+\begin{verbatim}
+
+A
+
+P1
+
+P2
+
+.
+.
+.
+
+Pn
+
+------
+
+A
+
+\end{verbatim}
+
+is obviously valid.  Marcel's {\bf d} command recognizes this only if the very first premise is the same as the conclusion, so you may need to use the {\bf gl} command
+to move a premise identical to the conclusion to the front.
+
+When there is more than one argument to show valid (as in an application of proof of a conjunction, use of a disjunction, use of an implication)  Marcel gives you one of them to show valid,
+and when you show that it is valid, it serves you up the next one.  When everything is finished, it will say QED.
+
+During a proof, there are some issues of strategy.  Marcel will let you act on either the conclusion or the first premise.  If both the conclusion and the first premise are simple (single letters in the
+conclusion, single letters or negations of single letters in the premises)  you should bring some other premise to the front to keep working.  Sometimes you may want to bring a different premise to the front even though the current first premise is complex.  One special thing to notice is that if you have a premise $A$
+and the premise $\neg A$ as well, bring $\neg A$ to the front with {\bf gl}, act on it with {\bf l} and you will be done:  from an explicit contradiction, any conclusion follows, and it is easy to show this to Marcel.
+
+When choosing which premise to bring to the front in a complicated conclusion, you might want to consider which premises share letters with the conclusion.  A negative premise $\neg A$ can be manipulated so
+that the conclusion becomes $A$, which may be advantageous.
+
+It is a general fact that each application of the {\bf r} or {\bf l} rule eliminates a logical operation from a premise or conclusion though it may make two arguments for you to show valid:  all of the arguments you end up with
+after you apply one of these rules are in a measurable sense simpler than the argument you started with, except in the exact case of the first premise being the negation of a single letter, the conclusion being a single letter,
+and applying {\bf l}.  Because of this, it is mathematically provable, and not actually hard to see in practice, that if you keep applying rules you will eventually arrive at a situation where every premise is either a single letter
+or the negation of a single letter, and the conclusion is either a single letter or the absurd.  You don't necessarily need to go this far to prove validity, but you can always get to this point.  Then if either the conclusion is the same as one of the premises or one of the premises is the negation of another, you have a valid sequent and you can finish (and go on to do the same to the next argument) and if neither of these things is true you have a counterexample (make all the premises
+true and the conclusion false and you have shown that the argument is invalid).  So, if you start with any proposition $P$ of propositional logic, you will prove that it is a theorem if it is one, and you will be able to present a situation where it is false if is not a theorem.
+
+The reason that this really does terminate, even though some of the rules may generate two arguments from one, is that they always generate two simpler arguments (arguments with fewer logical operations) from one.  In the worst case,
+this can have the same exponential blowup in size of arguments as the method of truth tables (all known methods of proof in propositional logic have worst case behavior the same as that of the method of truth tables) but it is often much more efficient.
+
 \end{document}
