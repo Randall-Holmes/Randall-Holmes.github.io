@@ -103,4 +103,483 @@ Write out this theorem in standard propositional logic notation and write a pape
 
 \end{enumerate}
 
+\section{Remarks on how Marcel works}
+
+The ideas that Marcel is based on are closely parallel to the proof strategies in the manual of logical style.  What Marcel does is take an argument, and simplify it, presenting one or two arguments whose validity is equivalent to the validity of the original argument.
+
+One comment which can be put here as well as anywhere is that it is the one line notation
+$P_1, P_2, \ldots, P_n \vdash C$ motivates the names of Marcel rules:  premises appear on the left and conclusions on the right, and this is why the rules acting on premises are {\bf l} and {\bf gl}, and the rule acting on conclusions is {\bf r}.
+
+\newpage
+
+\subsection{Conjunction (and)}
+
+Validity of
+
+\begin{verbatim}
+
+A & B
+
+P2
+
+P3
+
+.
+.
+. 
+
+Pn
+
+--------
+
+C
+
+\end{verbatim}
+
+is equivalent to validity of 
+
+\newpage
+
+\begin{verbatim}
+
+A
+
+B
+
+P2
+
+P3
+
+.
+.
+. 
+
+Pn
+
+--------
+
+C
+
+\end{verbatim}
+
+This corresponds to the strategy, if we have $A \wedge B$, we can deduce $A$ and $B$, for using a conjunction.
+
+\newpage
+
+Validity of 
+
+\begin{verbatim}
+
+P1
+
+P2 
+
+P3 
+.
+.
+.
+
+Pn
+
+----------
+
+A & B
+
+\end{verbatim}
+
+is equivalent to both of 
+
+\begin{verbatim}
+
+P1
+
+P2 
+
+P3 
+.
+.
+.
+
+Pn
+
+----------
+
+A
+
+\end{verbatim}
+
+and 
+
+\begin{verbatim}
+
+P1
+
+P2 
+
+P3 
+.
+.
+.
+
+Pn
+
+----------
+
+B
+
+\end{verbatim}
+
+being valid.  This corresponds to the strategy, to prove $A \wedge B$, first prove $A$, then prove $B$.
+
+\newpage
+
+\subsection{Disjunction (or)}
+
+The validity of 
+
+\begin{verbatim}
+
+A V B
+
+P2
+
+P3
+
+.
+.
+.
+
+Pn
+
+----------
+
+C
+
+\end{verbatim}
+
+is equivalent to the validity of both
+
+{\small \begin{verbatim}
+
+A
+
+P2
+
+P3
+
+.
+.
+.
+
+Pn
+
+----------
+
+C
+
+\end{verbatim}}
+
+and
+
+\begin{verbatim}
+
+B
+
+P2
+
+P3
+
+.
+.
+.
+
+Pn
+
+----------
+
+C
+
+\end{verbatim}
+
+This corresponds precisely to the strategy of proof by cases for using the hypothesis $A \vee B$.
+
+\newpage
+
+The validity of 
+
+\begin{verbatim}
+
+P1
+
+P2 
+
+.
+.
+.
+
+Pn
+
+---------
+
+A V B
+
+\end{verbatim}
+
+is equivalent to the validity of 
+
+\begin{verbatim}
+
+P1
+
+P2 
+
+.
+.
+.
+
+Pn
+
+~B  [apply double negation if possible]
+
+---------
+
+A
+
+\end{verbatim}
+
+This is equivalent to the strategy of alternative elimination for proving a disjunction $A \vee B$.
+
+\newpage
+
+\subsection{Negation}
+
+The validity of
+
+\begin{verbatim}
+
+~A
+
+P2
+
+P3
+
+.
+.
+.
+
+Pn 
+
+________
+
+C
+
+\end{verbatim}
+
+is equivalent to the validity of
+{\small 
+\begin{verbatim}
+
+P2
+
+P3
+
+.
+.
+.
+
+Pn
+
+~C [apply double negation if possible]
+
+-------
+
+A
+
+\end{verbatim}}
+
+This is equivalent to an application of the contrapositive and double negation:  it's an indirect
+proof move converting proving $C$ given $\neg A$ to proving $A$ given $\neg C$.  Further, if C were itself
+a negation $\neg D$, we would get just $D$ rather than $\neg \neg D$.  Note the same comment in
+the rule for manipulation disjunctions as conclusions.
+
+\newpage
+
+Validity of 
+
+\begin{verbatim}
+
+P1
+
+P2
+
+.
+.
+.
+
+Pn
+
+------
+
+~A
+
+
+\end{verbatim}
+
+is equivalent to validity of 
+
+\begin{verbatim}
+
+A
+
+P1
+
+P2
+
+.
+.
+.
+
+Pn
+
+------
+
+_|_
+
+
+\end{verbatim}
+
+This is the usual strategy of negation introduction:  to prove $\neg A$ assume $A$ and deduce the absurd $\perp$.
+
+When this appears in Marcel, you will notice that the absurd symbol gets no line number.  When one of the rules
+is applied that moves the negation of the conclusion into the premises, the special conclusion $\perp$ simply disappears
+(a premise $\neg \perp$ has no content, it is simply true without conveying any information).
+
+\newpage
+
+\subsection{Implication (only if)}
+
+Validity of 
+
+{\small \begin{verbatim}
+
+P1
+
+P2
+
+.
+.
+.
+
+Pn
+
+----------
+
+A -> B
+
+\end{verbatim}}
+
+is equivalent to the validity of
+
+{\small \begin{verbatim}
+
+A
+
+P1
+
+P2
+
+.
+.
+.
+
+Pn
+
+----------
+
+B
+
+\end{verbatim}}
+
+This is equivalent to our direct strategy for proving an implication:  to prove $A \rightarrow B$, assume $A$ and prove $B$.
+
+You may notice that we didn't put the rule for using an implication first.  That is because the form of this rule
+in Marcel is a little unexpected.
+
+The validity of
+
+\begin{verbatim}
+
+A -> B
+
+P2
+
+P3
+
+.
+.
+.
+
+Pn
+
+---------
+
+C
+
+\end{verbatim}
+
+is equivalent to validity of both
+
+\newpage
+
+{\small \begin{verbatim}
+
+P2
+
+P3
+
+.
+.
+.
+
+Pn
+
+~C  [apply double negation if possible]
+
+---------
+
+A
+
+\end{verbatim}}
+
+and 
+
+{\small \begin{verbatim}
+
+B
+
+P2
+
+P3
+
+.
+.
+.
+
+Pn
+
+---------
+
+C
+
+\end{verbatim}}
+
+This is the rule of modus ponens in disguise.  The first part proves that either $A$ or $C$ follows from the
+other premises.  The second part shows that if we assume $B$ and the other premises, we can deduce $C$.
+Now do proof by cases on the first part:  if $C$ follows from just the other premises of course we are done;
+otherwise, we deduce $A$ from the other premises, and then deduce $B$ by modus ponens from
+$A$ and $A \rightarrow B$, and then the second part allows us to deduce $C$.
+
+The reason it is different is that Marcel is committed for the most part to a strategy of manipulating one premise or conclusion at a time, and the usual form of {\em modus ponens\/} acts on two premises.
+
+I am not at this point writing out the rules for the biconditional:  they will not be surprising to a student of my manual of style.
 \end{document}
