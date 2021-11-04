@@ -894,7 +894,7 @@ output (!LOGFILE,"\n\n(paused, type something to continue) >");
 input(stdIn);());
 
 fun say2 s = (output(stdOut,"\n"^s);
-output (stdOut,"\n >>"); flushOut(stdOut);
+output (stdOut, "\n"^ ">>"); flushOut(stdOut);
 output(!LOGFILE,"\n"^s);
 (* output (!LOGFILE,"\n >>"); *) flushOut(!LOGFILE);
 (* input(stdIn); *)());
@@ -902,7 +902,7 @@ output(!LOGFILE,"\n"^s);
 fun say3 s = (output(stdOut,"\n"^s);
 output (stdOut,"\n"); flushOut(stdOut);
 output(!LOGFILE,"\n"^s);
-output (!LOGFILE,"\n"); flushOut(!LOGFILE);
+(* output (!LOGFILE,"\n"); *) flushOut(!LOGFILE);
 (* input(stdIn); *)());
 
 val DIAGNOSTIC = ref false;

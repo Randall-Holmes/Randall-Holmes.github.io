@@ -14,8 +14,7 @@
 
 
 \date{5/25/2021  installation of rewrites in progress \\
-
- -- This is a beta version of the second release, without rewriting.  It runs the entire  Zermelo implementation. It also ran the Automath translations without any changes.}
+--- This is a beta version of the second release, without rewriting.  It runs the entire  Zermelo implementation. It also ran the Automath translations without any changes.}
 
 
 \begin{document}
@@ -29,6 +28,9 @@
 \subsection{Version Notes}
 
 \begin{description}
+
+\item[10/28/2021:]  Another change to consider.  Can we have parameters which are object sorts?  Can we have
+two species of parameters, one for object sorts, one for sorts in general?
 
 \item[5/25/2021:]  I have now installed rewrites as an object type, parsable and displayable.  Next I have to actually make them do something.
 
@@ -103,7 +105,7 @@ it will eliminate extensions of that saved move.  These things are motivated by 
 
 \item[4/12/2020:]  I have realized why there are so few let terms even after minimizing obvious expansions:  there is heavy expansion going on in arguments, which I might be able to suppress.  Actually, it doesn't seem so easy.  The idea for preserving more let terms would be to allow object arguments to have let binders.
 
-Fixed error which allowed colons \verb :  to be special characters.
+Fixed error which allowed colons \verb|:| to be special characters.
 
 \item[4/10/2020:]  No code update.  I should attend to updating all the existing text not using rewrites for testing and demonstration purposes.
 
@@ -962,7 +964,7 @@ output (!LOGFILE,"\n\n(paused, type something to continue) >");
 input(stdIn);());
 
 fun say2 s = (output(stdOut,"\n"^s);
-output (stdOut,"\n >>"); flushOut(stdOut);
+output (stdOut, "\n"^ ">>"); flushOut(stdOut);
 output(!LOGFILE,"\n"^s);
 (* output (!LOGFILE,"\n >>"); *) flushOut(!LOGFILE);
 (* input(stdIn); *)());
@@ -970,8 +972,28 @@ output(!LOGFILE,"\n"^s);
 fun say3 s = (output(stdOut,"\n"^s);
 output (stdOut,"\n"); flushOut(stdOut);
 output(!LOGFILE,"\n"^s);
-output (!LOGFILE,"\n"); flushOut(!LOGFILE);
+(* output (!LOGFILE,"\n"); *) flushOut(!LOGFILE);
 (* input(stdIn); *)());
+
+(* fun say s = (output(stdOut,"\n"^s);flushOut(stdOut);
+output (stdOut,"\n\n(paused, type something to continue) >");
+ flushOut(stdOut);
+output(!LOGFILE,"\n Inspector Lestrade says:  "^s);
+output (!LOGFILE,"\n\n(paused, type something to continue) >");
+ flushOut(!LOGFILE);
+input(stdIn);());
+
+fun say2 s = (output(stdOut,"\n"^s);flushOut(stdOut);
+output (stdOut,"\n >>"); flushOut(stdOut);
+output(!LOGFILE,"\n"^s);flushOut(!LOGFILE);
+(* output (!LOGFILE,"\n >>"); *) flushOut(!LOGFILE);
+(* input(stdIn); *)());
+
+fun say3 s = (output(stdOut,"\n"^s);flushOut(stdOut);
+output (stdOut,"\n"); flushOut(stdOut);
+output(!LOGFILE,"\n"^s);flushOut(!LOGFILE);
+output (!LOGFILE,"\n"); flushOut(!LOGFILE);
+(* input(stdIn); *)()); *)
 
 val DIAGNOSTIC = ref false;
 
@@ -1074,7 +1096,7 @@ We begin the discussion of Lestrade notation.  It should be noted that Lestrade'
 
 Tokens are open and close parentheses, open and close brackets, commas, colons,  and identifiers.
 
-If a double quote \verb "  occurs in a line, the entire rest of the line is a token (dropping the quote).  This allows tokens of
+If a double quote \verb|"| occurs in a line, the entire rest of the line is a token (dropping the quote).  This allows tokens of
 quite uncontrolled form to be supplied (for example, file names).  This could be changed to support quoted strings as tokens, probably a good thing.
 
 Identifiers come in three  flavors:  
@@ -1083,14 +1105,14 @@ Identifiers come in three  flavors:
 
 \item strings of digits (not zero-initial unless of length one;  this is true of all strings of digits in this definition) optionally followed by one or more single quotes;  
 
-\item strings of letters with the first optionally capitalized followed optionally by a string of digits followed optionally by one or more single quotation marks  \verb ' ; 
+\item strings of letters with the first optionally capitalized followed optionally by a string of digits followed optionally by one or more single quotation marks  \verb:':; 
 
 \item strings of special characters
-(any typewriter character which is not a letter, a token, a period, a single quotation mark, or an underscore \verb _ ) followed optionally by a string of digits followed optionally by one or more single quotes.
+(any typewriter character which is not a letter, a token, a period, a single quotation mark, or an underscore \verb|_ |) followed optionally by a string of digits followed optionally by one or more single quotes.
 
 \end{enumerate}
 
-Whitespace (made up of spaces and backslashes \verb \ , and units composed of a backslash followed by zero or more spaces followed by a carriage return)  is only significant to the tokenizer where it separates identifiers which might otherwise run together.   A carriage return ends text to be tokenized unless it is preceded by a backslash followed optionally by additional whitespace.
+Whitespace (made up of spaces and backslashes \verb|\| , and units composed of a backslash followed by zero or more spaces followed by a carriage return)  is only significant to the tokenizer where it separates identifiers which might otherwise run together.   A carriage return ends text to be tokenized unless it is preceded by a backslash followed optionally by additional whitespace.
 
 Identifiers ending in single quotes are usually generated automatically by Lestrade, though users can declare them\footnote{In the previous implementation, identifiers with special characters were extended with dollar signs. Also note that at the moment one may use identifiers which are strings of single quotes, which turned out to be convenient while debugging the code.  It would be easy to forbid such identifiers but I haven't bothered.}.  When Lestrade needs to generate an identifier from an existing name for various special purposes, it will add enough single quotes  to get an identifier which is not declared yet.\footnote{For the moment, the only use for automatically generated identifiers is for matching variables in the implicit argument inference mechanism.  These can occasionally end up embedded in prover output as bound variables.}
 
@@ -1724,7 +1746,7 @@ fun extend s = if env s <> ~1 then extend(s^"'") else s;
 
 The aim here is to present functions which will reformat tokenized output with helpful line
 breaks and indentation.  The degree of indentation is determined by the move we are in and
-the degree of nesting within brackets \verb []  at which we are processing.  Note the theme of identification of declaration environments (moves) with variable binding environments (lambda terms and function sorts).
+the degree of nesting within brackets \verb|[]| at which we are processing.  Note the theme of identification of declaration environments (moves) with variable binding environments (lambda terms and function sorts).
 
 There are separate pretty printers for output and for command lines, since backslashes need to be inserted in command lines.
 The special prompt \verb >>>  is inserted by the pretty printer, and the log file reader uses the prompt to identify commands to be executed.\footnote{This has the effect that the file format for this version is quite different from that of the previous version;  but the previous version has a facility to export files in a format this version can read.}
@@ -2123,14 +2145,14 @@ implicitarglist x = (say "implicitarglist failure line 1905";Ferror);
 is followed by a comma and each non-initial name of arity greater than one  is preceded by a comma, and in which no comma is followed by another comma.  Additional commas
 between names are allowed.
 
-\item [A closed argument list] is an open parenthesis \verb (  followed by an open argument list followed by a close parenthesis \verb ) .
+\item [A closed argument list] is an open parenthesis \verb|(| followed by an open argument list followed by a close parenthesis \verb|)|.
 
 \item [An open term list]  is a sequence of function terms and commas  in which each non-final name of positive arity serving as a function term in the sequence
 is followed by a comma and each name which is of arity greater than one  and initial in one of the non-initial function terms in the sequence  is preceded by a comma, and in which no comma is followed by another comma.  Additional commas between function terms are allowed.
 
 The final term of an open term list is not a mixfix term unless it is followed by a non-identifier or end of text.
 
-\item [A closed term list] is an open parenthesis \verb (  followed by an open term list followed by a close parenthesis \verb ) .
+\item [A closed term list] is an open parenthesis \verb|(| followed by an open term list followed by a close parenthesis \verb|)|.
 
 \item [The length of an open or closed term list] is the number of function terms in it (commas are not counted).
 
@@ -2140,11 +2162,11 @@ The final term of an open term list is not a mixfix term unless it is followed b
 
 \item[name:]   a name of arity 0 
 
-\item[applicative:]   or a name of positive arity followed by a closed term list of length equal to its arity, or by an open term list of length equal to its arity whose first token is not a open parenthesis \verb (  . 
+\item[applicative:]   or a name of positive arity followed by a closed term list of length equal to its arity, or by an open term list of length equal to its arity whose first token is not a open parenthesis \verb|(|. 
 
 The meaning of an applicative term depends only on the list of function terms appearing in its term list, not on whether it is open or closed.
 
-\item[parenthesized:]   or an open parenthesis \verb (  followed by an object term followed by a close parenthesis \verb ) , 
+\item[parenthesized:]   or an open parenthesis \verb|(|  followed by an object term followed by a close parenthesis \verb|)|, 
 
 The meaning of a parenthesized term is the same as the meaning of the term enclosed in the parentheses.
 
@@ -2167,7 +2189,7 @@ The meaning of a mixfix term is the same as the meaning of the applicative term 
 \item or a name of arity greater than 1 followed by a closed term list of length less than the arity of the initial name, 
 
 \item or
-an open bracket \verb [  followed by an open argument list (in which commas are completely optional) followed by the reserved identifier {\tt =>} followed by an object term followed by a close bracket \verb ] .
+an open bracket \verb|[| followed by an open argument list (in which commas are completely optional) followed by the reserved identifier {\tt =>} followed by an object term followed by a close bracket \verb|] |.
 
 \end{enumerate}
 
@@ -2185,8 +2207,8 @@ an open bracket \verb [  followed by an open argument list (in which commas are 
 
 \end{enumerate}
 
-\item [A function sort term] consists of an open bracket \verb [  followed by an open argument list (in which commas are completely optional) followed by the reserved identifier {\tt =>} followed by an object  sort term followed by
-a close bracket \verb ] .
+\item [A function sort term] consists of an open bracket \verb|[| followed by an open argument list (in which commas are completely optional) followed by the reserved identifier {\tt =>} followed by an object  sort term followed by
+a close bracket \verb|]|.
 
 \end{description}
 
@@ -5333,13 +5355,15 @@ Important examples are {\tt open} followed optionally by an identifier, {\tt clo
 
 (*  beginning test declaration commands *)
 
+val SHOWFULL = ref false;
+
 fun showmove n = say2(
 reprocess(length(!CONTEXT)-1)
 ("{move "^(makestring n)^
 (if worldname n = makestring n 
 then "}" else ": "^(worldname n)^"}")));
 
-fun Showdec s = (if length(!CONTEXT) = 2 
+fun Showdec s = (if length(!CONTEXT) = 2 orelse (!SHOWFULL)
 then say3(reprocess (length(!CONTEXT)-1)
 (s^": "^(displayfunction(sortof s)))) else ()
 ;if islambda2 (sortof s)
@@ -5348,7 +5372,8 @@ then say3(reprocess(length(!CONTEXT)-1)(s^": "^
 (referentof("?!?",0,0,true,
 Lambda(nil,Unknown,OBJ)))(functionsort (sortof s))))))
 else (
-if length(!CONTEXT)<>2 then say3(reprocess (length(!CONTEXT)-1)
+if length(!CONTEXT)<>2 andalso not (!SHOWFULL) 
+then say3(reprocess (length(!CONTEXT)-1)
 (s^": "^(displayfunction(sortof s)))) else ()
 );showmove(env s))
 
@@ -5797,6 +5822,12 @@ Readline ["Readtex",s,t] = Readtex s t|
 Readline ["Readonbook",s,t] = Readonbook s t|
 
 Readline ["Readontex",s,t] = Readontex s t|
+
+(* toggle display of definition bodies in
+local environments *)
+
+Readline["Showfull"] = (SHOWFULL := not(!SHOWFULL);
+showmove(length(!CONTEXT)-1)) |
 
 
 Readline x = let val T1 = typefix(getfunction x) in
