@@ -17,28 +17,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 \documentclass[12pt]{article}
 
 \title{A concrete approach to mathematics?}
@@ -50,6 +28,8 @@
 \maketitle
 
 \tableofcontents
+
+\section{Introduction}
 
 In this essay we consider a view of the modern mathematics of the continuous and the infinite which views the objects and the arguments of mathematics as objects which can be concretely presented as inhabitants of data types representable in practice on a computer.   We illustrate this using actual general purpose software with this aim.
 
@@ -1163,6 +1143,17 @@ begin Lestrade execution
        : that .proppred_1 (.B_1))]
 
    {move 0}
+end Lestrade execution
+
+\end{verbatim}
+
+It is in no way a consequence of adopting the Lestrade logical framework that propositions should be identified with truth values, making the biconditional the equality relation on propositions,  It would be equally implementable in Lestrade to view propositions as. to go to an opposite extreme, character strings (or maybe parse trees), in which case there would be natural operations on propositions which would not respect the biconditional.
+
+\subsubsection{Equality of untyped and typed mathematical objects}
+
+\begin{verbatim}
+
+begin Lestrade execution
 
    >>> clearcurrent
 {move 1}
@@ -1269,7 +1260,7 @@ end Lestrade execution
 \end{verbatim}
 
 The substitution axiom {\tt Subs} has an alternative form {\tt Subs2} which does not require the predicate as an explicit argument.
-Basically, this enables substitution of $y$ for {\em all\/} occurrences of $x$.
+Basically, this enables substitution of $y$ for {\em all\/} occurrences of $x$:  Lestrade can infer the predicate argument in this case.
 
 The symbol {\tt ==} will be declared as equality in each type {\tt in tau}.  The implicit argument feature allows us to overload this symbol, as we will see.
 
@@ -1369,6 +1360,252 @@ end Lestrade execution
 
 The relation {\tt ==} is actually ternary, but the first argument is the common type of the second and third, and this can be left implicit.  In all other respects, these
 definitions are quite parallel to the definition for type {\tt obj}, and a nice advertisement of what the implicit argument mechanism can do for us.
+
+\subsubsection{Equality of types:  univalence}
+
+We implement something like the Univalence Axiom of HOTT in our entirely classical context.  We think it is important to notice that there is nothing intensional or constructive about this axiom.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+{move 1}
+
+   >>> declare tau1 type
+
+   tau1 : type
+
+   {move 1}
+
+   >>> declare tau2 type
+
+   tau2 : type
+
+   {move 1}
+
+   >>> postulate === tau1 tau2 prop
+
+   === : [(tau1_1 : type), (tau2_1 : type) => 
+       (--- : prop)]
+
+   {move 0}
+
+   >>> declare x1 in tau1
+
+   x1 : in tau1
+
+   {move 1}
+
+   >>> declare F [x1 => in tau2]
+
+   F : [(x1_1 : in tau1) => (--- : in 
+       tau2)]
+
+   {move 1}
+
+   >>> declare x2 in tau2
+
+   x2 : in tau2
+
+   {move 1}
+
+   >>> declare G [x2 => in tau1]
+
+   G : [(x2_1 : in tau2) => (--- : in 
+       tau1)]
+
+   {move 1}
+
+   >>> postulate bijection F prop
+
+   bijection : [(.tau1_1 : type), (.tau2_1 
+       : type), (F_1 : [(x1_2 : in .tau1_1) => 
+          (--- : in .tau2_1)]) => (--- 
+       : prop)]
+
+   {move 0}
+
+   >>> declare bijectionev [x1 => that x1 \
+          == G (F x1)]
+
+   bijectionev : [(x1_1 : in tau1) => 
+       (--- : that x1_1 == G (F (x1_1)))]
+
+   {move 1}
+
+   >>> postulate Bijectionproof bijectionev \
+       that bijection F
+
+   Bijectionproof : [(.tau1_1 : type), (.tau2_1 
+       : type), (.F_1 : [(x1_2 : in .tau1_1) => 
+          (--- : in .tau2_1)]), (.G_1 
+       : [(x2_2 : in .tau2_1) => (--- 
+          : in .tau1_1)]), (bijectionev_1 
+       : [(x1_2 : in .tau1_1) => (--- 
+          : that x1_2 == .G_1 (.F_1 (x1_2)))]) => 
+       (--- : that bijection (.F_1))]
+
+   {move 0}
+
+   >>> postulate Univalence F, G, bijectionev \
+       that tau1 === tau2
+
+   Univalence : [(.tau1_1 : type), (.tau2_1 
+       : type), (F_1 : [(x1_2 : in .tau1_1) => 
+          (--- : in .tau2_1)]), (G_1 
+       : [(x2_2 : in .tau2_1) => (--- 
+          : in .tau1_1)]), (bijectionev_1 
+       : [(x1_2 : in .tau1_1) => (--- 
+          : that x1_2 == G_1 (F_1 (x1_2)))]) => 
+       (--- : that .tau1_1 === .tau2_1)]
+
+   {move 0}
+
+   >>> define Typerefleq tau1 : Univalence \
+       [x1 => x1] [x1 => x1], [x1 => Refleqt \
+          x1]
+
+   Typerefleq : [(tau1_1 : type) => 
+       ({def} Univalence ([(x1_2 : in 
+          tau1_1) => 
+          ({def} x1_2 : in tau1_1)], [(x1_2 
+          : in tau1_1) => 
+          ({def} x1_2 : in tau1_1)], [(x1_2 
+          : in tau1_1) => 
+          ({def} Refleqt (x1_2) : that 
+          x1_2 == x1_2)]) : that tau1_1 
+       === tau1_1)]
+
+   Typerefleq : [(tau1_1 : type) => (--- 
+       : that tau1_1 === tau1_1)]
+
+   {move 0}
+
+   >>> declare typeqev that tau1 === tau2
+
+   typeqev : that tau1 === tau2
+
+   {move 1}
+
+   >>> declare typepred [tau1 => prop]
+
+   typepred : [(tau1_1 : type) => (--- 
+       : prop)]
+
+   {move 1}
+
+   >>> declare typepredev that typepred tau1
+
+   typepredev : that typepred (tau1)
+
+   {move 1}
+
+   >>> postulate Typeeqsub typeqev, typepred, typepredev \
+       that typepred tau2
+
+   Typeeqsub : [(.tau1_1 : type), (.tau2_1 
+       : type), (typeqev_1 : that .tau1_1 
+       === .tau2_1), (typepred_1 : [(tau1_2 
+          : type) => (--- : prop)]), (typepredev_1 
+       : that typepred_1 (.tau1_1)) => 
+       (--- : that typepred_1 (.tau2_1))]
+
+   {move 0}
+
+   >>> define Typeeqsub2 typeqev typepredev \
+       : Typeeqsub typeqev, typepred, typepredev
+
+   Typeeqsub2 : [(.tau1_1 : type), (.tau2_1 
+       : type), (typeqev_1 : that .tau1_1 
+       === .tau2_1), (.typepred_1 : [(tau1_2 
+          : type) => (--- : prop)]), (typepredev_1 
+       : that .typepred_1 (.tau1_1)) => 
+       ({def} Typeeqsub (typeqev_1, .typepred_1, typepredev_1) : that 
+       .typepred_1 (.tau2_1))]
+
+   Typeeqsub2 : [(.tau1_1 : type), (.tau2_1 
+       : type), (typeqev_1 : that .tau1_1 
+       === .tau2_1), (.typepred_1 : [(tau1_2 
+          : type) => (--- : prop)]), (typepredev_1 
+       : that .typepred_1 (.tau1_1)) => 
+       (--- : that .typepred_1 (.tau2_1))]
+
+   {move 0}
+end Lestrade execution
+
+\end{verbatim}
+
+It should be noted that these declarations are in no way required by the Lestrade framework.  The idea here is that all that matters about a type (of the form {\tt in tau}) is its cardinality:  two types which are the same size can be supposed to be exactly the same domain with different functions accessing it.  This might have a paradoxical air:  it implies for example that if we have a type of natural numbers and a type of rational numbers, they will be the same type.  But of course every rational number can be implemented as a natural number via some enumeration of the rationals, and all operations on rationals can be defined on such numerical implementations of rationals and output numerical implementations of rationals.   This is a subject which can be revisited when we have example types to look at.
+
+Note that we didn't provide the reflexive property of equality of types as a primitive:  we proved it as a consequence of univalence (the identity map is a bijection from a type to itself).
+
+There are also practical things which we might like to do which are ruled out by univalence.  It would be possible to make addition (for example) an overloaded operation working on all types.  But this would then force the naturals and the rationals to be unequal types, because propositions about these types (on reasonable assumptions) would express the quite different properties of the addition operation on the two types.
+
+\subsubsection{Equality of proofs/evidence: proof irrelevance}
+
+We regard all proofs of the same proposition as equal (again, in no way a consequence of the Lestrade framework, which quite naturally implements constructive logics in which information can be extracted from proofs:  for example, one might suppose that from a proof of an existentially quantified statement one could extract a witness, which might be different for different proofs).
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+{move 1}
+
+   >>> declare A prop
+
+   A : prop
+
+   {move 1}
+
+   >>> declare aa1 that A
+
+   aa1 : that A
+
+   {move 1}
+
+   >>> declare aa2 that A
+
+   aa2 : that A
+
+   {move 1}
+
+   >>> declare proofpred [aa1 => prop]
+
+   proofpred : [(aa1_1 : that A) => (--- 
+       : prop)]
+
+   {move 1}
+
+   >>> declare proofpredev that proofpred \
+       aa1
+
+   proofpredev : that proofpred (aa1)
+
+   {move 1}
+
+   >>> postulate Proofirrelevance aa2 proofpredev \
+       that proofpred aa2
+
+   Proofirrelevance : [(.A_1 : prop), (.aa1_1 
+       : that .A_1), (aa2_1 : that .A_1), (.proofpred_1 
+       : [(aa1_2 : that .A_1) => (--- 
+          : prop)]), (proofpredev_1 : that 
+       .proofpred_1 (.aa1_1)) => (--- 
+       : that .proofpred_1 (aa2_1))]
+
+   {move 0}
+end Lestrade execution
+
+\end{verbatim}
+
+This code declares that any predicate that holds of one proof of a proposition $A$ also holds of every other proof of that proposition:  there is only one proof of $A$.
+
+\subsubsection{A remark on generalizing over types in Lestrade}
+
+This section gives an example of what happens when one wants to define operations on all object sorts of Lestrade.  The object sorts come in five flavors.  Sometimes it is useful to treat them differently:  sometimes one ends up repeating developments for more than
+one kind of object sort.  There is a temptation to allow object sort parameters which I have considered.  In this case the five families are treated differently (though the treatment of untyped and typed mathematical objects is very similar).
 
 
 
