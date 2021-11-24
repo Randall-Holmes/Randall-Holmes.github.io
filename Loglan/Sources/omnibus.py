@@ -1591,8 +1591,7 @@ def grammarbatch(gfile):
         while not line1=='' and line1[0]==' ':line1=line1[1:]
         if not(line1=='' or line1[0]=='#'):  rundef(loglan,line1)
     
-
-#from loglanpreamble import *
+# from loglanpreamble import *
 
 L("V1 <- [aeiouyAEIOUY]")
 
@@ -2310,7 +2309,7 @@ L("HUE0 <- ([ ]* &caprule [Hh] [Uu] juncture? [Ee] juncture? !V1)")
 
 L("invvoc <- ((HUE0 comma2? name)/(HUE freemod? descpred guea? namesuffix?)/(HUE freemod? statement giuo?)/(HUE freemod? argument1 guu?)/([ ]* &([Hh] [Uu] juncture? [Ee] juncture?) AlienWord))")
 
-L("kiamod <- (comma2? !(K IA) ((PreName/LIU1/AlienWord/Word) kiamod? comma2? K IA) comma2?)")
+L("kiamod <- (comma2? !(!PreName !predstart K IA) ((PreName/LIU1/AlienWord/Word) kiamod? comma2? K IA) comma2?)")
 
 L("freemod <- ((kiamod/NOUI/(SOI freemod? descpred guea?)/DIE/(NO1 DIE)/(KIE comma? utterance0 comma? KIU)/(KIE2 comma? utterance0 comma? KIU2)/invvoc/voc/(comma !(!FalseMarked PreName))/JO/UI1/([ ]* '...' ([ ]* &letter)?)/([ ]* '--' ([ ]* &letter)?)) freemod?)")
 
@@ -2511,6 +2510,5 @@ L("uttF <- (uttE (I freemod? uttE)*)")
 L("utterance0 <- (!GE ((!PAUSE freemod period? utterance0)/(!PAUSE freemod period?)/(uttF IGE utterance0)/uttF/(I freemod? uttF?)/(I freemod? period?)/(ICA freemod? uttF)) (&I utterance0)?)")
 
 L("utterance <- (&(phoneticutterance !.) (!GE ((!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end)/(ICA freemod? uttF (&I utterance)? end))))")
-
 
 if __name__ == '__main__':interface();

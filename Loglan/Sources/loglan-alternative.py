@@ -716,7 +716,7 @@ L("HUE0 <- ([ ]* &caprule [Hh] [Uu] juncture? [Ee] juncture? !V1)")
 
 L("invvoc <- ((HUE0 comma2? name)/(HUE freemod? descpred guea? namesuffix?)/(HUE freemod? statement giuo?)/(HUE freemod? argument1 guu?)/([ ]* &([Hh] [Uu] juncture? [Ee] juncture?) AlienWord))")
 
-L("kiamod <- (comma2? !(K IA) ((PreName/LIU1/AlienWord/Word) kiamod? comma2? K IA) comma2?)")
+L("kiamod <- (comma2? !(!PreName !predstart K IA) ((PreName/LIU1/AlienWord/Word) kiamod? comma2? K IA) comma2?)")
 
 L("freemod <- ((kiamod/NOUI/(SOI freemod? descpred guea?)/DIE/(NO1 DIE)/(KIE comma? utterance0 comma? KIU)/(KIE2 comma? utterance0 comma? KIU2)/invvoc/voc/(comma !(!FalseMarked PreName))/JO/UI1/([ ]* '...' ([ ]* &letter)?)/([ ]* '--' ([ ]* &letter)?)) freemod?)")
 
