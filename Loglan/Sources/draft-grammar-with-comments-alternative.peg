@@ -2,6 +2,8 @@
 
 # Dated updates now to appear here
 
+# 11/24/2021  KIA, the one "word" deletion operator, is installed.  What it actually does is a bit subtle.
+
 # 2/4/2021  Imposed the rule that two final consonants cannot be consonants from voiced/unvoiced pairs
 # with different voice.  Also forbid second final consonant to be h.
 
@@ -1001,7 +1003,7 @@ LiQuote <- (&caprule [Ll][Ii]juncture? comma2? [\"] phoneticutterance [\"] comma
 # with mere whitespace between was used by <liu> quotation, but is now redundant,
 # because I have required that <liu> quotations be closed with explicit pauses in all cases.
 
-Word <- (NameWord / Cmapua !([ ]*Cmapua)/ Complex/CCVNOY)
+Word <- (NameWord / Cmapua / Complex/CCVNOY)
 
 # it is an odd point that all borrowings parse as complexes -- so when I parsed all the words the first time they all
 # parsed as complexes.  A borrowing is a complex consisting of a single final borrowing djifoa!
@@ -1858,11 +1860,15 @@ invvoc <- (HUE0 comma2? name/HUE freemod? descpred guea? namesuffix?/(HUE freemo
 
 # JO is a scare quote device.
 
+# deletion of a previous word or wordlike unit (or more than one) using K IA
+
+kiamod <- comma2? !(K IA) ((PreName/LIU1/AlienWord/Word) kiamod? comma2? K IA) comma2?
+
 # the comma is a freemod with no semantic content:  this is a device for discarding phonetically required pauses
 # and the speaker's optional pauses alike.   The pause before a non-pause marked prename is part of the NameWord and so
 # is excluded.  Ellipses and dashes are fancy pauses supported as freemods.
 
-freemod <- ((NOUI/(SOI freemod? descpred guea?)/DIE/(NO1 DIE)/(KIE comma? utterance0 comma? KIU)/(KIE2 comma? utterance0 comma? KIU2)/invvoc/voc/(comma !(!FalseMarked PreName))/JO/UI1/([ ]* '...' ([ ]* &letter)?)/([ ]* '--' ([ ]* &letter)?)) freemod?)
+freemod <- ((kiamod/NOUI/(SOI freemod? descpred guea?)/DIE/(NO1 DIE)/(KIE comma? utterance0 comma? KIU)/(KIE2 comma? utterance0 comma? KIU2)/invvoc/voc/(comma !(!FalseMarked PreName))/JO/UI1/([ ]* '...' ([ ]* &letter)?)/([ ]* '--' ([ ]* &letter)?)) freemod?)
 
 # the classes juelink to linkargs describe very tightly bound arguments which can be firmly attached to predicates in 
 # the context of metaphorical modifications and the use of predicates in descriptive arguments.
