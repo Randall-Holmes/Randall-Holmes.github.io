@@ -1,0 +1,161 @@
+\documentclass{article}
+
+\usepackage{amssymb}
+
+\title{A logical framework, Lestrade, and its parent, Automath}
+
+\author{M. Randall Holmes}
+
+\date{starting to write, 3/26/2018}
+
+\begin{document}
+
+\maketitle
+
+\section{Brief overview}
+
+We report here on two closely connected activities.  We developed a logical framework, Lestrade, based on some ideas in the philosophy of mathematics informed by some acquaintance with Automath (as well as other ingredients which should become evident).  Lestrade is implemented by a piece of software which we will describe, the Lestrade Type Inspector.  We do hope that we may be forgiven for the literary pun connected with our name and the name of the system.
+
+In the course of describing Lestrade and its associated software, we revisited Automath.  This paper contains a brief description of Automath, including an account of a set theoretical semantics for Automath which implements oddities of its type system.  We also reimplemented Automath ourselves, and will describe some additional insights which this work afforded us.
+
+We are indebted to the original Automath workers, whose work is mostly collected in the yellow Automath book \cite{yellowbook}, and to Freek Wiedijk, who is the  author of the other modern Automath implementation (\cite{autmanual},\cite{autpaper}) and who raises a number of interesting questions about Automath in connection with his discussion of his implementation.
+
+For each of the systems discussed (Lestrade and Automath) we provide a section on semantics (what the notations of the theory mean, that is, what mathematical universe it is talking about) and a section on pragmatics (how the system is used, that is, what it is like to talk to it).
+
+\newpage
+
+\section{Lestrade:  semantics}
+
+ Our intention in designing Lestrade was to create a system in which the user interacted with significant mathematical concepts as concretely, finitely given things, as far as possible.  Infinities should as far as possible be potential rather than actual.  Part of our intention was that mathematical proofs should be viewed as a species of mathematical object (we had the Curry-Howard isomorphism in mind).  This means that the notion of {\em function\/} is central (it could be viewed as {\em the\/} primitive notion of Lestrade).  This means that we do not want to view a function as a completely given infinite table of values, as is the usual set theoretical view:  this would defeat our attempt to avoid reliance on actual infinities.  Our guiding metaphor in dealing with functions is to view them as immediately given gadgets which will give output of a specified type when input(s) of specified type(s) are given;  for functions which are defined rather than primitive (a function such as $f(x,y)=x^2+y^2$) we have the description of a function by a formula or rule as in calculus as a model:  we are talking about functions in intension rather than functions in extension.
+
+The things we talk about in Lestrade are partitioned into two species, objects and Functions.  A reason that Function is capitalized is that among the objects we may have some functions, indicated as also being objects by the lower-case letter.  Each species is further partitioned into {\em sorts\/}.  The word {\em type\/} is reserved for a certain kind of sort.  We enumerate the sorts of object.  There is a primitive sort {\tt prop} of propositions.  For each $p$ of sort
+{\tt prop} there is a sort ({\tt that} $p$) inhabited by ``proofs of $p$" (we prefer to say ``evidence for $p$" as use of {\em proof\/} here appears to presume a constructive view).  There is a primitive sort {\em type\/} of ``types of mathematical object".  We prefer to call these ``type labels", because we naturally wish to resist viewing a type as a completely given collection of objects, instead viewing it as a feature encountered in each object of the type.  With each $\tau$ of sort {\tt type}, we associate a sort ({\tt in} $\tau$) inhabited by the objects of type $\tau$:  this is another reason to call $\tau$ a type label, as it is not itself the type!  If one wishes to have mathematical objects ``without type", an additional sort {\tt obj} is provided for these.  An implementation of ZFC in Lestrade might have the sets as of type {\tt obj}:  it would not be type-free, however, as there would be plenty of other types inhabited by propositions and proofs of propositions.  These are all the sorts of object in Lestrade.
+
+Each Function sort is of the form $$((x_1,\tau_1),\ldots,(x_n,\tau_n) \Rightarrow \tau)$$  where the $x_i$'s are variables bound in this notation, each $\tau_i$ is a notation for an object or Function sort, and $\tau$ is an object sort.  No $x_i$ may appear in $\tau_j$ for $j\leq i$.  The variable $x_i$ may appear in $\tau_j$ for $j>i$ or in $\tau$:  these are dependently sorted Functions.  Note that object sorts {\tt that} $p$ or {\tt in} $\tau$ with $p$ or $\tau$ complicated terms may quite naturally contain variables.
+
+That completes the account of Lestrade sorts.  We now give a compact account of Lestrade terms (of a theoretical flavor not quite the same as the term language of the software) and the computation of their sorts.  An object term is either atomic (with an object  sort presumably given by a declaration) or is of the form $f(t_1,\ldots,t_n)$, where $f$ is an atomic term representing a Function of sort
+$$((x_1,\tau_1),\ldots,(x_n,\tau_n) \Rightarrow \tau)$$ (the coincidence of arities is required), each $t_i$ is an object or Function term, and $t_1$ is required to be a term of sort $\tau_1$ (a necessary condition for this to be well-sorted).  If $n=1$ the sort
+of $f(t_1)$ is $\tau[t_1/x_1]$.  If $n>1$, the sort of $f(t_1,t_2\ldots,t_n)$ is the same as the sort of $f^*(t_2,\ldots,t_n)$ where $f^*$ is of sort
+$$((x_2,\tau_1[t_1/x_1]),\ldots,(x_n,\tau_n[t_1/x_1]) \Rightarrow \tau[t_1/x_1])$$ (and the further requirements for this to be well-sorted must hold).
+
+Lestrade Function terms are either atomic (declared with some Function sort) or of the form $$((x_1,\tau_1),\ldots,(x_n,\tau_n) \Rightarrow T,\tau)$$ (with sort  $$((x_1,\tau_1),\ldots,(x_n,\tau_n) \Rightarrow \tau))$$ where $T$ is an object term of sort $\tau$ (computed under the assumption that the type of each $x_i$ is $\tau_i$).  If the letter $f$ denotes the Function $$((x_1,\tau_1),\ldots,(x_n,\tau_n) \Rightarrow T,\tau),$$
+the term $f(t_1,\ldots,t_n)$ will denote $T[t_1/x_1]$ if $n=1$ and otherwise will have the same denotation as $f^*(t_2,\ldots,t_n)$, where $f^*$ denotes
+$$((x_2,\tau_1[t_1/x_1]),\ldots,(x_n,\tau_n[t_1/x_1]) \Rightarrow T[t_1/x_1],\tau[t_1/x_1])$$  We put matters in this seemingly indirect way because non-atomic Function terms do not appear in applied position in Lestrade notation:  they appear only as top-level notation or as arguments.  The definition just
+given of the denotation of  $f(t_1,\ldots,t_n)$ if $f$ denotes  $$((x_1,\tau_1),\ldots,(x_n,\tau_n) \Rightarrow T,\tau)$$ is also our definition of $f(t_1,\ldots,t_n)[((x_1,\tau_1),\ldots,(x_n,\tau_n) \Rightarrow T,\tau)/f]$, a clause of the definition of substitution.  We do not comment further on the formal definiton of substitution except to observe that the binding of $x_1,\ldots,x_n$ in the notations $((x_1,\tau_1),\ldots,(x_n,\tau_n) \Rightarrow (T,)\tau)$ for Function sorts and Functions has the usual effects on substitution.
+
+Note that object sort terms are {\tt prop}, {\tt type}, {\tt that} $p$ for each term $p$ of sort {\tt prop}, {\tt in} $\tau$ for each term $\tau$ of sort
+{\tt type}, and {\tt obj}.
+
+\newpage
+
+
+\section{Lestrade:  pragmatics}
+
+Everything about Lestrade is dictated by the desire to be able to define a function in the parametric form exemplified by $f(x,y)=x^2+y^2$, with proper attention to all sorts involved.
+
+Thus, the basic commands of Lestrade are declarations of variables (that is parameters for function definitions) as being of given types, declarations of
+primitive notions (axioms and undefined operations) taking parameters of given input types to a given output type, and finally definitions of functions in the target format, defining a function taking parameters of given types to a given term value (whose type is computed by Lestrade rather than supplied by the user).
+
+Things are ramified by a scheme of relative variation.  The declarations in a Lestrade theory at any particular point are organized into a sequence of lists
+called ``moves", of which there are always at least two, the first two being move 0 and move 1, and the last two being move $i$ and move $i+1$ ($i$ being an important parameter of the Lestrade state).  The declarations in each move are ordered.  Move $i$ is referred to as ``the last move".  Move $i+1$ is referred to as the ``next move".  Terms declared at the next move should be thought of as variable (parameters of function definitions live there);  terms declared at earlier moves are (for the moment) constant.
+
+\subsection{The basic functionality of Lestrade}
+
+We describe the basic functionality of Lestrade commands;  some of these have additional options which we may discuss later.  The command {\tt open}
+creates a new next move, empty of declarations:  the parameter $i$ is incremented, so that what was formerly move $i+1$ is now move $i$.  The command
+{\tt close} discards the next move and decrements $i$:  all declarations in the former move $i+1$ are discarded and the former move $i$ becomes move $i+1$.  If $i=0$, the {\tt close} command cannot be issued.  The {\tt clearcurrent} command clears all declarations from move $i+1$ and does not change the parameter $i$:  this is the only way to clear declarations from move 1.  These are the basic commands managing the move system.
+
+The command {\tt declare} $x$ $\tau$, where $x$ is a fresh identifier and $\tau$ is an object sort term, introduces a new declaration of the identifier $x$
+as a variable of sort $\tau$, which is introduced at the last position in the order on move $i+1$, the next move.
+
+The command {\tt construct} $x$ $\tau$, where $x$ is a fresh identifier and $\tau$ is an object sort term, introduces a new declaration of the identifier
+$x$ as a primitive constant of sort $\tau$, which is introduced at the last position in the order on move $i$, the last move.  A constant declared in move $i>0$ might become a variable after the {\tt close} command is issued:  only a constant declared in move 0 is unconditionally a constant.
+
+The command {\tt construct} $f$ $x_1, \ldots,x_n$ (:) $\tau$ (colon optional), where $f$ is a fresh identifier and the $x_i$'s are previously declared (not defined) in world $i+1$ in the order in which they are given in the argument list, each $x_i$ declared with type $\tau_i$, and each variable appearing in the each $\tau_i$ or $\tau$ appearing in the list, and $\tau$ is an object sort term, declares $f$ as a primitive Function constant of type
+$$((x_1,\tau_1),\ldots,(x_n,\tau_n) \Rightarrow \tau),$$ the declaration being recorded at the end of move $i$.  The basic Lestrade functionality does not provide an explicit way to declare a variable of Function type, but note that a Function declared as a primitive using the {\tt construct} command in move $i$ becomes a Function variable if the {\tt close} command is issued later from that move (being not defined and declared in world $i+1$ after the {\tt close} command decrements $i$) .
+
+The command {\tt define} $x$ $T$, where $x$ is a fresh identifier and $T$ is an object term containing no variables, introduces the definition of $x$ as $T$ (recorded by Lestrade
+as if $x$ were declared as the nullary  Function $(() \rightarrow T,\tau)$, where $\tau$ is the sort of $T$ computed by Lestrade, though $x$ as a term always is understood by the system as simply meaning $T$).  This declaration is recorded at the end of move $i$ (the last move).  After a {\tt close} command, this becomes a ``variable expression" depending on the variables which appear in it, but not a variable itself, being defined.
+
+The command {\tt define} $f$ $x_1, \ldots,x_n$ : $T$ (colon obligatory), where $f$ is a fresh identifier and the $x_i$'s are previously declared (not defined) in world $i+1$ in the order in which they are given in the argument list, each $x_i$ declared with type $\tau_i$, and each variable appearing in each $\tau_i$ or in $T$ or in the type of $T$ appearing in the list, and $T$ is an object term, declares $f$ as a defined Function $$((x_1,\tau_1),\ldots,(x_n,\tau_n) \Rightarrow T,\tau)$$ of type
+$((x_1,\tau_1),\ldots,(x_n,\tau_n) \Rightarrow \tau)$, the declaration being recorded at the end of move $i$.  The basic Lestrade functionality does not provide an explicit way to declare a variable of Function type, but note that a Function declared as a primitive using the {\tt construct} command in move $i$ becomes a variable if the {\tt close} command is issued later from that move (being not defined and declared in world $i+1$ after the {\tt close} command decrements $i$).
+
+When sort checking a term, Lestrade will carry out definitional expansions to determine whether required equations between sorts hold.
+
+The basic functionality of Lestrade that we describe here supports a limited palette of terms that the user can enter.  The user may enter atomic object terms,
+object terms of the form $f(t_1,\ldots,t_n)$, {\em atomic\/} function terms (such as those introduced by the {\tt construct} and {\tt define} commands) and object sort terms.  The user does not need to enter terms with bound variables (Function sort or Function terms), though it proves convenient to add this capability later.  It is interesting when thinking about what bound variables do for us to notice that the full logical power of Lestrade is in principle available without the user entering terms with bound variables.  
+
+It must further be noted that when a declaration is recorded in world $i$, any appearances of identifiers defined in world $i+1$ (``variable expressions") in the types and values recorded must be expanded out, since
+execution of the {\tt close} command would discard the information needed to interpret them.  {\em Variables\/} declared in world $i+1$ appear as parameters of the Function being declared, and their type information is reported as part of its type.   Occurrences of defined object terms or of defined Function terms in applied position are expanded out in the obvious way (formally described above).   Occurrences of Function terms in argument position are replaced by the formal notation for the Function given in the previous section, that is, by a term containing bound variables.  So, while the user never has to write such terms under the basic functionality of Lestrade, they do occur in dialogue with Lestrade.  This limits the still interesting sense in which the basic functionality of Lestrade is bound-variable-free.
+
+We note that in the term language of the Lestrade Type Inspector, there are some refinements of our notation.  The parentheses and commas in $f(t_1,\ldots,t_n)$ are often but not always optional.  Mixfix notation $t_1 f t_2,\ldots,t_n$ is supported; commas may be obligatory to prevent function terms appearing as arguments from being confused with function terms appearing as mixfixes.  Lestrade will always display binary Functions with first argument an object as infix, and otherwise will not display mixfix notation;  the display notation uses as many parentheses as it can.  It is worth noting that if a first argument in an argument list is enclosed in parentheses, the entire argument list must be as well.
+
+\subsection{An enhancement: rewriting}
+
+Lestrade supports rewriting as part of its logic.
+
+The command {\tt rewritec} $id$ $x_1, \ldots, x_n$, {\tt source}, {\tt target}  where $id$ is a fresh identifier, $x_1, \ldots, x_n$ are an argument list as in the {\tt construct} or {\tt define} command, and {\tt source} and {\tt target} are terms of the same sort, with every variable contained in {\tt source} or its type appearing in the argument list and every variable appearing in {\tt target} or its type appearing in {\tt source} or its type, will declare $id$ as a function taking arguments $x_1,\ldots,x_n,P,y$ where $P$ is a fresh variable of a type the reader can deduce from the type of $y$ and $y$ is a fresh variable of type
+${\tt that} \,P({\tt source})$ to output of type ${\tt that}\, P({\tt target})$.  This is in effect a proof that {\tt source} is equal to {\tt target} for all values of the $x_i$'s.  In addition, a rewrite rule is recorded, so that terms of the form {\tt source} will always be rewritten to the form {\tt target} whenever they are encountered (as long as $id$ remains in scope).  There are subtleties in the exact forms that {\tt source} and {\tt target} can take and in the exact conditions under which rewrites are applied which enforce confluence.  Lestrade will use rewrite rules to expand defined terms and to justify equations of types.   When a term is defined, Lestrade will actually apply rewrite rules to its displayed form;  rewrite rules will not be visibly applied to types, but Lestrade will use rewriting as well as definitional expansion in attempting to show equality of sort terms during sort checking.   This has been used for example in a partial simulation of the type checking algorithm of homotopy type theory. 
+
+The variant command  {\tt rewrited} $id$ $x_1, \ldots, x_n$, {\tt source}, {\tt target} differs in requiring that $id$ be an identifier already declared as a function taking arguments $x_1,\ldots,x_n,P,y$ where $P$ is a fresh variable of a type the reader can deduce from the type of $y$ and $y$ is a fresh variable of type
+${\tt that} \,P({\tt source})$ to output of type ${\tt that}\, P({\tt target})$.  In this way, theorems proved within a Lestrade theory can be used to extend the type checking algorithm with new rewrite rules.
+
+The use of rewrite rules to expand the displayed forms of defined terms gives Lestrade some of the character of a programming language:  we have for example written a Lestrade book in which the algorithms for addition and multiplication of binary numerals and the recursive algorithm for computation of Fibonacci numbers are ``proved" as a system of rewrite rules from basic algebra axioms, and quite large Fibonacci numbers can be computed as a side effect of defining them (rewrites being properly memoized).
+
+\subsection{Another enhancement:  implicit arguments}
+
+The basic declarations for the propositional connective $\wedge$ and the rule of conjunction might look like this in Lestrade:
+
+\begin{verbatim}
+
+declare p prop
+
+declare q prop
+
+construct & p q prop
+
+declare pp that p
+
+declare qq that q
+
+construct Conj p q pp qq :  that p & q
+
+\end{verbatim}
+
+An odd point here is that wherever the rule of conjunction is used, one needs (if one only has the basic functionality) to use four arguments, two of which,
+$p$ and $q$, can be deduced from the types of the others and which might be quite complicated sentences in an extended example.  A further feature of Lestrade permits the declaration of Functions (primitive or defined) with implicit arguments.  In this style, the last declaration would take the shape
+
+\begin{verbatim}
+
+construct Conj2 pp qq : that p & q
+
+\end{verbatim}
+
+The declaration functions of Lestrade identify the arguments $p$ and $q$ which are missing, and in any particular instance of {\tt Conj2}, matching will be used to determine the appropriate values of $p$ and $q$.  Lestrade can use matching to deduce (or sometimes guess) Function arguments as well as object arguments (it has some higher order matching capability).  Such deductions of implicit arguments can sometimes fail, and it is useful to declare versions of
+Functions with all arguments explicitly given for such situation (with explicitly given arguments, sort checking will always succeed if it is possible).  Implicit argument deduction using higher order matching is very useful for bearable implementation of quantifier and equality rules, for example.
+
+\subsection{A final enhancement:  user-entered terms with bound variables}
+
+It is theoretically interesting that users never need to write Function or Function sort terms with variable binding, but it is quite useful to allow this.  Function sorts can be used in commands {\tt declare} $f$ $\tau$ to declare Function variables.  The form of a Function sort term in the term language of the Lestrade Type Inspector is {\tt [x1,...,xn => tau]}, where the {\tt xi}'s are variables declared at the next move and {\tt tau} is an object term.  It is important to note that these bound occurrences of {\tt x1,...,xn} do {\em not\/} have the same reference as the variables of the same shape declared in the next move:  what they share is their sorts (with the subtlety that occurrences of $x_i$ for $i<j$ in the type of a bound $x_j$ refer to the bound $x_i$ preceding it, not to the ambient $x_i$ in the last move.  Observe that if this declaration were avoided, the variables appearing bound in the sort would actually be declared in a further move not actually opened:  these bound variables are in effect clones of variables in the current ``next move" standing in for variables notionally declared in a further move which we have avoided actually opening explicitly.
+
+Two kinds of complex Function terms are supported in addition to the atomic function terms provided in the basic functionality.  If $f$ has
+type $$((x_1,\tau_1),\ldots,(x_n,\tau_n) \Rightarrow \tau)$$ and $m<n$, the term $f(t_1,\ldots,t_m)$ represents
+$$((x_{m+1},\tau_{m+1}),\ldots,(x_n,\tau_n) \Rightarrow f(t_1,\ldots,t_m.x_{m+1},\ldots,x_n),\tau),$$ a curried term.  In the Type Inspector's term language, it is worth noting that the parentheses enclosing the argument list of a curried term are mandatory (so that the parser doesn't attempt to absorb the missing arguments from any following material).  A more general form of complex Function term is {\tt [x1,...,xn => T]}, which represents
+$((x_1,\tau_1),\ldots,(x_n,\tau_n) \Rightarrow T,\tau)$, where each $x_i$ is a variable declared at the next move (with the subtlety noted above that
+any reference to $x_j$ with $j<i$ in its type is a reference to the bound $x_j$ appearing in this term, not to the ambient $x_j$ in the next move), and $\tau$ is the sort computed by Lestrade for the object term $T$.  Again, it is interesting to note that the bound variables are actually clones of the variables $x_i$ in the next move which would have to be declared in a further move if we did not have the device of user-entered variable binding terms.
+
+\subsection{Another enhancement briefly noted:  saved moves}
+
+In the basic functionality, when a move is closed or cleared, all declarations in that move are simply discarded.  It is easy to imagine occasions on which it might be useful to reopen such declarations:  Lestrade provides the ability to save moves, so that a tree structure of saved moves with explicit names may appear in addition to the anonymous linear sequence of numbered moves in which most work is usually done.  
+
+\newpage
+
+
+\section{Automath:  semantics}
+
+
+\section{Automath:  pragmatics}
+
+\end{document}
+
+quit

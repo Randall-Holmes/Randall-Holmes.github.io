@@ -1,0 +1,5285 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\documentclass[12pt]{article}
+
+\usepackage{amssymb}
+
+\title{Implementation of Zermelo's work of 1908 in Lestrade:  Part II, Axiomatics of Zermelo set theory}
+
+\author{M. Randall Holmes}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+ 
+This document was originally titled as an essay on the proposition that mathematics is what can be done in Automath (as opposed to what can be done in ZFC, for example).  Such an essay is still in in my mind, but this particular document has transformed itself into the large project of implementing Zermelo's two important set theory papers of 1908 in Lestrade, with the further purpose of exploring the actual capabilities of Zermelo's system of 1908 as a mathematical foundation, which we think are perhaps underrated.
+
+This is a new version of this document in modules, designed to make it possible to work more efficiently without repeated execution of slow log files when they do not need to be revisited.
+
+This is the version being developed under Lestrade release 2.0, which still throws errors.
+
+\section{Basic concepts of set theory:  the axioms of extensionality and pairing}
+
+In this section, we start to declare the basic notions and axioms of 1908 Zermelo set theory.  The membership relation is declared.  The axioms declared here are existence of the empty set, weak extensionality (atoms are allowed, following Zermelo's clear intentions in the 1908 paper), and pairing.
+
+I have reedited this file to be a fairly direct implementation of Zermelo's axiomatics paper, currently just the first part discussing the axioms, but intended to include the development of theory of equivalence.  The way it was initially written was a correct implementation of the axioms, but concepts were not presented in the same order.  We will leave in the anachronistic demonstration of the basic property of the Kuratowski pair, which belongs at the same level of exposition.  I will add comments in this pass corresponding to paragraph  numbers in the Zermelo paper.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> comment load whatismath1
+
+
+   {move 1}
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> define =/= x y : ~ (x = y)
+
+[x y => ~ (x = y)] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> postulate E x y prop
+
+
+   E : [(x_1 : obj), (y_1 : obj) => 
+       (--- : prop)]
+
+
+   {move 0}
+
+   >>> postulate 0 obj
+
+
+   0 : obj
+
+
+   {move 0}
+
+   >>> postulate Empty x that ~ (x E 0)
+
+[x => that ~ (x E 0)] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define Isset x : (x = 0) V Exists \
+       [y => y E x]
+
+[x => (x = 0) V Exists [y => y E x]] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> declare u1 obj
+
+
+   u1 : obj
+
+
+   {move 1}
+
+   >>> declare v1 obj
+
+
+   v1 : obj
+
+
+   {move 1}
+
+   >>> declare nonemptyev that u1 E v1
+
+
+   nonemptyev : that u1 E v1
+
+
+   {move 1}
+
+   >>> define Inhabited nonemptyev : Fixform \
+       (Isset v1, Add2 (v1 = 0, Ei1 u1 nonemptyev))
+
+[nonemptyev => Fixform (Isset v1, Add2 (v1 = 0, Ei1 u1 nonemptyev))] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> declare z obj
+
+
+   z : obj
+
+
+   {move 1}
+
+   >>> define <<= x y : Forall [z => (z E x) -> \
+          z E y] & (Isset x) & Isset y
+
+[x y => Forall [z => (z E x) -> z E y] & (Isset x) & Isset y] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define disjoint x y : ~ Exists [z => \
+          (z E x) & z E y] & Isset x & Isset \
+       y
+
+[x y => ~ Exists [z => (z E x) & z E y] & Isset x & Isset y] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+We define the subset relation.  Note that we stipulate that it only holds between sets, which means that the atoms do not sneak into the power sets,
+and the power set of an atom is the empty set.
+
+The form of our definition of set agrees with what Zermelo says in the axiomatics paper:  it is a relation only between sets, not between the atoms which might exist. 
+
+We further define the disjointness relation between sets.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> declare z obj
+
+
+   z : obj
+
+
+   {move 1}
+
+   >>> declare subsev1 that x <<= y
+
+that x <<= y is not well-formed
+
+(paused, type something to continue) >
+
+   >>> declare subsev2 that y <<= z
+
+that y <<= z is not well-formed
+
+(paused, type something to continue) >
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare u obj
+
+
+      u : obj
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare uinev that u E x
+
+
+         uinev : that u E x
+
+
+         {move 3}
+
+         >>> define line1 uinev : Mp uinev, Ui \
+             u Simp1 subsev1
+
+[uinev => Mp uinev, Ui u Simp1 subsev1] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line2 uinev : Mp (line1 \
+             uinev, Ui u Simp1 subsev2)
+
+[uinev => Mp (line1 uinev, Ui u Simp1 subsev2)] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define linea3 u : Ded line2
+
+[u => Ded line2] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Transsub subsev1 subsev2 : Fixform \
+       (x <<= z, (Ug linea3) Conj (Simp1 \
+       Simp2 subsev1) Conj (Simp2 Simp2 subsev2))
+
+subsev1 subsev2 : Fixform (x <<= z, (Ug linea3) Conj (Simp1 Simp2 subsev1) Conj (Simp2 Simp2 subsev2)) is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+We prove the transitive property of the subset relation.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare issetx that Isset x
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare u obj
+
+
+      u : obj
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare uinev that u E x
+
+
+         uinev : that u E x
+
+
+         {move 3}
+
+         >>> define line1 uinev : uinev
+
+
+         line1 : [(uinev_1 : that u E x) => 
+             ({def} uinev_1 : that u E x)]
+
+
+         line1 : [(uinev_1 : that u E x) => 
+             (--- : that u E x)]
+
+
+         {move 2}
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define linea2 u : Ded line1
+
+[u => Ded line1] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Reflsubset issetx : Fixform \
+       (x <<= x, (Ug linea2) Conj issetx \
+       Conj issetx)
+
+issetx : Fixform (x <<= x, (Ug linea2) Conj issetx Conj issetx) is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+We prove the reflexive property of the subset relation (as a relation on sets).
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare inev that x E y
+
+
+   inev : that x E y
+
+
+   {move 1}
+
+   >>> declare subev that y <<= z
+
+that y <<= z is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define Mpsubs inev subev : Mp (inev, Ui \
+       x Simp1 subev)
+
+[inev => subev : Mp (inev, Ui x Simp1 subev)] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+This is the frequently useful rule of inference taking $x \in y$ and $y \subseteq z$ to $x \in z$.
+
+
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare X obj
+
+
+      X : obj
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare Xsetev that Isset X
+
+{declare command error}
+
+(paused, type something to continue) >
+
+         >>> open
+
+
+            {move 4}
+
+            >>> declare u obj
+
+
+            u : obj
+
+
+            {move 4}
+
+            >>> open
+
+
+               {move 5}
+
+               >>> declare uinxev that u E X
+
+
+               uinxev : that u E X
+
+
+               {move 5}
+
+               >>> define line1 uinxev : uinxev
+
+
+               line1 : [(uinxev_1 : that 
+                   u E X) => 
+                   ({def} uinxev_1 : that 
+                   u E X)]
+
+
+               line1 : [(uinxev_1 : that 
+                   u E X) => (--- : that 
+                   u E X)]
+
+
+               {move 4}
+
+               >>> close
+
+
+            {move 4}
+
+            >>> define line2 u : Ded line1
+
+[u => Ded line1] is not well-formed
+
+(paused, type something to continue) >
+
+            >>> close
+
+
+         {move 3}
+
+         >>> define line3 : Ug line2
+
+Ug line2 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line4 Xsetev : Fixform \
+             (X <<= X, line3 Conj Xsetev Conj \
+             Xsetev)
+
+Xsetev : Fixform (X <<= X, line3 Conj Xsetev Conj Xsetev) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define line5 X : Ded line4
+
+[X => Ded line4] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Subsetrefl : Ug line5
+
+Ug line5 is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+I do not know why I proved reflexivity of the subset relation again, but I am going to leave it alone for now.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> define Zeroisset : Fixform (Isset \
+       0, Add1 (Exists [x => x E 0], Refleq \
+       0))
+
+Fixform (Isset 0, Add1 (Exists [x => x E 0], Refleq 0)) is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+The empty set is a set.
+
+
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare firstev that Isset x
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> declare secondev that Isset y
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> declare thirdev that ~ (x <<= y)
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> open
+
+
+      {move 2}
+
+      >>> define linec1 : Counterexample \
+          (Notconj (thirdev, Conj firstev \
+          secondev))
+
+Counterexample (Notconj (thirdev, Conj firstev secondev)) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare z1 obj
+
+
+         z1 : obj
+
+
+         {move 3}
+
+         >>> declare u1 obj
+
+
+         u1 : obj
+
+
+         {move 3}
+
+         >>> declare evu1 that ~ ((u1 E x) -> \
+             u1 E y)
+
+{declare command error}
+
+(paused, type something to continue) >
+
+         >>> define linec2 u1 evu1 : Ei1 \
+             u1, Conj (Notimp2 evu1, Notimp1 \
+             evu1)
+
+[u1 => evu1 : Ei1 u1, Conj (Notimp2 evu1, Notimp1 evu1)] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define Subsetcounter1 : Eg linec1, linec2
+
+Eg linec1, linec2 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Subsetcounter firstev secondev \
+       thirdev : Subsetcounter1
+
+firstev secondev thirdev : Subsetcounter1 is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+I don't think I used this result, but it is nice to have it in the library (existence of witnesses to failures of inclusion).
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare setev1 that Isset x
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> declare setev2 that Isset y
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> declare extev [z => that (z E x) == \
+          (z E y)]
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> postulate Ext setev1 setev2 extev \
+       that x = y
+
+setev1 setev2 extev that x = y is not well-formed
+
+(paused, type something to continue) >
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> declare z obj
+
+
+   z : obj
+
+
+   {move 1}
+
+   >>> declare setev that z E x
+
+
+   setev : that z E x
+
+
+   {move 1}
+
+   >>> declare setev2 that z E y
+
+
+   setev2 : that z E y
+
+
+   {move 1}
+
+   >>> declare extev1 [setev => that z E y]
+
+
+   extev1 : [(setev_1 : that z E x) => 
+       (--- : that z E y)]
+
+
+   {move 1}
+
+   >>> declare extev2 [setev2 => that z E y]
+
+
+   extev2 : [(setev2_1 : that z E y) => 
+       (--- : that z E y)]
+
+
+   {move 1}
+
+   >>> postulate Ext1 setev extev1, extev2 \
+       that x = y
+
+[setev extev1, extev2 => that x = y] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+Above we have declared the membership relation $x \in y$, the empty set 0 and the axiom that it has no members, defined sets as elements and 0, and stated the weak axiom of extensionality:  sets which have the same extension are equal.
+
+The definition of ``set" (and the possibility of objects which are not sets) is clearly stated in Zermelo's axiomatics paper.
+
+The alternative formulation {\tt Ext1} is better in not involving logic primitives, which would add a little more burden to needed definitions.  I should define one of these in terms of the other.
+
+The  rule of inference {\tt Inhabited} from $x \in y$ to sethood of $y$ is often useful.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare sev1 that x <<= y
+
+that x <<= y is not well-formed
+
+(paused, type something to continue) >
+
+   >>> declare sev2 that y <<= x
+
+that y <<= x is not well-formed
+
+(paused, type something to continue) >
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare u obj
+
+
+      u : obj
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare ineva1 that u E x
+
+
+         ineva1 : that u E x
+
+
+         {move 3}
+
+         >>> declare ineva2 that u E y
+
+
+         ineva2 : that u E y
+
+
+         {move 3}
+
+         >>> define dir1 ineva1 : Mpsubs \
+             ineva1 sev1
+
+[ineva1 => Mpsubs ineva1 sev1] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define dir2 ineva2 : Mpsubs \
+             ineva2 sev2
+
+[ineva2 => Mpsubs ineva2 sev2] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define bothways u : Dediff dir1, dir2
+
+[u => Dediff dir1, dir2] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Antisymsub sev1 sev2 : Ext \
+       (Simp1 (Simp2 sev1), Simp2 (Simp2 \
+       sev1), bothways)
+
+sev1 sev2 : Ext (Simp1 (Simp2 sev1), Simp2 (Simp2 sev1), bothways) is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+We prove that the subset relation is antisymmetric (which is an alternative way in which Zermelo states extensionality).
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> declare z obj
+
+
+   z : obj
+
+
+   {move 1}
+
+   >>> postulate ; x y obj
+
+
+   ;: [(x_1 : obj), (y_1 : obj) => 
+       (--- : obj)]
+
+
+   {move 0}
+
+   >>> postulate Pair x y that Forall [z => \
+          (z E x ; y) == (z = x) V z = y]
+
+[x y => that Forall [z => (z E x ; y) == (z = x) V z = y]] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define Usc x : x ; x
+
+
+   Usc : [(x_1 : obj) => 
+       ({def} x_1 ; x_1 : obj)]
+
+
+   Usc : [(x_1 : obj) => (--- : obj)]
+
+
+   {move 0}
+
+   >>> define $ x y : (x ; x) ; (x ; y)
+
+
+   $: [(x_1 : obj), (y_1 : obj) => 
+       ({def} (x_1 ; x_1) ; x_1 ; y_1 : obj)]
+
+
+   $: [(x_1 : obj), (y_1 : obj) => 
+       (--- : obj)]
+
+
+   {move 0}
+end Lestrade execution
+\end{verbatim}
+
+Above we present the operation of unordered pairing and the axiom of pairing which determines the extension of the pair.  We write {\tt x ; y} for $\{x,y\}$.  We define
+ the singleton operation, borrowing Rosser's notation ${\tt USC}(x)$ for $\{x\}$.
+
+We define the Kuratowski ordered pair, using the notation $x \$ y$ for $(x,y)$.  This is of course a notion unknown to Zermelo, but it is a formal feature of his system even if he did not know about it.
+
+Our treatment differs from Zermelo's in treating the singleton as a special case of the unordered pair.  He treats the two as separate constructions.
+
+\section{Developments from pairing, including the properties of the ordered pair}
+
+Herein we do some development work with unordered pairs, singletons, and Kuratowski ordered pairs.  The results on Kuratowski ordered pairs are anachronistic, having nothing to do with Zermelo's development, and we do not make use  of these in implementing Zermelo's proofs;  lemmas provided about singletons and ordered pairs are used extensively, though it should be noted that strictly speaking Zermelo's well-ordering theorem proof does not actually depend on the axiom of pairing (pairs of objects taken from a set given in advance are provided by separation, and this is all that is actually needed in Zermelo's proof;  we might at some point revise the development here to highlight this fact).
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> declare inev that y E x ; x
+
+
+   inev : that y E x ; x
+
+
+   {move 1}
+
+   >>> open
+
+
+      {move 2}
+
+      >>> define line1 : Ui (y, Pair x x)
+
+Ui (y, Pair x x) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line2 : Iff1 inev line1
+
+Iff1 inev line1 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line3 : Oridem line2
+
+Oridem line2 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Inusc1 inev : line3
+
+[inev => line3] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> open
+
+
+      {move 2}
+
+      >>> define line1 : Add1 (x = x, Refleq \
+          x)
+
+Add1 (x = x, Refleq x) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line2 : Iff2 (line1, Ui \
+          (x, Pair x x))
+
+Iff2 (line1, Ui (x, Pair x x)) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Inusc2 x : line2
+
+[x => line2] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> open
+
+
+      {move 2}
+
+      >>> define scratch1 : Ui x (Pair x y)
+
+Ui x (Pair x y) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define scratch2 : Add1 (x = y, Refleq \
+          x)
+
+Add1 (x = y, Refleq x) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define scratch3 : Iff2 (scratch2, scratch1)
+
+Iff2 (scratch2, scratch1) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Inpair1 x y : scratch3
+
+[x y => scratch3] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> open
+
+
+      {move 2}
+
+      >>> define scratch1 : Ui y (Pair x y)
+
+Ui y (Pair x y) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define scratch2 : Add2 (y = x, Refleq \
+          y)
+
+Add2 (y = x, Refleq y) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define scratch3 : Iff2 scratch2 \
+          scratch1
+
+Iff2 scratch2 scratch1 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Inpair2 x y : scratch3
+
+[x y => scratch3] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare y obj
+
+
+      y : obj
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare inev1 that y E Usc x
+
+
+         inev1 : that y E Usc (x)
+
+
+         {move 3}
+
+         >>> declare inev2 that y = x
+
+that y = x is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define dir1 inev1 : Inusc1 inev1
+
+[inev1 => Inusc1 inev1] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line3 inev2 : Eqsymm \
+             inev2
+
+inev2 : Eqsymm inev2 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line4 : Fixform (x E Usc \
+             x, Inusc2 x)
+
+Fixform (x E Usc x, Inusc2 x) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> declare z1 obj
+
+
+         z1 : obj
+
+
+         {move 3}
+
+         >>> define dir2 inev2 : Subs (Eqsymm \
+             inev2, [z1 => z1 E Usc x], line4)
+
+inev2 : Subs (Eqsymm inev2, [z1 => z1 E Usc x], line4) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define inuscone : Fixform ((y E Usc \
+             x) == y = x, Dediff dir1, dir2)
+
+Fixform ((y E Usc x) == y = x, Dediff dir1, dir2) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define inuscone2 y : inuscone
+
+[y => inuscone] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define one1 : Ug inuscone2
+
+Ug inuscone2 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> declare w obj
+
+
+      w : obj
+
+
+      {move 2}
+
+      >>> declare y2 obj
+
+
+      y2 : obj
+
+
+      {move 2}
+
+      >>> define one2 : Fixform (One [w => \
+             w E Usc x], Ei (x, [w => Forall \
+             [y2 => (y2 E Usc x) == y2 = w]], one1))
+
+Fixform (One [w => w E Usc x], Ei (x, [w => Forall [y2 => (y2 E Usc x) == y2 = w]], one1)) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define one3 : Theax one2
+
+Theax one2 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define one4 : Inusc1 one3
+
+Inusc1 one3 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Theeltthm x : one2
+
+[x => one2] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define Theelt x : Fixform (The (Theeltthm \
+       x) = x, one4)
+
+[x => Fixform (The (Theeltthm x) = x, one4)] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+We prove that $y \in \{x\}$ iff $y=x$, and that $(\theta y: y \in \{x\})=x$.  This involves careful manipulations of environments and forms of statements to avoid blowup.
+
+We should also prove that if there is only one element in a set, it is the singleton of its element.
+
+In the following block, we develop the operation which sends $x$ and $\{x,y\}$ to $y$.  It is not immediately clear (except to common sense) that there
+{\em is\/} such an operation.  This might be useful for Zermelo's implementation of equivalence, later in this file.  I'm of two minds as to whether it will actually be useful, but it was an interesting exercise building the proofs and definitions.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> declare z obj
+
+
+   z : obj
+
+
+   {move 1}
+
+   >>> goal that One [z => (z E x ; y) & (z = x) == \
+          y = x]
+
+
+   {error type}
+
+
+   {move 1}
+
+   >>> goal that Forall [z => ((z E x ; y) & (z = x) == \
+          y = x) == z = y]
+
+
+   {error type}
+
+
+   {move 1}
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare z1 obj
+
+
+      z1 : obj
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare z2 obj
+
+
+         z2 : obj
+
+
+         {move 3}
+
+         >>> declare dir1 that (z1 E x ; y) & (z1 \
+             = x) == y = x
+
+that (z1 E x ; y) & (z1 = x) == y = x is not well-formed
+
+(paused, type something to continue) >
+
+         >>> declare dir2 that z1 = y
+
+that z1 = y is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line1 dir1 : Iff1 Simp1 \
+             dir1, Ui z1, Pair x y
+
+dir1 : Iff1 Simp1 dir1, Ui z1, Pair x y is not well-formed
+
+(paused, type something to continue) >
+
+         >>> open
+
+
+            {move 4}
+
+            >>> declare case1 that z1 = x
+
+that z1 = x is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line2 case1 : Iff1 \
+                case1 Simp2 dir1
+
+case1 : Iff1 case1 Simp2 dir1 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line3 case1 : Subs1 \
+                Eqsymm line2 case1 case1
+
+case1 : Subs1 Eqsymm line2 case1 case1 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> declare case2 that z1 = y
+
+that z1 = y is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line4 case2 : case2
+
+case2 : case2 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> close
+
+
+         {move 3}
+
+         >>> define line5 dir1 : Cases line1 \
+             dir1 line3, line4
+
+dir1 : Cases line1 dir1 line3, line4 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line6 : Conj Inpair2 \
+             x y, Iffrefl (y = x)
+
+Conj Inpair2 x y, Iffrefl (y = x) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line7 dir2 : Subs Eqsymm \
+             dir2 [z2 => (z2 E x ; y) & (z2 \
+                = x) == y = x] line6
+
+dir2 : Subs Eqsymm dir2 [z2 => (z2 E x ; y) & (z2 = x) == y = x] line6 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define line8 z1 : Dediff line5, line7
+
+[z1 => Dediff line5, line7] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Theother1 x y : Ug line8
+
+[x y => Ug line8] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> declare w obj
+
+
+   w : obj
+
+
+   {move 1}
+
+   >>> define Theother2 x y : Fixform One \
+       [z => ((z E x ; y) & (z = x) == \
+          y = x)], Ei y, [w => Forall [z => \
+             ((z E x ; y) & (z = x) == y = x) == \
+             z = w]], Theother1 x y
+
+[x y => Fixform One [z => ((z E x ; y) & (z = x) == y = x)], Ei y, [w => Forall [z => ((z E x ; y) & (z = x) == y = x) == z = w]], Theother1 x y] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> declare ispairev that z = x ; y
+
+that z = x ; y is not well-formed
+
+(paused, type something to continue) >
+
+   >>> declare z1 obj
+
+
+   z1 : obj
+
+
+   {move 1}
+
+   >>> define Theother x ispairev : The (Theother2 \
+       x y)
+
+[x => ispairev : The (Theother2 x y)] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> open
+
+
+      {move 2}
+
+      >>> define it : Theother x ispairev
+
+Theother x ispairev is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line9 : Fixform ((it E x ; y) & (it \
+          = x) == y = x, Theax (Theother2 \
+          x y))
+
+Fixform ((it E x ; y) & (it = x) == y = x, Theax (Theother2 x y)) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line10 : Iff1 Simp1 line9, Ui \
+          it, Pair x y
+
+Iff1 Simp1 line9, Ui it, Pair x y is not well-formed
+
+(paused, type something to continue) >
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare case1 that it = x
+
+{declare command error}
+
+(paused, type something to continue) >
+
+         >>> define line11 case1 : Iff1 case1 \
+             Simp2 line9
+
+case1 : Iff1 case1 Simp2 line9 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line12 case1 : Subs1 \
+             Eqsymm line11 case1 case1
+
+case1 : Subs1 Eqsymm line11 case1 case1 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> declare case2 that it = y
+
+{declare command error}
+
+(paused, type something to continue) >
+
+         >>> define line13 case2 : case2
+
+case2 : case2 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define line14 : Cases line10 line12, line13
+
+Cases line10 line12, line13 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Theother3 x ispairev : line14
+
+[x => ispairev : line14] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define Theother4 x y : Theother3 x Refleq \
+       (x ; y)
+
+[x y => Theother3 x Refleq (x ; y)] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+Our aim in the next blocks of code is to characterize projections of the pair.  $x$ is the unique object which belongs to all elements of $x;y$.  $y$ is the unique object which belongs to exactly one element of $x;y$.  These theorems allow us to prove that an ordered pair is determined by its projections.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare z obj
+
+
+      z : obj
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare inev that z E x $ y
+
+
+         inev : that z E x $ y
+
+
+         {move 3}
+
+         >>> open
+
+
+            {move 4}
+
+            >>> define line1 : Ui z (Pair \
+                x ; x (x ; y))
+
+Ui z (Pair x ; x (x ; y)) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line2 : Iff1 inev \
+                line1
+
+Iff1 inev line1 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> declare eqev1 that z = x ; x
+
+that z = x ; x is not well-formed
+
+(paused, type something to continue) >
+
+            >>> declare w obj
+
+
+            w : obj
+
+
+            {move 4}
+
+            >>> define dir1 eqev1 : Subs1 \
+                (Eqsymm eqev1, Inusc2 x)
+
+eqev1 : Subs1 (Eqsymm eqev1, Inusc2 x) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> declare eqev2 that z = x ; y
+
+that z = x ; y is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define dir2 eqev2 : Subs1 \
+                (Eqsymm eqev2, Inpair1 x y)
+
+eqev2 : Subs1 (Eqsymm eqev2, Inpair1 x y) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line3 : Cases line2 \
+                dir1, dir2
+
+Cases line2 dir1, dir2 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> close
+
+
+         {move 3}
+
+         >>> define scratch inev : line3
+
+[inev => line3] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define scratch2 : Ded scratch
+
+Ded scratch is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define scratch3 z : scratch2
+
+[z => scratch2] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Firstprojthm1 x y : Ug scratch3
+
+[x y => Ug scratch3] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare w obj
+
+
+      w : obj
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare z obj
+
+
+         z : obj
+
+
+         {move 3}
+
+         >>> declare firstev that Forall \
+             [z => (z E x $ y) -> w E z]
+
+{declare command error}
+
+(paused, type something to continue) >
+
+         >>> define line1 firstev : Ui (Usc \
+             x, firstev)
+
+firstev : Ui (Usc x, firstev) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line2 firstev : Fixform \
+             ((Usc x) E x $ y, Inpair1 (x ; x, x ; y))
+
+firstev : Fixform ((Usc x) E x $ y, Inpair1 (x ; x, x ; y)) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line3 firstev : Mp (line2 \
+             firstev, line1 firstev)
+
+firstev : Mp (line2 firstev, line1 firstev) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line4 firstev : Inusc1 \
+             line3 firstev
+
+firstev : Inusc1 line3 firstev is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define line5 w : Ded line4
+
+[w => Ded line4] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Firstprojthm2 x y : Ug line5
+
+[x y => Ug line5] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+At this point we have proved that $x$ belongs to all (both) elements of $(x,y)$, and that any $w$ which belongs to both elements of $(x,y)$ is actually equal to $x$.
+
+The corresponding result for $y$ will be a bit harder.  We first want to prove $(\exists! z: z \in (x,y) \wedge y \in z)$.
+Then we want to prove for any $w$ that if $(\exists! z: z \in (x,y) \wedge w \in z)$, then $w=y$.
+
+Expanding things a bit, for the first part we want to prove $(\exists z:(\forall w: w \in (x,y) \wedge y \in w) \leftrightarrow w=z)$.
+
+To be exact, this $w$ is $\{x,y\}$, so we want to prove $(\forall w: (w \in (x,y) \wedge y \in w) \leftrightarrow w = \{x,y\})$.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare w obj
+
+
+      w : obj
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare yinitinpairev that (w E x $ y) & y E w
+
+that (w E x $ y) & y E w is not well-formed
+
+(paused, type something to continue) >
+
+         >>> open
+
+
+            {move 4}
+
+            >>> define line1 : Simp1 yinitinpairev
+
+Simp1 yinitinpairev is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line2 : Ui (w, Pair \
+                (x ; x, x ; y))
+
+Ui (w, Pair (x ; x, x ; y)) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> open
+
+
+               {move 5}
+
+               >>> declare casehyp1 that \
+                   w = x ; x
+
+that w = x ; x is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define line3 casehyp1 \
+                   : Subs1 (casehyp1, Simp2 \
+                   yinitinpairev)
+
+casehyp1 : Subs1 (casehyp1, Simp2 yinitinpairev) is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define line4 casehyp1 \
+                   : Inusc1 line3 casehyp1
+
+casehyp1 : Inusc1 line3 casehyp1 is not well-formed
+
+(paused, type something to continue) >
+
+               >>> declare q obj
+
+
+               q : obj
+
+
+               {move 5}
+
+               >>> define dir1 casehyp1 : Subs \
+                   (Eqsymm line4 casehyp1, [q => \
+                      w = x ; q], casehyp1)
+
+casehyp1 : Subs (Eqsymm line4 casehyp1, [q => w = x ; q], casehyp1) is not well-formed
+
+(paused, type something to continue) >
+
+               >>> declare casehyp2 that \
+                   w = x ; y
+
+that w = x ; y is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define dir2 casehyp2 : casehyp2
+
+casehyp2 : casehyp2 is not well-formed
+
+(paused, type something to continue) >
+
+               >>> close
+
+
+            {move 4}
+
+            >>> define line5 : Iff1 line1 \
+                line2
+
+Iff1 line1 line2 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line6 : Cases line5 \
+                dir1, dir2
+
+Cases line5 dir1, dir2 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> close
+
+
+         {move 3}
+
+         >>> define Line6 yinitinpairev : line6
+
+yinitinpairev : line6 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> declare isunorderedxy that w = x ; y
+
+that w = x ; y is not well-formed
+
+(paused, type something to continue) >
+
+         >>> declare q obj
+
+
+         q : obj
+
+
+         {move 3}
+
+         >>> define Line7 isunorderedxy : Subs \
+             (Eqsymm isunorderedxy, [q => \
+                (q E x $ y) & y E q], Conj \
+             (Inpair2 (x ; x, x ; y), Inpair2 \
+             x y))
+
+isunorderedxy : Subs (Eqsymm isunorderedxy, [q => (q E x $ y) & y E q], Conj (Inpair2 (x ; x, x ; y), Inpair2 x y)) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define line8 w : Dediff Line6, Line7
+
+[w => Dediff Line6, Line7] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line9 : Ug line8
+
+Ug line8 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> declare q obj
+
+
+      q : obj
+
+
+      {move 2}
+
+      >>> define line10 : Fixform (One [q => \
+             (q E x $ y) & y E q], Ei1 (x ; y, line9))
+
+Fixform (One [q => (q E x $ y) & y E q], Ei1 (x ; y, line9)) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Secondprojthm1 x y : line10
+
+[x y => line10] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+We report that our text plan given just before the block of Lestrade code worked exactly to plan the proof.  We still have the second part, to show that for any $w$ that if $(\exists! z: z \in (x,y) \wedge w \in z)$, then $w=y$.
+
+We used environment nesting carefully to avoid declaring anything in move 0 in this block other than {\tt Secondprojthm1}.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> declare w obj
+
+
+   w : obj
+
+
+   {move 1}
+
+   >>> declare z obj
+
+
+   z : obj
+
+
+   {move 1}
+
+   >>> declare secondprojev that One [z => \
+          (z E x $ y) & w E z]
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare u obj
+
+
+      u : obj
+
+
+      {move 2}
+
+      >>> declare wev that Witnesses secondprojev \
+          u
+
+{declare command error}
+
+(paused, type something to continue) >
+
+      >>> open
+
+
+         {move 3}
+
+         >>> define fact1 : Ui (u, wev)
+
+Ui (u, wev) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define fact2 : Iff2 (Refleq \
+             u, fact1)
+
+Iff2 (Refleq u, fact1) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define fact3 : Simp1 fact2
+
+Simp1 fact2 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define fact4 : Simp2 fact2
+
+Simp2 fact2 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define fact5 : Ui u ((x ; x) Pair \
+             (x ; y))
+
+Ui u ((x ; x) Pair (x ; y)) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define fact6 : Iff1 fact3 fact5
+
+Iff1 fact3 fact5 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> open
+
+
+            {move 4}
+
+            >>> declare casehyp1 that u = x ; x
+
+that u = x ; x is not well-formed
+
+(paused, type something to continue) >
+
+            >>> declare casehyp2 that u = x ; y
+
+that u = x ; y is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line1 casehyp1 : Inusc1 \
+                (Subs1 casehyp1 fact4)
+
+casehyp1 : Inusc1 (Subs1 casehyp1 fact4) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define fact7 : Ui (x ; y, wev)
+
+Ui (x ; y, wev) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line2 casehyp1 : Subs1 \
+                (line1 casehyp1, fact7)
+
+casehyp1 : Subs1 (line1 casehyp1, fact7) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line3 casehyp1 : Subs1 \
+                (casehyp1, line2 casehyp1)
+
+casehyp1 : Subs1 (casehyp1, line2 casehyp1) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line4 casehyp1 : Iff1 \
+                (Conj (Inpair2 (x ; x, x ; y), Inpair1 \
+                (x, y)), line3 casehyp1)
+
+casehyp1 : Iff1 (Conj (Inpair2 (x ; x, x ; y), Inpair1 (x, y)), line3 casehyp1) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line5 casehyp1 : Inusc1 \
+                (Subs1 (line4 casehyp1, Inpair2 \
+                x y))
+
+casehyp1 : Inusc1 (Subs1 (line4 casehyp1, Inpair2 x y)) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line6 casehyp1 : Subs1 \
+                (Eqsymm line5 casehyp1, line1 \
+                casehyp1)
+
+casehyp1 : Subs1 (Eqsymm line5 casehyp1, line1 casehyp1) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line7 casehyp2 : (Subs1 \
+                casehyp2 fact4)
+
+casehyp2 : (Subs1 casehyp2 fact4) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line8 casehyp2 : Iff1 \
+                (line7 casehyp2, Ui w (x Pair \
+                y))
+
+casehyp2 : Iff1 (line7 casehyp2, Ui w (x Pair y)) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> open
+
+
+               {move 5}
+
+               >>> declare case1 that w = x
+
+that w = x is not well-formed
+
+(paused, type something to continue) >
+
+               >>> declare case2 that w = y
+
+that w = y is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define dir2 case2 : case2
+
+case2 : case2 is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define fact8 : Ui (x ; x, wev)
+
+Ui (x ; x, wev) is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define line9 case1 : Subs1 \
+                   (casehyp2, Subs1 (case1, fact8))
+
+case1 : Subs1 (casehyp2, Subs1 (case1, fact8)) is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define line10 case1 : Iff1 \
+                   (Conj (Inpair1 (x ; x, x ; y), Inusc2 \
+                   x), line9 case1)
+
+case1 : Iff1 (Conj (Inpair1 (x ; x, x ; y), Inusc2 x), line9 case1) is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define line11 case1 : Inusc1 \
+                   (Subs1 (Eqsymm (line10 \
+                   case1), Inpair2 x y))
+
+case1 : Inusc1 (Subs1 (Eqsymm (line10 case1), Inpair2 x y)) is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define dir1 case1 : Subs1 \
+                   (Eqsymm line11 case1, case1)
+
+case1 : Subs1 (Eqsymm line11 case1, case1) is not well-formed
+
+(paused, type something to continue) >
+
+               >>> close
+
+
+            {move 4}
+
+            >>> define line13 casehyp2 : Cases \
+                (line8 casehyp2, dir1, dir2)
+
+casehyp2 : Cases (line8 casehyp2, dir1, dir2) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> close
+
+
+         {move 3}
+
+         >>> define line14 : Cases (fact6, line6, line13)
+
+Cases (fact6, line6, line13) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define line15 u wev : line14
+
+[u => wev : line14] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line16 : Eg (secondprojev, line15)
+
+Eg (secondprojev, line15) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Secondprojthm2 x y w secondprojev \
+       : line16
+
+[x y w => secondprojev : line16] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+This completes the proof of the characterizations of first and second projections.  Now we prove that pairs are characterized exactly by their projections.  It is worth noting that
+the size of the Lestrade proof is more accurately determined if one ignores Lestrade's responses in the dialogue and considers only the input lines.  Another alternative would be to consider the size of the Lestrade terms saved at move 0.  We are currently generating this text with a setting in the prover which suppresses display of proof terms
+(and more generally of the definitions of defined terms) except at move 0.  At move 0, displayed proof terms/definitions can be quite large because all definitions at higher indexed moves are expanded out.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> declare z obj
+
+
+   z : obj
+
+
+   {move 1}
+
+   >>> declare w obj
+
+
+   w : obj
+
+
+   {move 1}
+
+   >>> declare paireqev that (x $ y) = z $ w
+
+that (x $ y) = z $ w is not well-formed
+
+(paused, type something to continue) >
+
+   >>> open
+
+
+      {move 2}
+
+      >>> define line1 : Firstprojthm1 x y
+
+Firstprojthm1 x y is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line2 : Subs1 paireqev line1
+
+Subs1 paireqev line1 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line3 : Firstprojthm2 z w
+
+Firstprojthm2 z w is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line4 : Ui x line3
+
+Ui x line3 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line5 : Mp line2 line4
+
+Mp line2 line4 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line6 : Secondprojthm1 x y
+
+Secondprojthm1 x y is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line7 : Subs1 paireqev line6
+
+Subs1 paireqev line6 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line8 : Secondprojthm2 z w y line7
+
+Secondprojthm2 z w y line7 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Pairseq paireqev : Conj (line5, line8)
+
+paireqev : Conj (line5, line8) is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+The details of the implementation of the ordered pair take up quite a lot of space but it is an important feature of the system.
+
+It is very interesting to observe that a definition of the pair local to the collection of relations from a given set to a given other set appears to be implicit in Zermelo's definition of correspondences;  I'll be explicit about this in constructions to appear below in this document, when I add them.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare s obj
+
+
+   s : obj
+
+
+   {move 1}
+
+   >>> declare t obj
+
+
+   t : obj
+
+
+   {move 1}
+
+   >>> declare u obj
+
+
+   u : obj
+
+
+   {move 1}
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare dir1 that (s ; t) <<= \
+          u
+
+that (s ; t) <<= u is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define linea1 dir1 : Conj Mp Inpair1 \
+          s t, Ui s Simp1 dir1, Mp Inpair2 \
+          s t, Ui t Simp1 dir1
+
+dir1 : Conj Mp Inpair1 s t, Ui s Simp1 dir1, Mp Inpair2 s t, Ui t Simp1 dir1 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> declare dir2 that (s E u) & t E u
+
+that (s E u) & t E u is not well-formed
+
+(paused, type something to continue) >
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare x1 obj
+
+
+         x1 : obj
+
+
+         {move 3}
+
+         >>> open
+
+
+            {move 4}
+
+            >>> declare xev1 that x1 E s ; t
+
+
+            xev1 : that x1 E s ; t
+
+
+            {move 4}
+
+            >>> define linebb2 xev1 : Iff1 \
+                xev1, Ui x1, Pair s t
+
+[xev1 => Iff1 xev1, Ui x1, Pair s t] is not well-formed
+
+(paused, type something to continue) >
+
+            >>> open
+
+
+               {move 5}
+
+               >>> declare case1 that x1 \
+                   = s
+
+that x1 = s is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define linebb3 case1 : Subs1 \
+                   (Eqsymm case1, Simp1 dir2)
+
+case1 : Subs1 (Eqsymm case1, Simp1 dir2) is not well-formed
+
+(paused, type something to continue) >
+
+               >>> declare case2 that x1 \
+                   = t
+
+that x1 = t is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define linea4 case2 : Subs1 \
+                   (Eqsymm case2, Simp2 dir2)
+
+case2 : Subs1 (Eqsymm case2, Simp2 dir2) is not well-formed
+
+(paused, type something to continue) >
+
+               >>> close
+
+
+            {move 4}
+
+            >>> define linea5 xev1 : Cases \
+                linebb2 xev1, linebb3, linea4
+
+[xev1 => Cases linebb2 xev1, linebb3, linea4] is not well-formed
+
+(paused, type something to continue) >
+
+            >>> close
+
+
+         {move 3}
+
+         >>> define linea6 x1 : Ded linea5
+
+[x1 => Ded linea5] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define linebb7 dir2 : Fixform ((s ; t) <<= \
+          u, Conj (Ug linea6, Conj (Inhabited \
+          Inpair1 s t, Inhabited Simp1 dir2)))
+
+dir2 : Fixform ((s ; t) <<= u, Conj (Ug linea6, Conj (Inhabited Inpair1 s t, Inhabited Simp1 dir2))) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Pairsubs s t u : Dediff linea1, linebb7
+
+[s t u => Dediff linea1, linebb7] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare dir1 that Usc s <<= t
+
+that Usc s <<= t is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define linea8 dir1 : Simp1 (Iff1 \
+          dir1, Pairsubs s s t)
+
+dir1 : Simp1 (Iff1 dir1, Pairsubs s s t) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> declare dir2 that s E t
+
+
+      dir2 : that s E t
+
+
+      {move 2}
+
+      >>> define linea9 dir2 : Fixform (Usc \
+          s <<= t, Iff2 (Conj dir2 dir2, Pairsubs \
+          s s t))
+
+[dir2 => Fixform (Usc s <<= t, Iff2 (Conj dir2 dir2, Pairsubs s s t))] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Uscsubs s t : Dediff linea8, linea9
+
+[s t => Dediff linea8, linea9] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define Pairinhabited s t : Ei s, [u => \
+          u E s ; t], Inpair1 s t
+
+[s t => Ei s, [u => u E s ; t], Inpair1 s t] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+This is a batch of axioms relating unordered pairs and singletons to subset which were brought to my attention by the actual Zermelo development.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare sethyp that Isset x
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare W obj
+
+
+      W : obj
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare absurdhyp that W E 0
+
+
+         absurdhyp : that W E 0
+
+
+         {move 3}
+
+         >>> define line1 absurdhyp : Giveup \
+             (W E x, Mp absurdhyp Empty W)
+
+[absurdhyp => Giveup (W E x, Mp absurdhyp Empty W)] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define lineb2 W : Ded line1
+
+[W => Ded line1] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Zeroissubset sethyp : Fixform \
+       (0 <<= x, Conj (Ug lineb2, Conj (Zeroisset, sethyp)))
+
+sethyp : Fixform (0 <<= x, Conj (Ug lineb2, Conj (Zeroisset, sethyp))) is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+The empty set is a subset of every set.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> define <=/= x y : (x <<= y) & x =/= \
+       y
+
+[x y => (x <<= y) & x =/= y] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+\section{The axiom scheme of separation}
+
+We now develop the signature axiom scheme of Zermelo set theory, which may be thought of as its solution to the ``paradoxes of naive set theory".  An arbitrary predicate of untyped objects can be converted to a set, if restricted to an already given set.
+
+Our development follows the order in the axiomatics paper.  In Zermelo's treatment, this is the third axiom, after extensionality and the axiom of elementary sets
+(empty set, singleton, and pairing).  Zermelo does assert that the object witnessing an instance of separation is a subset of the bounding set, and so a set:  we merely provide
+an additional axiom that $\{x \in A : \phi(x)\}$, from which the assertion that it is a subset of $A$ can be proved.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare A obj
+
+
+   A : obj
+
+
+   {move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare pred [x => prop]
+
+
+   pred : [(x_1 : obj) => (--- : prop)]
+
+
+   {move 1}
+
+   >>> postulate Set A pred obj
+
+
+   Set : [(A_1 : obj), (pred_1 : [(x_2 
+          : obj) => (--- : prop)]) => 
+       (--- : obj)]
+
+
+   {move 0}
+
+   >>> postulate Separation A pred that Forall \
+       [x => (x E Set A pred) == (x E A) & pred \
+          x]
+
+[A pred => that Forall [x => (x E Set A pred) == (x E A) & pred x]] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+We present the axiom of separation and the constructor implementing it.  Like the deduction theorem, this is a constructor taking constructions to objects.
+Its argument of type {\tt [x:obj => prop]} is a general predicate of objects, and may be thought of as a proper class.
+
+The fact that any property of objects however formulated generates a set when restricted to a previously given set implements Zermelo's intention.  We do not thereby automatically find ourselves in a second order theory, because we have not provided ourselves with quantifiers over proper classes.  We could declare quantifiers over proper classes easily enough, but we have not done so.  It is worth noting that in Automath (at least in later versions) quantification over any type, including function types such as the type of predicates of sets we are considering here, is automatically provided:  as soon as one axiomatizes Zermelo set theory along these lines in Automath, one has thereby axiomatized second order Zermelo set theory, which is a bit stronger.  Weakness in a logical framework can be an advantage.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> postulate Separation2 A pred that \
+       Isset (Set A pred)
+
+[A pred => that Isset (Set A pred)] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+We provide the additional axiom that $\{x \in A:\phi(x)\}$ is always a set (which is only relevant to empty extensions).  Like {\tt Scthm2}. this is implicit in Zermelo's statement of his axioms.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare sillyeq that x = Set A pred
+
+that x = Set A pred is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define Separation3 sillyeq : Separation2 \
+       A pred
+
+sillyeq : Separation2 A pred is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+This is a tricky ``theorem" which allows the deduction that $x$ is a set from the proof of $x=x$ if $x$ happens to be ultimately defined using the separation constructor, without the user needing to specify the predicate defining the set.  This is a diabolical perhaps unintended use of the implicit argument mechanism.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> define Separation4 sillyeq : Separation \
+       A pred
+
+sillyeq : Separation A pred is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+This is a tricky ``theorem" which allows the instance of separation defining $x$ to be extracted from the proof of $x=x$.  This is a diabolical perhaps unintended use of the implicit argument mechanism.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare X7 obj
+
+
+   X7 : obj
+
+
+   {move 1}
+
+   >>> declare Y7 obj
+
+
+   Y7 : obj
+
+
+   {move 1}
+
+   >>> declare Z7 obj
+
+
+   Z7 : obj
+
+
+   {move 1}
+
+   >>> declare xinyev that X7 E Y7
+
+
+   xinyev : that X7 E Y7
+
+
+   {move 1}
+
+   >>> declare pred7 [Z7 => prop]
+
+
+   pred7 : [(Z7_1 : obj) => (--- : prop)]
+
+
+   {move 1}
+
+   >>> declare univev that Forall [Z7 => \
+          (Z7 E Y7) -> pred7 Z7]
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> define Univcheat xinyev univev : Mp \
+       xinyev, Ui X7 univev
+
+[xinyev => univev : Mp xinyev, Ui X7 univev] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+This is another implicit argument trick.  From evidence for $x \in y$ and $(\forall z: z \in y \rightarrow \phi(z))$, get evidence for $\phi(x)$.  The advantage is
+that the second parameter may be a complex defined notion which is only universal when expanded:  the implicit argument mechanism handles the expansion without the user's attention being needed.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare inev7 that X7 E Set Y7, pred7
+
+
+   inev7 : that X7 E Y7 Set pred7
+
+
+   {move 1}
+
+   >>> define Separation5 inev7 : Iff1 inev7, Ui \
+       X7, Separation4 Refleq Set Y7, pred7
+
+[inev7 => Iff1 inev7, Ui X7, Separation4 Refleq Set Y7, pred7] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+This is a tricky method to get a proof of $a \in A \wedge \phi(a)$ from a proof of $a \in \{x \mid \phi(x)\}$.  The numbers attached to the various flavors of separation are arbitrary, basically in order of discovery of the need for them.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> declare z obj
+
+
+   z : obj
+
+
+   {move 1}
+
+   >>> declare Aisset that Isset A
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare X obj
+
+
+      X : obj
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare Xinev that X E (Set \
+             A pred)
+
+
+         Xinev : that X E A Set pred
+
+
+         {move 3}
+
+         >>> define line1 Xinev : Simp1 Iff1 \
+             Xinev, Ui X, Separation A pred
+
+[Xinev => Simp1 Iff1 Xinev, Ui X, Separation A pred] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define line2 X : Ded line1
+
+[X => Ded line1] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Sepsub A pred, Aisset : Fixform \
+       ((Set A pred) <<= A, Conj (Ug line2, Conj \
+       (Separation2 A pred, Aisset)))
+
+[A pred, => Aisset : Fixform ((Set A pred) <<= A, Conj (Ug line2, Conj (Separation2 A pred, Aisset)))] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+This uses the implicit argument mechanism to extract a proof that $\{x \in A:\phi(x)\}$ is a subset of $A$ (if $A$ is a set) from the proof that $\{x \in A:\phi(x)\}$ is equal to itself.
+The magic is that this works if the form used for $\{x : \phi(x)\}$ is a definition from which we do not want to extract the predicate.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare eqev that (Set A pred) = Set \
+       A pred
+
+that (Set A pred) = Set A pred is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define Sepsub2 Aisset eqev : Sepsub \
+       A pred, Aisset
+
+Aisset eqev : Sepsub A pred, Aisset is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+This uses the implicit argument mechanism to extract a proof that $\{x \in A:\phi(x)\}$ is a subset of $A$ (if $A$ is a set) from the proof that $\{x \in A:\phi(x)\}$ is equal to itself.
+The magic is that this works if the form used for $\{x : \phi(x)\}$ is a definition from which we do not want to extract the predicate.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare M obj
+
+
+   M : obj
+
+
+   {move 1}
+
+   >>> declare M1 obj
+
+
+   M1 : obj
+
+
+   {move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> define Complement M M1 : Set M [x => \
+          ~ (x E M1)]
+
+[M M1 => Set M [x => ~ (x E M1)]] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define Compax M M1 : Fixform (Forall \
+       [x => (x E Complement M M1) == (x E M) & ~ (x E M1)], Separation \
+       M [x => ~ (x E M1)])
+
+[M M1 => Fixform (Forall [x => (x E Complement M M1) == (x E M) & ~ (x E M1)], Separation M [x => ~ (x E M1)])] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+Above we implement the relative complement and its defining axiom.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> declare z obj
+
+
+   z : obj
+
+
+   {move 1}
+
+   >>> define ** x y : Set x [z => z E y]
+
+
+   **: [(x_1 : obj), (y_1 : obj) => 
+       ({def} x_1 Set [(z_2 : obj) => 
+          ({def} z_2 E y_1 : prop)] : obj)]
+
+
+   **: [(x_1 : obj), (y_1 : obj) => 
+       (--- : obj)]
+
+
+   {move 0}
+end Lestrade execution
+\end{verbatim}
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare T obj
+
+
+   T : obj
+
+
+   {move 1}
+
+   >>> declare A obj
+
+
+   A : obj
+
+
+   {move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare B obj
+
+
+   B : obj
+
+
+   {move 1}
+
+   >>> define Intersection T A : Set A [x => \
+          Forall [B => (B E T) -> x E B]]
+
+[T A => Set A [x => Forall [B => (B E T) -> x E B]]] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare inev that A E T
+
+
+      inev : that A E T
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare u obj
+
+
+         u : obj
+
+
+         {move 3}
+
+         >>> open
+
+
+            {move 4}
+
+            >>> declare hyp1 that u E Intersection \
+                T A
+
+{declare command error}
+
+(paused, type something to continue) >
+
+            >>> declare x1 obj
+
+
+            x1 : obj
+
+
+            {move 4}
+
+            >>> declare B1 obj
+
+
+            B1 : obj
+
+
+            {move 4}
+
+            >>> declare hyp2 that Forall \
+                [B1 => (B1 E T) -> u E B1]
+
+{declare command error}
+
+(paused, type something to continue) >
+
+            >>> define line1 hyp2 : Ui A hyp2
+
+hyp2 : Ui A hyp2 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line2 hyp2 : Mp inev \
+                line1 hyp2
+
+hyp2 : Mp inev line1 hyp2 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line3 hyp2 : Conj \
+                (line2 hyp2, hyp2)
+
+hyp2 : Conj (line2 hyp2, hyp2) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line4 hyp2 : Fixform \
+                (u E Intersection T A, Iff2 \
+                (line3 hyp2, Ui (u, Separation \
+                A [x1 => Forall [B1 => (B1 \
+                      E T) -> x1 E B1]])))
+
+hyp2 : Fixform (u E Intersection T A, Iff2 (line3 hyp2, Ui (u, Separation A [x1 => Forall [B1 => (B1 E T) -> x1 E B1]]))) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line5 hyp1 : Simp2 \
+                (Iff1 (hyp1, Ui (u, Separation \
+                A [x1 => Forall [B1 => (B1 \
+                      E T) -> x1 E B1]])))
+
+hyp1 : Simp2 (Iff1 (hyp1, Ui (u, Separation A [x1 => Forall [B1 => (B1 E T) -> x1 E B1]]))) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> close
+
+
+         {move 3}
+
+         >>> define bothways u : Dediff line5, line4
+
+[u => Dediff line5, line4] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define Intax1 inev : Ug bothways
+
+[inev => Ug bothways] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Intax T A : Ded Intax1
+
+[T A => Ded Intax1] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+Above we develop the set intersection operation and prove the natural symmetric form of its associated comprehension axiom (without the asymmetric special role of $A$).
+
+%%  Zermelo point 10:  
+%% Russell's argument, 
+% we can uniformly select an object in the complement of any set.
+
+The following development makes use of the reasoning in Russell's paradox to show that for every set there is some object not belonging to it.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x1 obj
+
+
+   x1 : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> define Russell x1 : Set x1 [y => \
+          ~ (y E y)]
+
+[x1 => Set x1 [y => ~ (y E y)]] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define Russellax x1 : Fixform (Forall \
+       [y => (y E Russell x1) == (y E x1) & ~ (y E y)], Separation \
+       x1 [y => ~ (y E y)])
+
+[x1 => Fixform (Forall [y => (y E Russell x1) == (y E x1) & ~ (y E y)], Separation x1 [y => ~ (y E y)])] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare x obj
+
+
+      x : obj
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare rhyp1 that (Russell \
+             x) E x
+
+{declare command error}
+
+(paused, type something to continue) >
+
+         >>> open
+
+
+            {move 4}
+
+            >>> declare rhyp2 that (Russell \
+                x) E Russell x
+
+{declare command error}
+
+(paused, type something to continue) >
+
+            >>> open
+
+
+               {move 5}
+
+               >>> declare y1 obj
+
+
+               y1 : obj
+
+
+               {move 5}
+
+               >>> define line1 : Ui (Russell \
+                   x, Russellax x)
+
+Ui (Russell x, Russellax x) is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define linea1 : Ui (Russell \
+                   x, Separation x [y1 => ~ (y1 \
+                      E y1)])
+
+Ui (Russell x, Separation x [y1 => ~ (y1 E y1)]) is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define line2 : Iff1 rhyp2 \
+                   linea1
+
+Iff1 rhyp2 linea1 is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define line3 : Simp2 line2
+
+Simp2 line2 is not well-formed
+
+(paused, type something to continue) >
+
+               >>> define line4 : Mp rhyp2 \
+                   line3
+
+Mp rhyp2 line3 is not well-formed
+
+(paused, type something to continue) >
+
+               >>> close
+
+
+            {move 4}
+
+            >>> define line5 rhyp2 : line4
+
+rhyp2 : line4 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line6 : Negintro line5
+
+Negintro line5 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line7 : Ui (Russell \
+                x, Russellax x)
+
+Ui (Russell x, Russellax x) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> declare z obj
+
+
+            z : obj
+
+
+            {move 4}
+
+            >>> define linea7 : Ui (Russell \
+                x, Separation x [z => ~ (z E z)])
+
+Ui (Russell x, Separation x [z => ~ (z E z)]) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line8 : Iff2 (Conj \
+                (rhyp1, line6), linea7)
+
+Iff2 (Conj (rhyp1, line6), linea7) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line9 : Mp line8 line6
+
+Mp line8 line6 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> close
+
+
+         {move 3}
+
+         >>> define notin rhyp1 : line9
+
+rhyp1 : line9 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define Notin1 : Negintro notin
+
+Negintro notin is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define Enotin1 : Ei1 (Russell \
+             x, Notin1)
+
+Ei1 (Russell x, Notin1) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define Notin2 x : Notin1
+
+[x => Notin1] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define Enotin x : Enotin1
+
+[x => Enotin1] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Notin x1 : Notin2 x1
+
+[x1 => Notin2 x1] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define Uenotin : Ug Enotin
+
+Ug Enotin is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+By a diagonalization similar to that in the Russell argument, we are able to uniformly select an element from the complement of each set.
+
+The use of the definitions {\tt linea1} and {\tt linea7} (which eliminate the need to define {\t Russellax}) are a test of the matching capabilities of Lestrade.  But the formulation of something like {\tt Russellax} for a defined set construction is probably a good idea.
+
+I believe I may use the constructions here to implement some of Zermelo's constructions where he speaks generally of choosing something not in a set.
+
+\section{The axioms of power set and union}
+
+In this section, we introduce the axioms of power set and union, which allow construction of more specific sets.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> declare z obj
+
+
+   z : obj
+
+
+   {move 1}
+
+   >>> postulate Sc x obj
+
+
+   Sc : [(x_1 : obj) => (--- : obj)]
+
+
+   {move 0}
+
+   >>> postulate Scthm x : that Forall [z => \
+          (z E Sc x) == z <<= x]
+
+[x => that Forall [z => (z E Sc x) == z <<= x]] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+Here is the declaration of the power set operation (for which we use a variant of Rosser's notaiton ${\tt SC}(x)$) and its main axiom.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare X obj
+
+
+      X : obj
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare Xisset that Isset X
+
+{declare command error}
+
+(paused, type something to continue) >
+
+         >>> define line1 : Ui X Subsetrefl
+
+Ui X Subsetrefl is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line2 Xisset : Xisset \
+             Mp line1
+
+Xisset : Xisset Mp line1 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line3 : Scthm X
+
+Scthm X is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line4 : Ui X line3
+
+Ui X line3 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define linea5 Xisset : line2 \
+             Xisset Iff2 line4
+
+Xisset : line2 Xisset Iff2 line4 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> declare v obj
+
+
+         v : obj
+
+
+         {move 3}
+
+         >>> define line6 Xisset : Fixform \
+             (Isset Sc X, Add2 ((Sc X) = 0, Ei \
+             (X, [v => v E (Sc X)], linea5 \
+             Xisset)))
+
+Xisset : Fixform (Isset Sc X, Add2 ((Sc X) = 0, Ei (X, [v => v E (Sc X)], linea5 Xisset))) is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define line7 X : Ded line6
+
+[X => Ded line6] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define linea7 X : Ded linea5
+
+[X => Ded linea5] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Scofsetisset : Ug line7
+
+Ug line7 is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+The power set of a set is a set.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> define Inownpowerset : Ug linea7
+
+Ug linea7 is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+Each set belongs to its own power set.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> postulate Sc2 x : that Isset Sc x
+
+[x => that Isset Sc x] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+This is an additional axiom implicit in Zermelo's treatment but natural in any case:  the power set of an atom is empty by the axioms given, but we further
+specify that it is the empty set.  The axiom is stated in the convenient general form that all power sets are sets (which is what Zermelo actually says), but the case of atoms (and the empty set itself)
+is the only case in which it is actually needed.  Careful reading of Zermelo's axiom may reveal that he says that power sets are actually sets, which would fully justify this.
+
+
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare w obj
+
+
+   w : obj
+
+
+   {move 1}
+
+   >>> postulate Union x obj
+
+
+   Union : [(x_1 : obj) => (--- : obj)]
+
+
+   {move 0}
+
+   >>> postulate Uthm x : that Forall [z => \
+          (z E Union x) == Exists [w => (z E w) & w E x]]
+
+[x => that Forall [z => (z E Union x) == Exists [w => (z E w) & w E x]]] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> postulate Uthm2 x : that Isset Union \
+       x
+
+[x => that Isset Union x] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare unioninhyp that z E Union \
+          y
+
+
+      unioninhyp : that z E Union (y)
+
+
+      {move 2}
+
+      >>> declare unionsubshyp that y <<= \
+          x
+
+that y <<= x is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line1 unioninhyp : Iff1 \
+          unioninhyp, Ui z Uthm y
+
+[unioninhyp => Iff1 unioninhyp, Ui z Uthm y] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare w1 obj
+
+
+         w1 : obj
+
+
+         {move 3}
+
+         >>> declare wev that (z E w1) & w1 \
+             E y
+
+that (z E w1) & w1 E y is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line2 wev : Mpsubs Simp2 \
+             wev unionsubshyp
+
+wev : Mpsubs Simp2 wev unionsubshyp is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line3 wev : Conj Simp1 \
+             wev line2 wev
+
+wev : Conj Simp1 wev line2 wev is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line4 wev : Ei1 w1 line3 \
+             wev
+
+wev : Ei1 w1 line3 wev is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define line5 unioninhyp unionsubshyp \
+          : Eg (line1 unioninhyp, line4)
+
+[unioninhyp => unionsubshyp : Eg (line1 unioninhyp, line4)] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line6 unioninhyp unionsubshyp \
+          : Iff2 (line5 unioninhyp unionsubshyp, Ui \
+          z Uthm x)
+
+[unioninhyp => unionsubshyp : Iff2 (line5 unioninhyp unionsubshyp, Ui z Uthm x)] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> declare uihyp that z E Union y
+
+
+   uihyp : that z E Union (y)
+
+
+   {move 1}
+
+   >>> declare ushyp that y <<= x
+
+that y <<= x is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define Unionmonotone uihyp ushyp : line6 \
+       uihyp ushyp
+
+[uihyp => ushyp : line6 uihyp ushyp] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define ++ x y : Union (x ; y)
+
+
+   ++: [(x_1 : obj), (y_1 : obj) => 
+       ({def} Union (x_1 ; y_1) : obj)]
+
+
+   ++: [(x_1 : obj), (y_1 : obj) => 
+       (--- : obj)]
+
+
+   {move 0}
+
+   >>> goal that (z E x ++ y) == (z E x) V z E y
+
+
+   that z E x ++ y
+
+
+   {move 1}
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare dir1 that z E x ++ y
+
+
+      dir1 : that z E x ++ y
+
+
+      {move 2}
+
+      >>> define linec1 dir1 : Iff1 dir1, Ui \
+          z, Uthm (x ; y)
+
+[dir1 => Iff1 dir1, Ui z, Uthm (x ; y)] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare w83 obj
+
+
+         w83 : obj
+
+
+         {move 3}
+
+         >>> declare wev83 that (z E w83) & w83 \
+             E x ; y
+
+that (z E w83) & w83 E x ; y is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define linec2 wev83 : Iff1 Simp2 \
+             wev83, Ui w83, Pair x y
+
+wev83 : Iff1 Simp2 wev83, Ui w83, Pair x y is not well-formed
+
+(paused, type something to continue) >
+
+         >>> open
+
+
+            {move 4}
+
+            >>> declare case1 that w83 = x
+
+that w83 = x is not well-formed
+
+(paused, type something to continue) >
+
+            >>> declare case2 that w83 = y
+
+that w83 = y is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define linec3 case1 : Add1 \
+                (z E y, Subs1 case1 Simp1 wev83)
+
+case1 : Add1 (z E y, Subs1 case1 Simp1 wev83) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define linec4 case2 : Add2 \
+                (z E x, Subs1 case2 Simp1 wev83)
+
+case2 : Add2 (z E x, Subs1 case2 Simp1 wev83) is not well-formed
+
+(paused, type something to continue) >
+
+            >>> close
+
+
+         {move 3}
+
+         >>> define linec5 wev83 : Cases \
+             linec2 wev83, linec3, linec4
+
+wev83 : Cases linec2 wev83, linec3, linec4 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define linec6 dir1 : Eg linec1 \
+          dir1, linec5
+
+[dir1 => Eg linec1 dir1, linec5] is not well-formed
+
+(paused, type something to continue) >
+
+      >>> declare dir2 that (z E x) V z E y
+
+that (z E x) V z E y is not well-formed
+
+(paused, type something to continue) >
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare case1 that z E x
+
+
+         case1 : that z E x
+
+
+         {move 3}
+
+         >>> declare case2 that z E y
+
+
+         case2 : that z E y
+
+
+         {move 3}
+
+         >>> define linec7 : Inpair1 x y
+
+Inpair1 x y is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define linec8 : Inpair2 x y
+
+Inpair2 x y is not well-formed
+
+(paused, type something to continue) >
+
+         >>> declare z1 obj
+
+
+         z1 : obj
+
+
+         {move 3}
+
+         >>> define linec9 case1 : Ei x, [z1 \
+                => (z E z1) & z1 E x ; y], Conj \
+             (case1, linec7)
+
+[case1 => Ei x, [z1 => (z E z1) & z1 E x ; y], Conj (case1, linec7)] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define linec10 case2 : Ei y, [z1 \
+                => (z E z1) & z1 E x ; y], Conj \
+             (case2, linec8)
+
+[case2 => Ei y, [z1 => (z E z1) & z1 E x ; y], Conj (case2, linec8)] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define linec11 dir2 : Cases dir2, linec9, linec10
+
+dir2 : Cases dir2, linec9, linec10 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define linec12 dir2 : Iff2 linec11 \
+          dir2, Ui z, Uthm (x ; y)
+
+dir2 : Iff2 linec11 dir2, Ui z, Uthm (x ; y) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Binaryunion x y z : Dediff \
+       linec6, linec12
+
+[x y z => Dediff linec6, linec12] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+
+Here we declare the set union operation and its defining theorem, and define binary union.  Various utilities need to be developed, for example the theorem
+{\tt Unionmonotone} needed in the proof below that a subset of a partition is a partition.
+
+\section{The axiom of choice}
+
+Here we state the axiom of choice in its original form:  each partition has a choice set.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> declare z obj
+
+
+   z : obj
+
+
+   {move 1}
+
+   >>> declare w obj
+
+
+   w : obj
+
+
+   {move 1}
+
+   >>> define Ispartition x : (Forall [y => \
+          (y E x) -> Exists [z => z E y]]) & Forall \
+       [y => (y E (Union x)) -> One [z => \
+             (y E z) & z E x]]
+
+[x => (Forall [y => (y E x) -> Exists [z => z E y]]) & Forall [y => (y E (Union x)) -> One [z => (y E z) & z E x]]] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare partev that Ispartition \
+          x
+
+{declare command error}
+
+(paused, type something to continue) >
+
+      >>> declare subpartev that y <<= x
+
+that y <<= x is not well-formed
+
+(paused, type something to continue) >
+
+      >>> goal that Ispartition y
+
+
+      {error type}
+
+
+      {move 2}
+
+      >>> declare x17 obj
+
+
+      x17 : obj
+
+
+      {move 2}
+
+      >>> declare z17 obj
+
+
+      z17 : obj
+
+
+      {move 2}
+
+      >>> goal that Forall [z17 => (z17 \
+             E y) -> Exists [x17 => x17 E z17]]
+
+
+      {error type}
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare z1 obj
+
+
+         z1 : obj
+
+
+         {move 3}
+
+         >>> open
+
+
+            {move 4}
+
+            >>> declare inev that z1 E y
+
+
+            inev : that z1 E y
+
+
+            {move 4}
+
+            >>> define line1 inev : Mpsubs \
+                inev, subpartev
+
+[inev => Mpsubs inev, subpartev] is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line2 inev : Mp line1 \
+                inev, Ui z1 Simp1 partev
+
+[inev => Mp line1 inev, Ui z1 Simp1 partev] is not well-formed
+
+(paused, type something to continue) >
+
+            >>> close
+
+
+         {move 3}
+
+         >>> define line3 z1 : Ded line2
+
+[z1 => Ded line2] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define line4 partev subpartev : Ug \
+          line3
+
+partev subpartev : Ug line3 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> goal that Forall [z17 => (z17 \
+             E Union y) -> One [x17 => (z17 \
+                E x17) & x17 E y]]
+
+
+      {error type}
+
+
+      {move 2}
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare z1 obj
+
+
+         z1 : obj
+
+
+         {move 3}
+
+         >>> open
+
+
+            {move 4}
+
+            >>> declare thehyp that z1 E Union \
+                y
+
+
+            thehyp : that z1 E Union (y)
+
+
+            {move 4}
+
+            >>> define line5 thehyp : Unionmonotone \
+                thehyp subpartev
+
+[thehyp => Unionmonotone thehyp subpartev] is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line6 thehyp : Mp \
+                line5 thehyp, Ui z1 Simp2 partev
+
+[thehyp => Mp line5 thehyp, Ui z1 Simp2 partev] is not well-formed
+
+(paused, type something to continue) >
+
+            >>> declare w1 obj
+
+
+            w1 : obj
+
+
+            {move 4}
+
+            >>> goal that Forall [w1 => \
+                   ((z1 E w1) & w1 E x) == \
+                   (z1 E w1) & w1 E y]
+
+
+            {error type}
+
+
+            {move 4}
+
+            >>> open
+
+
+               {move 5}
+
+               >>> declare w2 obj
+
+
+               w2 : obj
+
+
+               {move 5}
+
+               >>> open
+
+
+                  {move 6}
+
+                  >>> declare dir1 that (z1 \
+                      E w2) & w2 E x
+
+that (z1 E w2) & w2 E x is not well-formed
+
+(paused, type something to continue) >
+
+                  >>> define line7 dir1 : Simp2 \
+                      dir1
+
+dir1 : Simp2 dir1 is not well-formed
+
+(paused, type something to continue) >
+
+                  >>> define line8 dir1 : Iff1 \
+                      thehyp, Ui z1 Uthm y
+
+dir1 : Iff1 thehyp, Ui z1 Uthm y is not well-formed
+
+(paused, type something to continue) >
+
+                  >>> define line9 dir1 : Ui \
+                      z1 Simp2 partev
+
+dir1 : Ui z1 Simp2 partev is not well-formed
+
+(paused, type something to continue) >
+
+                  >>> define line10 dir1 \
+                      : Unionmonotone thehyp \
+                      subpartev
+
+dir1 : Unionmonotone thehyp subpartev is not well-formed
+
+(paused, type something to continue) >
+
+                  >>> define line11 dir1 \
+                      : Mp line10 dir1, line9 \
+                      dir1
+
+dir1 : Mp line10 dir1, line9 dir1 is not well-formed
+
+(paused, type something to continue) >
+
+                  >>> open
+
+
+                     {move 7}
+
+                     >>> declare w3 obj
+
+
+                     w3 : obj
+
+
+                     {move 7}
+
+                     >>> declare u obj
+
+
+                     u : obj
+
+
+                     {move 7}
+
+                     >>> declare whyp3 that \
+                         Forall [u => ((z1 \
+                            E u) & u E x) == \
+                            u = w3]
+
+{declare command error}
+
+(paused, type something to continue) >
+
+                     >>> define line12 whyp3 \
+                         : Iff1 dir1, Ui w2 \
+                         whyp3
+
+whyp3 : Iff1 dir1, Ui w2 whyp3 is not well-formed
+
+(paused, type something to continue) >
+
+                     >>> open
+
+
+                        {move 8}
+
+                        >>> declare w4 obj
+
+
+                        w4 : obj
+
+
+                        {move 8}
+
+                        >>> declare whyp4 \
+                            that (z1 E w4) & w4 \
+                            E y
+
+that (z1 E w4) & w4 E y is not well-formed
+
+(paused, type something to continue) >
+
+                        >>> define line13 \
+                            whyp4 : Mpsubs Simp2 \
+                            whyp4 subpartev
+
+whyp4 : Mpsubs Simp2 whyp4 subpartev is not well-formed
+
+(paused, type something to continue) >
+
+                        >>> define line14 \
+                            whyp4 : Iff1 (Conj \
+                            Simp1 whyp4 line13 \
+                            whyp4, Ui w4 whyp3)
+
+whyp4 : Iff1 (Conj Simp1 whyp4 line13 whyp4, Ui w4 whyp3) is not well-formed
+
+(paused, type something to continue) >
+
+                        >>> define line15 \
+                            whyp4 : Subs1 line14 \
+                            whyp4 Simp2 whyp4
+
+whyp4 : Subs1 line14 whyp4 Simp2 whyp4 is not well-formed
+
+(paused, type something to continue) >
+
+                        >>> define line16 \
+                            whyp4 : Subs1 (Eqsymm \
+                            line12 whyp3, line15 \
+                            whyp4)
+
+whyp4 : Subs1 (Eqsymm line12 whyp3, line15 whyp4) is not well-formed
+
+(paused, type something to continue) >
+
+                        >>> close
+
+
+                     {move 7}
+
+                     >>> define line17 whyp3 \
+                         : Eg line8 dir1 line16
+
+whyp3 : Eg line8 dir1 line16 is not well-formed
+
+(paused, type something to continue) >
+
+                     >>> close
+
+
+                  {move 6}
+
+                  >>> define line18 dir1 \
+                      : Eg line11 dir1 line17
+
+dir1 : Eg line11 dir1 line17 is not well-formed
+
+(paused, type something to continue) >
+
+                  >>> define line19 dir1 \
+                      : Conj Simp1 dir1, line18 \
+                      dir1
+
+dir1 : Conj Simp1 dir1, line18 dir1 is not well-formed
+
+(paused, type something to continue) >
+
+                  >>> declare dir2 that (z1 \
+                      E w2) & w2 E y
+
+that (z1 E w2) & w2 E y is not well-formed
+
+(paused, type something to continue) >
+
+                  >>> define line20 dir2 \
+                      : Conj (Simp1 dir2, Mpsubs \
+                      Simp2 dir2 subpartev)
+
+dir2 : Conj (Simp1 dir2, Mpsubs Simp2 dir2 subpartev) is not well-formed
+
+(paused, type something to continue) >
+
+                  >>> close
+
+
+               {move 5}
+
+               >>> define line21 w2 : Dediff \
+                   line19, line20
+
+[w2 => Dediff line19, line20] is not well-formed
+
+(paused, type something to continue) >
+
+               >>> close
+
+
+            {move 4}
+
+            >>> define line22 thehyp : Ug \
+                line21
+
+[thehyp => Ug line21] is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line23 thehyp : Onequiv \
+                line6 thehyp line22 thehyp
+
+[thehyp => Onequiv line6 thehyp line22 thehyp] is not well-formed
+
+(paused, type something to continue) >
+
+            >>> close
+
+
+         {move 3}
+
+         >>> define line24 z1 : Ded line23
+
+[z1 => Ded line23] is not well-formed
+
+(paused, type something to continue) >
+
+         >>> close
+
+
+      {move 2}
+
+      >>> define line25 partev subpartev \
+          : Ug line24
+
+partev subpartev : Ug line24 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> close
+
+
+   {move 1}
+
+   >>> declare partev2 that Ispartition x
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> declare subpartev2 that y <<= x
+
+that y <<= x is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define Subpartition partev2 subpartev2 \
+       : Fixform (Ispartition y, Conj (line4 \
+       partev2 subpartev2, line25 partev2 subpartev2))
+
+partev2 subpartev2 : Fixform (Ispartition y, Conj (line4 partev2 subpartev2, line25 partev2 subpartev2)) is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+We prove above that a subset of a partition is a partition.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> postulate Ac that Forall [x => (Ispartition \
+          x) -> Exists [y => (y <<= Union \
+             x) & Forall [z => (z E x) -> \
+                One [w => (w E y) & w E z]]]]
+
+that Forall [x => (Ispartition x) -> Exists [y => (y <<= Union x) & Forall [z => (z E x) -> One [w => (w E y) & w E z]]]] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> declare partx that Ispartition x
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> define Product partx : Set Sc (Union \
+       x) [y => Forall [z => (z E x) -> \
+             One [w => (w E y) & w E z]]]
+
+partx : Set Sc (Union x) [y => Forall [z => (z E x) -> One [w => (w E y) & w E z]]] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+Examples of use of this axiom are needed.  I should add the development of binary product.
+
+
+\section{The axiom of infinity}
+
+The axiom of infinity is introduced in the original form used by Zermelo.  0 is implemented as $\emptyset$ and the successor operation is implemented as the singleton operation.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare pred [x => prop]
+
+
+   pred : [(x_1 : obj) => (--- : prop)]
+
+
+   {move 1}
+
+   >>> define inductive pred : (Forall [x => \
+          pred x -> pred Usc x]) & pred 0
+
+[pred => (Forall [x => pred x -> pred Usc x]) & pred 0] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> postulate N obj
+
+
+   N : obj
+
+
+   {move 0}
+
+   >>> postulate Nax1 that inductive [x => \
+          x E N]
+
+that inductive [x => x E N] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> declare predindev that inductive pred
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> declare isnatev that x E N
+
+
+   isnatev : that x E N
+
+
+   {move 1}
+
+   >>> postulate Nax2 predindev isnatev : that \
+       x E N
+
+predindev isnatev : that x E N is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+Natural numbers are defined as those objects which have all inductive properties, and it is declared that the collection of natural numbers is a set (and that belonging to this set
+is an inductive property).  We cannot prove that having all inductive properties is an inductive property, because we have not equipped ourselves with second order quantification.
+
+This is not exactly the same as Zermelo's development:  he simply asserts the existence of a set ${\mathbb N}_0$ membership in which is inductive, then defines
+$\mathbb N$ as the intersection of all inductive subsets of ${\mathbb N}_0$, and shows that the latter set is uniquely determined by this procedure.  But this approach is
+equivalent, and one is asserting the existence of a definite object.
+
+Some declarations related to arithmetic and finite sets should appear here.
+
+\section{Commencing the theory of equivalence}
+
+This completes the development of the axioms of 1908 Zermelo set theory under Lestrade.  It remains to develop the theory of equivalence following the Zermelo paper.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+
+{move 1}
+
+   >>> declare x obj
+
+
+   x : obj
+
+
+   {move 1}
+
+   >>> declare y obj
+
+
+   y : obj
+
+
+   {move 1}
+
+   >>> declare z obj
+
+
+   z : obj
+
+
+   {move 1}
+
+   >>> declare A obj
+
+
+   A : obj
+
+
+   {move 1}
+
+   >>> declare B obj
+
+
+   B : obj
+
+
+   {move 1}
+
+   >>> declare disjev that A disjoint B
+
+that A disjoint B is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define product disjev : Set Sc (A ++ \
+       B) [z => Exists [x => (x E A) & Exists \
+             [y => (y E B) & z = x ; y]]]
+
+disjev : Set Sc (A ++ B) [z => Exists [x => (x E A) & Exists [y => (y E B) & z = x ; y]]] is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+Above I saved myself a little work by defining binary product independently of the infinitary product defined with AC.  The missing ingredient would be the proof of equivalence
+of disjointness of $A,B$ with $\{A,B\}$ being a partition (which would probably be good for me).
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare F obj
+
+
+   F : obj
+
+
+   {move 1}
+
+   >>> declare s obj
+
+
+   s : obj
+
+
+   {move 1}
+
+   >>> declare t obj
+
+
+   t : obj
+
+
+   {move 1}
+
+   >>> define Equivalent disjev : Exists \
+       [F => (F <<= product disjev) & Forall \
+          [s => (s E A ++ B) -> One [t => \
+                (t E F) & s E t]]]
+
+disjev : Exists [F => (F <<= product disjev) & Forall [s => (s E A ++ B) -> One [t => (t E F) & s E t]]] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> define Mapping disjev F : (F <<= \
+       product disjev) & Forall [s => (s E A ++ \
+          B) -> One [t => (t E F) & s E t]]
+
+disjev F : (F <<= product disjev) & Forall [s => (s E A ++ B) -> One [t => (t E F) & s E t]] is not well-formed
+
+(paused, type something to continue) >
+
+   >>> declare ismap that Mapping disjev \
+       F
+
+{declare command error}
+
+(paused, type something to continue) >
+
+   >>> declare c obj
+
+
+   c : obj
+
+
+   {move 1}
+
+   >>> declare d obj
+
+
+   d : obj
+
+
+   {move 1}
+
+   >>> define corresponds ismap c d : (c ; d) E F
+
+ismap c d : (c ; d) E F is not well-formed
+
+(paused, type something to continue) >
+
+   >>> declare infield that s E A ++ B
+
+
+   infield : that s E A ++ B
+
+
+   {move 1}
+
+   >>> open
+
+
+      {move 2}
+
+      >>> define line1 : Mp infield, Ui \
+          s Simp2 ismap
+
+Mp infield, Ui s Simp2 ismap is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define theimage : The line1
+
+The line1 is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define theimagefact : Fixform ((theimage \
+          E F) & s E theimage, Theax line1)
+
+Fixform ((theimage E F) & s E theimage, Theax line1) is not well-formed
+
+(paused, type something to continue) >
+
+      >>> declare u obj
+
+
+      u : obj
+
+
+      {move 2}
+
+      >>> goal that One [u => (u E theimage) & ~ (u = s)]
+
+
+      {error type}
+
+
+      {move 2}
+
+      >>> define line2 : Fixform theimage \
+          E product disjev, Mpsubs Simp1 theimagefact, Simp1 \
+          ismap
+
+Fixform theimage E product disjev, Mpsubs Simp1 theimagefact, Simp1 ismap is not well-formed
+
+(paused, type something to continue) >
+
+      >>> define line3 : Simp2 Iff1 line2, Ui \
+          theimage Separation4 Refleq product \
+          disjev
+
+Simp2 Iff1 line2, Ui theimage Separation4 Refleq product disjev is not well-formed
+
+(paused, type something to continue) >
+
+      >>> open
+
+
+         {move 3}
+
+         >>> declare u1 obj
+
+
+         u1 : obj
+
+
+         {move 3}
+
+         >>> declare witnessev1 that Witnesses \
+             line3 u1
+
+{declare command error}
+
+(paused, type something to continue) >
+
+         >>> define line4 witnessev1 : Simp1 \
+             witnessev1
+
+witnessev1 : Simp1 witnessev1 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> define line5 witnessev1 : Simp2 \
+             witnessev1
+
+witnessev1 : Simp2 witnessev1 is not well-formed
+
+(paused, type something to continue) >
+
+         >>> open
+
+
+            {move 4}
+
+            >>> declare v1 obj
+
+
+            v1 : obj
+
+
+            {move 4}
+
+            >>> declare witnessev2 that Witnesses \
+                line5 witnessev1 v1
+
+{declare command error}
+
+(paused, type something to continue) >
+
+            >>> define line6 witnessev2 : Simp1 \
+                witnessev2
+
+witnessev2 : Simp1 witnessev2 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line7 witnessev2 : Simp2 \
+                witnessev2
+
+witnessev2 : Simp2 witnessev2 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> define line8 witnessev2 : Iff1 \
+                Subs1 line7 witnessev2 Simp2 \
+                theimagefact, Ui s, Pair u1 \
+                v1
+
+witnessev2 : Iff1 Subs1 line7 witnessev2 Simp2 theimagefact, Ui s, Pair u1 v1 is not well-formed
+
+(paused, type something to continue) >
+
+            >>> open
+
+
+               {move 5}
+
+               >>> declare case1 that s = u1
+
+that s = u1 is not well-formed
+
+(paused, type something to continue) >
+
+               >>> declare u2 obj
+
+
+               u2 : obj
+
+
+               {move 5}
+
+               >>> goal that One [u2 => \
+                      (u2 E theimage) & ~ (u2 \
+                      = s)]
+
+
+               {error type}
+
+
+               {move 5}
+
+               >>> declare case2 that s = v1
+
+that s = v1 is not well-formed
+
+(paused, type something to continue) >
+
+               >>> goal that One [u2 => \
+                      (u2 E theimage) & ~ (u2 \
+                      = s)]
+
+
+               {error type}
+
+
+               {move 5}
+
+               >>> close
+
+
+            {move 4}
+
+            >>> close
+
+
+         {move 3}
+
+         >>> close
+
+
+      {move 2}
+
+      >>> close
+
+
+   {move 1}
+end Lestrade execution
+\end{verbatim}
+
+Above is Zermelo's definition of the ``immediate equivalence" of disjoint sets $A$ and $B$.  We also define the notion of a mapping from $A$ to $B$, where $A,B$ are disjoint, 
+realized as a subset $F$ of the binary product of $A$ and $B$ defined above with the property that each element of $A \cup B$ belongs to exactly one element of $F$, and the notion of correspondence of $c$ in one of the sets with a $d$ in the other set via $F$.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> define Mappings disjev : Set (Sc \
+       product disjev, Mapping (disjev))
+
+disjev : Set (Sc product disjev, Mapping (disjev)) is not well-formed
+
+(paused, type something to continue) >
+end Lestrade execution
+\end{verbatim}
+
+Here we define the set of all mappngs witnessing the equivalence of disjoint $A$ and $B$.  This set is nonempty iff $A \sim B$ holds.  Note the use of the curried abstraction
+{\tt Mapping(disjev)} as an argument.
+
+
+\end{document}
+
+(* quit *)

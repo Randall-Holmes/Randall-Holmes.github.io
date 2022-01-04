@@ -1,0 +1,1346 @@
+
+>> Inspector Lestrade says:  
+>> Welcome to the Lestrade Type Inspector,
+>>  
+>> User entered lambda terms (arguments)
+>> and function sorts (in declare)!
+>> literate programming with LaTeX comments in ML source
+>> version of  7/24/2019
+>>  12:30 pm Boise time
+
+
+comment  The treatment of logic in my style manual
+
+
+declare p prop
+
+>> p: prop {move 1}
+
+
+
+declare q prop
+
+>> q: prop {move 1}
+
+
+comment   conjunction/and
+
+
+postulate & p q:prop
+
+>> &: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+declare pp that p
+
+>> pp: that p {move 1}
+
+
+
+declare qq that q
+
+>> qq: that q {move 1}
+
+
+
+postulate Andproof p q pp qq:that p & q
+
+>> Andproof: [(p_1:prop),(q_1:prop),(pp_1:that
+>>      p_1),(qq_1:that q_1) => (---:that (p_1
+>>      & q_1))]
+>>   {move 0}
+
+
+
+declare rr that p & q
+
+>> rr: that (p & q) {move 1}
+
+
+
+postulate Andelim1 p q rr:that p
+
+>> Andelim1: [(p_1:prop),(q_1:prop),(rr_1:that
+>>      (p_1 & q_1)) => (---:that p_1)]
+>>   {move 0}
+
+
+
+postulate Andelim2 p q rr: that q
+
+>> Andelim2: [(p_1:prop),(q_1:prop),(rr_1:that
+>>      (p_1 & q_1)) => (---:that q_1)]
+>>   {move 0}
+
+
+comment implication/if...then...
+
+
+postulate -> p q:prop
+
+>> ->: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate Ded pp2:that q
+
+>>    Ded: [(pp2_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Ifproof p q Ded:that p -> q
+
+>> Ifproof: [(p_1:prop),(q_1:prop),(Ded_1:[(pp2_2:
+>>         that p_1) => (---:that q_1)])
+>>      => (---:that (p_1 -> q_1))]
+>>   {move 0}
+
+
+
+declare ss that p -> q
+
+>> ss: that (p -> q) {move 1}
+
+
+
+postulate Mp p q pp ss:that q
+
+>> Mp: [(p_1:prop),(q_1:prop),(pp_1:that p_1),
+>>      (ss_1:that (p_1 -> q_1)) => (---:that
+>>      q_1)]
+>>   {move 0}
+
+
+comment negation (not defining it this time)
+
+
+postulate ~ p:prop
+
+>> ~: [(p_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate ??:prop
+
+>> ??: prop {move 0}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate contra pp2:that ??
+
+>>    contra: [(pp2_1:that p) => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Negproof p contra:that ~p
+
+>> Negproof: [(p_1:prop),(contra_1:[(pp2_2:that
+>>         p_1) => (---:that ??)])
+>>      => (---:that ~(p_1))]
+>>   {move 0}
+
+
+
+declare tt that ~p
+
+>> tt: that ~(p) {move 1}
+
+
+
+postulate Contradiction p pp tt:that ??
+
+>> Contradiction: [(p_1:prop),(pp_1:that p_1),
+>>      (tt_1:that ~(p_1)) => (---:that ??)]
+>>   {move 0}
+
+
+
+declare absurd that ??
+
+>> absurd: that ?? {move 1}
+
+
+
+postulate Panic p absurd:that p
+
+>> Panic: [(p_1:prop),(absurd_1:that ??) =>
+>>      (---:that p_1)]
+>>   {move 0}
+
+
+
+declare maybe that ~ ~p
+
+>> maybe: that ~(~(p)) {move 1}
+
+
+
+postulate Dneg p maybe:that p
+
+>> Dneg: [(p_1:prop),(maybe_1:that ~(~(p_1)))
+>>      => (---:that p_1)]
+>>   {move 0}
+
+
+comment basic rules for disjunction
+
+
+postulate v p q:prop
+
+>> v: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate Addition1 p q pp:that p v q
+
+>> Addition1: [(p_1:prop),(q_1:prop),(pp_1:that
+>>      p_1) => (---:that (p_1 v q_1))]
+>>   {move 0}
+
+
+
+postulate Addition2 p q qq:that p v q
+
+>> Addition2: [(p_1:prop),(q_1:prop),(qq_1:that
+>>      q_1) => (---:that (p_1 v q_1))]
+>>   {move 0}
+
+
+comment prepare for proof by cases
+
+
+declare uu that p v q
+
+>> uu: that (p v q) {move 1}
+
+
+
+declare r prop
+
+>> r: prop {move 1}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate case1 pp2:that r
+
+>>    case1: [(pp2_1:that p) => (---:that r)]
+>>      {move 1}
+
+
+
+   close
+
+open
+
+   declare qq2 that q
+
+>>    qq2: that q {move 2}
+
+
+
+   postulate case2 qq2:that r
+
+>>    case2: [(qq2_1:that q) => (---:that r)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Cases p,q,uu,r,case1,case2:that \
+   r
+
+>> Cases: [(p_1:prop),(q_1:prop),(uu_1:that
+>>      (p_1 v q_1)),(r_1:prop),(case1_1:[(pp2_2:
+>>         that p_1) => (---:that r_1)]),
+>>      (case2_1:[(qq2_3:that q_1) => (---:that
+>>         r_1)])
+>>      => (---:that r_1)]
+>>   {move 0}
+
+
+comment derived rules for implication
+
+
+open
+
+   declare notq that ~q
+
+>>    notq: that ~(q) {move 2}
+
+
+
+   postulate Ded2 notq:that ~p
+
+>>    Ded2: [(notq_1:that ~(q)) => (---:that
+>>         ~(p))]
+>>      {move 1}
+
+
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   open
+
+      declare notq2 that ~q
+
+>>       notq2: that ~(q) {move 3}
+
+
+
+      define hah notq2:Contradiction p pp2, \
+         Ded2 notq2
+
+>>       hah: [(notq2_1:that ~(q)) => (---:that
+>>            ??)]
+>>         {move 2}
+
+
+
+      close
+
+   define hah2 pp2:Negproof ~q hah
+
+>>    hah2: [(pp2_1:that p) => (---:that ~(~(q)))]
+>>      {move 1}
+
+
+
+   define hah3 pp2:Dneg q hah2 pp2
+
+>>    hah3: [(pp2_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   close
+
+define Indirect p q Ded2:Ifproof p q hah3
+
+
+>> Indirect: [(p_1:prop),(q_1:prop),(Ded2_1:
+>>      [(notq_2:that ~(q_1)) => (---:that ~(p_1))])
+>>      => (Ifproof(p_1,q_1,[(pp2_3:that p_1)
+>>         => ((q_1 Dneg (~(q_1) Negproof [(notq2_4:
+>>            that ~(q_1)) => (Contradiction(p_1,
+>>            pp2_3,Ded2_1(notq2_4)):that ??)]))
+>>         :that q_1)])
+>>      :that (p_1 -> q_1))]
+>>   {move 0}
+
+
+
+declare vv that ~q
+
+>> vv: that ~(q) {move 1}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   define hmmm pp2:Mp p q pp2 ss
+
+>>    hmmm: [(pp2_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   define hmmm2 pp2:Contradiction q hmmm \
+      pp2 vv
+
+>>    hmmm2: [(pp2_1:that p) => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Mt p q ss vv:Negproof p hmmm2
+
+>> Mt: [(p_1:prop),(q_1:prop),(ss_1:that (p_1
+>>      -> q_1)),(vv_1:that ~(q_1)) => ((p_1 Negproof
+>>      [(pp2_2:that p_1) => (Contradiction(q_1,
+>>         Mp(p_1,q_1,pp2_2,ss_1),vv_1):that ??)])
+>>      :that ~(p_1))]
+>>   {move 0}
+
+
+comment derived rules for disjunction
+
+
+open
+
+   declare notq that ~q
+
+>>    notq: that ~(q) {move 2}
+
+
+
+   postulate ruleout notq:that p
+
+>>    ruleout: [(notq_1:that ~(q)) => (---:that
+>>         p)]
+>>      {move 1}
+
+
+
+   declare neither that ~(p v q)
+
+>>    neither: that ~((p v q)) {move 2}
+
+
+
+   open
+
+      declare notq2 that ~q
+
+>>       notq2: that ~(q) {move 3}
+
+
+
+      define problem notq2:Addition1 p q \
+         ruleout notq2
+
+>>       problem: [(notq2_1:that ~(q)) => (---:
+>>            that (p v q))]
+>>         {move 2}
+
+
+
+      define problem2 notq2: Contradiction \
+         p v q, problem notq2, neither
+
+>>       problem2: [(notq2_1:that ~(q)) => (---:
+>>            that ??)]
+>>         {move 2}
+
+
+
+      close
+
+   define problem3 neither:Negproof ~q, problem2
+
+
+>>    problem3: [(neither_1:that ~((p v q)))
+>>         => (---:that ~(~(q)))]
+>>      {move 1}
+
+
+
+   define problem4 neither:Dneg q problem3 \
+      neither
+
+>>    problem4: [(neither_1:that ~((p v q)))
+>>         => (---:that q)]
+>>      {move 1}
+
+
+
+   define problem5 neither: Addition2 p q \
+      problem4 neither
+
+>>    problem5: [(neither_1:that ~((p v q)))
+>>         => (---:that (p v q))]
+>>      {move 1}
+
+
+
+   define disaster neither:Contradiction \
+      p v q, problem5 neither, neither
+
+>>    disaster: [(neither_1:that ~((p v q)))
+>>         => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Orproof p q ruleout:Dneg p v q, Negproof \
+   ~(p v q), disaster
+
+>> Orproof: [(p_1:prop),(q_1:prop),(ruleout_1:
+>>      [(notq_2:that ~(q_1)) => (---:that p_1)])
+>>      => (((p_1 v q_1) Dneg (~((p_1 v q_1))
+>>      Negproof [(neither_3:that ~((p_1 v q_1)))
+>>         => (Contradiction((p_1 v q_1),Addition2(p_1,
+>>         q_1,(q_1 Dneg (~(q_1) Negproof [(notq2_4:
+>>            that ~(q_1)) => (Contradiction((p_1
+>>            v q_1),Addition1(p_1,q_1,ruleout_1(notq2_4)),
+>>            neither_3):that ??)]))
+>>         ),neither_3):that ??)]))
+>>      :that (p_1 v q_1))]
+>>   {move 0}
+
+
+comment rules of disjunctive syllogism
+
+
+declare notp that ~p
+
+>> notp: that ~(p) {move 1}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   define qfollows pp2:Panic q, Contradiction \
+      p pp2 notp
+
+>>    qfollows: [(pp2_1:that p) => (---:that
+>>         q)]
+>>      {move 1}
+
+
+
+   declare qq2 that q
+
+>>    qq2: that q {move 2}
+
+
+
+   define qfollow2 qq2:qq2
+
+>>    qfollow2: [(qq2_1:that q) => (---:that
+>>         q)]
+>>      {move 1}
+
+
+
+   close
+
+define Ds1 p q uu notp:Cases p q uu q, qfollows, \
+   qfollow2
+
+>> Ds1: [(p_1:prop),(q_1:prop),(uu_1:that (p_1
+>>      v q_1)),(notp_1:that ~(p_1)) => (Cases(p_1,
+>>      q_1,uu_1,q_1,[(pp2_2:that p_1) => ((q_1
+>>         Panic Contradiction(p_1,pp2_2,notp_1)):
+>>         that q_1)]
+>>      ,[(qq2_3:that q_1) => (qq2_3:that q_1)])
+>>      :that q_1)]
+>>   {move 0}
+
+
+
+declare notq that ~q
+
+>> notq: that ~(q) {move 1}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   define notqcase1 pp2:pp2
+
+>>    notqcase1: [(pp2_1:that p) => (---:that
+>>         p)]
+>>      {move 1}
+
+
+
+   declare qq2 that q
+
+>>    qq2: that q {move 2}
+
+
+
+   define notqcase2 qq2: Panic p, Contradiction \
+      q qq2 notq
+
+>>    notqcase2: [(qq2_1:that q) => (---:that
+>>         p)]
+>>      {move 1}
+
+
+
+   close
+
+define Ds2 p q uu notq:Cases p q uu p, notqcase1, \
+   notqcase2
+
+>> Ds2: [(p_1:prop),(q_1:prop),(uu_1:that (p_1
+>>      v q_1)),(notq_1:that ~(q_1)) => (Cases(p_1,
+>>      q_1,uu_1,p_1,[(pp2_2:that p_1) => (pp2_2:
+>>         that p_1)]
+>>      ,[(qq2_3:that q_1) => ((p_1 Panic Contradiction(q_1,
+>>         qq2_3,notq_1)):that p_1)])
+>>      :that p_1)]
+>>   {move 0}
+
+
+comment delayed Orproof2 needed
+
+
+open
+
+   declare notp2 that ~p
+
+>>    notp2: that ~(p) {move 2}
+
+
+
+   postulate ruleout2 notp2:that q
+
+>>    ruleout2: [(notp2_1:that ~(p)) => (---:
+>>         that q)]
+>>      {move 1}
+
+
+
+   declare neither that ~(p v q)
+
+>>    neither: that ~((p v q)) {move 2}
+
+
+
+   open
+
+      declare notp3 that ~p
+
+>>       notp3: that ~(p) {move 3}
+
+
+
+      define problem notp3:Addition2 p q, \
+         ruleout2 notp3
+
+>>       problem: [(notp3_1:that ~(p)) => (---:
+>>            that (p v q))]
+>>         {move 2}
+
+
+
+      define problem2 notp3:Contradiction \
+         p v q,problem notp3, neither
+
+>>       problem2: [(notp3_1:that ~(p)) => (---:
+>>            that ??)]
+>>         {move 2}
+
+
+
+      close
+
+   define problema3 neither:Dneg p, Negproof \
+      ~p problem2
+
+>>    problema3: [(neither_1:that ~((p v q)))
+>>         => (---:that p)]
+>>      {move 1}
+
+
+
+   define problema4 neither:Addition1 p q, \
+      problema3 neither
+
+>>    problema4: [(neither_1:that ~((p v q)))
+>>         => (---:that (p v q))]
+>>      {move 1}
+
+
+
+   define problema5 neither:Contradiction \
+      p v q, problema4 neither, neither
+
+>>    problema5: [(neither_1:that ~((p v q)))
+>>         => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Orproof2 p q ruleout2:Dneg p v q, \
+   Negproof ~(p v q), problema5
+
+>> Orproof2: [(p_1:prop),(q_1:prop),(ruleout2_1:
+>>      [(notp2_2:that ~(p_1)) => (---:that q_1)])
+>>      => (((p_1 v q_1) Dneg (~((p_1 v q_1))
+>>      Negproof [(neither_3:that ~((p_1 v q_1)))
+>>         => (Contradiction((p_1 v q_1),Addition1(p_1,
+>>         q_1,(p_1 Dneg (~(p_1) Negproof [(notp3_4:
+>>            that ~(p_1)) => (Contradiction((p_1
+>>            v q_1),Addition2(p_1,q_1,ruleout2_1(notp3_4)),
+>>            neither_3):that ??)]))
+>>         ),neither_3):that ??)]))
+>>      :that (p_1 v q_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare notp2 that ~p
+
+>>    notp2: that ~(p) {move 2}
+
+
+
+   define samenotp notp2:notp2
+
+>>    samenotp: [(notp2_1:that ~(p)) => (---:
+>>         that ~(p))]
+>>      {move 1}
+
+
+
+   close
+
+define Excmid p:Orproof2 p, ~p, samenotp
+
+
+>> Excmid: [(p_1:prop) => (Orproof2(p_1,~(p_1),
+>>      [(notp2_2:that ~(p_1)) => (notp2_2:that
+>>         ~(p_1))])
+>>      :that (p_1 v ~(p_1)))]
+>>   {move 0}
+
+
+comment basic declarations for type theory
+
+
+declare atype type
+
+>> atype: type {move 1}
+
+
+
+postulate setsof atype:type
+
+>> setsof: [(atype_1:type) => (---:type)]
+>>   {move 0}
+
+
+
+declare x in atype
+
+>> x: in atype {move 1}
+
+
+
+declare y in setsof atype
+
+>> y: in setsof(atype) {move 1}
+
+
+
+postulate E atype x y:prop
+
+>> E: [(atype_1:type),(x_1:in atype_1),(y_1:
+>>      in setsof(atype_1)) => (---:prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare u in atype
+
+>>    u: in atype {move 2}
+
+
+
+   postulate P u:prop
+
+>>    P: [(u_1:in atype) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate set atype P:in setsof atype
+
+>> set: [(atype_1:type),(P_1:[(u_2:in atype_1)
+>>         => (---:prop)])
+>>      => (---:in setsof(atype_1))]
+>>   {move 0}
+
+
+comment declarations for equality
+
+
+declare u in atype
+
+>> u: in atype {move 1}
+
+
+
+declare v1 in atype
+
+>> v1: in atype {move 1}
+
+
+
+postulate = atype u v1:prop
+
+>> =: [(atype_1:type),(u_1:in atype_1),(v1_1:
+>>      in atype_1) => (---:prop)]
+>>   {move 0}
+
+
+
+declare eq that = atype u v1
+
+>> eq: that =(atype,u,v1) {move 1}
+
+
+
+declare Pu that P u
+
+>> Pu: that P(u) {move 1}
+
+
+
+postulate subs atype, P, u v1 eq Pu:that \
+   P v1
+
+>> subs: [(atype_1:type),(P_1:[(u_2:in atype_1)
+>>         => (---:prop)]),
+>>      (u_1:in atype_1),(v1_1:in atype_1),(eq_1:
+>>      that =(atype_1,u_1,v1_1)),(Pu_1:that P_1(u_1))
+>>      => (---:that P_1(v1_1))]
+>>   {move 0}
+
+
+
+open
+
+   open
+
+      declare w in atype
+
+>>       w: in atype {move 3}
+
+
+
+      postulate Q, w:prop
+
+>>       Q: [(w_1:in atype) => (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   declare Qu that Q u
+
+>>    Qu: that Q(u) {move 2}
+
+
+
+   postulate Eq, Q, Qu:that Q v1
+
+>>    Eq: [(Q_1:[(w_2:in atype) => (---:prop)]),
+>>         (Qu_1:that Q_1(u)) => (---:that Q_1(v1))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Eqproof atype u v1 Eq:that = atype \
+   u v1
+
+>> Eqproof: [(atype_1:type),(u_1:in atype_1),
+>>      (v1_1:in atype_1),(Eq_1:[(Q_2:[(w_3:in
+>>            atype_1) => (---:prop)]),
+>>         (Qu_2:that Q_2(u_1)) => (---:that Q_2(v1_1))])
+>>      => (---:that =(atype_1,u_1,v1_1))]
+>>   {move 0}
+
+
+comment comprehension axiom
+
+
+postulate comp1 atype, P, u Pu:that atype \
+   E u atype set P
+
+>> comp1: [(atype_1:type),(P_1:[(u_2:in atype_1)
+>>         => (---:prop)]),
+>>      (u_1:in atype_1),(Pu_1:that P_1(u_1))
+>>      => (---:that E(atype_1,u_1,(atype_1 set
+>>      P_1)))]
+>>   {move 0}
+
+
+
+declare Pu2 that atype E u atype set P
+
+>> Pu2: that E(atype,u,(atype set P)) {move
+>>   1}
+
+
+
+postulate comp2 atype, P, u Pu2:that P u
+
+
+>> comp2: [(atype_1:type),(P_1:[(u_2:in atype_1)
+>>         => (---:prop)]),
+>>      (u_1:in atype_1),(Pu2_1:that E(atype_1,
+>>      u_1,(atype_1 set P_1))) => (---:that P_1(u_1))]
+>>   {move 0}
+
+
+comment extensionality axiom
+
+
+open
+
+   declare w in atype
+
+>>    w: in atype {move 2}
+
+
+
+   postulate Q w:prop
+
+>>    Q: [(w_1:in atype) => (---:prop)]
+>>      {move 1}
+
+
+
+   declare Pw that P w
+
+>>    Pw: that P(w) {move 2}
+
+
+
+   declare Qw that Q w
+
+>>    Qw: that Q(w) {move 2}
+
+
+
+   postulate subclass1 w Pw: that Q w
+
+>>    subclass1: [(w_1:in atype),(Pw_1:that
+>>         P(w_1)) => (---:that Q(w_1))]
+>>      {move 1}
+
+
+
+   postulate subclass2 w Qw: that P w
+
+>>    subclass2: [(w_1:in atype),(Qw_1:that
+>>         Q(w_1)) => (---:that P(w_1))]
+>>      {move 1}
+
+
+
+   close
+
+postulate ext atype, P, Q, subclass1, subclass2: \
+   that setsof atype = atype set P, atype set \
+   Q
+
+>> ext: [(atype_1:type),(P_1:[(u_2:in atype_1)
+>>         => (---:prop)]),
+>>      (Q_1:[(w_3:in atype_1) => (---:prop)]),
+>>      (subclass1_1:[(w_4:in atype_1),(Pw_4:that
+>>         P_1(w_4)) => (---:that Q_1(w_4))]),
+>>      (subclass2_1:[(w_5:in atype_1),(Qw_5:that
+>>         Q_1(w_5)) => (---:that P_1(w_5))])
+>>      => (---:that =(setsof(atype_1),(atype_1
+>>      set P_1),(atype_1 set Q_1)))]
+>>   {move 0}
+
+
+comment I believe that the quantifiers over types can now be defined.  This should be TSTU 
+
+comment The improbable seeming ambiguity axiom
+
+
+open
+
+   declare atype2 type
+
+>>    atype2: type {move 2}
+
+
+
+   postulate Tprop atype2:prop
+
+>>    Tprop: [(atype2_1:type) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate base:type
+
+>> base: type {move 0}
+
+
+
+declare aa that Tprop base
+
+>> aa: that Tprop(base) {move 1}
+
+
+
+declare bb that Tprop setsof base
+
+>> bb: that Tprop(setsof(base)) {move 1}
+
+
+
+postulate typeraise Tprop, aa:that Tprop \
+   setsof base
+
+>> typeraise: [(Tprop_1:[(atype2_2:type) =>
+>>         (---:prop)]),
+>>      (aa_1:that Tprop_1(base)) => (---:that
+>>      Tprop_1(setsof(base)))]
+>>   {move 0}
+
+
+
+postulate typelower Tprop, bb:that Tprop \
+   base
+
+>> typelower: [(Tprop_1:[(atype2_2:type) =>
+>>         (---:prop)]),
+>>      (bb_1:that Tprop_1(setsof(base))) => (---:
+>>      that Tprop_1(base))]
+>>   {move 0}
+
+
+comment I believe that NF(U) sets can now be implemented as selectors from the type base
+
+comment -- abstractions not objects!  Then provide first order quantifiers over these, 
+
+comment but not second order on pain of contradiction.   To have a type of NF sets would
+
+comment require that we restrict the domain of the setsof type postulateor.
+
+comment I think this also needs a selector from nonempty NF sets.  Is this consistent?
+
+
+define bash atype: setsof setsof setsof atype
+
+
+>> bash: [(atype_1:type) => (setsof(setsof(setsof(atype_1))):
+>>      type)]
+>>   {move 0}
+
+
+comment needed to change selectors to choose from three types up from the given type
+
+
+open
+
+   declare atype2 type
+
+>>    atype2: type {move 2}
+
+
+
+   postulate nfx1 atype2: in bash atype2
+
+
+>>    nfx1: [(atype2_1:type) => (---:in bash(atype2_1))]
+>>      {move 1}
+
+
+
+   postulate nfx2 atype2: in bash atype2
+
+
+>>    nfx2: [(atype2_1:type) => (---:in bash(atype2_1))]
+>>      {move 1}
+
+
+
+   close
+
+define nfeq nfx1, nfx2: bash base = nfx1 \
+   base nfx2 base
+
+>> nfeq: [(nfx1_1:[(atype2_2:type) => (---:in
+>>         bash(atype2_2))]),
+>>      (nfx2_1:[(atype2_3:type) => (---:in bash(atype2_3))])
+>>      => (=(bash(base),nfx1_1(base),nfx2_1(base)):
+>>      prop)]
+>>   {move 0}
+
+
+
+define nfin nfx1, nfx2: bash base E nfx1 \
+   base nfx2 setsof base
+
+>> nfin: [(nfx1_1:[(atype2_2:type) => (---:in
+>>         bash(atype2_2))]),
+>>      (nfx2_1:[(atype2_3:type) => (---:in bash(atype2_3))])
+>>      => (E(bash(base),nfx1_1(base),nfx2_1(setsof(base))):
+>>      prop)]
+>>   {move 0}
+
+
+
+open
+
+   open
+
+      declare atype3 type
+
+>>       atype3: type {move 3}
+
+
+
+      postulate nfx3 atype3: in bash atype3
+
+
+>>       nfx3: [(atype3_1:type) => (---:in bash(atype3_1))]
+>>         {move 2}
+
+
+
+      close
+
+   postulate Nfprop nfx3:prop
+
+>>    Nfprop: [(nfx3_1:[(atype3_2:type) => (---:
+>>            in bash(atype3_2))])
+>>         => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Forallnf Nfprop:prop
+
+>> Forallnf: [(Nfprop_1:[(nfx3_2:[(atype3_3:
+>>            type) => (---:in bash(atype3_3))])
+>>         => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+
+declare xxx that Forallnf Nfprop
+
+>> xxx: that Forallnf(Nfprop) {move 1}
+
+
+
+postulate Uinf nfx1, Nfprop, xxx:that Nfprop \
+   nfx1
+
+>> Uinf: [(nfx1_1:[(atype2_2:type) => (---:in
+>>         bash(atype2_2))]),
+>>      (Nfprop_1:[(nfx3_3:[(atype3_4:type) =>
+>>            (---:in bash(atype3_4))])
+>>         => (---:prop)]),
+>>      (xxx_1:that Forallnf(Nfprop_1)) => (---:
+>>      that Nfprop_1(nfx1_1))]
+>>   {move 0}
+
+
+
+open
+
+   open
+
+      declare atype3 type
+
+>>       atype3: type {move 3}
+
+
+
+      postulate nfx3 atype3:in bash atype3
+
+
+>>       nfx3: [(atype3_1:type) => (---:in bash(atype3_1))]
+>>         {move 2}
+
+
+
+      close
+
+   postulate Gen nfx3: that Nfprop nfx3
+
+>>    Gen: [(nfx3_1:[(atype3_2:type) => (---:
+>>            in bash(atype3_2))])
+>>         => (---:that Nfprop(nfx3_1))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Ugnf Nfprop, Gen:that Forallnf \
+   Nfprop
+
+>> Ugnf: [(Nfprop_1:[(nfx3_2:[(atype3_3:type)
+>>            => (---:in bash(atype3_3))])
+>>         => (---:prop)]),
+>>      (Gen_1:[(nfx3_4:[(atype3_5:type) => (---:
+>>            in bash(atype3_5))])
+>>         => (---:that Nfprop_1(nfx3_4))])
+>>      => (---:that Forallnf(Nfprop_1))]
+>>   {move 0}
+
+
+comment The selector takes a proof that nfx1 base has an element to an nfx2 which is nfin nfx1:
+
+comment tricky, since we are talking about abstractions not entities
+
+
+open
+
+   declare uuu in bash base
+
+>>    uuu: in bash(base) {move 2}
+
+
+
+   define inhabitant uuu:bash base E uuu \
+      nfx1 setsof base
+
+>>    inhabitant: [(uuu_1:in bash(base)) =>
+>>         (---:prop)]
+>>      {move 1}
+
+
+
+   define Empty uuu:??
+
+>>    Empty: [(uuu_1:in bash(base)) => (---:
+>>         prop)]
+>>      {move 1}
+
+
+
+   close
+
+declare qqq that ~(setsof bash base = bash \
+   base set Empty, bash base set inhabitant)
+
+
+>> qqq: that ~(=(setsof(bash(base)),(bash(base)
+>>   set Empty),(bash(base) set inhabitant)))
+>>   {move 1}
+
+
+
+open
+
+   open
+
+      declare atype3 type
+
+>>       atype3: type {move 3}
+
+
+
+      postulate nfx5 atype3:in bash atype3
+
+
+>>       nfx5: [(atype3_1:type) => (---:in bash(atype3_1))]
+>>         {move 2}
+
+
+
+      close
+
+   define testin nfx5:~(nfin nfx5, nfx1)
+
+
+>>    testin: [(nfx5_1:[(atype3_2:type) => (---:
+>>            in bash(atype3_2))])
+>>         => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate select nfx1, qqq:that ~(Forallnf \
+   testin)
+
+>> select: [(nfx1_1:[(atype2_2:type) => (---:
+>>         in bash(atype2_2))]),
+>>      (qqq_1:that ~(=(setsof(bash(base)),(bash(base)
+>>      set [(uuu_3:in bash(base)) => (??:prop)]),
+>>      (bash(base) set [(uuu_4:in bash(base))
+>>         => (E(bash(base),uuu_4,nfx1_1(setsof(base))):
+>>         prop)]))
+>>      )) => (---:that ~(Forallnf([(nfx5_5:[(atype3_6:
+>>            type) => (---:in bash(atype3_6))])
+>>         => (~(nfin(nfx5_5,nfx1_1)):prop)]))
+>>      )]
+>>   {move 0}
+
+
+comment A more general NF set implementation requires selectors sending
+
+comment a type to an element of any function of the type.
+
+
+>> Inspector Lestrade says:  Done reading scratch to typetheories:
+>>  type lines or type quit to exit interface
+
+quit
+
+

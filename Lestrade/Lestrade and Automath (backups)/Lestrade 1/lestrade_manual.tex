@@ -1,0 +1,1839 @@
+\documentstyle[12pt]{article}
+
+\title{The Lestrade Type Inspector -- Manual and Discussion}
+
+\author{M. Randall Holmes}
+
+\begin{document}
+
+\maketitle
+
+\noindent{\bf version:}  8/2/2019 edits reflecting later changes in Lestrade (but this is still talking about an early stage of the development of Lestrade); 4/3/2015 10:15 AM various updates
+
+\tableofcontents
+
+\section{Introduction}
+
+To begin with, the name is a bit of fun.  I am Holmes, I already have a theorem prover called Watson; my son suggested Lestrade.  I hope that I may be forgiven.
+
+The system presented here is a variant of Automath.  The most obvious difference is that the user never enters a $\lambda$-term or dependent type.  I originally thought that this represented a greater difference from Automath than it actually does.\footnote{8/2/19:  Lestrade now does support user entry of $\lambda$-terms and dependent types, and these features are very useful (though instructively rather restricted),  It is still worthy of note that use of these features can be avoided.}
+
+This file only documents the version {\tt lestrade\_basic.sml} without the new rewriting features.\footnote{This version is no longer supported or distributed.  But this is still an accurate description of the viewpoint of this old manual.}  All but one of the source files on the web page will run with the basic version.  I'm updating this file in summer 2016\footnote{and further in summer 2019} to remove anachronisms, and without trying to document the new rewriting commands.
+
+\section{Access to the software}
+
+Lestrade is contained in a Moscow ML 2.01 program {\tt lestrade.sml}.  When this has been compiled, loaded and opened, type {\tt interface <filename>}  at the ML command line to reach the Lestrade interface (a log will be recorded to {\tt <filename>.lti}.   The command {\tt readfile <file1> <file2>}, {\bf  issued at the ML command line}, will  clear the Lestrade context then execute the Lestrade commands in {\tt <file1>.lti} and log those commands and any commands the user subsequently types to {\tt <file2>.lti}.    Readfile and interface are ML functions, not Lestrade commands.  It is important to end your sessions with the Lestrade interface with {\tt quit} (starting {\tt interface} or typing {\tt quit} in the interface does not clear your declarations; only issuing a {\tt readfile} does that.)  If you crash out of the interface, the {\tt Cleanup();} command will close input and output files which otherwise might be damaged.  The {\tt versiondate();} command will tell you what version of Lestrade you have.  The {\tt setmargin <integer>} command will allow you to set the margin at which lines break in the (marginally) pretty-printed display.   The Lestrade log files with extension {\tt .lti} are readable text files; open them with a text editor.  It is very important to end an {\tt .lti} file with the line {\tt quit}!  It is also very important to close the interface with {\tt quit} before closing the ML window.
+
+\section{Commands which can be given in the Lestrade interface}
+
+The explanations of the commands are for reference; the terms used are explained in following sections.
+
+{\tt quit} ends the interface session and closes the log file.  The Lestrade context is not affected by this command .
+
+{\tt clearall} resets the Lestrade context to its original state.
+
+{\tt open}  Opens a new world with index one higher than the previous current world; this becomes the current world and the previous current world becomes the parent world.  With an argument, a saved world named by the argument may be opened.  For details, see the new paper.
+
+{\tt close}   Deletes the current world (unless it is world 1, which one cannot close).   The previously parent world becomes the new current world, and the world with index one lower becomes the new parent world.
+
+{\tt clearcurrent} deletes all declarations from the current world.  If an argument is supplied, it may introduce declarations from a saved world at that level:  for details see the new paper.
+
+{\tt showdec <ident>}  shows the type of the identifier {\tt <ident>} if it is declared.   The type will include information about the value of a defined abstraction.
+
+{\tt showall}  shows all declarations, sorted by world, most recently declared in each world at the top.
+
+{\tt showrecent} shows the declarations in the current world and the parent world.
+
+{\tt declare <ident> <type>}  declares the fresh identifier {\tt <ident>} with entity type {\tt <type>} in the current world (terminology explained below).  This declares {\tt <ident>} as primitive.
+
+{\tt postulate <ident> <arglist> : <type>}  declares the fresh identifier {\tt ident} in the parent world as a primitive abstraction of type determined by the arguments in {\tt <arglist>}, which must each
+be primitive identifiers declared in the current world (not any lower-indexed world), followed by commas if they represent abstractions [a last abstraction argument doesn't require a comma; any argument can be followed by a comma and sometimes a comma is needed before an abstraction to prevent reading it as an infix],  and must appear in the order in which they were declared, and include any primitive identifiers declared in the current world on which {\tt <type>}, an entity type, depends.   It is possible for {\tt <arglist>} to be empty:  in this case the effect of the command is to declare a variable in the parent world, a new constant from the standpoint of the current world.\footnote{The original shape of this command was {\tt construct}, changed to {\tt postulate} in 2019.  This change has been made everywhere in all Lestrade documents.}
+
+{\tt define <ident> <arglist> : <value>}  declares the fresh identifier {\tt ident} in the parent world as a defined abstraction of type determined by the arguments in {\tt <arglist>} and the computed type of {\tt <value>}.   The arguments must each
+be primitive identifiers declared in the current world (not any lower-indexed world), followed by commas if they represent abstractions [if not final; same remarks about commas after argument as under {\tt postulate}],  and must appear in the order in which they were declared, and include any primitive identifiers declared in the current world on which {\tt <value>}, an entity term, or the computed type of {\tt <value>} depends.   It is possible for {\tt <arglist>} to be empty (this is how entity definitions are given:  a zero arity abstraction identifier is always read as an entity term of the appropriate type, the null argument list being supposed supplied).
+
+\section{The input language}
+
+An identifier may contain upper case letters, lower case letters, numerals or special characters.   Any of these may appear initial to an identifier.  An upper case letter appearing in an identifier
+will be terminal or followed by a lower case letter or numeral.   A lower case letter appearing in an identifier will be terminal or followed by a lower case letter or numeral.   A numeral appearing in an identifier will be terminal or followed by a numeral.   A special character appearing in an identifier will be terminal or followed by another special character.
+
+A token is an identifier or one of the special tokens {\tt , :} (a comma or a colon) or an open or close parenthesis.
+
+A command or expression of the input language consists of tokens and spaces.  The only function of the spaces is to serve to separate tokens from one another when necessary.   The first token in a command line will of course be the command name.
+
+All declared abstractions have arity.  An entity term of the input language will either be a single identifier of entity type or an identifier of abstraction type followed by an argument list with number of items determined by the arity of the abstraction.  Notice that an abstraction identifier of zero arity is read as a full entity term by itself.   In the latest version, the parser has been upgraded to allow infix notation and also argument lists of a more usual kind.  Terms may be enclosed in parentheses.  Terms written $at_1\ldots t_n$ (in Polish notation; this is still accepted, with the freedom to put commas after arguments as desired and the positive need to place them before and after abstraction arguments) can also be written $a(t_1,\ldots,t_n)$   [argument list enclosed in parentheses and (optionally) arguments separated by commas] or $t_1 a t_2\ldots t_n$ as long as $n$ is at least 2 and $t_1$ is of entity type.   In the infix/mixfix notation, the arguments
+after the abstraction may optionally be separated by commas but cannot be enclosed in parentheses as a block (unless of course there is only one of them).   Any abstraction which occurs finally or followed by a comma, colon or close parenthesis is to be interpreted as an abstraction argument, and takes no arguments of its own (either as a prefix or infix).   Use of a comma after an abstraction argument is usually obligatory, except at the end of a term or before colons or close parentheses.  Abstractions of arity 1 bind more tightly than infixes; otherwise all precedences are equal and infix terms group to the right as in APL, except as modified by use of parentheses.  Abstraction identifiers are not displayed or read as followed by infixes.  It is important
+to note that a parenthesis immediately following an abstraction used as a prefix operator will be interpreted as enclosing the list of arguments, not as enclosing the first argument or an initial subterm of the first argument:  {\bf if you want to parenthesize the first argument in an argument list, you must also parenthesize the entire argument list}.
+
+The liberalized syntax does not apply to what appears to the left of the colon in a {\tt define} or {\tt postulate} command:  this will be a declared abstraction name followed by
+a list of identifiers optionally separated with commas (abstraction arguments in non-final position must be followed by commas and it is wise to precede them with commas as well), and the argument list will not be enclosed in parentheses.
+
+An argument list is a list of items which are either abstraction identifiers of positive arity followed by a comma [unless final] or full entity terms (which may or may not be followed by a comma).   The comma is a device
+to prevent one from reading the abstraction identifier appearing as an argument from taking following terms up as arguments of its own; in the new version a comma before an abstraction argument may also be obligatory to avoid reading it as an infix.   It is probably a good idea to separate arguments with commas if in any doubt.
+
+An entity type is one of {\tt obj}, {\tt prop}, {\tt type} by itself, or else {\tt that} or {\tt in} followed by an entity term.  An entity type is well-typed iff it is {\tt obj}, {\tt prop} or {\tt type}, or it is of the form {\tt that} $P$ where $P$ type checks with type {\tt prop}, or it is of the form
+{\tt in} $T$, where $T$ type checks as of type {\tt type}.
+
+This section gives mostly syntactical information about well formed entity terms and types; further issues of type enter into whether such terms are accepted.
+
+\section{Worlds}
+
+The Lestrade context consists of a list of worlds\footnote{What were called worlds are now called moves (comment in 2019).} indexed by natural numbers starting at 0.   Each of these is a list of declarations.   Initially, there is world 0 and world 1,
+both empty, and the {\tt clearall} command restores this state.   The initial state is also restored when the {\tt readfile} command is called from the ML interface.
+
+There are always at least two worlds.   The highest indexed world, which we will call world $i+1$, is called the current world, and world $i$ is called the parent world.
+
+The {\tt open} command creates world $i+2$ with an empty declaration list.   After this command, world $i+2$ is the current world and world $i+1$ is the parent world.
+
+The {\tt close} command deletes world $i+1$, unless $i=0$, in which case it reports an error.   World 1 cannot be closed.   All declarations in a closed world are lost.
+After this command, world $i$ is the current world and world $i-1$ is the parent world.  
+
+The {\tt clearcurrent} command empties world $i+1$ of declarations but does not close it.
+
+All items declared in any world are declared in the context and can be used in terms and types.  An item cannot be declared in more than one world.  
+
+If one thinks of these as possible worlds with variable objects in them, one should note that when abstractions are declared they actually depend only on subworlds (the primitives declared in their argument lists).   The entire context of world $i+1$ in a nontrivial proof is very likely to be an inconsistent collection of entities and abstractions; it is formally easier for the prover to
+view it as a whole, but in any particular construction one is likely to be postulating only a small part of it.
+
+One should think of objects declared in the current world as variable or arbitrary objects, of the sort which are postulated for the sake of argument.  One cannot assume that one knows anything about an object declared in the current world, except insofar as the supposed existence of an object postulated later may tell you something about it.   Abstractions that we declare using the {\tt postulate} or {\tt define} command are supposed to exist for all objects of the appropriate types (and note that these abstractions are declared in the parent world; they are not hypothetical, except relative to worlds of even lower index).   Objects in the parent world or worlds of lower index are objects to whose existence we are more firmly committed -- relatively.   When we close the current world, the parent world becomes current world to the even lower indexed new parent world.  Declaration of abstractions of arity zero has the effect of declaring genuine (relative) constants of entity type in the parent world.
+
+A new feature outlined in the new paper allows one to assign names to worlds and save them.  When a new world is opened, it can optionally be assigned a name
+(an argument to the open command).  If no argument is supplied, a world being opened as world $i+1$ gets the numeral $i+1$ as its name.  The save command takes an argument
+(if no argument is supplied, the world is saved with its current name); a world cannot be saved with its default numeral name [or not directly; this can happen as a side-effect, though].
+The effect of the save command is to change the name of the current world to the argument of the save command, then save the current world with its attached name (its actual address is the full list of names for all the worlds up to $i+1$, giving a tree structure) and save each world with index $\leq i+1$ with its current name [of course the internal index being the full list of names as indicated].  The clearcurrent command can also take the name of a saved version of the world at the current level as an argument, and load that version instead of clearing the world.  If either open or clearcurrent is issued with an argument which is not the name of an available saved world, an empty world is created with that name.  Commands {\tt foropen}
+and {\tt forclearcurrent} are provided to show lists of names of saved worlds accessible to the open or clearcurrent command in the current context.
+
+\section{Declaration commands}
+
+The command {\tt declare} $x$ $\tau$ declares $x$ in the current world with type $\tau$, if $x$ is a fresh identifier (not already declared in any world) and $\tau$ is an entity type which type checks correctly.   An identifier declared by this command is a primitive identifier.
+
+The command {\tt postulate} $x$ $t_1\ldots t_n$ : $\tau$  will first check that $x$ is a fresh identifier, that each term $t_i$ is a primitive entity identifier or a primitive abstraction identifier of positive arity followed by a comma [unless final], that all of these are declared in the current world, and that the $t_i$'s appear in the order in which they were declared [it is possible for there to be no $t_i$'s at all].  It computes types $\tau_i$ for each $t_i$.   Each primitive identifier declared in the current world on which $\tau$
+or any of the $\tau_i$'s depends must appear as one of the $t_i$'s.   This is enforced by type checking the entity type $\tau$ in an environment in which only the $t_i$'s are declared in the current world (including type checking each of the $t_i$'s themselves)  after expanding all defined abstractions appearing in $\tau$ and declared in the current world (details of this expansion discussed below).   If all these checks are passed, $x$ is declared in the parent world (not the current world!) with abstraction type $[(t_1^*,\tau_1^*),\ldots,(t_n^*,\tau_n^*)\rightarrow(${\tt ---}$,\tau^*)]$, where the star
+represents the operation of replacing each $t_i$ whereever it appears with an identifier $t_i^*$ taken from a fresh namespace unique to this type notation (achieved by affixing a numerical index).  Note that $\tau^*$ is also changed by the indicated expansion of defined notions declared in the current world.  An identifier declared by this command is a primitive identifier.
+
+The postulate command with an empty argument list simply declares a variable of the stated sort in the parent world (which must type check in the parent world).
+
+The command {\tt define} $x$ $t_1\ldots t_n$ : $D$  will first check that $x$ is a fresh identifier, that each term $t_i$ is a primitive entity identifier or a primitive abstraction identifier of positive arity followed by a comma [unless final],  that all of these are declared in the current world, and that the $t_i$'s appear in the order in which they were declared.  It computes types $\tau_i$ for each $t_i$.   Each primitive identifier declared in the current world on which the entity term $D$ or its type $\tau$
+or any of the $\tau_i$'s depends must appear as one of the $t_i$'s.   This is enforced by type checking $D$ in an environment in which only the $t_i$'s are declared in the current world (including type checking each of the $t_i$'s themselves)  after expanding all defined abstractions appearing in $D$ and in $\tau$ and declared in the current world (details of this expansion discussed below).   If all these checks are passed, $x$ is declared in the parent world (not the current world!) with abstraction type $[(t_1^*,\tau_1^*),\ldots,(t_n^*,\tau_n^*)\rightarrow (D^*,\tau^*)]$, where the star
+represents the operation of replacing each $t_i$ whereever it appears with an identifier $t_i^*$ taken from a fresh namespace unique to this type notation (achieved by affixing a numerical index).   Note that $D^*$ is also affected by the expansion of all defined abstractions declared in the current world.   An identifier declared by this command is a defined and not a primitive identifier.
+
+Execution of any of these commands will be followed by the display of the resulting type declaration, if it succeeds.   The output language of Lestrade is less parsimonious than the input language:  argument lists are delimited with parentheses and separated with commas [after the parser upgrade, the user is permitted but not required to write argument lists thus], and dependent types are displayed as shown here.  In the latest version (with the parser upgrade) all arity 2 operators are displayed as infix operators, with all parentheses shown.   We believe that bits of output language will now parse as input if they contain no anonymized variables and no lambda-terms or dependent type notations.   Further (version of 3/21/2015) the display of commands and declarations is now indented in a way determined by the number of worlds there are (the more levels of supposition we have, the more we are indented).  This should help the reader to understand the scope of identifiers.
+
+\section{Type checking and definition expansion}
+
+We have already indicated above how entity types are type checked (subject to information about how entity terms are type checked which will be given here).
+
+An undeclared identifier will trigger type check failure.
+
+An entity identifier (declared using the {\tt declare} command) will be assigned the type which has been declared for it (in any world). 
+
+An entity term $a t_1,\ldots, t_n$, where $a$ is an abstraction identifier of arity $n$ and each $t_i$ is either an entity term or an abstraction identifier of positive arity followed by a comma [unless final],
+will be typed by the following algorithm:  let $[(a_1,\alpha_1),\ldots,(a_n,\alpha_n)\rightarrow (x,\tau)]$ be the declared type of $a$ (whether the value $x$ is an entity term or {\tt ---} is immaterial).
+Let $[(t_1,\tau_1),\ldots,(t_n,\tau_n)]$ be the list of $t_i$'s with their computed types.   If $t_1$ does not match $\alpha_1$, the type check fails and the term cannot be typed.   Otherwise type check $[(t_2,\tau_2),\ldots,(t_n,\tau_n)]$ against $[(a_2,\alpha_2^*),\ldots,(a_n,\alpha_n^*)\rightarrow (x^*,\tau^*)]$, where the starring denotes the operation of replacing $a_1$ with $t_1$ throughout.  When the process terminates with matching the empty list against $[x^*,\tau^*]$, return $\tau^*$ as the type (notice that this will happen as the first step if $a$ is of arity 0).  Type matching does include expanding defined abstractions if necessary.  A term $t_i$ which is of the form (abstraction identifier followed by a comma [unless final]) is of course assigned its own abstraction type as declared (and type check fails if it is not defined).  Abstraction types match if they can be identified up to changes of name of bound variables.
+
+An entity term $a t_1,\ldots, t_n$ where $a$ is a defined abstraction with type $[(a_1,\alpha_1),\ldots,(a_n,\alpha_n)\rightarrow (D,\tau)]$  will expand out to the result of replacing
+each $a_i$ with $t_i$ in $D$.  If an abstraction identifier of positive arity appears followed by a comma [or final] in an argument list, it expands (if this is forced) to its declared type, which is in effect a $\lambda$-term.
+When a $\lambda$-term replaces a variable in applied position in a definition expansion, the obvious substitution is carried out.  Lestrade can be forced to do this (explicit $\beta$-reduction does happen).   Substitutions into $\lambda$-terms force a change of namespace of its bound variables as in the {\tt postulate} command if the substitution makes any change in the term.   These changes in namespace prevent bound variable capture.
+
+\section{Motivation}
+
+{\tt obj} is intended to represent the realm of untyped mathematical objects (if one were implementing ZFC, all one's official objects would live here).  {\tt prop} is intended to represent the realm of propositions.  {\tt type} is intended to be inhabited by sorts of typed mathematical object.  {\tt that} $P$ is intended to represent the type of proofs of (evidence for) the proposition $P$.   {\tt in} $T$ is intended to be inhabited by objects of the sort denoted by the term $T$.  It is useful to note that the type {\tt prop} and the type constructor {\tt that} have exactly the same relation to each other that {\tt type} does to {\tt in}:  the difference is entirely one of intent.  The objects of all the types considered in this paragraph are referred to as {\em entities}. \footnote{In 2019, what we here call entities are called objects, and the term entity is used to subsume all sorts discussed in Lestrade.  Note above that the word object has been used in this general sense in this text.}
+
+The other objects handled by Lestrade are the functions or abstractions declared with {\tt postulate} and {\tt define}.   Abstractions are treated with some caution by Lestrade.  The user is not allowed to type $\lambda$-terms (or dependent types) herself; these are always generated by the system.   No entity actually {\em is\/} an abstraction:  the user must always
+declare a construction (making some sort of axiomatic commitment) to involve an abstraction in the definition of an entity (a proof for example).   But Lestrade allows one to formulate and adopt such commitments quite freely:  one can for example implement quantification over abstraction types quite readily.   This is a higher order logical framework.\footnote{In 2019, what we here call functions or abstractions are instead called constructions.}
+
+The relationship between worlds is best described in this way.   The parent world and the lower indexed worlds represent objects to which one is currently committed as fixed objects.  The objects in the current world are variable or arbitrary objects, which are allowed to vary freely in their declared types.   A {\tt postulate} or {\tt define} command allows one to write
+new terms $at_1\ldots t_n$ in the current world, which vary as the $t_i$'s vary; the denotation of the identifier $a$ in the parent world is a new fixed (not varying) object obtained by abstraction from this complex variable term.
+
+Propositional and first-order logic (and higher-order logic as well) can be implemented using the Curry-Howard isomorphism.  This is best discussed along with sample declarations.   A constructive logic of course can be implemented in this way, but so can classical logic, just as it was in Automath.  It is worth noting that this system generates and maintains proof objects.
+
+There is a philosophical program behind this software.  I suggest implicitly that one can take the notion of a variable or arbitrary object seriously:  it works in this formalism.  This allows a function to be understood in an old-fashioned way as abstracted from a dependent variable expression or a rule.  A function is not an infinite table of values which can only be understood after all of its values are understood.   Similarly, a universally quantified statement is not an infinitary conjunction which can only be understood after all of its conjuncts are understood (impredicativity is not a real difficulty).  A further point is that it is strongly suggested that mathematics (even classical impredicative two-valued mathematics) can be done in a way which does not involve postulation of completed infinities, with the support of the device of variable objects.
+
+\section{Some Remarks}
+
+Some things seem be be done with mirrors in Lestrade.   
+
+The type declaration dependence of postulated and defined notions is checked only once, when they are declared.   This is done by first expanding all defined notions declared in the current world in the type and/or definition of the proposed abstraction [because the type and definition to be recorded for the proposed abstraction will be placed in the parent world, and cannot depend on information which will disappear if the current world is closed], then temporarily cutting down the current world to the argument list of the proposed
+abstraction and type checking the curtailed current world itself, and the type and/or definition of the proposed object.   The type checker will then detect any dependencies that were not taken into account in the argument list by finding undeclared identifiers.  The necessary dependence relations between items in the parameter list are enforced magically by requiring that parameters to the proposed abstraction appear in the order in which they were originally declared.
+
+There is no need to parse or type check $\lambda$-terms or dependent types in Lestrade, because the user never enters such a term and such terms are known to be soundly typed (mod bugs in the type checker) because they were constructed by Lestrade itself.   This is why the definition expansion function does not need to have type
+checking as it goes.
+
+It may seem odd that $\lambda$-terms are treated in effect as subtypes of dependent types, but this is very convenient structurally and it appears that I am making no logical assumptions of any particular moment by doing so.
+
+There are some cautions about the parser.   Arguments to abstractions can always be separated by commas (and perhaps this should be universally required, but so far I have not done it).  However, abstractions of positive arity  may have to be followed by commas to avoid capturing terms after them as arguments, and preceded by commas if they have arity greater than one to avoid being read as infixes and capturing preceding terms.   Terms and argument lists may be enclosed in parentheses; note a particular hazard, which is that if one encloses a first argument in an argument list of length greater than one in parentheses one must enclose the entire argument list in parentheses as well; the parser reads a parenthesis immediately following an 
+abstraction as opening an argument list, not a term.   This is not the case for parentheses following an abstraction being used as an infix or mixfix operator.  Notice that the display functions will always present an abstraction of arity 2 as an infix operator [unless the first argument supplied to it is an abstraction], although the user is free to enter it as a prefix operator.  Note that the left side of a {\tt postulate} or {\tt define} command is always written in prefix order (and never with parentheses around the parameters).   Parameters like arguments to any abstraction can be comma separated, and commas will be necessary after abstractions with positive arity and before abstractions with arity greater than one.    {\bf The parser and display functions do not allow an abstraction whose first argument is itself an abstraction to be read or displayed as infix or mixfix.}
+
+The display of both commands and Lestrade output (other than error messages) on the console and in log files is indented in a way which indicates the depth of the current world.   This should be useful in determining the structure of arguments and the scope of identifiers.
+
+The nomenclature ``current world" and ``parent world" for world $i+1$ and world $i$ may need to be revisited.   The objects and abstractions to which one is currently committed are in the parent world; objects in the current world are hypothetical objects allowed to vary freely.
+
+\section{Possible further features}
+
+I would like to have the ability to save a closed world with the possibility of opening it again.   This does seem to require modifying its namespace to avoid collision with anything that is
+declared in the interim, or of course searching saved worlds when checking identifier freshness as well as the accessible worlds.  Note that this is now implemented.
+
+I would like to support program execution.   The most natural way to do this would seem to be to allow declaration of rewrite rules to be applied when definitions are being expanded
+or type matches are being checked.  The kinds of proofs which allow rewrites are easily recognized (actually, this was a bit tricky).  This is now implemented, but see the new paper.
+
+\section{Some sample log files}
+
+I provide some samples of Lestrade interactions.  These are sample executable log files.  They were run under old versions of Lestrade; I do not plan to redo them for this document.
+
+
+
+\subsection{Russell's paradox}
+
+Russell's paradox.   The point here is that one cannot have the constructions {\tt comp} and {\tt comp2} which implement unrestricted comprehension.  This file
+contains its own definitions of basic propositional logic notions in an older style than the following section of logic declarations.
+
+\begin{verbatim}Lestrade execution:
+
+clearcurrent
+
+
+open
+
+   declare x obj
+
+>>    x: obj {move 2}
+
+
+
+   postulate P x:prop
+
+>>    P: [(x_1:obj) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate set P:obj
+
+>> set: [(P_1:[(x_2:obj) => (---:prop)])
+>>      => (---:obj)]
+>>   {move 0}
+
+
+
+declare x obj
+
+>> x: obj {move 1}
+
+
+
+declare y obj
+
+>> y: obj {move 1}
+
+
+
+postulate E x y:prop
+
+>> E: [(x_1:obj),(y_1:obj) => (---:prop)]
+>>   {move 0}
+
+
+
+declare x1 that P x
+
+>> x1: that P(x) {move 1}
+
+
+
+postulate comp P, x x1:that E x set P
+
+>> comp: [(P_1:[(x_2:obj) => (---:prop)]),
+>>      (x_1:obj),(x1_1:that P_1(x_1)) => (---:
+>>      that (x_1 E set(P_1)))]
+>>   {move 0}
+
+
+
+declare x2 that E x set P
+
+>> x2: that (x E set(P)) {move 1}
+
+
+
+postulate comp2 P, x x2: that P x
+
+>> comp2: [(P_1:[(x_2:obj) => (---:prop)]),
+>>      (x_1:obj),(x2_1:that (x_1 E set(P_1)))
+>>      => (---:that P_1(x_1))]
+>>   {move 0}
+
+
+
+declare p prop
+
+>> p: prop {move 1}
+
+
+
+declare q prop
+
+>> q: prop {move 1}
+
+
+
+postulate If p q:prop
+
+>> If: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate False:prop
+
+>> False: prop {move 0}
+
+
+
+declare pp that p
+
+>> pp: that p {move 1}
+
+
+
+declare rr that If p q
+
+>> rr: that (p If q) {move 1}
+
+
+
+postulate Mp p q pp rr:that q
+
+>> Mp: [(p_1:prop),(q_1:prop),(pp_1:that p_1),
+>>      (rr_1:that (p_1 If q_1)) => (---:that
+>>      q_1)]
+>>   {move 0}
+
+
+
+declare absurd that False
+
+>> absurd: that False {move 1}
+
+
+
+postulate Panic p absurd: that p
+
+>> Panic: [(p_1:prop),(absurd_1:that False)
+>>      => (---:that p_1)]
+>>   {move 0}
+
+
+
+define Not p:If p False
+
+>> Not: [(p_1:prop) => ((p_1 If False):prop)]
+>>   {move 0}
+
+
+
+define Russell x:Not E x x
+
+>> Russell: [(x_1:obj) => (Not((x_1 E x_1)):
+>>      prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate Ded pp2:that q
+
+>>    Ded: [(pp2_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Ifproof p q Ded:that If p q
+
+>> Ifproof: [(p_1:prop),(q_1:prop),(Ded_1:[(pp2_2:
+>>         that p_1) => (---:that q_1)])
+>>      => (---:that (p_1 If q_1))]
+>>   {move 0}
+
+
+
+open
+
+   define R: set Russell
+
+>>    R: [(---:obj)]
+>>      {move 1}
+
+
+
+   declare R1 that E set Russell, set Russell
+
+
+>>    R1: that (set(Russell) E set(Russell))
+>>      {move 2}
+
+
+
+   define R2 R1:comp2 Russell, set Russell, \
+      R1
+
+>>    R2: [(R1_1:that (set(Russell) E set(Russell)))
+>>         => (---:that Russell(set(Russell)))]
+>>      {move 1}
+
+
+
+   define R3 R1:Mp E set Russell, set Russell, \
+      False R1 R2 R1
+
+>>    R3: [(R1_1:that (set(Russell) E set(Russell)))
+>>         => (---:that False)]
+>>      {move 1}
+
+
+
+   close
+
+define R4:Ifproof E set Russell, set Russell, \
+   False R3
+
+>> R4: [(Ifproof((set(Russell) E set(Russell)),
+>>      False,[(R1_1:that (set(Russell) E set(Russell)))
+>>         => (Mp((set(Russell) E set(Russell)),
+>>         False,R1_1,comp2(Russell,set(Russell),
+>>         R1_1)):that False)])
+>>      :that ((set(Russell) E set(Russell)) If
+>>      False))]
+>>   {move 0}
+
+
+
+define R5:comp Russell, set Russell, R4
+
+>> R5: [(comp(Russell,set(Russell),R4):that
+>>      (set(Russell) E set(Russell)))]
+>>   {move 0}
+
+
+
+define R6: Mp E set Russell, set Russell, \
+   False R5 R4
+
+>> R6: [(Mp((set(Russell) E set(Russell)),False,
+>>      R5,R4):that False)]
+>>   {move 0}
+
+
+\end{verbatim}
+
+\subsection{Logic declarations and proofs}
+
+This file contains all the declarations of primitive concepts and rules and definitions of derived rules from my manual of logical style for students.
+
+\begin{verbatim}Lestrade execution:
+
+clearall
+comment  The treatment of logic in my style manual
+
+
+declare p prop
+
+>> p: prop {move 1}
+
+
+
+declare q prop
+
+>> q: prop {move 1}
+
+
+comment   conjunction/and
+
+
+postulate & p q:prop
+
+>> &: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+declare pp that p
+
+>> pp: that p {move 1}
+
+
+
+declare qq that q
+
+>> qq: that q {move 1}
+
+
+
+postulate Andproof p q pp qq:that p & q
+
+>> Andproof: [(p_1:prop),(q_1:prop),(pp_1:that
+>>      p_1),(qq_1:that q_1) => (---:that (p_1
+>>      & q_1))]
+>>   {move 0}
+
+
+
+declare rr that p & q
+
+>> rr: that (p & q) {move 1}
+
+
+
+postulate Andelim1 p q rr:that p
+
+>> Andelim1: [(p_1:prop),(q_1:prop),(rr_1:that
+>>      (p_1 & q_1)) => (---:that p_1)]
+>>   {move 0}
+
+
+
+postulate Andelim2 p q rr: that q
+
+>> Andelim2: [(p_1:prop),(q_1:prop),(rr_1:that
+>>      (p_1 & q_1)) => (---:that q_1)]
+>>   {move 0}
+
+
+comment implication/if...then...
+
+
+postulate -> p q:prop
+
+>> ->: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate Ded pp2:that q
+
+>>    Ded: [(pp2_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Ifproof p q Ded:that p -> q
+
+>> Ifproof: [(p_1:prop),(q_1:prop),(Ded_1:[(pp2_2:
+>>         that p_1) => (---:that q_1)])
+>>      => (---:that (p_1 -> q_1))]
+>>   {move 0}
+
+
+
+declare ss that p -> q
+
+>> ss: that (p -> q) {move 1}
+
+
+
+postulate Mp p q pp ss:that q
+
+>> Mp: [(p_1:prop),(q_1:prop),(pp_1:that p_1),
+>>      (ss_1:that (p_1 -> q_1)) => (---:that
+>>      q_1)]
+>>   {move 0}
+
+
+comment negation (not defining it this time)
+
+
+postulate ~ p:prop
+
+>> ~: [(p_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate ??:prop
+
+>> ??: prop {move 0}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate contra pp2:that ??
+
+>>    contra: [(pp2_1:that p) => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Negproof p contra:that ~p
+
+>> Negproof: [(p_1:prop),(contra_1:[(pp2_2:that
+>>         p_1) => (---:that ??)])
+>>      => (---:that ~(p_1))]
+>>   {move 0}
+
+
+
+declare tt that ~p
+
+>> tt: that ~(p) {move 1}
+
+
+
+postulate Contradiction p pp tt:that ??
+
+>> Contradiction: [(p_1:prop),(pp_1:that p_1),
+>>      (tt_1:that ~(p_1)) => (---:that ??)]
+>>   {move 0}
+
+
+
+declare absurd that ??
+
+>> absurd: that ?? {move 1}
+
+
+
+postulate Panic p absurd:that p
+
+>> Panic: [(p_1:prop),(absurd_1:that ??) =>
+>>      (---:that p_1)]
+>>   {move 0}
+
+
+
+declare maybe that ~ ~p
+
+>> maybe: that ~(~(p)) {move 1}
+
+
+
+postulate Dneg p maybe:that p
+
+>> Dneg: [(p_1:prop),(maybe_1:that ~(~(p_1)))
+>>      => (---:that p_1)]
+>>   {move 0}
+
+
+comment basic rules for disjunction
+
+
+postulate v p q:prop
+
+>> v: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate Addition1 p q pp:that p v q
+
+>> Addition1: [(p_1:prop),(q_1:prop),(pp_1:that
+>>      p_1) => (---:that (p_1 v q_1))]
+>>   {move 0}
+
+
+
+postulate Addition2 p q qq:that p v q
+
+>> Addition2: [(p_1:prop),(q_1:prop),(qq_1:that
+>>      q_1) => (---:that (p_1 v q_1))]
+>>   {move 0}
+
+
+comment prepare for proof by cases
+
+
+declare uu that p v q
+
+>> uu: that (p v q) {move 1}
+
+
+
+declare r prop
+
+>> r: prop {move 1}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate case1 pp2:that r
+
+>>    case1: [(pp2_1:that p) => (---:that r)]
+>>      {move 1}
+
+
+
+   close
+
+open
+
+   declare qq2 that q
+
+>>    qq2: that q {move 2}
+
+
+
+   postulate case2 qq2:that r
+
+>>    case2: [(qq2_1:that q) => (---:that r)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Cases p,q,uu,r,case1,case2:that \
+   r
+
+>> Cases: [(p_1:prop),(q_1:prop),(uu_1:that
+>>      (p_1 v q_1)),(r_1:prop),(case1_1:[(pp2_2:
+>>         that p_1) => (---:that r_1)]),
+>>      (case2_1:[(qq2_3:that q_1) => (---:that
+>>         r_1)])
+>>      => (---:that r_1)]
+>>   {move 0}
+
+
+comment derived rules for implication
+
+
+open
+
+   declare notq that ~q
+
+>>    notq: that ~(q) {move 2}
+
+
+
+   postulate Ded2 notq:that ~p
+
+>>    Ded2: [(notq_1:that ~(q)) => (---:that
+>>         ~(p))]
+>>      {move 1}
+
+
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   open
+
+      declare notq2 that ~q
+
+>>       notq2: that ~(q) {move 3}
+
+
+
+      define hah notq2:Contradiction p pp2, \
+         Ded2 notq2
+
+>>       hah: [(notq2_1:that ~(q)) => (---:that
+>>            ??)]
+>>         {move 2}
+
+
+
+      close
+
+   define hah2 pp2:Negproof ~q hah
+
+>>    hah2: [(pp2_1:that p) => (---:that ~(~(q)))]
+>>      {move 1}
+
+
+
+   define hah3 pp2:Dneg q hah2 pp2
+
+>>    hah3: [(pp2_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   close
+
+define Indirect p q Ded2:Ifproof p q hah3
+
+
+>> Indirect: [(p_1:prop),(q_1:prop),(Ded2_1:
+>>      [(notq_2:that ~(q_1)) => (---:that ~(p_1))])
+>>      => (Ifproof(p_1,q_1,[(pp2_3:that p_1)
+>>         => ((q_1 Dneg (~(q_1) Negproof [(notq2_4:
+>>            that ~(q_1)) => (Contradiction(p_1,
+>>            pp2_3,Ded2_1(notq2_4)):that ??)]))
+>>         :that q_1)])
+>>      :that (p_1 -> q_1))]
+>>   {move 0}
+
+
+
+declare vv that ~q
+
+>> vv: that ~(q) {move 1}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   define hmmm pp2:Mp p q pp2 ss
+
+>>    hmmm: [(pp2_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   define hmmm2 pp2:Contradiction q hmmm \
+      pp2 vv
+
+>>    hmmm2: [(pp2_1:that p) => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Mt p q ss vv:Negproof p hmmm2
+
+>> Mt: [(p_1:prop),(q_1:prop),(ss_1:that (p_1
+>>      -> q_1)),(vv_1:that ~(q_1)) => ((p_1 Negproof
+>>      [(pp2_2:that p_1) => (Contradiction(q_1,
+>>         Mp(p_1,q_1,pp2_2,ss_1),vv_1):that ??)])
+>>      :that ~(p_1))]
+>>   {move 0}
+
+
+comment derived rules for disjunction
+
+
+open
+
+   declare notq that ~q
+
+>>    notq: that ~(q) {move 2}
+
+
+
+   postulate ruleout notq:that p
+
+>>    ruleout: [(notq_1:that ~(q)) => (---:that
+>>         p)]
+>>      {move 1}
+
+
+
+   declare neither that ~(p v q)
+
+>>    neither: that ~((p v q)) {move 2}
+
+
+
+   open
+
+      declare notq2 that ~q
+
+>>       notq2: that ~(q) {move 3}
+
+
+
+      define problem notq2:Addition1 p q \
+         ruleout notq2
+
+>>       problem: [(notq2_1:that ~(q)) => (---:
+>>            that (p v q))]
+>>         {move 2}
+
+
+
+      define problem2 notq2: Contradiction \
+         p v q, problem notq2, neither
+
+>>       problem2: [(notq2_1:that ~(q)) => (---:
+>>            that ??)]
+>>         {move 2}
+
+
+
+      close
+
+   define problem3 neither:Negproof ~q, problem2
+
+
+>>    problem3: [(neither_1:that ~((p v q)))
+>>         => (---:that ~(~(q)))]
+>>      {move 1}
+
+
+
+   define problem4 neither:Dneg q problem3 \
+      neither
+
+>>    problem4: [(neither_1:that ~((p v q)))
+>>         => (---:that q)]
+>>      {move 1}
+
+
+
+   define problem5 neither: Addition2 p q \
+      problem4 neither
+
+>>    problem5: [(neither_1:that ~((p v q)))
+>>         => (---:that (p v q))]
+>>      {move 1}
+
+
+
+   define disaster neither:Contradiction \
+      p v q, problem5 neither, neither
+
+>>    disaster: [(neither_1:that ~((p v q)))
+>>         => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Orproof p q ruleout:Dneg p v q, Negproof \
+   ~(p v q), disaster
+
+>> Orproof: [(p_1:prop),(q_1:prop),(ruleout_1:
+>>      [(notq_2:that ~(q_1)) => (---:that p_1)])
+>>      => (((p_1 v q_1) Dneg (~((p_1 v q_1))
+>>      Negproof [(neither_3:that ~((p_1 v q_1)))
+>>         => (Contradiction((p_1 v q_1),Addition2(p_1,
+>>         q_1,(q_1 Dneg (~(q_1) Negproof [(notq2_4:
+>>            that ~(q_1)) => (Contradiction((p_1
+>>            v q_1),Addition1(p_1,q_1,ruleout_1(notq2_4)),
+>>            neither_3):that ??)]))
+>>         ),neither_3):that ??)]))
+>>      :that (p_1 v q_1))]
+>>   {move 0}
+
+
+comment rules of disjunctive syllogism
+
+
+declare notp that ~p
+
+>> notp: that ~(p) {move 1}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   define qfollows pp2:Panic q, Contradiction \
+      p pp2 notp
+
+>>    qfollows: [(pp2_1:that p) => (---:that
+>>         q)]
+>>      {move 1}
+
+
+
+   declare qq2 that q
+
+>>    qq2: that q {move 2}
+
+
+
+   define qfollow2 qq2:qq2
+
+>>    qfollow2: [(qq2_1:that q) => (---:that
+>>         q)]
+>>      {move 1}
+
+
+
+   close
+
+define Ds1 p q uu notp:Cases p q uu q, qfollows, \
+   qfollow2
+
+>> Ds1: [(p_1:prop),(q_1:prop),(uu_1:that (p_1
+>>      v q_1)),(notp_1:that ~(p_1)) => (Cases(p_1,
+>>      q_1,uu_1,q_1,[(pp2_2:that p_1) => ((q_1
+>>         Panic Contradiction(p_1,pp2_2,notp_1)):
+>>         that q_1)]
+>>      ,[(qq2_3:that q_1) => (qq2_3:that q_1)])
+>>      :that q_1)]
+>>   {move 0}
+
+
+
+declare notq that ~q
+
+>> notq: that ~(q) {move 1}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   define notqcase1 pp2:pp2
+
+>>    notqcase1: [(pp2_1:that p) => (---:that
+>>         p)]
+>>      {move 1}
+
+
+
+   declare qq2 that q
+
+>>    qq2: that q {move 2}
+
+
+
+   define notqcase2 qq2: Panic p, Contradiction \
+      q qq2 notq
+
+>>    notqcase2: [(qq2_1:that q) => (---:that
+>>         p)]
+>>      {move 1}
+
+
+
+   close
+
+define Ds2 p q uu notq:Cases p q uu p, notqcase1, \
+   notqcase2
+
+>> Ds2: [(p_1:prop),(q_1:prop),(uu_1:that (p_1
+>>      v q_1)),(notq_1:that ~(q_1)) => (Cases(p_1,
+>>      q_1,uu_1,p_1,[(pp2_2:that p_1) => (pp2_2:
+>>         that p_1)]
+>>      ,[(qq2_3:that q_1) => ((p_1 Panic Contradiction(q_1,
+>>         qq2_3,notq_1)):that p_1)])
+>>      :that p_1)]
+>>   {move 0}
+
+
+comment delayed Orproof2 needed
+
+
+open
+
+   declare notp2 that ~p
+
+>>    notp2: that ~(p) {move 2}
+
+
+
+   postulate ruleout2 notp2:that q
+
+>>    ruleout2: [(notp2_1:that ~(p)) => (---:
+>>         that q)]
+>>      {move 1}
+
+
+
+   declare neither that ~(p v q)
+
+>>    neither: that ~((p v q)) {move 2}
+
+
+
+   open
+
+      declare notp3 that ~p
+
+>>       notp3: that ~(p) {move 3}
+
+
+
+      define problem notp3:Addition2 p q, \
+         ruleout2 notp3
+
+>>       problem: [(notp3_1:that ~(p)) => (---:
+>>            that (p v q))]
+>>         {move 2}
+
+
+
+      define problem2 notp3:Contradiction \
+         p v q,problem notp3, neither
+
+>>       problem2: [(notp3_1:that ~(p)) => (---:
+>>            that ??)]
+>>         {move 2}
+
+
+
+      close
+
+   define problema3 neither:Dneg p, Negproof \
+      ~p problem2
+
+>>    problema3: [(neither_1:that ~((p v q)))
+>>         => (---:that p)]
+>>      {move 1}
+
+
+
+   define problema4 neither:Addition1 p q, \
+      problema3 neither
+
+>>    problema4: [(neither_1:that ~((p v q)))
+>>         => (---:that (p v q))]
+>>      {move 1}
+
+
+
+   define problema5 neither:Contradiction \
+      p v q, problema4 neither, neither
+
+>>    problema5: [(neither_1:that ~((p v q)))
+>>         => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Orproof2 p q ruleout2:Dneg p v q, \
+   Negproof ~(p v q), problema5
+
+>> Orproof2: [(p_1:prop),(q_1:prop),(ruleout2_1:
+>>      [(notp2_2:that ~(p_1)) => (---:that q_1)])
+>>      => (((p_1 v q_1) Dneg (~((p_1 v q_1))
+>>      Negproof [(neither_3:that ~((p_1 v q_1)))
+>>         => (Contradiction((p_1 v q_1),Addition1(p_1,
+>>         q_1,(p_1 Dneg (~(p_1) Negproof [(notp3_4:
+>>            that ~(p_1)) => (Contradiction((p_1
+>>            v q_1),Addition2(p_1,q_1,ruleout2_1(notp3_4)),
+>>            neither_3):that ??)]))
+>>         ),neither_3):that ??)]))
+>>      :that (p_1 v q_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare notp2 that ~p
+
+>>    notp2: that ~(p) {move 2}
+
+
+
+   define samenotp notp2:notp2
+
+>>    samenotp: [(notp2_1:that ~(p)) => (---:
+>>         that ~(p))]
+>>      {move 1}
+
+
+
+   close
+
+define Excmid p:Orproof2 p, ~p, samenotp
+
+
+>> Excmid: [(p_1:prop) => (Orproof2(p_1,~(p_1),
+>>      [(notp2_2:that ~(p_1)) => (notp2_2:that
+>>         ~(p_1))])
+>>      :that (p_1 v ~(p_1)))]
+>>   {move 0}
+
+
+\end{verbatim}
+
+
+
+
+
+
+
+\subsection{Working on Landau$\ldots$}
+
+Landau up to proposition 2.   This file is preceded by a copy of the logical declarations given above (previous versions contained embedded duplicates
+of earlier forms of those logical declarations).
+
+\begin{verbatim}Lestrade execution:
+
+clearcurrent
+
+comment we assume the totality of natural numbers
+
+
+postulate Nat:type
+
+>> Nat: type {move 0}
+
+
+
+declare x in Nat
+
+>> x: in Nat {move 1}
+
+
+
+declare y in Nat
+
+>> y: in Nat {move 1}
+
+
+
+open
+
+   declare z in Nat
+
+>>    z: in Nat {move 2}
+
+
+
+   postulate P z:prop
+
+>>    P: [(z_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate = x y:prop
+
+>> =: [(x_1:in Nat),(y_1:in Nat) => (---:prop)]
+>>   {move 0}
+
+
+
+declare eq that = x y
+
+>> eq: that (x = y) {move 1}
+
+
+
+declare px that P x
+
+>> px: that P(x) {move 1}
+
+
+
+postulate subs x y P, eq px:that P y
+
+>> subs: [(x_1:in Nat),(y_1:in Nat),(P_1:[(z_2:
+>>         in Nat) => (---:prop)]),
+>>      (eq_1:that (x_1 = y_1)),(px_1:that P_1(x_1))
+>>      => (---:that P_1(y_1))]
+>>   {move 0}
+
+
+
+open
+
+   open
+
+      declare u in Nat
+
+>>       u: in Nat {move 3}
+
+
+
+      postulate P1 u:prop
+
+>>       P1: [(u_1:in Nat) => (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   declare px1 that P1 x
+
+>>    px1: that P1(x) {move 2}
+
+
+
+   postulate Eq P1, px1:that P1 y
+
+>>    Eq: [(P1_1:[(u_2:in Nat) => (---:prop)]),
+>>         (px1_1:that P1_1(x)) => (---:that P1_1(y))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Eqproof x y Eq:that = x y
+
+>> Eqproof: [(x_1:in Nat),(y_1:in Nat),(Eq_1:
+>>      [(P1_2:[(u_3:in Nat) => (---:prop)]),
+>>         (px1_2:that P1_2(x_1)) => (---:that
+>>         P1_2(y_1))])
+>>      => (---:that (x_1 = y_1))]
+>>   {move 0}
+
+
+
+open
+
+   open
+
+      declare u in Nat
+
+>>       u: in Nat {move 3}
+
+
+
+      postulate P2 u:prop
+
+>>       P2: [(u_1:in Nat) => (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   declare refl1 that P2 x
+
+>>    refl1: that P2(x) {move 2}
+
+
+
+   define refl2 P2, refl1:refl1
+
+>>    refl2: [(P2_1:[(u_2:in Nat) => (---:prop)]),
+>>         (refl1_1:that P2_1(x)) => (---:that
+>>         P2_1(x))]
+>>      {move 1}
+
+
+
+   close
+
+define Refl x:Eqproof x x refl2
+
+>> Refl: [(x_1:in Nat) => (Eqproof(x_1,x_1,[(P2_2:
+>>         [(u_3:in Nat) => (---:prop)]),
+>>         (refl1_2:that P2_2(x_1)) => (refl1_2:
+>>         that P2_2(x_1))])
+>>      :that (x_1 = x_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare symm1 that = x y
+
+>>    symm1: that (x = y) {move 2}
+
+
+
+   open
+
+      declare u in Nat
+
+>>       u: in Nat {move 3}
+
+
+
+      define P3 u:=y u
+
+>>       P3: [(u_1:in Nat) => (---:prop)]
+>>         {move 2}
+
+
+
+      define P4 u:=u x
+
+>>       P4: [(u_1:in Nat) => (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   define symm2 symm1: subs x y P4, symm1, \
+      Refl x
+
+>>    symm2: [(symm1_1:that (x = y)) => (---:
+>>         that (y = x))]
+>>      {move 1}
+
+
+
+   close
+
+declare symm3 that = x y
+
+>> symm3: that (x = y) {move 1}
+
+
+
+define symm x y symm3:symm2 symm3
+
+>> symm: [(x_1:in Nat),(y_1:in Nat),(symm3_1:
+>>      that (x_1 = y_1)) => (subs(x_1,y_1,[(u_2:
+>>         in Nat) => ((u_2 = x_1):prop)]
+>>      ,symm3_1,Refl(x_1)):that (y_1 = x_1))]
+>>   {move 0}
+
+
+
+declare z in Nat
+
+>> z: in Nat {move 1}
+
+
+
+open
+
+   declare trans1 that = x y
+
+>>    trans1: that (x = y) {move 2}
+
+
+
+   declare trans2 that = y z
+
+>>    trans2: that (y = z) {move 2}
+
+
+
+   open
+
+      declare u in Nat
+
+>>       u: in Nat {move 3}
+
+
+
+      define P5 u:= x u
+
+>>       P5: [(u_1:in Nat) => (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   define trans3 trans1 trans2:subs y z P5, \
+      trans2 trans1
+
+>>    trans3: [(trans1_1:that (x = y)),(trans2_1:
+>>         that (y = z)) => (---:that (x = z))]
+>>      {move 1}
+
+
+
+   close
+
+declare t1 that =x y
+
+>> t1: that (x = y) {move 1}
+
+
+
+declare t2 that =y z
+
+>> t2: that (y = z) {move 1}
+
+
+
+define trans x y z t1 t2:trans3 t1 t2
+
+>> trans: [(x_1:in Nat),(y_1:in Nat),(z_1:in
+>>      Nat),(t1_1:that (x_1 = y_1)),(t2_1:that
+>>      (y_1 = z_1)) => (subs(y_1,z_1,[(u_2:in
+>>         Nat) => ((x_1 = u_2):prop)]
+>>      ,t2_1,t1_1):that (x_1 = z_1))]
+>>   {move 0}
+
+
+
+postulate 1: in Nat
+
+>> 1: in Nat {move 0}
+
+
+
+postulate succ x:in Nat
+
+>> succ: [(x_1:in Nat) => (---:in Nat)]
+>>   {move 0}
+
+
+
+postulate notone x: that ~ = succ x 1
+
+>> notone: [(x_1:in Nat) => (---:that ~((succ(x_1)
+>>      = 1)))]
+>>   {move 0}
+
+
+
+declare samesucc1 that = succ x succ y
+
+>> samesucc1: that (succ(x) = succ(y)) {move
+>>   1}
+
+
+
+postulate samesucc x y samesucc1:that = x \
+   y
+
+>> samesucc: [(x_1:in Nat),(y_1:in Nat),(samesucc1_1:
+>>      that (succ(x_1) = succ(y_1))) => (---:
+>>      that (x_1 = y_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare u in Nat
+
+>>    u: in Nat {move 2}
+
+
+
+   postulate Indp u:prop
+
+>>    Indp: [(u_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+declare basis that Indp 1
+
+>> basis: that Indp(1) {move 1}
+
+
+
+open
+
+   declare u in Nat
+
+>>    u: in Nat {move 2}
+
+
+
+   declare indhyp that Indp u
+
+>>    indhyp: that Indp(u) {move 2}
+
+
+
+   postulate indstep u indhyp:that Indp succ \
+      u
+
+>>    indstep: [(u_1:in Nat),(indhyp_1:that
+>>         Indp(u_1)) => (---:that Indp(succ(u_1)))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Induction x Indp, basis indstep: \
+   that Indp x
+
+>> Induction: [(x_1:in Nat),(Indp_1:[(u_2:in
+>>         Nat) => (---:prop)]),
+>>      (basis_1:that Indp_1(1)),(indstep_1:[(u_3:
+>>         in Nat),(indhyp_3:that Indp_1(u_3))
+>>         => (---:that Indp_1(succ(u_3)))])
+>>      => (---:that Indp_1(x_1))]
+>>   {move 0}
+
+
+comment try to prove Satz 1
+
+
+define =/= x y: ~(x=y)
+
+>> =/=: [(x_1:in Nat),(y_1:in Nat) => (~((x_1
+>>      = y_1)):prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare hyp that x =/= y
+
+>>    hyp: that (x =/= y) {move 2}
+
+
+
+   open
+
+      declare counterhyp that succ x = succ \
+         y
+
+>>       counterhyp: that (succ(x) = succ(y))
+>>         {move 3}
+
+
+
+      define oops counterhyp:Contradiction \
+         x=y, (samesucc x y counterhyp), hyp
+
+
+>>       oops: [(counterhyp_1:that (succ(x)
+>>            = succ(y))) => (---:that ??)]
+>>         {move 2}
+
+
+
+      close
+
+   define conc hyp: Negproof succ x = succ \
+      y, oops
+
+>>    conc: [(hyp_1:that (x =/= y)) => (---:
+>>         that ~((succ(x) = succ(y))))]
+>>      {move 1}
+
+
+
+   close
+
+define satz1 x y:Ifproof x=/=y, succ x =/= \
+   succ y,conc
+
+>> satz1: [(x_1:in Nat),(y_1:in Nat) => (Ifproof((x_1
+>>      =/= y_1),(succ(x_1) =/= succ(y_1)),[(hyp_2:
+>>         that (x_1 =/= y_1)) => (((succ(x_1)
+>>         = succ(y_1)) Negproof [(counterhyp_3:
+>>            that (succ(x_1) = succ(y_1))) =>
+>>            (Contradiction((x_1 = y_1),samesucc(x_1,
+>>            y_1,counterhyp_3),hyp_2):that ??)])
+>>         :that ~((succ(x_1) = succ(y_1))))])
+>>      :that ((x_1 =/= y_1) -> (succ(x_1) =/=
+>>      succ(y_1))))]
+>>   {move 0}
+
+
+
+define theprop x:succ x =/= x
+
+>> theprop: [(x_1:in Nat) => ((succ(x_1) =/=
+>>      x_1):prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare u in Nat
+
+>>    u: in Nat {move 2}
+
+
+
+   declare xx that theprop u
+
+>>    xx: that theprop(u) {move 2}
+
+
+
+   define yy u:satz1 succ u u
+
+>>    yy: [(u_1:in Nat) => (---:that ((succ(u_1)
+>>         =/= u_1) -> (succ(succ(u_1)) =/= succ(u_1))))]
+>>      {move 1}
+
+
+
+   define zz u xx:Mp succ u =/= u, succ succ \
+      u =/= succ u, xx, yy u
+
+>>    zz: [(u_1:in Nat),(xx_1:that theprop(u_1))
+>>         => (---:that (succ(succ(u_1)) =/= succ(u_1)))]
+>>      {move 1}
+
+
+
+   define zz2 u xx:Mp theprop u, theprop \
+      succ u, xx, yy u
+
+>>    zz2: [(u_1:in Nat),(xx_1:that theprop(u_1))
+>>         => (---:that theprop(succ(u_1)))]
+>>      {move 1}
+
+
+
+   close
+
+define satz2 x:Induction x, theprop, notone \
+   1, zz2
+
+>> satz2: [(x_1:in Nat) => (Induction(x_1,theprop,
+>>      notone(1),[(u_2:in Nat),(xx_2:that theprop(u_2))
+>>         => (Mp(theprop(u_2),theprop(succ(u_2)),
+>>         xx_2,(succ(u_2) satz1 u_2)):that theprop(succ(u_2)))])
+>>      :that theprop(x_1))]
+>>   {move 0}
+
+
+
+define badsatz2 x:Induction x,theprop,notone \
+   1,zz
+
+>> badsatz2: [(x_1:in Nat) => (Induction(x_1,
+>>      theprop,notone(1),[(u_2:in Nat),(xx_2:
+>>         that theprop(u_2)) => (Mp((succ(u_2)
+>>         =/= u_2),(succ(succ(u_2)) =/= succ(u_2)),
+>>         xx_2,(succ(u_2) satz1 u_2)):that (succ(succ(u_2))
+>>         =/= succ(u_2)))])
+>>      :that theprop(x_1))]
+>>   {move 0}
+
+
+comment not bad any more after bugs fixed...
+
+comment existence and uniqueness stuff -- definition of "the"; quantifiers
+
+
+open
+
+   declare n in Nat
+
+>>    n: in Nat {move 2}
+
+
+
+   postulate Uprop n:prop
+
+>>    Uprop: [(n_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate the Uprop:in Nat
+
+>> the: [(Uprop_1:[(n_2:in Nat) => (---:prop)])
+>>      => (---:in Nat)]
+>>   {move 0}
+
+
+
+open
+
+   declare m in Nat
+
+>>    m: in Nat {move 2}
+
+
+
+   declare n in Nat
+
+>>    n: in Nat {move 2}
+
+
+
+   declare mm that Uprop m
+
+>>    mm: that Uprop(m) {move 2}
+
+
+
+   declare nn that Uprop n
+
+>>    nn: that Uprop(n) {move 2}
+
+
+
+   postulate allthesame m n mm nn:that m=n
+
+
+>>    allthesame: [(m_1:in Nat),(n_1:in Nat),
+>>         (mm_1:that Uprop(m_1)),(nn_1:that Uprop(n_1))
+>>         => (---:that (m_1 = n_1))]
+>>      {move 1}
+
+
+
+   close
+
+declare w in Nat
+
+>> w: in Nat {move 1}
+
+
+
+declare ww that Uprop w
+
+>> ww: that Uprop(w) {move 1}
+
+
+
+postulate Theproof Uprop, allthesame, w ww: \
+   that Uprop the Uprop
+
+>> Theproof: [(Uprop_1:[(n_2:in Nat) => (---:
+>>         prop)]),
+>>      (allthesame_1:[(m_3:in Nat),(n_3:in Nat),
+>>         (mm_3:that Uprop_1(m_3)),(nn_3:that
+>>         Uprop_1(n_3)) => (---:that (m_3 = n_3))]),
+>>      (w_1:in Nat),(ww_1:that Uprop_1(w_1))
+>>      => (---:that Uprop_1(the(Uprop_1)))]
+>>   {move 0}
+
+
+\end{verbatim}
+
+
+
+\end{document}
+
+quit

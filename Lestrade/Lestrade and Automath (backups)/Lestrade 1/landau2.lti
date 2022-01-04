@@ -1,0 +1,1071 @@
+
+>> Inspector Lestrade says:  
+>> Welcome to the Lestrade Type Inspector,
+>>  
+>> User entered lambda terms (arguments)
+>> and function sorts (in declare)!
+>> literate programming with LaTeX comments in ML source
+>> version of  7/24/2019
+>>  12:30 pm Boise time
+
+
+comment Implementation of Landau's Foundations of Analysis
+
+comment Part I. Logic
+
+
+declare p prop
+
+>> p: prop {move 1}
+
+
+
+declare q prop
+
+>> q: prop {move 1}
+
+
+
+postulate False:prop
+
+>> False: prop {move 0}
+
+
+
+postulate ~p:prop
+
+>> ~: [(p_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate & p q:prop
+
+>> &: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate v p q:prop
+
+>> v: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate -> p q:prop
+
+>> ->: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+comment Rules of conjunction
+
+
+declare pp that p
+
+>> pp: that p {move 1}
+
+
+
+declare qq that q
+
+>> qq: that q {move 1}
+
+
+
+postulate Andintro p q pp qq:that p & q
+
+>> Andintro: [(p_1:prop),(q_1:prop),(pp_1:that
+>>      p_1),(qq_1:that q_1) => (---:that (p_1
+>>      & q_1))]
+>>   {move 0}
+
+
+
+declare rr that p & q
+
+>> rr: that (p & q) {move 1}
+
+
+
+postulate Andelim1 p q rr:that p
+
+>> Andelim1: [(p_1:prop),(q_1:prop),(rr_1:that
+>>      (p_1 & q_1)) => (---:that p_1)]
+>>   {move 0}
+
+
+
+postulate Andelim2 p q rr:that q
+
+>> Andelim2: [(p_1:prop),(q_1:prop),(rr_1:that
+>>      (p_1 & q_1)) => (---:that q_1)]
+>>   {move 0}
+
+
+comment Rules of implication
+
+
+declare ss that p -> q
+
+>> ss: that (p -> q) {move 1}
+
+
+
+postulate Mp p q pp ss:that q
+
+>> Mp: [(p_1:prop),(q_1:prop),(pp_1:that p_1),
+>>      (ss_1:that (p_1 -> q_1)) => (---:that
+>>      q_1)]
+>>   {move 0}
+
+
+
+open
+
+   declare tt that p
+
+>>    tt: that p {move 2}
+
+
+
+   postulate Ded tt:that q
+
+>>    Ded: [(tt_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Ifintro p q Ded:that p -> q
+
+>> Ifintro: [(p_1:prop),(q_1:prop),(Ded_1:[(tt_2:
+>>         that p_1) => (---:that q_1)])
+>>      => (---:that (p_1 -> q_1))]
+>>   {move 0}
+
+
+comment Rules of negation
+
+
+declare absurd that False
+
+>> absurd: that False {move 1}
+
+
+
+postulate Panic p absurd:that p
+
+>> Panic: [(p_1:prop),(absurd_1:that False)
+>>      => (---:that p_1)]
+>>   {move 0}
+
+
+
+declare pp2 that ~p
+
+>> pp2: that ~(p) {move 1}
+
+
+
+postulate contradiction p pp pp2:that False
+
+
+>> contradiction: [(p_1:prop),(pp_1:that p_1),
+>>      (pp2_1:that ~(p_1)) => (---:that False)]
+>>   {move 0}
+
+
+
+open
+
+   declare tt that p
+
+>>    tt: that p {move 2}
+
+
+
+   postulate Con tt:that False
+
+>>    Con: [(tt_1:that p) => (---:that False)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Negintro p Con:that ~p
+
+>> Negintro: [(p_1:prop),(Con_1:[(tt_2:that
+>>         p_1) => (---:that False)])
+>>      => (---:that ~(p_1))]
+>>   {move 0}
+
+
+
+declare maybe that ~ ~p
+
+>> maybe: that ~(~(p)) {move 1}
+
+
+
+postulate Dneg p maybe:that p
+
+>> Dneg: [(p_1:prop),(maybe_1:that ~(~(p_1)))
+>>      => (---:that p_1)]
+>>   {move 0}
+
+
+comment Rules for disjunction
+
+
+postulate Orintro1 p q pp:that p v q
+
+>> Orintro1: [(p_1:prop),(q_1:prop),(pp_1:that
+>>      p_1) => (---:that (p_1 v q_1))]
+>>   {move 0}
+
+
+
+postulate Orintro2 p q qq:that p v q
+
+>> Orintro2: [(p_1:prop),(q_1:prop),(qq_1:that
+>>      q_1) => (---:that (p_1 v q_1))]
+>>   {move 0}
+
+
+
+declare r prop
+
+>> r: prop {move 1}
+
+
+
+declare vv that p v q
+
+>> vv: that (p v q) {move 1}
+
+
+
+open
+
+   declare tt that p
+
+>>    tt: that p {move 2}
+
+
+
+   declare uu that q
+
+>>    uu: that q {move 2}
+
+
+
+   postulate case1 tt: that r
+
+>>    case1: [(tt_1:that p) => (---:that r)]
+>>      {move 1}
+
+
+
+   postulate case2 uu:that r
+
+>>    case2: [(uu_1:that q) => (---:that r)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Cases p q r vv, case1, case2:that \
+   r
+
+>> Cases: [(p_1:prop),(q_1:prop),(r_1:prop),
+>>      (vv_1:that (p_1 v q_1)),(case1_1:[(tt_2:
+>>         that p_1) => (---:that r_1)]),
+>>      (case2_1:[(uu_3:that q_1) => (---:that
+>>         r_1)])
+>>      => (---:that r_1)]
+>>   {move 0}
+
+
+comment Derived rules of propositional logic to be proved in this space as needed
+
+clearcurrent
+
+
+declare p prop
+
+>> p: prop {move 1}
+
+
+
+declare q prop
+
+>> q: prop {move 1}
+
+
+
+declare direct that p -> q
+
+>> direct: that (p -> q) {move 1}
+
+
+
+declare indirecthyp that ~q
+
+>> indirecthyp: that ~(q) {move 1}
+
+
+
+open
+
+   declare pp that p
+
+>>    pp: that p {move 2}
+
+
+
+   define qq pp: Mp p q pp direct
+
+>>    qq: [(pp_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   define ohno pp:contradiction q, qq pp, \
+      indirecthyp
+
+>>    ohno: [(pp_1:that p) => (---:that False)]
+>>      {move 1}
+
+
+
+   close
+
+define Mt p q direct indirecthyp: Negintro \
+   p ohno
+
+>> Mt: [(p_1:prop),(q_1:prop),(direct_1:that
+>>      (p_1 -> q_1)),(indirecthyp_1:that ~(q_1))
+>>      => ((p_1 Negintro [(pp_2:that p_1) =>
+>>         (contradiction(q_1,Mp(p_1,q_1,pp_2,
+>>         direct_1),indirecthyp_1):that False)])
+>>      :that ~(p_1))]
+>>   {move 0}
+
+
+
+declare pp that p
+
+>> pp: that p {move 1}
+
+
+
+open
+
+   declare contrahyp that ~q
+
+>>    contrahyp: that ~(q) {move 2}
+
+
+
+   postulate contraconc contrahyp:that ~p
+
+
+>>    contraconc: [(contrahyp_1:that ~(q)) =>
+>>         (---:that ~(p))]
+>>      {move 1}
+
+
+
+   open
+
+      declare notqq that ~q
+
+>>       notqq: that ~(q) {move 3}
+
+
+
+      define ohno2 notqq:contradiction p \
+         pp contraconc notqq
+
+>>       ohno2: [(notqq_1:that ~(q)) => (---:
+>>            that False)]
+>>         {move 2}
+
+
+
+      close
+
+   define notnotq: Negintro ~q ohno2
+
+>>    notnotq: [(---:that ~(~(q)))]
+>>      {move 1}
+
+
+
+   close
+
+define Indirect p q pp contraconc:Dneg q \
+   notnotq
+
+>> Indirect: [(p_1:prop),(q_1:prop),(pp_1:that
+>>      p_1),(contraconc_1:[(contrahyp_2:that
+>>         ~(q_1)) => (---:that ~(p_1))])
+>>      => ((q_1 Dneg (~(q_1) Negintro [(notqq_3:
+>>         that ~(q_1)) => (contradiction(p_1,
+>>         pp_1,contraconc_1(notqq_3)):that False)]))
+>>      :that q_1)]
+>>   {move 0}
+
+
+clearcurrent
+
+comment The type of natural numbers introduced
+
+
+postulate Nat:type
+
+>> Nat: type {move 0}
+
+
+
+postulate 1:in Nat
+
+>> 1: in Nat {move 0}
+
+
+
+declare n0 in Nat
+
+>> n0: in Nat {move 1}
+
+
+
+postulate succ n0:in Nat
+
+>> succ: [(n0_1:in Nat) => (---:in Nat)]
+>>   {move 0}
+
+
+comment Logic of quantifiers
+
+
+open
+
+   declare n1 in Nat
+
+>>    n1: in Nat {move 2}
+
+
+
+   postulate Pred1 n1:prop
+
+>>    Pred1: [(n1_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate forall Pred1:prop
+
+>> forall: [(Pred1_1:[(n1_2:in Nat) => (---:
+>>         prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+
+postulate exists Pred1:prop
+
+>> exists: [(Pred1_1:[(n1_2:in Nat) => (---:
+>>         prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+
+declare n in Nat
+
+>> n: in Nat {move 1}
+
+
+
+declare aproof that forall Pred1
+
+>> aproof: that forall(Pred1) {move 1}
+
+
+
+postulate Ui Pred1, n aproof:that Pred1 n
+
+
+>> Ui: [(Pred1_1:[(n1_2:in Nat) => (---:prop)]),
+>>      (n_1:in Nat),(aproof_1:that forall(Pred1_1))
+>>      => (---:that Pred1_1(n_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare n1 in Nat
+
+>>    n1: in Nat {move 2}
+
+
+
+   postulate Gen n1:that Pred1 n1
+
+>>    Gen: [(n1_1:in Nat) => (---:that Pred1(n1_1))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Ug Pred1, Gen:that forall Pred1
+
+
+>> Ug: [(Pred1_1:[(n1_2:in Nat) => (---:prop)]),
+>>      (Gen_1:[(n1_3:in Nat) => (---:that Pred1_1(n1_3))])
+>>      => (---:that forall(Pred1_1))]
+>>   {move 0}
+
+
+
+declare example that Pred1 n
+
+>> example: that Pred1(n) {move 1}
+
+
+
+postulate Ei Pred1, n example:that exists \
+   Pred1
+
+>> Ei: [(Pred1_1:[(n1_2:in Nat) => (---:prop)]),
+>>      (n_1:in Nat),(example_1:that Pred1_1(n_1))
+>>      => (---:that exists(Pred1_1))]
+>>   {move 0}
+
+
+
+declare isone that exists Pred1
+
+>> isone: that exists(Pred1) {move 1}
+
+
+
+declare r prop
+
+>> r: prop {move 1}
+
+
+
+open
+
+   declare n1 in Nat
+
+>>    n1: in Nat {move 2}
+
+
+
+   declare witnessing that Pred1 n1
+
+>>    witnessing: that Pred1(n1) {move 2}
+
+
+
+   postulate using n1 witnessing:that r
+
+>>    using: [(n1_1:in Nat),(witnessing_1:that
+>>         Pred1(n1_1)) => (---:that r)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Eg Pred1, isone, r, using: that \
+   r
+
+>> Eg: [(Pred1_1:[(n1_2:in Nat) => (---:prop)]),
+>>      (isone_1:that exists(Pred1_1)),(r_1:prop),
+>>      (using_1:[(n1_3:in Nat),(witnessing_3:
+>>         that Pred1_1(n1_3)) => (---:that r_1)])
+>>      => (---:that r_1)]
+>>   {move 0}
+
+
+comment Add more results from predicate logic here as needed.
+
+clearcurrent
+
+comment Logic of equality
+
+
+declare m in Nat
+
+>> m: in Nat {move 1}
+
+
+
+declare n in Nat
+
+>> n: in Nat {move 1}
+
+
+
+postulate = m n:prop
+
+>> =: [(m_1:in Nat),(n_1:in Nat) => (---:prop)]
+>>   {move 0}
+
+
+
+postulate Refl m:that m = m
+
+>> Refl: [(m_1:in Nat) => (---:that (m_1 = m_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare n1 in Nat
+
+>>    n1: in Nat {move 2}
+
+
+
+   postulate Pred n1:prop
+
+>>    Pred: [(n1_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+declare eqproof that m=n
+
+>> eqproof: that (m = n) {move 1}
+
+
+
+declare mfact that Pred m
+
+>> mfact: that Pred(m) {move 1}
+
+
+
+postulate Subs m n, Pred, eqproof mfact:that \
+   Pred n
+
+>> Subs: [(m_1:in Nat),(n_1:in Nat),(Pred_1:
+>>      [(n1_2:in Nat) => (---:prop)]),
+>>      (eqproof_1:that (m_1 = n_1)),(mfact_1:
+>>      that Pred_1(m_1)) => (---:that Pred_1(n_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare n1 in Nat
+
+>>    n1: in Nat {move 2}
+
+
+
+   define sympred n1:n1 = m
+
+>>    sympred: [(n1_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+define symm m n eqproof:Subs m n, sympred, \
+   eqproof, Refl m
+
+>> symm: [(m_1:in Nat),(n_1:in Nat),(eqproof_1:
+>>      that (m_1 = n_1)) => (Subs(m_1,n_1,[(n1_2:
+>>         in Nat) => ((n1_2 = m_1):prop)]
+>>      ,eqproof_1,Refl(m_1)):that (n_1 = m_1))]
+>>   {move 0}
+
+
+
+declare p in Nat
+
+>> p: in Nat {move 1}
+
+
+
+declare eqproof2 that n = p
+
+>> eqproof2: that (n = p) {move 1}
+
+
+
+open
+
+   declare n1 in Nat
+
+>>    n1: in Nat {move 2}
+
+
+
+   define transpred n1:m=n1
+
+>>    transpred: [(n1_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+define trans m n eqproof p eqproof2:Subs \
+   n p, transpred, eqproof2 eqproof
+
+>> trans: [(m_1:in Nat),(n_1:in Nat),(eqproof_1:
+>>      that (m_1 = n_1)),(p_1:in Nat),(eqproof2_1:
+>>      that (n_1 = p_1)) => (Subs(n_1,p_1,[(n1_2:
+>>         in Nat) => ((m_1 = n1_2):prop)]
+>>      ,eqproof2_1,eqproof_1):that (m_1 = p_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare n1 in Nat
+
+>>    n1: in Nat {move 2}
+
+
+
+   postulate f n1:in Nat
+
+>>    f: [(n1_1:in Nat) => (---:in Nat)]
+>>      {move 1}
+
+
+
+   define bothsidespred n1:f m = f n1
+
+>>    bothsidespred: [(n1_1:in Nat) => (---:
+>>         prop)]
+>>      {move 1}
+
+
+
+   close
+
+define bothsides m n eqproof f:Subs m n, \
+   bothsidespred, eqproof, Refl f m
+
+>> bothsides: [(m_1:in Nat),(n_1:in Nat),(eqproof_1:
+>>      that (m_1 = n_1)),(f_1:[(n1_2:in Nat)
+>>         => (---:in Nat)])
+>>      => (Subs(m_1,n_1,[(n1_3:in Nat) => ((f_1(m_1)
+>>         = f_1(n1_3)):prop)]
+>>      ,eqproof_1,Refl(f_1(m_1))):that (f_1(m_1)
+>>      = f_1(n_1)))]
+>>   {move 0}
+
+
+comment More theorems about equality can be added here as needed
+
+clearcurrent
+
+comment More axioms of arithmetic
+
+
+declare m in Nat
+
+>> m: in Nat {move 1}
+
+
+
+declare n in Nat
+
+>> n: in Nat {move 1}
+
+
+
+define =/= m n:~(m=n)
+
+>> =/=: [(m_1:in Nat),(n_1:in Nat) => (~((m_1
+>>      = n_1)):prop)]
+>>   {move 0}
+
+
+
+postulate ax3 n:that succ n =/= 1
+
+>> ax3: [(n_1:in Nat) => (---:that (succ(n_1)
+>>      =/= 1))]
+>>   {move 0}
+
+
+
+declare succeqproof that succ m = succ n
+
+
+>> succeqproof: that (succ(m) = succ(n)) {move
+>>   1}
+
+
+
+postulate ax4 m n succeqproof:that m=n
+
+>> ax4: [(m_1:in Nat),(n_1:in Nat),(succeqproof_1:
+>>      that (succ(m_1) = succ(n_1))) => (---:
+>>      that (m_1 = n_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare n1 in Nat
+
+>>    n1: in Nat {move 2}
+
+
+
+   postulate Pred n1:prop
+
+>>    Pred: [(n1_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+declare basisproof that Pred 1
+
+>> basisproof: that Pred(1) {move 1}
+
+
+
+open
+
+   declare n1 in Nat
+
+>>    n1: in Nat {move 2}
+
+
+
+   declare indhyp that Pred n1
+
+>>    indhyp: that Pred(n1) {move 2}
+
+
+
+   postulate indstep n1 indhyp:that Pred \
+      succ n1
+
+>>    indstep: [(n1_1:in Nat),(indhyp_1:that
+>>         Pred(n1_1)) => (---:that Pred(succ(n1_1)))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Induction n, Pred, basisproof, \
+   indstep:that Pred n
+
+>> Induction: [(n_1:in Nat),(Pred_1:[(n1_2:in
+>>         Nat) => (---:prop)]),
+>>      (basisproof_1:that Pred_1(1)),(indstep_1:
+>>      [(n1_3:in Nat),(indhyp_3:that Pred_1(n1_3))
+>>         => (---:that Pred_1(succ(n1_3)))])
+>>      => (---:that Pred_1(n_1))]
+>>   {move 0}
+
+
+clearcurrent
+
+comment Proposition 1
+
+
+declare x in Nat
+
+>> x: in Nat {move 1}
+
+
+
+declare y in Nat
+
+>> y: in Nat {move 1}
+
+
+
+declare satzhyp1 that x=/=y
+
+>> satzhyp1: that (x =/= y) {move 1}
+
+
+
+open
+
+   declare satzcontrahyp1 that succ x = succ \
+      y
+
+>>    satzcontrahyp1: that (succ(x) = succ(y))
+>>      {move 2}
+
+
+
+   define ohno satzcontrahyp1: contradiction \
+      x=y, ax4 x y satzcontrahyp1, satzhyp1
+
+
+>>    ohno: [(satzcontrahyp1_1:that (succ(x)
+>>         = succ(y))) => (---:that False)]
+>>      {move 1}
+
+
+
+   close
+
+define satz1 x y satzhyp1:Negintro succ x \
+   = succ y ohno
+
+>> satz1: [(x_1:in Nat),(y_1:in Nat),(satzhyp1_1:
+>>      that (x_1 =/= y_1)) => (((succ(x_1) =
+>>      succ(y_1)) Negintro [(satzcontrahyp1_2:
+>>         that (succ(x_1) = succ(y_1))) => (contradiction((x_1
+>>         = y_1),ax4(x_1,y_1,satzcontrahyp1_2),
+>>         satzhyp1_1):that False)])
+>>      :that ~((succ(x_1) = succ(y_1))))]
+>>   {move 0}
+
+
+
+open
+
+   declare hyp1 that x=/=y
+
+>>    hyp1: that (x =/= y) {move 2}
+
+
+
+   define conc1 hyp1:satz1 x y hyp1
+
+>>    conc1: [(hyp1_1:that (x =/= y)) => (---:
+>>         that ~((succ(x) = succ(y))))]
+>>      {move 1}
+
+
+
+   close
+
+define Satz1 x y:Ifintro x=/=y succ x =/= \
+   succ y conc1
+
+>> Satz1: [(x_1:in Nat),(y_1:in Nat) => (Ifintro((x_1
+>>      =/= y_1),(succ(x_1) =/= succ(y_1)),[(hyp1_2:
+>>         that (x_1 =/= y_1)) => (satz1(x_1,y_1,
+>>         hyp1_2):that ~((succ(x_1) = succ(y_1))))])
+>>      :that ((x_1 =/= y_1) -> (succ(x_1) =/=
+>>      succ(y_1))))]
+>>   {move 0}
+
+
+clearcurrent
+
+comment Proposition 2
+
+
+declare n in Nat
+
+>> n: in Nat {move 1}
+
+
+
+open
+
+   define satzbasis2: ax3 1
+
+>>    satzbasis2: [(---:that (succ(1) =/= 1))]
+>>      {move 1}
+
+
+
+   close
+
+open
+
+   declare x in Nat
+
+>>    x: in Nat {move 2}
+
+
+
+   declare satzindhyp2 that succ x =/= x
+
+
+>>    satzindhyp2: that (succ(x) =/= x) {move
+>>      2}
+
+
+
+   define satzindconc2 x satzindhyp2:satz1 \
+      succ x x satzindhyp2
+
+>>    satzindconc2: [(x_1:in Nat),(satzindhyp2_1:
+>>         that (succ(x_1) =/= x_1)) => (---:that
+>>         ~((succ(succ(x_1)) = succ(x_1))))]
+>>      {move 1}
+
+
+
+   close
+
+open
+
+   declare x in Nat
+
+>>    x: in Nat {move 2}
+
+
+
+   define satzindpred2 x:succ x =/= x
+
+>>    satzindpred2: [(x_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+define satz2 n:Induction n, satzindpred2, \
+   satzbasis2, satzindconc2
+
+>> satz2: [(n_1:in Nat) => (Induction(n_1,[(x_2:
+>>         in Nat) => ((succ(x_2) =/= x_2):prop)]
+>>      ,ax3(1),[(x_3:in Nat),(satzindhyp2_3:that
+>>         (succ(x_3) =/= x_3)) => (satz1(succ(x_3),
+>>         x_3,satzindhyp2_3):that ~((succ(succ(x_3))
+>>         = succ(x_3))))])
+>>      :that (succ(n_1) =/= n_1))]
+>>   {move 0}
+
+
+
+>> Inspector Lestrade says:  Done reading scratch to landau2:
+>>  type lines or type quit to exit interface
+
+quit
+
+

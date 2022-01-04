@@ -1,0 +1,173 @@
+
+begin Lestrade execution
+
+   >>> declare p prop
+
+
+   p : prop
+
+
+   {move 1}
+
+   >>> declare q prop
+
+
+   q : prop
+
+
+   {move 1}
+
+   >>> postulate -> p q prop
+
+
+   ->: [(p_1 : prop), (q_1 : prop) => 
+       (--- : prop)]
+
+
+   {move 0}
+
+   >>> declare pp that p
+
+
+   pp : that p
+
+
+   {move 1}
+
+   >>> declare ss that p -> q
+
+
+   ss : that p -> q
+
+
+   {move 1}
+
+   >>> postulate Mp p q pp ss that q
+
+
+   Mp : [(p_1 : prop), (q_1 : prop), (pp_1 
+       : that p_1), (ss_1 : that p_1 -> 
+       q_1) => (--- : that q_1)]
+
+
+   {move 0}
+
+   >>> declare ded [pp => that q]
+
+
+   ded : [(pp_1 : that p) => (--- : that 
+       q)]
+
+
+   {move 1}
+
+   >>> postulate Ded p q ded that p -> q
+
+
+   Ded : [(p_1 : prop), (q_1 : prop), (ded_1 
+       : [(pp_2 : that p_1) => (--- : that 
+          q_1)]) => (--- : that p_1 -> 
+       q_1)]
+
+
+   {move 0}
+
+   >>> declare r prop
+
+
+   r : prop
+
+
+   {move 1}
+
+   >>> declare aa that p -> q
+
+
+   aa : that p -> q
+
+
+   {move 1}
+
+   >>> declare bb that q -> r
+
+
+   bb : that q -> r
+
+
+   {move 1}
+
+   >>> open
+
+
+      {move 2}
+
+      >>> declare pp1 that p
+
+
+      pp1 : that p
+
+
+      {move 2}
+
+      >>> Declare line1 Mp (p, q, pp1, aa)
+
+
+      line1 : Mp (p, q, pp1, aa)
+
+
+      line1 : that q
+
+
+      {move 2}
+
+      >>> Declare line2 Mp (q, r, line1, bb)
+
+
+      line2 : Mp (q, r, line1, bb)
+
+
+      line2 : that r
+
+
+      {move 2}
+
+      >>> define trans pp1 : line2
+
+
+      trans : [(pp1_1 : that p) => 
+          ({def} Mp (q, r, Mp (p, q, pp1_1, aa), bb) : that 
+          r)]
+
+
+      trans : [(pp1_1 : that p) => (--- 
+          : that r)]
+
+
+      {move 1}
+
+      >>> close
+
+
+   {move 1}
+
+   >>> define Transimp p q r aa bb : Ded \
+       p r trans
+
+
+   Transimp : [(p_1 : prop), (q_1 : prop), (r_1 
+       : prop), (aa_1 : that p_1 -> q_1), (bb_1 
+       : that q_1 -> r_1) => 
+       ({def} Ded (p_1, r_1, [(pp1_2 
+          : that p_1) => 
+          ({def} Mp (q_1, r_1, Mp (p_1, q_1, pp1_2, aa_1), bb_1) : that 
+          r_1)]) : that p_1 -> r_1)]
+
+
+   Transimp : [(p_1 : prop), (q_1 : prop), (r_1 
+       : prop), (aa_1 : that p_1 -> q_1), (bb_1 
+       : that q_1 -> r_1) => (--- : that 
+       p_1 -> r_1)]
+
+
+   {move 0}
+(* quit *)

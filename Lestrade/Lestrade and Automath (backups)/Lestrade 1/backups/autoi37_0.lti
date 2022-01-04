@@ -1,0 +1,4105 @@
+
+>> Inspector Lestrade says:  
+>> Welcome to the Lestrade Type Inspector,
+>>  
+>> User entered lambda terms (arguments)
+>> and function sorts (in declare)!
+>> literate programming with LaTeX comments in ML source
+>> version of  8/6/2019
+>>  10:30 am Boise time
+
+
+%% Automath file 37 translation.  This must be run with the Lestrade version of
+%% July 8 or later, with changes in saved world management.  The new saved world
+%% management allows simulation of the Automath context device, and prevents
+% name cluttering of world 1.
+
+% this version makes full use of implicit arguments.  Proof lines are generally much shorter.
+
+%% odd name changes because a declared identifier now cannot end with the numeral 9 unless
+% it is a numeral
+
+%  * A := EB ; PROP
+
+
+declare A prop
+
+>> A: prop {move 1}
+
+
+% A * B := EB  ; PROP
+
+
+declare B prop
+
+>> B: prop {move 1}
+
+
+% B * IMP := [T,A]B  ;PROP
+
+
+save B
+
+postulate Imp A B : prop
+
+>> Imp: [(A_1:prop),(B_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare T that A
+
+>>    T: that A {move 2}
+
+
+
+   postulate Ded T: that B
+
+>>    Ded: [(T_1:that A) => (---:that B)]
+>>      {move 1:B}
+
+
+
+   close
+
+postulate Imppf Ded : that Imp A B
+
+>> Imppf: [(.A_1:prop),(.B_1:prop),(Ded_1:[(T_2:
+>>         that .A_1) => (---:that .B_1)])
+>>      => (---:that (.A_1 Imp .B_1))]
+>>   {move 0}
+
+
+
+postulate Imppffull A B Ded : that Imp A \
+   B
+
+>> Imppffull: [(A_1:prop),(B_1:prop),(Ded_1:
+>>      [(T_2:that A_1) => (---:that B_1)])
+>>      => (---:that (A_1 Imp B_1))]
+>>   {move 0}
+
+
+
+declare X that A
+
+>> X: that A {move 1:B}
+
+
+
+declare Y that A Imp B
+
+>> Y: that (A Imp B) {move 1:B}
+
+
+
+postulate Mp X Y : that B
+
+>> Mp: [(.A_1:prop),(X_1:that .A_1),(.B_1:prop),
+>>      (Y_1:that (.A_1 Imp .B_1)) => (---:that
+>>      .B_1)]
+>>   {move 0}
+
+
+
+postulate Mpfull A B X Y : that B
+
+>> Mpfull: [(A_1:prop),(B_1:prop),(X_1:that
+>>      A_1),(Y_1:that (A_1 Imp B_1)) => (---:
+>>      that B_1)]
+>>   {move 0}
+
+
+%% This is a universal device for 
+%% fixing forms of conclusions
+%% which would otherwise come out wrong 
+% due to expansion of definitions.
+
+
+declare p66 prop
+
+>> p66: prop {move 1:B}
+
+
+
+declare pp66 that p66
+
+>> pp66: that p66 {move 1:B}
+
+
+
+define Fixfun p66 pp66:pp66
+
+>> Fixfun: [(p66_1:prop),(pp66_1:that p66_1)
+>>      => (pp66_1:that p66_1)]
+>>   {move 0}
+
+
+% open
+
+% declare pp67 that p66
+
+% define pid66 pp67: pp67
+
+% close
+
+% define Fixfun p66 pp66 : Mp pp66, Imppffull p66 p66 pid66
+
+%   *  CON  := PN  ;PROP
+
+
+postulate Con prop
+
+>> Con: prop {move 0}
+
+
+% A * NOT  := IMP(A,CON) ; PROP
+
+
+define Not A : A Imp Con
+
+>> Not: [(A_1:prop) => ((A_1 Imp Con):prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare Xx that A Imp Con
+
+>>    Xx: that (A Imp Con) {move 2}
+
+
+
+   define negfix Xx : Xx
+
+>>    negfix: [(Xx_1:that (A Imp Con)) => (---:
+>>         that (A Imp Con))]
+>>      {move 1:B}
+
+
+
+   close
+
+define Negfix A : Imppffull (A Imp Con, Not \
+   A, negfix)
+
+>> Negfix: [(A_1:prop) => (Imppffull((A_1 Imp
+>>      Con),Not(A_1),[(Xx_2:that (A_1 Imp Con))
+>>         => (Xx_2:that (A_1 Imp Con))])
+>>      :that ((A_1 Imp Con) Imp Not(A_1)))]
+>>   {move 0}
+
+
+
+open
+
+   declare aa that A
+
+>>    aa: that A {move 2}
+
+
+
+   postulate neg aa : that Con
+
+>>    neg: [(aa_1:that A) => (---:that Con)]
+>>      {move 1:B}
+
+
+
+   close
+%define Negproof neg:  Mp (Imppf neg, Negfix A)
+
+
+define Negproof neg: Fixfun(Not A,Imppf neg)
+
+
+>> Negproof: [(.A_1:prop),(neg_1:[(aa_2:that
+>>         .A_1) => (---:that Con)])
+>>      => ((Not(.A_1) Fixfun Imppf(neg_1)):that
+>>      Not(.A_1))]
+>>   {move 0}
+
+
+% B * I  :=EB  ; IMP(A,B)
+
+clearcurrent B
+
+
+declare I that A Imp B
+
+>> I: that (A Imp B) {move 1:B}
+
+
+
+save I
+% I * N  := E3  ;NOT(B)
+
+
+declare N that Not B
+
+>> N: that Not(B) {move 1:I}
+
+
+% N *  CONTRAPOS := [T,A]<<T>I>N  ;NOT(A)
+
+
+open
+
+   declare T that A
+
+>>    T: that A {move 2}
+
+
+
+   define step1 T : Mp T I
+
+>>    step1: [(T_1:that A) => (---:that B)]
+>>      {move 1:I}
+
+
+
+   define step2 T : Mp (step1 T, N)
+
+>>    step2: [(T_1:that A) => (---:that Con)]
+>>      {move 1:I}
+
+
+
+   close
+
+define Contrapos I N : Negproof step2
+
+>> Contrapos: [(.A_1:prop),(.B_1:prop),(I_1:
+>>      that (.A_1 Imp .B_1)),(N_1:that Not(.B_1))
+>>      => (Negproof([(T_2:that .A_1) => (((T_2
+>>         Mp I_1) Mp N_1):that Con)])
+>>      :that Not(.A_1))]
+>>   {move 0}
+
+
+% A * A0  := EB   ;A
+
+clearcurrent I
+
+
+declare A0 that A
+
+>> A0: that A {move 1:I}
+
+
+
+save A0
+% A0 * TH1  := [T,NOT(A)]<A0>[T]  ; NOT(NOT(A))
+
+
+open
+
+   declare T that Not A
+
+>>    T: that Not(A) {move 2}
+
+
+
+   define step1 T : Mp A0 T
+
+>>    step1: [(T_1:that Not(A)) => (---:that
+>>         Con)]
+>>      {move 1:A0}
+
+
+
+   close
+
+define Th1 A0 : Negproof step1
+
+>> Th1: [(.A_1:prop),(A0_1:that .A_1) => (Negproof([(T_2:
+>>         that Not(.A_1)) => ((A0_1 Mp T_2):that
+>>         Con)])
+>>      :that Not(Not(.A_1)))]
+>>   {move 0}
+
+
+clearcurrent A0
+
+
+save A0
+% A * N :=EB  ; NOT(NOT(A))
+
+
+declare N that Not Not A
+
+>> N: that Not(Not(A)) {move 1:A0}
+
+
+% N * DBLNEGLAW := PN  ; A
+
+
+postulate Dblneglaw N : that A
+
+>> Dblneglaw: [(.A_1:prop),(N_1:that Not(Not(.A_1)))
+>>      => (---:that .A_1)]
+>>   {move 0}
+
+
+% B * I  := EB ;IMP(A,B)
+
+% already declared
+
+% I * J := EB  ;IMP(NOT(A),B)
+
+
+declare J that (Not A) Imp B
+
+>> J: that (Not(A) Imp B) {move 1:A0}
+
+
+% J * ANYCASE := DBLNEGLAW(B,[T,NOT(B)]<<CONTRAPOS(A,B,I,T)>J>T) ; B
+
+
+open
+
+   declare bb that Not B
+
+>>    bb: that Not(B) {move 2}
+
+
+
+   define step1 bb : Contrapos I bb
+
+>>    step1: [(bb_1:that Not(B)) => (---:that
+>>         Not(A))]
+>>      {move 1:A0}
+
+
+
+   define step2 bb : Contrapos (J, bb)
+
+>>    step2: [(bb_1:that Not(B)) => (---:that
+>>         Not(Not(A)))]
+>>      {move 1:A0}
+
+
+
+   define step3 bb: Mp (step1 bb,step2 bb)
+
+
+>>    step3: [(bb_1:that Not(B)) => (---:that
+>>         Con)]
+>>      {move 1:A0}
+
+
+
+   close
+
+define Anycase I J : Dblneglaw (Negproof \
+   (step3))
+
+>> Anycase: [(.A_1:prop),(.B_1:prop),(I_1:that
+>>      (.A_1 Imp .B_1)),(J_1:that (Not(.A_1)
+>>      Imp .B_1)) => (Dblneglaw(Negproof([(bb_2:
+>>         that Not(.B_1)) => (((I_1 Contrapos
+>>         bb_2) Mp (J_1 Contrapos bb_2)):that
+>>         Con)]))
+>>      :that .B_1)]
+>>   {move 0}
+
+
+clearcurrent I
+
+
+save I
+% B * N := EB  ;NOT(A)
+
+
+declare N that Not A
+
+>> N: that Not(A) {move 1:I}
+
+
+% N % TH2 := [T,A]DBLNEGLAW(B,[U,NOT(B)]<T>N ;IMP(A,B)
+
+
+open
+
+   declare T that A
+
+>>    T: that A {move 2}
+
+
+
+   open
+
+      declare U that Not B
+
+>>       U: that Not(B) {move 3}
+
+
+
+      define step1 U : Mp T N
+
+>>       step1: [(U_1:that Not(B)) => (---:that
+>>            Con)]
+>>         {move 2}
+
+
+
+      close
+
+   define step2 T : Dblneglaw (Negproof (step1))
+
+
+>>    step2: [(T_1:that A) => (---:that B)]
+>>      {move 1:I}
+
+
+
+   close
+%% Notice that Th2 has a proposition parameter,
+%% because B cannot be extracted from the argument
+% supplied (a proof of not A).
+
+
+define Th2 B N : Imppf step2
+
+>> Th2: [(B_1:prop),(.A_1:prop),(N_1:that Not(.A_1))
+>>      => (Imppf([(T_2:that .A_1) => (Dblneglaw(Negproof([(U_3:
+>>            that Not(B_1)) => ((T_2 Mp N_1):
+>>            that Con)]))
+>>         :that B_1)])
+>>      :that (.A_1 Imp B_1))]
+>>   {move 0}
+
+
+% B * A0 := EB  ; A
+
+% already declared
+
+% A0 * N := EB ; NOT(B)
+
+clearcurrent A0
+
+
+save A0
+
+declare N that Not B
+
+>> N: that Not(B) {move 1:A0}
+
+
+%  N * TH3 := [T,IMP(A,B)]<<A0>T>N ;NOT(IMP(A,B))
+
+
+open
+
+   declare T that Imp A B
+
+>>    T: that (A Imp B) {move 2}
+
+
+
+   define step1 T : Mp A0 T
+
+>>    step1: [(T_1:that (A Imp B)) => (---:that
+>>         B)]
+>>      {move 1:A0}
+
+
+
+   define step2 T : Mp (step1 T, N)
+
+>>    step2: [(T_1:that (A Imp B)) => (---:that
+>>         Con)]
+>>      {move 1:A0}
+
+
+
+   close
+
+define Th3 A0 N : Negproof(step2)
+
+>> Th3: [(.A_1:prop),(A0_1:that .A_1),(.B_1:
+>>      prop),(N_1:that Not(.B_1)) => (Negproof([(T_2:
+>>         that (.A_1 Imp .B_1)) => (((A0_1 Mp
+>>         T_2) Mp N_1):that Con)])
+>>      :that Not((.A_1 Imp .B_1)))]
+>>   {move 0}
+
+
+% B * N := EB ; NOT(IMP(A,B))
+
+clearcurrent I
+
+
+save I
+
+declare N that Not(A Imp B)
+
+>> N: that Not((A Imp B)) {move 1:I}
+
+
+
+save N
+% N * TH4 := DBLNEGLAW(A,[T,NOT(A)]<TH2(A,B,T)>N
+
+
+open
+
+   declare T that Not A
+
+>>    T: that Not(A) {move 2}
+
+
+
+   define step1 T : Th2 B T
+
+>>    step1: [(T_1:that Not(A)) => (---:that
+>>         (A Imp B))]
+>>      {move 1:N}
+
+
+
+   define step2 T: Mp (step1 T, N)
+
+>>    step2: [(T_1:that Not(A)) => (---:that
+>>         Con)]
+>>      {move 1:N}
+
+
+
+   close
+
+define Th4 N : Dblneglaw (Negproof (step2))
+
+
+>> Th4: [(.A_1:prop),(.B_1:prop),(N_1:that Not((.A_1
+>>      Imp .B_1))) => (Dblneglaw(Negproof([(T_2:
+>>         that Not(.A_1)) => (((.B_1 Th2 T_2)
+>>         Mp N_1):that Con)]))
+>>      :that .A_1)]
+>>   {move 0}
+
+
+clearcurrent N
+
+% N * TH5 := [T,B]<[U,A]T>N
+
+
+open
+
+   declare T that B
+
+>>    T: that B {move 2}
+
+
+
+   open
+
+      declare U that A
+
+>>       U: that A {move 3}
+
+
+
+      define step1 U : T
+
+>>       step1: [(U_1:that A) => (---:that B)]
+>>         {move 2}
+
+
+
+      close
+
+   define step2 T : Mp ((Imppf step1), N)
+
+
+>>    step2: [(T_1:that B) => (---:that Con)]
+>>      {move 1:N}
+
+
+
+   close
+
+define Th5 N : Negproof step2
+
+>> Th5: [(.A_1:prop),(.B_1:prop),(N_1:that Not((.A_1
+>>      Imp .B_1))) => (Negproof([(T_2:that .B_1)
+>>         => ((Imppf([(U_3:that .A_1) => (T_2:
+>>            that .B_1)])
+>>         Mp N_1):that Con)])
+>>      :that Not(.B_1))]
+>>   {move 0}
+
+
+% B * OR := IMP(NOT(A),B) ; PROP
+
+clearcurrent I
+
+
+save I
+
+define Or A B : (Not A) Imp B
+
+>> Or: [(A_1:prop),(B_1:prop) => ((Not(A_1)
+>>      Imp B_1):prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare X2 that (Not A) Imp B
+
+>>    X2: that (Not(A) Imp B) {move 2}
+
+
+
+   define orfix X2:X2
+
+>>    orfix: [(X2_1:that (Not(A) Imp B)) =>
+>>         (---:that (Not(A) Imp B))]
+>>      {move 1:I}
+
+
+
+   close
+
+define Orfix A B: Imppffull((Not A) Imp B, \
+   Or A B,orfix)
+
+>> Orfix: [(A_1:prop),(B_1:prop) => (Imppffull((Not(A_1)
+>>      Imp B_1),(A_1 Or B_1),[(X2_2:that (Not(A_1)
+>>         Imp B_1)) => (X2_2:that (Not(A_1) Imp
+>>         B_1))])
+>>      :that ((Not(A_1) Imp B_1) Imp (A_1 Or
+>>      B_1)))]
+>>   {move 0}
+
+
+% B * A0 := EB ; A
+
+
+declare A0 that A
+
+>> A0: that A {move 1:I}
+
+
+% A0 * ORI1 := TH2(NOT(A),B,TH1(A,A0)) ; OR(A,B)
+
+% define Ori1 B A0 : Mp (Th2 (B, Th1  A0),Orfix A,B)
+
+
+define Ori1 B A0: Fixfun(A Or B,Th2(B,Th1 \
+   A0))
+
+>> Ori1: [(B_1:prop),(.A_1:prop),(A0_1:that
+>>      .A_1) => (((.A_1 Or B_1) Fixfun (B_1 Th2
+>>      Th1(A0_1))):that (.A_1 Or B_1))]
+>>   {move 0}
+
+
+% B * B0 := EB ; B
+
+clearcurrent I
+
+
+declare A0 that A
+
+>> A0: that A {move 1:I}
+
+
+
+declare B0 that B
+
+>> B0: that B {move 1:I}
+
+
+
+save B0
+% B0 * ORI2 := [T,NOT(A)]B0 ; OR(A,B)
+
+
+open
+
+   declare Nn that Not A
+
+>>    Nn: that Not(A) {move 2}
+
+
+
+   define oristep Nn : B0
+
+>>    oristep: [(Nn_1:that Not(A)) => (---:that
+>>         B)]
+>>      {move 1:B0}
+
+
+
+   close
+%define Ori2 A B0 : Mp(Imppf (oristep), Orfix A B)
+
+
+define Ori2 A B0: Fixfun(A Or B,Imppf oristep)
+
+
+>> Ori2: [(A_1:prop),(.B_1:prop),(B0_1:that
+>>      .B_1) => (((A_1 Or .B_1) Fixfun Imppf([(Nn_2:
+>>         that Not(A_1)) => (B0_1:that .B_1)]))
+>>      :that (A_1 Or .B_1))]
+>>   {move 0}
+
+
+% B * O := EB ; OR(A,B)
+
+clearcurrent B0
+
+
+declare O that Or A B
+
+>> O: that (A Or B) {move 1:B0}
+
+
+
+save O
+% O * N := EB ; NOT(A)
+
+
+declare nota that Not A
+
+>> nota: that Not(A) {move 1:O}
+
+
+
+save nota
+% N * NOTCASE1 := <N>O ; B
+
+
+define Notcase1 O nota : Mp (nota, O)
+
+>> Notcase1: [(.A_1:prop),(.B_1:prop),(O_1:that
+>>      (.A_1 Or .B_1)),(nota_1:that Not(.A_1))
+>>      => ((nota_1 Mp O_1):that .B_1)]
+>>   {move 0}
+
+
+% O * N := EB ; NOT(B)
+
+clearcurrent nota
+
+
+declare notb that Not B
+
+>> notb: that Not(B) {move 1:nota}
+
+
+
+save notb
+% N * NOTCASE2 := DBLNEGLAW(A,CONTRAPOS(NOT A,B,O,N))
+
+
+define Notcase2 O notb : Dblneglaw(Contrapos(O, \
+   notb))
+
+>> Notcase2: [(.A_1:prop),(.B_1:prop),(O_1:that
+>>      (.A_1 Or .B_1)),(notb_1:that Not(.B_1))
+>>      => (Dblneglaw((O_1 Contrapos notb_1)):
+>>      that .A_1)]
+>>   {move 0}
+
+
+% B * C := EB ; PROP
+
+clearcurrent B
+
+
+declare C prop
+
+>> C: prop {move 1:B}
+
+
+% C * O := EB ; OR(A,B)
+
+
+declare O that A Or B
+
+>> O: that (A Or B) {move 1:B}
+
+
+% O * I := EB ; IMP(A,C)
+
+
+declare I that A Imp C
+
+>> I: that (A Imp C) {move 1:B}
+
+
+% I * J := EB ; IMP(B,C)
+
+
+declare J that B Imp C
+
+>> J: that (B Imp C) {move 1:B}
+
+
+% J * ORE := ANYCASE(A,C,I,[T,Not A]<<T>,O>J>) ; C
+
+
+open
+
+   declare T that Not A
+
+>>    T: that Not(A) {move 2}
+
+
+
+   define step1 T: Mp (T, O)
+
+>>    step1: [(T_1:that Not(A)) => (---:that
+>>         B)]
+>>      {move 1:B}
+
+
+
+   define step2 T: Mp (step1 T, J)
+
+>>    step2: [(T_1:that Not(A)) => (---:that
+>>         C)]
+>>      {move 1:B}
+
+
+
+   close
+
+define Ore O I J : Anycase(I,Imppf (step2))
+
+
+>> Ore: [(.A_1:prop),(.B_1:prop),(O_1:that (.A_1
+>>      Or .B_1)),(.C_1:prop),(I_1:that (.A_1
+>>      Imp .C_1)),(J_1:that (.B_1 Imp .C_1))
+>>      => ((I_1 Anycase Imppf([(T_2:that Not(.A_1))
+>>         => (((T_2 Mp O_1) Mp J_1):that .C_1)]))
+>>      :that .C_1)]
+>>   {move 0}
+
+
+% B * AND := NOT(IMP(A,NOT(B))) ; PROP
+
+clearcurrent B0
+
+
+define And A B: Not(A Imp Not B)
+
+>> And: [(A_1:prop),(B_1:prop) => (Not((A_1
+>>      Imp Not(B_1))):prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare fixand that And A B
+
+>>    fixand: that (A And B) {move 2}
+
+
+
+   define andfix fixand : fixand
+
+>>    andfix: [(fixand_1:that (A And B)) =>
+>>         (---:that (A And B))]
+>>      {move 1:B0}
+
+
+
+   close
+
+define Andfix A B: Imppffull (Not(A Imp Not \
+   B),A And B,andfix)
+
+>> Andfix: [(A_1:prop),(B_1:prop) => (Imppffull(Not((A_1
+>>      Imp Not(B_1))),(A_1 And B_1),[(fixand_2:
+>>         that (A_1 And B_1)) => (fixand_2:that
+>>         (A_1 And B_1))])
+>>      :that (Not((A_1 Imp Not(B_1))) Imp (A_1
+>>      And B_1)))]
+>>   {move 0}
+
+
+% B * A0 := EB ; A
+
+% already declared
+
+% A0 * B0 := EB ; B
+
+% use B0 already declared
+
+% B0 * ANDI := TH3(A,NOT(B),A0,TH1(B,B0)) ; AND(A,B)
+
+
+define Andi A0 B0 : Fixfun(A And B,(Th3(A0, \
+   Th1 B0)))
+
+>> Andi: [(.A_1:prop),(A0_1:that .A_1),(.B_1:
+>>      prop),(B0_1:that .B_1) => (((.A_1 And
+>>      .B_1) Fixfun (A0_1 Th3 Th1(B0_1))):that
+>>      (.A_1 And .B_1))]
+>>   {move 0}
+
+
+% B * A1 := EB ; AND(A,B)
+
+
+declare A1 that A And B
+
+>> A1: that (A And B) {move 1:B0}
+
+
+% A1 * ANDE1 := TH4(A,NOT B,A1) ; A
+
+
+define Ande1 A1 : Th4(A1)
+
+>> Ande1: [(.A_1:prop),(.B_1:prop),(A1_1:that
+>>      (.A_1 And .B_1)) => (Th4(A1_1):that .A_1)]
+>>   {move 0}
+
+
+% A1 * ANDE2 := DBLNEGLAW(B,TH5(A,NOT(B),A1))
+
+
+define Ande2 A1 : Dblneglaw(Th5(A1))
+
+>> Ande2: [(.A_1:prop),(.B_1:prop),(A1_1:that
+>>      (.A_1 And .B_1)) => (Dblneglaw(Th5(A1_1)):
+>>      that .B_1)]
+>>   {move 0}
+
+
+% * NAT := PN ;TYPE
+
+clearcurrent
+
+
+postulate Nat type
+
+>> Nat: type {move 0}
+
+
+%  * P := EB ; [x:NAT]PROP
+
+%% Notice the characteristic Lestrade maneuver
+% to declare an abstraction variable
+
+
+open
+
+   declare x in Nat
+
+>>    x: in Nat {move 2}
+
+
+
+   postulate P x prop
+
+>>    P: [(x_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+save P
+% P * ALL := P ; PROP
+
+%% Here we have to do some work;
+%% we are up against the quite
+%% different treatment of proof
+% types in Lestrade.
+
+%% It is quite hard to make sense
+%% of without carefully thinking
+%% about the weird subtyping in
+% metatypes in Automath.
+
+
+postulate All P: prop
+
+>> All: [(P_1:[(x_2:in Nat) => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+
+declare xx in Nat
+
+>> xx: in Nat {move 1:P}
+
+
+
+declare ev that All P
+
+>> ev: that All(P) {move 1:P}
+
+
+
+postulate Alle xx ev :that P xx
+
+>> Alle: [(xx_1:in Nat),(.P_1:[(x_2:in Nat)
+>>         => (---:prop)]),
+>>      (ev_1:that All(.P_1)) => (---:that .P_1(xx_1))]
+>>   {move 0}
+
+
+clearcurrent P
+
+
+open
+
+   declare x in Nat
+
+>>    x: in Nat {move 2}
+
+
+
+   postulate univev x: that P x
+
+>>    univev: [(x_1:in Nat) => (---:that P(x_1))]
+>>      {move 1:P}
+
+
+
+   close
+
+postulate Alli univev : that All P
+
+>> Alli: [(.P_1:[(x_2:in Nat) => (---:prop)]),
+>>      (univev_1:[(x_3:in Nat) => (---:that .P_1(x_3))])
+>>      => (---:that All(.P_1))]
+>>   {move 0}
+
+
+clearcurrent P
+
+% P * SOME := NOT(ALL([X,NAT]NOT(<X>P))) ; PROP
+
+
+open
+
+   declare xxx in Nat
+
+>>    xxx: in Nat {move 2}
+
+
+
+   define Notp xxx : Not (P xxx)
+
+>>    Notp: [(xxx_1:in Nat) => (---:prop)]
+>>      {move 1:P}
+
+
+
+   close
+
+define Some P : Not(All Notp)
+
+>> Some: [(P_1:[(x_2:in Nat) => (---:prop)])
+>>      => (Not(All([(xxx_3:in Nat) => (Not(P_1(xxx_3)):
+>>         prop)]))
+>>      :prop)]
+>>   {move 0}
+
+
+% P * K := EB ; NAT
+
+
+save Notp
+
+open
+
+   declare fixsome that Some P
+
+>>    fixsome: that Some(P) {move 2}
+
+
+
+   define somefix fixsome: fixsome
+
+>>    somefix: [(fixsome_1:that Some(P)) =>
+>>         (---:that Some(P))]
+>>      {move 1:Notp}
+
+
+
+   close
+
+define Somefix P: Imppffull (Not (All Notp), \
+   Some P,somefix)
+
+>> Somefix: [(P_1:[(x_2:in Nat) => (---:prop)])
+>>      => (Imppffull(Not(All([(xxx_3:in Nat)
+>>         => (Not(P_1(xxx_3)):prop)]))
+>>      ,Some(P_1),[(fixsome_4:that Some(P_1))
+>>         => (fixsome_4:that Some(P_1))])
+>>      :that (Not(All([(xxx_5:in Nat) => (Not(P_1(xxx_5)):
+>>         prop)]))
+>>      Imp Some(P_1)))]
+>>   {move 0}
+
+
+clearcurrent Notp
+
+
+declare K in Nat
+
+>> K: in Nat {move 1:Notp}
+
+
+% K * KP := EB ; <K>P
+
+
+declare Kp that P K
+
+>> Kp: that P(K) {move 1:Notp}
+
+
+% Kp * SOMEI := [T,[X,NAT]NOT(<X>P)]<KP><K>T
+
+
+open
+
+   declare counterev that All Notp
+
+>>    counterev: that All(Notp) {move 2}
+
+
+
+   define step1 counterev: Alle K counterev
+
+
+>>    step1: [(counterev_1:that All(Notp)) =>
+>>         (---:that Notp(K))]
+>>      {move 1:Notp}
+
+
+
+   define step2 counterev: Mp (Kp, step1 \
+      counterev)
+
+>>    step2: [(counterev_1:that All(Notp)) =>
+>>         (---:that Con)]
+>>      {move 1:Notp}
+
+
+
+   close
+
+define Somei P, K, Kp: Fixfun(Some P,Negproof \
+   (step2))
+
+>> Somei: [(P_1:[(x_2:in Nat) => (---:prop)]),
+>>      (K_1:in Nat),(Kp_1:that P_1(K_1)) => ((Some(P_1)
+>>      Fixfun Negproof([(counterev_4:that All([(xxx_5:
+>>            in Nat) => (Not(P_1(xxx_5)):prop)]))
+>>         => ((Kp_1 Mp (K_1 Alle counterev_4)):
+>>         that Con)]))
+>>      :that Some(P_1))]
+>>   {move 0}
+
+
+clearcurrent Notp
+
+% P * A := EB ; PROP
+
+
+declare A prop
+
+>> A: prop {move 1:Notp}
+
+
+% A * S := EB ; SOME(P)
+
+
+declare S that Some P
+
+>> S: that Some(P) {move 1:Notp}
+
+
+% S * A0 := EB ; [X:NAT][T,<X>P)]A
+
+
+open
+
+   declare xxx in Nat
+
+>>    xxx: in Nat {move 2}
+
+
+
+   declare T that P xxx
+
+>>    T: that P(xxx) {move 2}
+
+
+
+   postulate A00 xxx T that A
+
+>>    A00: [(xxx_1:in Nat),(T_1:that P(xxx_1))
+>>         => (---:that A)]
+>>      {move 1:Notp}
+
+
+
+   close
+%% +1
+% A0 * N := EB ; NOT(A)
+
+
+open
+
+   declare nota1 that Not A
+
+>>    nota1: that Not(A) {move 2}
+
+
+     % N * K := EB ; NAT
+
+
+   open
+
+      declare kk in Nat
+
+>>       kk: in Nat {move 3}
+
+
+          % K * T1 := CONTRAPOS(<K>P,A,<K>A0,N) ; NOT(<K>P)
+
+
+      open
+
+         declare zorch that P kk
+
+>>          zorch: that P(kk) {move 4}
+
+
+
+         define counterzorch zorch : A00 \
+            kk zorch
+
+>>          counterzorch: [(zorch_1:that P(kk))
+>>               => (---:that A)]
+>>            {move 3}
+
+
+
+         close
+
+      define A01 kk : Imppf (counterzorch)
+
+
+>>       A01: [(kk_1:in Nat) => (---:that (P(kk_1)
+>>            Imp A))]
+>>         {move 2}
+
+
+
+      define step1 kk : Contrapos(A01 kk, \
+         nota1)
+
+>>       step1: [(kk_1:in Nat) => (---:that
+>>            Not(P(kk_1)))]
+>>         {move 2}
+
+
+          % N * T2 := <[X:NAT]T1(X)>S ; CON
+
+
+      close
+
+   define step2 nota1 : Alli step1
+
+>>    step2: [(nota1_1:that Not(A)) => (---:
+>>         that All([(kk_5:in Nat) => (Not(P(kk_5)):
+>>            prop)]))
+>>         ]
+>>      {move 1:Notp}
+
+
+
+   define step3 nota1 : Mp (step2 nota1 , \
+      S)
+
+>>    step3: [(nota1_1:that Not(A)) => (---:
+>>         that Con)]
+>>      {move 1:Notp}
+
+
+
+   close
+% A0 SOMEE := DBLNEGLAW(A,[T,NOT(A)]T2"-1"(T)) ; A
+
+%% Note that in the proof of Somee, though
+%% in general terms it is clear that the logical
+%% structure is similar, the details of the 
+%% type system are different enough that it
+% is hard to compare the terms.
+
+
+define Somee S, A00 : Dblneglaw (Negproof \
+   (step3))
+
+>> Somee: [(.P_1:[(x_2:in Nat) => (---:prop)]),
+>>      (S_1:that Some(.P_1)),(.A_1:prop),(A00_1:
+>>      [(xxx_3:in Nat),(T_3:that .P_1(xxx_3))
+>>         => (---:that .A_1)])
+>>      => (Dblneglaw(Negproof([(nota1_4:that
+>>         Not(.A_1)) => ((Alli([(kk_7:in Nat)
+>>            => ((Imppf([(zorch_8:that .P_1(kk_7))
+>>               => ((kk_7 A00_1 zorch_8):that
+>>               .A_1)])
+>>            Contrapos nota1_4):that Not(.P_1(kk_7)))])
+>>         Mp S_1):that Con)]))
+>>      :that .A_1)]
+>>   {move 0}
+
+
+clearcurrent
+
+% * K := EB ; NAT
+
+
+declare K in Nat
+
+>> K: in Nat {move 1}
+
+
+% K * L := EB ; NAT
+
+
+declare L in Nat
+
+>> L: in Nat {move 1}
+
+
+% L * IS := PN ; PROP
+
+
+save L
+
+postulate Is K L : prop
+
+>> Is: [(K_1:in Nat),(L_1:in Nat) => (---:prop)]
+>>   {move 0}
+
+
+% K * REFLEQ := PN ; IS(K,K)
+
+
+postulate Refleq K that Is(K,K)
+
+>> Refleq: [(K_1:in Nat) => (---:that (K_1 Is
+>>      K_1))]
+>>   {move 0}
+
+
+% L * I := EB ; IS{K,L)
+
+
+declare I that Is K L
+
+>> I: that (K Is L) {move 1:L}
+
+
+% I * P := EB ; [X,NAT]PROP
+
+
+open
+
+   declare x in Nat
+
+>>    x: in Nat {move 2}
+
+
+
+   postulate P x : prop
+
+>>    P: [(x_1:in Nat) => (---:prop)]
+>>      {move 1:L}
+
+
+
+   close
+
+save P
+% P * KP := EB ; <K>P
+
+
+declare Kp that P K
+
+>> Kp: that P(K) {move 1:P}
+
+
+% KP * EQPRED1 := PN ; <L>P
+
+%% That we actually need the predicate argument
+%% (though it could be inferred) comes from the
+%% fact that we do not want to make all substitutions
+% of L for K when we use K=L.
+
+% an implicit argument version might have uses.
+
+
+postulate Eqpred1 I P, Kp : that P L
+
+>> Eqpred1: [(.K_1:in Nat),(.L_1:in Nat),(I_1:
+>>      that (.K_1 Is .L_1)),(P_1:[(x_2:in Nat)
+>>         => (---:prop)]),
+>>      (Kp_1:that P_1(.K_1)) => (---:that P_1(.L_1))]
+>>   {move 0}
+
+
+% I * SYMEQ := EQPRED1([X:NAT]IS(X,K),REFLEQ(K)) ; IS(L,K)
+
+
+open
+
+   declare x in Nat
+
+>>    x: in Nat {move 2}
+
+
+
+   define thepred x : Is(x,K)
+
+>>    thepred: [(x_1:in Nat) => (---:prop)]
+>>      {move 1:P}
+
+
+
+   close
+% right here we use a non-inferrable predicate with Eqpred1.
+
+
+define Symeq I : Eqpred1 I thepred, Refleq \
+   K
+
+>> Symeq: [(.K_1:in Nat),(.L_1:in Nat),(I_1:
+>>      that (.K_1 Is .L_1)) => (Eqpred1(I_1,[(x_2:
+>>         in Nat) => ((x_2 Is .K_1):prop)]
+>>      ,Refleq(.K_1)):that (.L_1 Is .K_1))]
+>>   {move 0}
+
+
+clearcurrent P
+
+% P * LP := EB ; <L>P
+
+
+declare Lp that P L
+
+>> Lp: that P(L) {move 1:P}
+
+
+% LP * EQPRED2 := EQPRED1(L,K,SYMEQ(K,L,I),P,LP) ; <K>P
+
+
+define Eqpred2 I P, Lp: Eqpred1(Symeq(I), \
+   P,Lp)
+
+>> Eqpred2: [(.K_1:in Nat),(.L_1:in Nat),(I_1:
+>>      that (.K_1 Is .L_1)),(P_1:[(x_2:in Nat)
+>>         => (---:prop)]),
+>>      (Lp_1:that P_1(.L_1)) => (Eqpred1(Symeq(I_1),
+>>      P_1,Lp_1):that P_1(.K_1))]
+>>   {move 0}
+
+
+% L * M := EB ; Nat
+
+clearcurrent L
+
+
+declare M in Nat
+
+>> M: in Nat {move 1:L}
+
+
+% M * I := EB ; IS(K,L)
+
+
+save M
+
+declare I that K Is L
+
+>> I: that (K Is L) {move 1:M}
+
+
+% I * J := EB ; IS(L,M)
+
+
+declare J that L Is M
+
+>> J: that (L Is M) {move 1:M}
+
+
+% J * TREQ := EQPRED1(L,M,J,[X:NAT]IS(K,X),I)
+
+
+open
+
+   declare x in Nat
+
+>>    x: in Nat {move 2}
+
+
+
+   define thepred x: Is(K,x)
+
+>>    thepred: [(x_1:in Nat) => (---:prop)]
+>>      {move 1:M}
+
+
+
+   close
+
+define Treq I J : Eqpred1(J,thepred,I)
+
+>> Treq: [(.K_1:in Nat),(.L_1:in Nat),(I_1:that
+>>      (.K_1 Is .L_1)),(.M_1:in Nat),(J_1:that
+>>      (.L_1 Is .M_1)) => (Eqpred1(J_1,[(x_2:
+>>         in Nat) => ((.K_1 Is x_2):prop)]
+>>      ,I_1):that (.K_1 Is .M_1))]
+>>   {move 0}
+
+
+clearcurrent M
+
+% M * I := EB ; IS(K,M)
+
+
+declare I that K Is M
+
+>> I: that (K Is M) {move 1:M}
+
+
+% I * J := EB ; IS(L,M)
+
+
+declare J that L Is M
+
+>> J: that (L Is M) {move 1:M}
+
+
+% J * CONVEQ := TREQ(K,M,L,I,SYMEQ(L,M,J)) ; IS(K,L)
+
+
+define Conveq I J : Treq(I,Symeq(J))
+
+>> Conveq: [(.K_1:in Nat),(.M_1:in Nat),(I_1:
+>>      that (.K_1 Is .M_1)),(.L_1:in Nat),(J_1:
+>>      that (.L_1 Is .M_1)) => ((I_1 Treq Symeq(J_1)):
+>>      that (.K_1 Is .L_1))]
+>>   {move 0}
+
+
+clearcurrent M
+
+% M * I := EB ; IS(M,K)
+
+
+declare I that M Is K
+
+>> I: that (M Is K) {move 1:M}
+
+
+% I * J := EB ; IS(M,L)
+
+
+declare J that M Is L
+
+>> J: that (M Is L) {move 1:M}
+
+
+% J * DIVEQ := TREQ(K,M,L,SYMEQ(M,K,I),J) ; IS(K,L)
+
+
+define Diveq I J : Treq(Symeq(I),J)
+
+>> Diveq: [(.M_1:in Nat),(.K_1:in Nat),(I_1:
+>>      that (.M_1 Is .K_1)),(.L_1:in Nat),(J_1:
+>>      that (.M_1 Is .L_1)) => ((Symeq(I_1) Treq
+>>      J_1):that (.K_1 Is .L_1))]
+>>   {move 0}
+
+
+clearcurrent M
+
+% M * N := EB ; NAT
+
+
+declare N in Nat
+
+>> N: in Nat {move 1:M}
+
+
+% N * I := EB ; IS(K,L)
+
+
+declare I that K Is L
+
+>> I: that (K Is L) {move 1:M}
+
+
+% I * J := EB ; IS(L,M)
+
+
+declare J that L Is M
+
+>> J: that (L Is M) {move 1:M}
+
+
+% J * I0 := EB ; IS(M,N)
+
+
+declare I0 that M Is N
+
+>> I0: that (M Is N) {move 1:M}
+
+
+% I0 * TR3EQ := TREQ(K,M,N,TREQ(K,L,M,I,J),I0)
+
+
+define Treq3 I J I0 : Treq(Treq(I,J),I0)
+
+
+>> Treq3: [(.K_1:in Nat),(.L_1:in Nat),(I_1:
+>>      that (.K_1 Is .L_1)),(.M_1:in Nat),(J_1:
+>>      that (.L_1 Is .M_1)),(.N_1:in Nat),(I0_1:
+>>      that (.M_1 Is .N_1)) => (((I_1 Treq J_1)
+>>      Treq I0_1):that (.K_1 Is .N_1))]
+>>   {move 0}
+
+
+clearcurrent
+
+% * P := EB ; [X:NAT]PROP
+
+
+open
+
+   declare x in Nat
+
+>>    x: in Nat {move 2}
+
+
+
+   postulate P x prop
+
+>>    P: [(x_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+save P
+% P * NOTTWO := [X,NAT][Y,NAT][T,<X>P][U,<Y>P]IS(X,Y) ; PROP
+
+%% I am forced to take a different tack
+% due to not having weird Automath subtyping
+
+
+open
+
+   declare x in Nat
+
+>>    x: in Nat {move 2}
+
+
+
+   open
+
+      declare y in Nat
+
+>>       y: in Nat {move 3}
+
+
+
+      define bothptheneq y : ((P x) And (P \
+         y)) Imp (x Is y)
+
+>>       bothptheneq: [(y_1:in Nat) => (---:
+>>            prop)]
+>>         {move 2}
+
+
+
+      close
+
+   define bothptheneq2 x : All bothptheneq
+
+
+>>    bothptheneq2: [(x_1:in Nat) => (---:prop)]
+>>      {move 1:P}
+
+
+
+   close
+
+define Nottwo P : All bothptheneq2
+
+>> Nottwo: [(P_1:[(x_2:in Nat) => (---:prop)])
+>>      => (All([(x_3:in Nat) => (All([(y_4:in
+>>            Nat) => (((P_1(x_3) And P_1(y_4))
+>>            Imp (x_3 Is y_4)):prop)])
+>>         :prop)])
+>>      :prop)]
+>>   {move 0}
+
+
+clearcurrent P
+
+% P * ONE := AND(SOME(P),NOTTWO(P)) ; PROP
+
+
+define One P : (Some P) And (Nottwo P)
+
+>> One: [(P_1:[(x_2:in Nat) => (---:prop)])
+>>      => ((Some(P_1) And Nottwo(P_1)):prop)]
+>>   {move 0}
+
+
+% P * O := EB ; ONE
+
+
+declare O that One P
+
+>> O: that One(P) {move 1:P}
+
+
+% O * INDIVIDUAL := PN ; NAT
+
+
+postulate Individual O : in Nat
+
+>> Individual: [(.P_1:[(x_2:in Nat) => (---:
+>>         prop)]),
+>>      (O_1:that One(.P_1)) => (---:in Nat)]
+>>   {move 0}
+
+
+% O * AXINDIVIDUAL := PN ; <INDIVIDUAL>P
+
+
+postulate Axindividual O: that P(Individual \
+   O)
+
+>> Axindividual: [(.P_1:[(x_2:in Nat) => (---:
+>>         prop)]),
+>>      (O_1:that One(.P_1)) => (---:that .P_1(Individual(O_1)))]
+>>   {move 0}
+
+
+clearcurrent B
+
+% * A K := EB ; NAT
+
+% already declared
+
+% A * K := EB ; NAT
+
+
+declare K in Nat
+
+>> K: in Nat {move 1:B}
+
+
+% K * L := EB ; NAT
+
+
+declare L in Nat
+
+>> L: in Nat {move 1:B}
+
+
+
+save L
+%% +3
+% L * N := EB ; NAT
+
+
+declare N in Nat
+
+>> N: in Nat {move 1:L}
+
+
+% N * PROP1 := IMP(A,IS(N,K)) ; PROP
+
+
+define Prop1 A K L N : A Imp (N Is K)
+
+>> Prop1: [(A_1:prop),(K_1:in Nat),(L_1:in Nat),
+>>      (N_1:in Nat) => ((A_1 Imp (N_1 Is K_1)):
+>>      prop)]
+>>   {move 0}
+
+
+% N * PROP2 := IMP(NOT(A),IS(N,L)) ; PROP
+
+
+define Prop2 A K L N : (Not A) Imp (N Is \
+   L)
+
+>> Prop2: [(A_1:prop),(K_1:in Nat),(L_1:in Nat),
+>>      (N_1:in Nat) => ((Not(A_1) Imp (N_1 Is
+>>      L_1)):prop)]
+>>   {move 0}
+
+
+% N * PROP3  := AND(PROP1,PROP2) ; PROP
+
+
+define Prop3 A K L N : (Prop1 A K L N) And \
+   Prop2 A K L N
+
+>> Prop3: [(A_1:prop),(K_1:in Nat),(L_1:in Nat),
+>>      (N_1:in Nat) => ((Prop1(A_1,K_1,L_1,N_1)
+>>      And Prop2(A_1,K_1,L_1,N_1)):prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare xxx that Prop3 A K L N
+
+>>    xxx: that Prop3(A,K,L,N) {move 2}
+
+
+
+   define xxxid xxx:xxx
+
+>>    xxxid: [(xxx_1:that Prop3(A,K,L,N)) =>
+>>         (---:that Prop3(A,K,L,N))]
+>>      {move 1:L}
+
+
+
+   close
+
+define Propfix3 A K L N : Imppffull ((Prop1 \
+   A K L N) And Prop2 A K L N,Prop3 A K L N, \
+   xxxid)
+
+>> Propfix3: [(A_1:prop),(K_1:in Nat),(L_1:in
+>>      Nat),(N_1:in Nat) => (Imppffull((Prop1(A_1,
+>>      K_1,L_1,N_1) And Prop2(A_1,K_1,L_1,N_1)),
+>>      Prop3(A_1,K_1,L_1,N_1),[(xxx_2:that Prop3(A_1,
+>>         K_1,L_1,N_1)) => (xxx_2:that Prop3(A_1,
+>>         K_1,L_1,N_1))])
+>>      :that ((Prop1(A_1,K_1,L_1,N_1) And Prop2(A_1,
+>>      K_1,L_1,N_1)) Imp Prop3(A_1,K_1,L_1,N_1)))]
+>>   {move 0}
+
+
+% L * A0 := EB ; A
+
+
+open
+
+   declare A0 that A
+
+>>    A0: that A {move 2}
+
+
+     % A0 * T1 := ANDI(PROP1(K),PROP2(K),[T,A]REFLEQ(K),TH2(NOT(A),IS(K,L),TH1(A,A0))) ; PROP3(K)
+
+
+   declare yyy in Nat
+
+>>    yyy: in Nat {move 2}
+
+
+
+   define Propa1 yyy: Prop1 A K L yyy
+
+>>    Propa1: [(yyy_1:in Nat) => (---:prop)]
+>>      {move 1:L}
+
+
+
+   define Propa2 yyy: Prop2 A K L yyy
+
+>>    Propa2: [(yyy_1:in Nat) => (---:prop)]
+>>      {move 1:L}
+
+
+
+   define Propa3 yyy: Prop3 A K L yyy
+
+>>    Propa3: [(yyy_1:in Nat) => (---:prop)]
+>>      {move 1:L}
+
+
+
+   save yyy
+
+   open
+
+      declare T that A
+
+>>       T: that A {move 3}
+
+
+
+      define step1 T: Refleq K
+
+>>       step1: [(T_1:that A) => (---:that (K
+>>            Is K))]
+>>         {move 2:yyy}
+
+
+
+      close
+
+   define step2 : Imppf step1
+
+>>    step2: [(---:that (A Imp (K Is K)))]
+>>      {move 1:L}
+
+
+
+   define T1 A0 : Mp ((Andi (step2 , Th2(K \
+      Is L,Th1 A0))),Propfix3 A K L K)
+
+>>    T1: [(A0_1:that A) => (---:that Prop3(A,
+>>         K,L,K))]
+>>      {move 1:L}
+
+
+     % A0 * T2 := SOMEI([X,NAT]PROP3(X),K,T1) ; SOME([X,NAT]PROP3(X))
+
+
+   define T2 A0: Somei(Propa3,K,T1 A0)
+
+>>    T2: [(A0_1:that A) => (---:that Some(Propa3))]
+>>      {move 1:L}
+
+
+     % L * A1 := EB ; NOT(A)
+
+
+   declare A1 that Not A
+
+>>    A1: that Not(A) {move 2:yyy}
+
+
+     % A1 * T3 := ANDI(PROP1(L),PROP2(L),TH2(A,IS(L,K),A1),[T,NOT(A)]REFLEQ(L)) ; PROP3(L)
+
+
+   open
+
+      declare T that Not A
+
+>>       T: that Not(A) {move 3}
+
+
+
+      define lprop T : Refleq L
+
+>>       lprop: [(T_1:that Not(A)) => (---:that
+>>            (L Is L))]
+>>         {move 2:yyy}
+
+
+
+      close
+
+   define lprop2 : Imppf (lprop)
+
+>>    lprop2: [(---:that (Not(A) Imp (L Is L)))]
+>>      {move 1:L}
+
+
+
+   define T3 A1 : Mp(Andi(Th2(L Is K,A1), \
+      lprop2),Propfix3 A K L L)
+
+>>    T3: [(A1_1:that Not(A)) => (---:that Prop3(A,
+>>         K,L,L))]
+>>      {move 1:L}
+
+
+     % A1 * T4 := SOMEI([X,NAT]PROP3(X),L,T3) ; SOME([X:NAT]PROP3(X))
+
+
+   define T4 A1 : Somei(Propa3,L,T3 A1)
+
+>>    T4: [(A1_1:that Not(A)) => (---:that Some(Propa3))]
+>>      {move 1:L}
+
+
+     % L * EXISTENCE := ANYCASE(A,SOME([X,NAT]PROP3(X),[T,A]T2(T),[T,NOT(A)]T4(T)) ; SOME([X,NAT]PROP3(X))
+
+
+   close
+
+define Existence A K L : Anycase(Imppf T2, \
+   Imppf (T4))
+
+>> Existence: [(A_1:prop),(K_1:in Nat),(L_1:
+>>      in Nat) => ((Imppf([(A0_4:that A_1) =>
+>>         (Somei([(yyy_5:in Nat) => (Prop3(A_1,
+>>            K_1,L_1,yyy_5):prop)]
+>>         ,K_1,((Imppf([(T_6:that A_1) => (Refleq(K_1):
+>>            that (K_1 Is K_1))])
+>>         Andi ((K_1 Is L_1) Th2 Th1(A0_4)))
+>>         Mp Propfix3(A_1,K_1,L_1,K_1))):that
+>>         Some([(yyy_7:in Nat) => (Prop3(A_1,
+>>            K_1,L_1,yyy_7):prop)]))
+>>         ])
+>>      Anycase Imppf([(A1_9:that Not(A_1)) =>
+>>         (Somei([(yyy_10:in Nat) => (Prop3(A_1,
+>>            K_1,L_1,yyy_10):prop)]
+>>         ,L_1,((((L_1 Is K_1) Th2 A1_9) Andi
+>>         Imppf([(T_11:that Not(A_1)) => (Refleq(L_1):
+>>            that (L_1 Is L_1))]))
+>>         Mp Propfix3(A_1,K_1,L_1,L_1))):that
+>>         Some([(yyy_12:in Nat) => (Prop3(A_1,
+>>            K_1,L_1,yyy_12):prop)]))
+>>         ]))
+>>      :that Some([(yyy_13:in Nat) => (Prop3(A_1,
+>>         K_1,L_1,yyy_13):prop)]))
+>>      ]
+>>   {move 0}
+
+
+clearcurrent L
+
+
+open yyy
+     % L * M := EB ; NAT
+
+
+   declare M in Nat
+
+>>    M: in Nat {move 2:yyy}
+
+
+     % M * P := EB ; PROP3(M)
+
+
+   declare M2 in Nat
+
+>>    M2: in Nat {move 2:yyy}
+
+
+
+   declare P that Propa3 M
+
+>>    P: that Propa3(M) {move 2:yyy}
+
+
+     % P * A0 := EB ; A
+
+
+   declare a0 that A
+
+>>    a0: that A {move 2:yyy}
+
+
+     % A0 * T5 := <A0>ANDE1(PROP1(M),PROP2(M),P) ; IS(M,K)
+
+
+   define T5 P a0 : Mp a0 (Ande1(P))
+
+>>    T5: [(.M_1:in Nat),(P_1:that Propa3(.M_1)),
+>>         (a0_1:that A) => (---:that (.M_1 Is
+>>         K))]
+>>      {move 1:L}
+
+
+     % P * A1 := EB ; NOT(A)
+
+
+   declare a1 that Not A
+
+>>    a1: that Not(A) {move 2:yyy}
+
+
+     % A1 * T6 := <A1>ANDE2(PROP1(M),PROP2(M),P) ; IS(M,L)
+
+
+   define T6 P a1 : Mp (a1, Ande2(P))
+
+>>    T6: [(.M_1:in Nat),(P_1:that Propa3(.M_1)),
+>>         (a1_1:that Not(A)) => (---:that (.M_1
+>>         Is L))]
+>>      {move 1:L}
+
+
+     % M * N := EB ; NAT
+
+     % already declared as M2 above
+
+     % N * P := EB ; PROP3(M)
+
+     % already declared
+
+     % P * Q := EB ; PROP3(M2)
+
+
+   declare Q that Propa3 M2
+
+>>    Q: that Propa3(M2) {move 2:yyy}
+
+
+     % Q * A0 := EB ; A
+
+     % already declared
+
+
+   open
+
+      declare aa0 that A
+
+>>       aa0: that A {move 3}
+
+
+
+      declare aa1 that Not A
+
+>>       aa1: that Not(A) {move 3}
+
+
+          % A0 * T7 := CONVEQ(M,N,K,T5(M,P,A0),T5(N,Q,A0)) ; IS(M,N)
+
+
+      define T7 aa0 : Conveq(T5(P,aa0),T5(Q, \
+         aa0))
+
+>>       T7: [(aa0_1:that A) => (---:that (M
+>>            Is M2))]
+>>         {move 2:yyy}
+
+
+          % Q * A1 := EB ; NOT(A)
+
+          % already declared
+
+          % A1 * T8 := CONVEQ(M,N,L,T6(M,P,A1),T6(N,Q,A1)); IS(M,N)
+
+
+      define T8 aa1 : Conveq(T6(P,aa1),T6(Q, \
+         aa1))
+
+>>       T8: [(aa1_1:that Not(A)) => (---:that
+>>            (M Is M2))]
+>>         {move 2:yyy}
+
+
+          % Q * UNICITY := ANYCASE(A,IS(M,N),[T,A]T7(T),[T,NOT(A)]T8(T)) ; IS(M,N)
+
+
+      close
+
+   define Unicity1 P Q : Anycase(Imppf T7, \
+      Imppf (T8))
+
+>>    Unicity1: [(.M_1:in Nat),(P_1:that Propa3(.M_1)),
+>>         (.M2_1:in Nat),(Q_1:that Propa3(.M2_1))
+>>         => (---:that (.M_1 Is .M2_1))]
+>>      {move 1:L}
+
+
+
+   close
+
+declare m in Nat
+
+>> m: in Nat {move 1:L}
+
+
+
+declare m2 in Nat
+
+>> m2: in Nat {move 1:L}
+
+
+
+declare p that Propa3 m
+
+>> p: that Propa3(m) {move 1:L}
+
+
+
+declare q that Propa3 m2
+
+>> q: that Propa3(m2) {move 1:L}
+
+
+
+define Unicity A K L p q : Unicity1 p q
+
+>> Unicity: [(A_1:prop),(K_1:in Nat),(L_1:in
+>>      Nat),(.m_1:in Nat),(p_1:that Prop3(A_1,
+>>      K_1,L_1,.m_1)),(.m2_1:in Nat),(q_1:that
+>>      Prop3(A_1,K_1,L_1,.m2_1)) => ((Imppf([(aa0_2:
+>>         that A_1) => (((aa0_2 Mp Ande1(p_1))
+>>         Conveq (aa0_2 Mp Ande1(q_1))):that
+>>         (.m_1 Is .m2_1))])
+>>      Anycase Imppf([(aa1_3:that Not(A_1)) =>
+>>         (((aa1_3 Mp Ande2(p_1)) Conveq (aa1_3
+>>         Mp Ande2(q_1))):that (.m_1 Is .m2_1))]))
+>>      :that (.m_1 Is .m2_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare x1 in Nat
+
+>>    x1: in Nat {move 2}
+
+
+
+   open
+
+      declare x2 in Nat
+
+>>       x2: in Nat {move 3}
+
+
+
+      open
+
+         declare pp that (Propa3 x1) And \
+            Propa3 x2
+
+>>          pp: that (Propa3(x1) And Propa3(x2))
+>>            {move 4}
+
+
+
+         define qq pp: Ande1 (pp)
+
+>>          qq: [(pp_1:that (Propa3(x1) And
+>>               Propa3(x2))) => (---:that Propa3(x1))]
+>>            {move 3}
+
+
+
+         define rr pp: Ande2 (pp)
+
+>>          rr: [(pp_1:that (Propa3(x1) And
+>>               Propa3(x2))) => (---:that Propa3(x2))]
+>>            {move 3}
+
+
+
+         define ss pp: Unicity1 (qq pp, (rr \
+            pp))
+
+>>          ss: [(pp_1:that (Propa3(x1) And
+>>               Propa3(x2))) => (---:that (x1
+>>               Is x2))]
+>>            {move 3}
+
+
+
+         close
+
+      define tt x2 : Imppf (ss)
+
+>>       tt: [(x2_1:in Nat) => (---:that ((Propa3(x1)
+>>            And Propa3(x2_1)) Imp (x1 Is x2_1)))]
+>>         {move 2}
+
+
+          %          define theprop1 x2:  ((Propa3 x1) And Propa3 x2) Imp x1 Is x2
+
+
+      close
+
+   define uu x1 : Alli tt
+
+>>    uu: [(x1_1:in Nat) => (---:that All([(x2_5:
+>>            in Nat) => (((Propa3(x1_1) And Propa3(x2_5))
+>>            Imp (x1_1 Is x2_5)):prop)]))
+>>         ]
+>>      {move 1:L}
+
+
+     %     define theprop2 x1 : All theprop1
+
+
+   close
+
+define Uniqueness A K L : Alli uu
+
+>> Uniqueness: [(A_1:prop),(K_1:in Nat),(L_1:
+>>      in Nat) => (Alli([(x1_4:in Nat) => (Alli([(x2_6:
+>>            in Nat) => (Imppf([(pp_7:that (Prop3(A_1,
+>>               K_1,L_1,x1_4) And Prop3(A_1,K_1,
+>>               L_1,x2_6))) => ((Imppf([(aa0_8:
+>>                  that A_1) => (((aa0_8 Mp Ande1(Ande1(pp_7)))
+>>                  Conveq (aa0_8 Mp Ande1(Ande2(pp_7)))):
+>>                  that (x1_4 Is x2_6))])
+>>               Anycase Imppf([(aa1_9:that Not(A_1))
+>>                  => (((aa1_9 Mp Ande2(Ande1(pp_7)))
+>>                  Conveq (aa1_9 Mp Ande2(Ande2(pp_7)))):
+>>                  that (x1_4 Is x2_6))]))
+>>               :that (x1_4 Is x2_6))])
+>>            :that ((Prop3(A_1,K_1,L_1,x1_4)
+>>            And Prop3(A_1,K_1,L_1,x2_6)) Imp
+>>            (x1_4 Is x2_6)))])
+>>         :that All([(x2_10:in Nat) => (((Prop3(A_1,
+>>            K_1,L_1,x1_4) And Prop3(A_1,K_1,
+>>            L_1,x2_10)) Imp (x1_4 Is x2_10)):
+>>            prop)]))
+>>         ])
+>>      :that All([(x1_11:in Nat) => (All([(x2_12:
+>>            in Nat) => (((Prop3(A_1,K_1,L_1,
+>>            x1_11) And Prop3(A_1,K_1,L_1,x2_12))
+>>            Imp (x1_11 Is x2_12)):prop)])
+>>         :prop)]))
+>>      ]
+>>   {move 0}
+
+
+%% L * T9 := ANDI(SOME([X,NAT]PROP3(X)),NOTTWO([X,NAT]PROP3(X)),EXISTENCE,
+% [X,NAT][Y,NAT][T,PROP3(X)][U,PROP3(Y)]UNICITY(X,Y,T,U)) ; ONE([X,NAT]PROP3(X))
+
+
+define T9 A K L : Andi(Existence A K L,Uniqueness \
+   A K L)
+
+>> T9: [(A_1:prop),(K_1:in Nat),(L_1:in Nat)
+>>      => ((Existence(A_1,K_1,L_1) Andi Uniqueness(A_1,
+>>      K_1,L_1)):that (Some([(yyy_5:in Nat) =>
+>>         (Prop3(A_1,K_1,L_1,yyy_5):prop)])
+>>      And All([(x1_6:in Nat) => (All([(x2_7:
+>>            in Nat) => (((Prop3(A_1,K_1,L_1,
+>>            x1_6) And Prop3(A_1,K_1,L_1,x2_7))
+>>            Imp (x1_6 Is x2_7)):prop)])
+>>         :prop)]))
+>>      )]
+>>   {move 0}
+
+
+% L * N0 := INDIVIDUAL([X,NAT]PROP3(X),T9) ;NAT
+
+
+define Ifthenelse A K L : Individual (T9 \
+   A K L)
+
+>> Ifthenelse: [(A_1:prop),(K_1:in Nat),(L_1:
+>>      in Nat) => (Individual(T9(A_1,K_1,L_1)):
+>>      in Nat)]
+>>   {move 0}
+
+
+
+define T10 A K L : Axindividual (T9 A K L)
+
+
+>> T10: [(A_1:prop),(K_1:in Nat),(L_1:in Nat)
+>>      => (Axindividual(T9(A_1,K_1,L_1)):that
+>>      Prop3(A_1,K_1,L_1,Individual(T9(A_1,K_1,
+>>      L_1))))]
+>>   {move 0}
+
+
+% L *IFTHENELSE *N0"-3" ; NAT
+
+% already declared
+
+% L * A0 := EB ; A
+
+
+declare A0 that A
+
+>> A0: that A {move 1:L}
+
+
+% A0 * THEN := T5"-3"(N0"-3",T10"-3",A0) ; IS(IFTHENELSE,K)
+
+
+define Then0 A K L A0 : T5(T10 A K L,A0)
+
+
+>> Then0: [(A_1:prop),(K_1:in Nat),(L_1:in Nat),
+>>      (A0_1:that A_1) => ((A0_1 Mp Ande1(T10(A_1,
+>>      K_1,L_1))):that (Individual(T9(A_1,K_1,
+>>      L_1)) Is K_1))]
+>>   {move 0}
+
+
+
+define Then A K L A0 : Fixfun(Ifthenelse(A, \
+   K,L) Is K,Then0(A,K,L,A0))
+
+>> Then: [(A_1:prop),(K_1:in Nat),(L_1:in Nat),
+>>      (A0_1:that A_1) => (((Ifthenelse(A_1,K_1,
+>>      L_1) Is K_1) Fixfun Then0(A_1,K_1,L_1,
+>>      A0_1)):that (Ifthenelse(A_1,K_1,L_1) Is
+>>      K_1))]
+>>   {move 0}
+
+
+% L * A1 := EB ; NOT(A)
+
+
+declare A1 that Not A
+
+>> A1: that Not(A) {move 1:L}
+
+
+% A1 * ELSE := T6"-3"(No"-3",T10"-3",A1) ; IS(IFTHENELSE,L)
+
+
+define Else0 A K L A1 : T6(T10 A K L,A1)
+
+
+>> Else0: [(A_1:prop),(K_1:in Nat),(L_1:in Nat),
+>>      (A1_1:that Not(A_1)) => ((A1_1 Mp Ande2(T10(A_1,
+>>      K_1,L_1))):that (Individual(T9(A_1,K_1,
+>>      L_1)) Is L_1))]
+>>   {move 0}
+
+
+
+define Else A K L A1 : Fixfun (Ifthenelse \
+   (A, K, L) Is L,Else0 A K L A1)
+
+>> Else: [(A_1:prop),(K_1:in Nat),(L_1:in Nat),
+>>      (A1_1:that Not(A_1)) => (((Ifthenelse(A_1,
+>>      K_1,L_1) Is L_1) Fixfun Else0(A_1,K_1,
+>>      L_1,A1_1)):that (Ifthenelse(A_1,K_1,L_1)
+>>      Is L_1))]
+>>   {move 0}
+
+
+clearcurrent
+
+% * SET := PN ; TYPE
+
+
+postulate Set type
+
+>> Set: type {move 0}
+
+
+% * K := EB ; NAT
+
+
+declare K in Nat
+
+>> K: in Nat {move 1}
+
+
+% K * S := EB ; SET
+
+
+declare S in Set
+
+>> S: in Set {move 1}
+
+
+% S * IN := PN ; PROP
+
+
+postulate In K S :prop
+
+>> In: [(K_1:in Nat),(S_1:in Set) => (---:prop)]
+>>   {move 0}
+
+
+% * P := EB ; [X,NAT]PROP
+
+clearcurrent
+
+
+open
+
+   declare x1 in Nat
+
+>>    x1: in Nat {move 2}
+
+
+
+   postulate P x1 : prop
+
+>>    P: [(x1_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+% P * SETOF := PN ; SET
+
+
+postulate Setof P : in Set
+
+>> Setof: [(P_1:[(x1_2:in Nat) => (---:prop)])
+>>      => (---:in Set)]
+>>   {move 0}
+
+
+% P * K := EB ; NAT
+
+
+declare K in Nat
+
+>> K: in Nat {move 1}
+
+
+% K * KP := EB ; <K>P
+
+
+declare Kp that P K
+
+>> Kp: that P(K) {move 1}
+
+
+% KP * INI := PN ; IN(K,SETOF(P))
+
+
+postulate Ini P, K Kp that K In Setof P
+
+>> Ini: [(P_1:[(x1_2:in Nat) => (---:prop)]),
+>>      (K_1:in Nat),(Kp_1:that P_1(K_1)) => (---:
+>>      that (K_1 In Setof(P_1)))]
+>>   {move 0}
+
+
+% K * I := EB ; IN(K,SETOF(P))
+
+
+declare I that K In Setof P
+
+>> I: that (K In Setof(P)) {move 1}
+
+
+% I * INE := PN ; <K>P
+
+
+postulate Ine K I that P K
+
+>> Ine: [(K_1:in Nat),(.P_1:[(x1_2:in Nat) =>
+>>         (---:prop)]),
+>>      (I_1:that (K_1 In Setof(.P_1))) => (---:
+>>      that .P_1(K_1))]
+>>   {move 0}
+
+
+clearcurrent
+
+% +NATURALS
+
+% * 1 := PN ; NAT
+
+
+postulate 1 in Nat
+
+>> 1: in Nat {move 0}
+
+
+% * K := EB ; NAT
+
+
+declare K in Nat
+
+>> K: in Nat {move 1}
+
+
+% K * SUC := PN ; NAT
+
+
+postulate Suc K in Nat
+
+>> Suc: [(K_1:in Nat) => (---:in Nat)]
+>>   {move 0}
+
+
+% K * L := EB ; NAT
+
+
+declare L in Nat
+
+>> L: in Nat {move 1}
+
+
+% L * I := EB ; IS(K,L)
+
+
+save L
+
+declare I that K Is L
+
+>> I: that (K Is L) {move 1:L}
+
+
+% I * AX2 := EQPRED1(K,L,I,[X,NAT]IS(SUC(K),SUC(X)),REFLEQ(SUC(K)) ; IS(SUC(K),SUC(L))
+
+
+open
+
+   declare x in Nat
+
+>>    x: in Nat {move 2}
+
+
+
+   define keqx x : (Suc K) Is (Suc x)
+
+>>    keqx: [(x_1:in Nat) => (---:prop)]
+>>      {move 1:L}
+
+
+
+   close
+
+define Ax2 K L I : Eqpred1(I,keqx,Refleq \
+   Suc K)
+
+>> Ax2: [(K_1:in Nat),(L_1:in Nat),(I_1:that
+>>      (K_1 Is L_1)) => (Eqpred1(I_1,[(x_2:in
+>>         Nat) => ((Suc(K_1) Is Suc(x_2)):prop)]
+>>      ,Refleq(Suc(K_1))):that (Suc(K_1) Is Suc(L_1)))]
+>>   {move 0}
+
+
+% K * AX3 := PN ; NOT(IS(SUC(K),1))
+
+
+postulate Ax3 K : that Not (Suc K Is 1)
+
+>> Ax3: [(K_1:in Nat) => (---:that Not((Suc(K_1)
+>>      Is 1)))]
+>>   {move 0}
+
+
+clearcurrent L
+
+% L * I := EB ; IS(SUC(K),SUC(L))
+
+
+declare I that (Suc K) Is (Suc L)
+
+>> I: that (Suc(K) Is Suc(L)) {move 1:L}
+
+
+% I * AX4 := PN ; IS(K,L)
+
+
+postulate Ax4 I : that K Is L
+
+>> Ax4: [(.K_1:in Nat),(.L_1:in Nat),(I_1:that
+>>      (Suc(.K_1) Is Suc(.L_1))) => (---:that
+>>      (.K_1 Is .L_1))]
+>>   {move 0}
+
+
+clearcurrent
+
+% * S := EB ; SET
+
+
+declare S in Set
+
+>> S: in Set {move 1}
+
+
+% S * PROGRESSIVE := ALL([X,NAT]IMP(IN(X,S),IN(SUC(X),S))) ; PROP
+
+
+open
+
+   declare s in Set
+
+>>    s: in Set {move 2}
+
+
+
+   open
+
+      declare x in Nat
+
+>>       x: in Nat {move 3}
+
+
+
+      define progress x: (x In s) Imp Suc \
+         x In s
+
+>>       progress: [(x_1:in Nat) => (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   define Progressive s : All progress
+
+>>    Progressive: [(s_1:in Set) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+% S * P := EB ; PROGRESSIVE(S)
+
+
+declare P that Progressive S
+
+>> P: that Progressive(S) {move 1}
+
+
+
+save P
+% P * I := EB ; IN(1,S)
+
+
+declare I that 1 In S
+
+>> I: that (1 In S) {move 1:P}
+
+
+% I * K := EB ; NAT
+
+
+declare K in Nat
+
+>> K: in Nat {move 1:P}
+
+
+% K * AX5 := PN ; IN(K,S)
+
+%% Again, the issue is definition expansion!
+% why won't it accept S as implicit?
+
+%% it does now.  The implicit argument inference feature
+% does not always play nicely with definitions.
+
+
+postulate Ax5 P I K : that K In S
+
+>> Ax5: [(.S_1:in Set),(P_1:that All([(x_2:in
+>>         Nat) => (((x_2 In .S_1) Imp (Suc(x_2)
+>>         In .S_1)):prop)]))
+>>      ,(I_1:that (1 In .S_1)),(K_1:in Nat) =>
+>>      (---:that (K_1 In .S_1))]
+>>   {move 0}
+
+
+clearcurrent
+
+% * P := EB ; [X,NAT]PROP
+
+
+open
+
+   declare x in Nat
+
+>>    x: in Nat {move 2}
+
+
+
+   postulate P x prop
+
+>>    P: [(x_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+% P * 1P := EB ; <1>P
+
+
+declare Onep that P 1
+
+>> Onep: that P(1) {move 1}
+
+
+% 1P * A := EB ; ALL)[X,NAT]IMP(<X>P,<SUC(X)>P))
+
+
+open
+
+   declare x in Nat
+
+>>    x: in Nat {move 2}
+
+
+
+   define progress x : P x Imp P Suc x
+
+>>    progress: [(x_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+declare A that All progress
+
+>> A: that All(progress) {move 1}
+
+
+% A * K := EB ; NAT
+
+
+declare K in Nat
+
+>> K: in Nat {move 1}
+
+
+% +0
+
+% A * S0 := SETOF(P) ; SET
+
+
+define S0 P : Setof P
+
+>> S0: [(P_1:[(x_2:in Nat) => (---:prop)])
+>>      => (Setof(P_1):in Set)]
+>>   {move 0}
+
+
+% A * T1 := INI(P,1,1P) ; IN(1,S0)
+
+
+define T1 P, Onep : Ini P, 1 Onep
+
+>> T1: [(P_1:[(x_2:in Nat) => (---:prop)]),
+>>      (Onep_1:that P_1(1)) => (Ini(P_1,1,Onep_1):
+>>      that (1 In Setof(P_1)))]
+>>   {move 0}
+
+
+% K * I := EB ; IN(K,S0)
+
+
+declare I that K In S0 P
+
+>> I: that (K In S0(P)) {move 1}
+
+
+% I * T2 := INI(P,SUC(K),<INE(P,K,I)><K>A) ; IN(SUC(K),S0)
+
+% -0
+
+% K * INDUCTION := Ine(P,K,AX5(S0"-0",[X,NAT][T.IN(X,S0"-0")]T2"-0"(X,T),T1"-0",K)) ; <K>P
+
+
+open
+
+   declare x in Nat
+
+>>    x: in Nat {move 2}
+
+
+
+   open
+
+      declare ev that x In S0 P
+
+>>       ev: that (x In S0(P)) {move 3}
+
+
+
+      define step1 ev : Ine x ev
+
+>>       step1: [(ev_1:that (x In S0(P))) =>
+>>            (---:that P(x))]
+>>         {move 2}
+
+
+
+      define step2 ev : Alle x A
+
+>>       step2: [(ev_1:that (x In S0(P))) =>
+>>            (---:that progress(x))]
+>>         {move 2}
+
+
+
+      define step3 ev: Mp (step1 ev, step2 \
+         ev)
+
+>>       step3: [(ev_1:that (x In S0(P))) =>
+>>            (---:that P(Suc(x)))]
+>>         {move 2}
+
+
+
+      define step4 ev: Ini P, Suc x step3 \
+         ev
+
+>>       step4: [(ev_1:that (x In S0(P))) =>
+>>            (---:that (Suc(x) In Setof(P)))]
+>>         {move 2}
+
+
+
+      close
+
+   define progress2 x: Imppf (step4)
+
+>>    progress2: [(x_1:in Nat) => (---:that
+>>         ((x_1 In S0(P)) Imp (Suc(x_1) In Setof(P))))]
+>>      {move 1}
+
+
+     %     define progressive2 x: Imp (x In S0 P,(Suc x) In S0 P)
+
+
+   close
+%% why could I not make P implicit?
+% solved:  it is hidden in a defined concept progress that isn't expanded.
+
+% fixing it also required eta reduction to be added!
+
+
+define step5 A: Alli progress2
+
+>> step5: [(.P_1:[(x_2:in Nat) => (---:prop)]),
+>>      (A_1:that All([(x_3:in Nat) => ((.P_1(x_3)
+>>         Imp .P_1(Suc(x_3))):prop)]))
+>>      => (Alli([(x_5:in Nat) => (Imppf([(ev_6:
+>>            that (x_5 In S0(.P_1))) => (Ini(.P_1,
+>>            Suc(x_5),((x_5 Ine ev_6) Mp (x_5
+>>            Alle A_1))):that (Suc(x_5) In Setof(.P_1)))])
+>>         :that ((x_5 In S0(.P_1)) Imp (Suc(x_5)
+>>         In Setof(.P_1))))])
+>>      :that All([(x_8:in Nat) => (((x_8 In S0(.P_1))
+>>         Imp (Suc(x_8) In Setof(.P_1))):prop)]))
+>>      ]
+>>   {move 0}
+
+
+
+define Induction Onep A, K : Ax5 (step5 A, \
+   T1 P, Onep, K)
+
+>> Induction: [(.P_1:[(x_2:in Nat) => (---:prop)]),
+>>      (Onep_1:that .P_1(1)),(A_1:that All([(x_3:
+>>         in Nat) => ((.P_1(x_3) Imp .P_1(Suc(x_3))):
+>>         prop)]))
+>>      ,(K_1:in Nat) => (Ax5(step5(A_1),T1(.P_1,
+>>      Onep_1),K_1):that (K_1 In S0(.P_1)))]
+>>   {move 0}
+
+
+clearcurrent
+
+% * K := EB ; NAT
+
+
+declare K in Nat
+
+>> K: in Nat {move 1}
+
+
+% K * L := EB ; NAT
+
+
+declare L in Nat
+
+>> L: in Nat {move 1}
+
+
+% L * LE := [S,SET][T,PROGRESSIVE(S)]IMP(IN(K,S),IN(L,S)) ; PROP
+
+%% This definition has significant preliminaries:
+%% we introduce Progressive defined in world 0,
+%% which we avoided in formulating the axioms.
+% I suspect we will need it.
+
+
+declare S in Set
+
+>> S: in Set {move 1}
+
+
+
+open
+
+   declare K1 in Nat
+
+>>    K1: in Nat {move 2}
+
+
+
+   define progressive1 K1 : (K1 In S) Imp \
+      Suc K1 In S
+
+>>    progressive1: [(K1_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+define Progressive S : All progressive1
+
+>> Progressive: [(S_1:in Set) => (All([(K1_2:
+>>         in Nat) => (((K1_2 In S_1) Imp (Suc(K1_2)
+>>         In S_1)):prop)])
+>>      :prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare S1 in Set
+
+>>    S1: in Set {move 2}
+
+
+
+   define leprop S1 : (Progressive S1) Imp \
+      (K In S1) Imp L In S1
+
+>>    leprop: [(S1_1:in Set) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+%% I have to define the universal quantifier for sets.
+% Automath gets it for free from the evil subtyping.
+
+
+open
+
+   declare S1 in Set
+
+>>    S1: in Set {move 2}
+
+
+
+   postulate P S1 prop
+
+>>    P: [(S1_1:in Set) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+save P
+
+postulate Alls P: prop
+
+>> Alls: [(P_1:[(S1_2:in Set) => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+
+declare xx in Set
+
+>> xx: in Set {move 1:P}
+
+
+
+declare ev that Alls P
+
+>> ev: that Alls(P) {move 1:P}
+
+
+
+postulate Allse xx ev :that P xx
+
+>> Allse: [(xx_1:in Set),(.P_1:[(S1_2:in Set)
+>>         => (---:prop)]),
+>>      (ev_1:that Alls(.P_1)) => (---:that .P_1(xx_1))]
+>>   {move 0}
+
+
+clearcurrent P
+
+
+open
+
+   declare x in Set
+
+>>    x: in Set {move 2}
+
+
+
+   postulate univev x: that P x
+
+>>    univev: [(x_1:in Set) => (---:that P(x_1))]
+>>      {move 1:P}
+
+
+
+   close
+
+postulate Allsi univev : that Alls P
+
+>> Allsi: [(.P_1:[(S1_2:in Set) => (---:prop)]),
+>>      (univev_1:[(x_3:in Set) => (---:that .P_1(x_3))])
+>>      => (---:that Alls(.P_1))]
+>>   {move 0}
+
+
+
+define Le K L : Alls leprop
+
+>> Le: [(K_1:in Nat),(L_1:in Nat) => (Alls([(S1_2:
+>>         in Set) => ((Progressive(S1_2) Imp
+>>         ((K_1 In S1_2) Imp (L_1 In S1_2))):
+>>         prop)])
+>>      :prop)]
+>>   {move 0}
+
+
+
+open
+
+   declare T that Le K L
+
+>>    T: that (K Le L) {move 2}
+
+
+
+   define Tid T:T
+
+>>    Tid: [(T_1:that (K Le L)) => (---:that
+>>         (K Le L))]
+>>      {move 1:P}
+
+
+
+   close
+
+define Lefix K L : Imppffull(Alls leprop, \
+   Le K L, Tid)
+
+>> Lefix: [(K_1:in Nat),(L_1:in Nat) => (Imppffull(Alls([(S1_2:
+>>         in Set) => ((Progressive(S1_2) Imp
+>>         ((K_1 In S1_2) Imp (L_1 In S1_2))):
+>>         prop)]),
+>>      (K_1 Le L_1),[(T_3:that (K_1 Le L_1))
+>>         => (T_3:that (K_1 Le L_1))])
+>>      :that (Alls([(S1_4:in Set) => ((Progressive(S1_4)
+>>         Imp ((K_1 In S1_4) Imp (L_1 In S1_4))):
+>>         prop)])
+>>      Imp (K_1 Le L_1)))]
+>>   {move 0}
+
+
+% K * REFLLE := [S,SET]{T,PROGRESSIVE(S)][U,IN(K,S)]U ; LE(K,K)
+
+
+open
+
+   declare S1 in Set
+
+>>    S1: in Set {move 2}
+
+
+
+   open
+
+      declare T that Progressive S1
+
+>>       T: that Progressive(S1) {move 3}
+
+
+
+      open
+
+         declare U that K In S1
+
+>>          U: that (K In S1) {move 4}
+
+
+
+         define uid U: U
+
+>>          uid: [(U_1:that (K In S1)) => (---:
+>>               that (K In S1))]
+>>            {move 3}
+
+
+
+         close
+
+      define step1 T : Imppf (uid)
+
+>>       step1: [(T_1:that Progressive(S1))
+>>            => (---:that ((K In S1) Imp (K In
+>>            S1)))]
+>>         {move 2}
+
+
+
+      close
+
+   define step2 S1 : Imppf (step1)
+
+>>    step2: [(S1_1:in Set) => (---:that (Progressive(S1_1)
+>>         Imp ((K In S1_1) Imp (K In S1_1))))]
+>>      {move 1:P}
+
+
+     %     define prop1 S1 :  (Progressive S1) Imp (K In S1) Imp K In S1
+
+
+   close
+
+define step3 K : Allsi step2
+
+>> step3: [(K_1:in Nat) => (Allsi([(S1_3:in
+>>         Set) => (Imppf([(T_4:that Progressive(S1_3))
+>>            => (Imppf([(U_5:that (K_1 In S1_3))
+>>               => (U_5:that (K_1 In S1_3))])
+>>            :that ((K_1 In S1_3) Imp (K_1 In
+>>            S1_3)))])
+>>         :that (Progressive(S1_3) Imp ((K_1
+>>         In S1_3) Imp (K_1 In S1_3))))])
+>>      :that Alls([(S1_6:in Set) => ((Progressive(S1_6)
+>>         Imp ((K_1 In S1_6) Imp (K_1 In S1_6))):
+>>         prop)]))
+>>      ]
+>>   {move 0}
+
+
+
+define Reflle K : Mp (step3 K, Lefix K K)
+
+
+>> Reflle: [(K_1:in Nat) => ((step3(K_1) Mp
+>>      (K_1 Lefix K_1)):that (K_1 Le K_1))]
+>>   {move 0}
+
+
+clearcurrent L
+
+% L * M := EB ; NAT
+
+
+declare M in Nat
+
+>> M: in Nat {move 1:L}
+
+
+% M * L1 := EB ; LE(K,L)
+
+
+declare L1 that K Le L
+
+>> L1: that (K Le L) {move 1:L}
+
+
+% L1 * L2 := EB ; LE(L,M)
+
+
+declare L2 that L Le M
+
+>> L2: that (L Le M) {move 1:L}
+
+
+% +*0
+
+% L2 * S := EB ; SET
+
+
+open
+
+   declare S in Set
+
+>>    S: in Set {move 2}
+
+
+     % S * P := EB ;PROGRESSIVE(S)
+
+
+   open
+
+      declare P that Progressive S
+
+>>       P: that Progressive(S) {move 3}
+
+
+          % P * I := EB ; IN(K,S)
+
+
+      open
+
+         declare I that K In S
+
+>>          I: that (K In S) {move 4}
+
+
+               % I * T3 := <I><P><S>L1 ; IN(L,S)
+
+
+         open
+
+            declare S1 in Set
+
+>>             S1: in Set {move 5}
+
+
+                    %                    define steptarget1 S1: Progressive S1 Imp (K In S1) Imp L In S1
+
+
+            close
+
+         define step1 : Allse S L1
+
+>>          step1: [(---:that (Progressive(S)
+>>               Imp ((K In S) Imp (L In S))))]
+>>            {move 3}
+
+
+
+         define step2 : Mp (P,step1)
+
+>>          step2: [(---:that ((K In S) Imp
+>>               (L In S)))]
+>>            {move 3}
+
+
+               % it is a bad thing that there is something called step3; cleanup needed
+
+
+         define stepa3 I: Mp (I,step2)
+
+>>          stepa3: [(I_1:that (K In S)) =>
+>>               (---:that (L In S))]
+>>            {move 3}
+
+
+               % I * T4 := <T3><P><S>L2 ; IN(M,S)
+
+
+         open
+
+            declare S1 in Set
+
+>>             S1: in Set {move 5}
+
+
+                    %                   define steptarget2 S1: Progressive S1 Imp (L In S1) Imp M In S1
+
+
+            close
+
+         define stepa4: Allse S L2
+
+>>          stepa4: [(---:that (Progressive(S)
+>>               Imp ((L In S) Imp (M In S))))]
+>>            {move 3}
+
+
+
+         define stepa5: Mp (P,stepa4)
+
+>>          stepa5: [(---:that ((L In S) Imp
+>>               (M In S)))]
+>>            {move 3}
+
+
+
+         define stepa6 I: Mp (stepa3 I,stepa5)
+
+
+>>          stepa6: [(I_1:that (K In S)) =>
+>>               (---:that (M In S))]
+>>            {move 3}
+
+
+
+         close
+
+      define stepa7 P: Imppf (stepa6)
+
+>>       stepa7: [(P_1:that Progressive(S))
+>>            => (---:that ((K In S) Imp (M In
+>>            S)))]
+>>         {move 2}
+
+
+
+      close
+
+   define stepa8 S: Imppf (stepa7)
+
+>>    stepa8: [(S_1:in Set) => (---:that (Progressive(S_1)
+>>         Imp ((K In S_1) Imp (M In S_1))))]
+>>      {move 1:L}
+
+
+     %     define stepatarget9 S: (Progressive S) Imp (K In S) Imp M In S
+
+
+   close
+
+define stepa9 L1 L2 : Allsi stepa8
+
+>> stepa9: [(.K_1:in Nat),(.L_1:in Nat),(L1_1:
+>>      that (.K_1 Le .L_1)),(.M_1:in Nat),(L2_1:
+>>      that (.L_1 Le .M_1)) => (Allsi([(S_3:in
+>>         Set) => (Imppf([(P_4:that Progressive(S_3))
+>>            => (Imppf([(I_5:that (.K_1 In S_3))
+>>               => (((I_5 Mp (P_4 Mp (S_3 Allse
+>>               L1_1))) Mp (P_4 Mp (S_3 Allse
+>>               L2_1))):that (.M_1 In S_3))])
+>>            :that ((.K_1 In S_3) Imp (.M_1 In
+>>            S_3)))])
+>>         :that (Progressive(S_3) Imp ((.K_1
+>>         In S_3) Imp (.M_1 In S_3))))])
+>>      :that Alls([(S_8:in Set) => ((Progressive(S_8)
+>>         Imp ((.K_1 In S_8) Imp (.M_1 In S_8))):
+>>         prop)]))
+>>      ]
+>>   {move 0}
+
+
+% -0
+
+% L2 * TRLE := [S,SET][T,PROGRESSIVE(S)][U,IN(K,S)]T4"-0"(S,T,U) ; LE(K,M)
+
+
+define Trle L1 L2: Mp (stepa9 L1 L2,Lefix \
+   K M)
+
+>> Trle: [(.K_1:in Nat),(.L_1:in Nat),(L1_1:
+>>      that (.K_1 Le .L_1)),(.M_1:in Nat),(L2_1:
+>>      that (.L_1 Le .M_1)) => (((L1_1 stepa9
+>>      L2_1) Mp (.K_1 Lefix .M_1)):that (.K_1
+>>      Le .M_1))]
+>>   {move 0}
+
+
+% K * TH1 := [S,SET][T,PROGRESSIVE(S)]<K>T ; LE(K,SUC(K))
+
+
+open
+
+   declare S1 in Set
+
+>>    S1: in Set {move 2}
+
+
+
+   open
+
+      declare P1 that Progressive(S1)
+
+>>       P1: that Progressive(S1) {move 3}
+
+
+
+      define pageline181 P1 : Alle(K,P1)
+
+
+>>       pageline181: [(P1_1:that Progressive(S1))
+>>            => (---:that ((K In S1) Imp (Suc(K)
+>>            In S1)))]
+>>         {move 2}
+
+
+
+      close
+
+   define pageline182 S1 : Imppf pageline181
+
+
+>>    pageline182: [(S1_1:in Set) => (---:that
+>>         (Progressive(S1_1) Imp ((K In S1_1)
+>>         Imp (Suc(K) In S1_1))))]
+>>      {move 1:L}
+
+
+
+   close
+
+define Lethm1 K : Fixfun (K Le Suc K,Allsi \
+   pageline182)
+
+>> Lethm1: [(K_1:in Nat) => (((K_1 Le Suc(K_1))
+>>      Fixfun Allsi([(S1_3:in Set) => (Imppf([(P1_4:
+>>            that Progressive(S1_3)) => ((K_1
+>>            Alle P1_4):that ((K_1 In S1_3) Imp
+>>            (Suc(K_1) In S1_3)))])
+>>         :that (Progressive(S1_3) Imp ((K_1
+>>         In S1_3) Imp (Suc(K_1) In S1_3))))]))
+>>      :that (K_1 Le Suc(K_1)))]
+>>   {move 0}
+
+
+% L * L1 := EB ; LE(K,L)
+
+% L1 * COR1 := TRLE(K,L,SUC(L),TH1(L))
+
+
+define Lecor1 L1 : Trle L1 Lethm1 L
+
+>> Lecor1: [(.K_1:in Nat),(.L_1:in Nat),(L1_1:
+>>      that (.K_1 Le .L_1)) => ((L1_1 Trle Lethm1(.L_1)):
+>>      that (.K_1 Le Suc(.L_1)))]
+>>   {move 0}
+
+
+% starting p. 19
+
+clearcurrent L
+
+% L * L1 := EB ;  LE(SUC(K),SUC(L))
+
+
+declare L1 that (Suc K) Le Suc L
+
+>> L1: that (Suc(K) Le Suc(L)) {move 1:L}
+
+
+% +2
+
+% L1 * S := EB ; SET
+
+
+declare S in Set
+
+>> S: in Set {move 1:L}
+
+
+% S * P := EB ; PROGRESSIVE(S)
+
+
+declare P that Progressive S
+
+>> P: that Progressive(S) {move 1:L}
+
+
+
+save P
+% P * M := EB ; NAT
+
+
+declare M in Nat
+
+>> M: in Nat {move 1:P}
+
+
+% M * N := EB ; NAT
+
+
+declare N in Nat
+
+>> N: in Nat {move 1:P}
+
+
+%% There are clear signs here that I need to encapsulate
+% some earlier material for namespace control.
+
+% N * PROP1 := AND(IN(N,S),IS(SUC(N),M)) ; PROP
+
+
+define Propa1 S M N : (N In S) And ((Suc \
+   N) Is M)
+
+>> Propa1: [(S_1:in Set),(M_1:in Nat),(N_1:in
+>>      Nat) => (((N_1 In S_1) And (Suc(N_1) Is
+>>      M_1)):prop)]
+>>   {move 0}
+
+
+% P * S0 := SETOF([X,NAT]SOME([Y,NAT]PROP1(X,Y))) ; SET
+
+
+open
+
+   declare x0 in Nat
+
+>>    x0: in Nat {move 2}
+
+
+
+   open
+
+      declare y0 in Nat
+
+>>       y0: in Nat {move 3}
+
+
+
+      define propa1 y0 : Propa1 S x0 y0
+
+>>       propa1: [(y0_1:in Nat) => (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   define sa0 x0: Some propa1
+
+>>    sa0: [(x0_1:in Nat) => (---:prop)]
+>>      {move 1:P}
+
+
+
+   close
+
+define Sa0 S :Setof sa0
+
+>> Sa0: [(S_1:in Set) => (Setof([(x0_2:in Nat)
+>>         => (Some([(y0_3:in Nat) => (Propa1(S_1,
+>>            x0_2,y0_3):prop)])
+>>         :prop)])
+>>      :in Set)]
+>>   {move 0}
+
+
+% P * M := EB ; NAT
+
+%declare M in Nat
+
+% M * I := EB ; IN(M,S0)
+
+
+declare I that M In Sa0 S
+
+>> I: that (M In Sa0(S)) {move 1:P}
+
+
+
+save I
+% I * T1 :=  INE([X,NAT]SOME([Y,NAT]PROP1(X,Y)),M,I) ;  SOME([X,NAT]PROP1(M,X))
+
+
+define Ta1 S M I : Ine M I
+
+>> Ta1: [(S_1:in Set),(M_1:in Nat),(I_1:that
+>>      (M_1 In Sa0(S_1))) => ((M_1 Ine I_1):that
+>>      Some([(y0_4:in Nat) => (Propa1(S_1,M_1,
+>>         y0_4):prop)]))
+>>      ]
+>>   {move 0}
+
+
+% I * N := EB ; NAT
+
+%declare N in Nat
+
+% N * Q := EB ; PROP1(M,N)
+
+
+declare Q that Propa1(S,M,N)
+
+>> Q: that Propa1(S,M,N) {move 1:I}
+
+
+% Q * T2 := <Ande1(IN(N,S),IS(SUC(N),M),Q)><N>P ; IN(SUC(N),S)
+
+
+define T2 S P M N Q : Mp(Ande1 Q, Alle N \
+   P)
+
+>> T2: [(S_1:in Set),(P_1:that Progressive(S_1)),
+>>      (M_1:in Nat),(N_1:in Nat),(Q_1:that Propa1(S_1,
+>>      M_1,N_1)) => ((Ande1(Q_1) Mp (N_1 Alle
+>>      P_1)):that (Suc(N_1) In S_1))]
+>>   {move 0}
+
+
+% Q * T3 := AX2(SUC(N),M,ANDE2(IN(N,S),IS(SUC(N),M),Q) ; IS(SUS(SUC(N)),SUC(M))
+
+
+define T3 S P M N Q : Ax2(Suc N,M,Ande2 Q)
+
+
+>> T3: [(S_1:in Set),(P_1:that Progressive(S_1)),
+>>      (M_1:in Nat),(N_1:in Nat),(Q_1:that Propa1(S_1,
+>>      M_1,N_1)) => (Ax2(Suc(N_1),M_1,Ande2(Q_1)):
+>>      that (Suc(Suc(N_1)) Is Suc(M_1)))]
+>>   {move 0}
+
+
+% Q * T4 := ANDI(IN(SUC(N),S),IS(SUS(SUC(N)),SUC(M)),T2,T3) ; PROP1(SUC(M),SUC(N))
+
+
+define T4 S P M N Q : Fixfun (Propa1(S,Suc \
+   M, Suc N),Andi(T2 S P M N Q,T3 S P M N Q))
+
+
+>> T4: [(S_1:in Set),(P_1:that Progressive(S_1)),
+>>      (M_1:in Nat),(N_1:in Nat),(Q_1:that Propa1(S_1,
+>>      M_1,N_1)) => ((Propa1(S_1,Suc(M_1),Suc(N_1))
+>>      Fixfun (T2(S_1,P_1,M_1,N_1,Q_1) Andi T3(S_1,
+>>      P_1,M_1,N_1,Q_1))):that Propa1(S_1,Suc(M_1),
+>>      Suc(N_1)))]
+>>   {move 0}
+
+
+% Q * T5 := SOMEI([X,NAT]PROP1(SUC(M),X),SUC(N),T4) ; SOME([X,NAT]PROP1(SUC(M),X))
+
+% note use of truncated applicative term here to represent a function.
+
+
+define T5 S P M N Q : Fixfun (Some (Propa1(S, \
+   Suc M)),Somei (Propa1(S,Suc(M)), Suc(N), \
+   T4 S P M N Q))
+
+>> T5: [(S_1:in Set),(P_1:that Progressive(S_1)),
+>>      (M_1:in Nat),(N_1:in Nat),(Q_1:that Propa1(S_1,
+>>      M_1,N_1)) => ((Some([(N_2:in Nat) => (Propa1(S_1,
+>>         Suc(M_1),N_2):prop)])
+>>      Fixfun Somei([(N_3:in Nat) => (Propa1(S_1,
+>>         Suc(M_1),N_3):prop)]
+>>      ,Suc(N_1),T4(S_1,P_1,M_1,N_1,Q_1))):that
+>>      Some([(N_4:in Nat) => (Propa1(S_1,Suc(M_1),
+>>         N_4):prop)]))
+>>      ]
+>>   {move 0}
+
+
+% I * T6 := SOMEE([X,NAT]PROP1(M,X),SOME([X,NAT]PROP1(SUC(M),X),T1,[X,NAT][T,PROP1(M,X)]T5(X,T));  SOME([X,NAT]PROP1(SUC(M),X))
+
+
+define T6 S P, M I : Somee (Ta1 S M I,T5(S, \
+   P, M))
+
+>> T6: [(S_1:in Set),(P_1:that Progressive(S_1)),
+>>      (M_1:in Nat),(I_1:that (M_1 In Sa0(S_1)))
+>>      => ((Ta1(S_1,M_1,I_1) Somee [(N_4:in Nat),
+>>         (Q_4:that Propa1(S_1,M_1,N_4)) => (T5(S_1,
+>>         P_1,M_1,N_4,Q_4):that Some([(N_5:in
+>>            Nat) => (Propa1(S_1,Suc(M_1),N_5):
+>>            prop)]))
+>>         ])
+>>      :that Some([(N_6:in Nat) => (Propa1(S_1,
+>>         Suc(M_1),N_6):prop)]))
+>>      ]
+>>   {move 0}
+
+
+% I * T7 := INI([X,NAT]SOME[Y,NAT]PROP1(X,Y),SUC(M),T6) ; IN(SUC(M),S0)
+
+
+open
+
+   declare M1 in Nat
+
+>>    M1: in Nat {move 2}
+
+
+
+   define t7 M1 : Some (Propa1 (S,M1))
+
+>>    t7: [(M1_1:in Nat) => (---:prop)]
+>>      {move 1:I}
+
+
+
+   close
+
+define T7 S P, M I : Fixfun(Suc M In Sa0(S), \
+   Ini(t7,Suc M,T6 S P, M I))
+
+>> T7: [(S_1:in Set),(P_1:that Progressive(S_1)),
+>>      (M_1:in Nat),(I_1:that (M_1 In Sa0(S_1)))
+>>      => (((Suc(M_1) In Sa0(S_1)) Fixfun Ini([(M1_2:
+>>         in Nat) => (Some([(N_3:in Nat) => (Propa1(S_1,
+>>            M1_2,N_3):prop)])
+>>         :prop)]
+>>      ,Suc(M_1),T6(S_1,P_1,M_1,I_1))):that (Suc(M_1)
+>>      In Sa0(S_1)))]
+>>   {move 0}
+
+
+% starting page 20
+
+clearcurrent P
+
+% P * I := EB ; IN(K,S)
+
+
+declare I that K In S
+
+>> I: that (K In S) {move 1:P}
+
+
+
+save I
+
+declare M in Nat
+
+>> M: in Nat {move 1:I}
+
+
+% I * T8 := ANDI(IN(K,S),IS(SUC(K),SUC,K),I,REFLEQ(SUC(K))) ; PROP!(SUC(K),K)
+
+
+define T8 K S P, I : Fixfun(S Propa1 Suc \
+   K, K ,Andi I Refleq Suc K)
+
+>> T8: [(K_1:in Nat),(S_1:in Set),(P_1:that
+>>      Progressive(S_1)),(I_1:that (K_1 In S_1))
+>>      => ((Propa1(S_1,Suc(K_1),K_1) Fixfun (I_1
+>>      Andi Refleq(Suc(K_1)))):that Propa1(S_1,
+>>      Suc(K_1),K_1))]
+>>   {move 0}
+
+
+% I * T9 := SOMEI([X,NAT]PROP1(SUC(K),X),K,T8) ; SOME([X,NAT]PROP1(SUC(K),X))
+
+
+define Ta9 K S P, I : Somei (Propa1(S,Suc \
+   K),K,T8 K S P, I)
+
+>> Ta9: [(K_1:in Nat),(S_1:in Set),(P_1:that
+>>      Progressive(S_1)),(I_1:that (K_1 In S_1))
+>>      => (Somei([(N_2:in Nat) => (Propa1(S_1,
+>>         Suc(K_1),N_2):prop)]
+>>      ,K_1,T8(K_1,S_1,P_1,I_1)):that Some([(N_3:
+>>         in Nat) => (Propa1(S_1,Suc(K_1),N_3):
+>>         prop)]))
+>>      ]
+>>   {move 0}
+
+
+% I * T10 :=  INI([X,NAT]SOME([Y,NAT]PROP1(X,Y)),SUC(K),T9) ; IN(SUC(K),S0)
+
+
+open
+
+   declare M1 in Nat
+
+>>    M1: in Nat {move 2}
+
+
+
+   define t7 M1 : Some (Propa1 (S,M1))
+
+>>    t7: [(M1_1:in Nat) => (---:prop)]
+>>      {move 1:I}
+
+
+
+   close
+
+define Ta10 K S P, I : Fixfun((Suc K) In \
+   Sa0 S, Ini(t7, Suc K, Ta9 K S P, I))
+
+>> Ta10: [(K_1:in Nat),(S_1:in Set),(P_1:that
+>>      Progressive(S_1)),(I_1:that (K_1 In S_1))
+>>      => (((Suc(K_1) In Sa0(S_1)) Fixfun Ini([(M1_2:
+>>         in Nat) => (Some([(N_3:in Nat) => (Propa1(S_1,
+>>            M1_2,N_3):prop)])
+>>         :prop)]
+>>      ,Suc(K_1),Ta9(K_1,S_1,P_1,I_1))):that
+>>      (Suc(K_1) In Sa0(S_1)))]
+>>   {move 0}
+
+
+% I * T11 := <T10>[X,NAT][T,IN(X,S0)]T7(X,T)><S0>L1
+
+
+define pageline201 L1 S : Allse (Sa0 S,L1)
+
+
+>> pageline201: [(.K_1:in Nat),(.L_1:in Nat),
+>>      (L1_1:that (Suc(.K_1) Le Suc(.L_1))),(S_1:
+>>      in Set) => ((Sa0(S_1) Allse L1_1):that
+>>      (Progressive(Sa0(S_1)) Imp ((Suc(.K_1)
+>>      In Sa0(S_1)) Imp (Suc(.L_1) In Sa0(S_1)))))]
+>>   {move 0}
+
+
+
+define pageline202 S P M: Imppf (T7 (S, P, \
+   M))
+
+>> pageline202: [(S_1:in Set),(P_1:that Progressive(S_1)),
+>>      (M_1:in Nat) => (Imppf([(I_2:that (M_1
+>>         In Sa0(S_1))) => (T7(S_1,P_1,M_1,I_2):
+>>         that (Suc(M_1) In Sa0(S_1)))])
+>>      :that ((M_1 In Sa0(S_1)) Imp (Suc(M_1)
+>>      In Sa0(S_1))))]
+>>   {move 0}
+
+
+
+define pageline203 S P : Fixfun(Progressive(Sa0 \
+   S),Alli(pageline202(S,P)))
+
+>> pageline203: [(S_1:in Set),(P_1:that Progressive(S_1))
+>>      => ((Progressive(Sa0(S_1)) Fixfun Alli([(M_3:
+>>         in Nat) => (pageline202(S_1,P_1,M_3):
+>>         that ((M_3 In Sa0(S_1)) Imp (Suc(M_3)
+>>         In Sa0(S_1))))]))
+>>      :that Progressive(Sa0(S_1)))]
+>>   {move 0}
+
+
+
+define pageline204 L1 S P : Mp(pageline203 \
+   S P, pageline201 L1 S)
+
+>> pageline204: [(.K_1:in Nat),(.L_1:in Nat),
+>>      (L1_1:that (Suc(.K_1) Le Suc(.L_1))),(S_1:
+>>      in Set),(P_1:that Progressive(S_1)) =>
+>>      (((S_1 pageline203 P_1) Mp (L1_1 pageline201
+>>      S_1)):that ((Suc(.K_1) In Sa0(S_1)) Imp
+>>      (Suc(.L_1) In Sa0(S_1))))]
+>>   {move 0}
+
+
+
+define T11 L1 S P I : Mp(Ta10 K S P I,pageline204 \
+   L1 S P)
+
+>> T11: [(.K_1:in Nat),(.L_1:in Nat),(L1_1:that
+>>      (Suc(.K_1) Le Suc(.L_1))),(S_1:in Set),
+>>      (P_1:that Progressive(S_1)),(I_1:that
+>>      (.K_1 In S_1)) => ((Ta10(.K_1,S_1,P_1,
+>>      I_1) Mp pageline204(L1_1,S_1,P_1)):that
+>>      (Suc(.L_1) In Sa0(S_1)))]
+>>   {move 0}
+
+
+% I * T12 := T1(SUC(L),T11) ; SOME([X,NAT]PROP1(SUC(L),X))
+
+
+define T12 L1 S P I : Ta1 (S, Suc L, T11 \
+   L1 S P I)
+
+>> T12: [(.K_1:in Nat),(.L_1:in Nat),(L1_1:that
+>>      (Suc(.K_1) Le Suc(.L_1))),(S_1:in Set),
+>>      (P_1:that Progressive(S_1)),(I_1:that
+>>      (.K_1 In S_1)) => (Ta1(S_1,Suc(.L_1),T11(L1_1,
+>>      S_1,P_1,I_1)):that Some([(y0_2:in Nat)
+>>         => (Propa1(S_1,Suc(.L_1),y0_2):prop)]))
+>>      ]
+>>   {move 0}
+
+
+% I * M := EB ; NAT
+
+% already declared
+
+% M * Q := EB ; PROP1(SUC(L),M)
+
+
+declare Q that Propa1 S (Suc L) M
+
+>> Q: that Propa1(S,Suc(L),M) {move 1:I}
+
+
+% Q * T13 := Ax4(M,L,ANDE2(IN(M,S),IS(SUC(M),SUC(L)),Q); IS(M,L)
+
+
+define T13 Q : Ax4(Ande2 Q)
+
+>> T13: [(.S_1:in Set),(.L_1:in Nat),(.M_1:in
+>>      Nat),(Q_1:that Propa1(.S_1,Suc(.L_1),.M_1))
+>>      => (Ax4(Ande2(Q_1)):that (.M_1 Is .L_1))]
+>>   {move 0}
+
+
+%% Q * T14 := EQPRED1(M,L,T13,[X,NAT]In(X,S),ANDE1(IN(M,S),IS(SUC(M),SUC(L)),Q);
+%       IN(L,S)
+
+
+define Inconv S M : M In S
+
+>> Inconv: [(S_1:in Set),(M_1:in Nat) => ((M_1
+>>      In S_1):prop)]
+>>   {move 0}
+
+
+
+define T14 L1 S M Q : Fixfun(L In S,Eqpred1(T13 \
+   Q,Inconv(S),Ande1 Q))
+
+>> T14: [(.K_1:in Nat),(.L_1:in Nat),(L1_1:that
+>>      (Suc(.K_1) Le Suc(.L_1))),(S_1:in Set),
+>>      (M_1:in Nat),(Q_1:that Propa1(S_1,Suc(.L_1),
+>>      M_1)) => (((.L_1 In S_1) Fixfun Eqpred1(T13(Q_1),
+>>      [(M_2:in Nat) => ((S_1 Inconv M_2):prop)]
+>>      ,Ande1(Q_1))):that (.L_1 In S_1))]
+>>   {move 0}
+
+
+clearcurrent I
+
+% I * T15 := SOMEE([X,NAT]PROP1(SUC(L),X),IN(L,S),T12,[X,NAT][T,PROP1(SUC(L),X)]T14(X,T) ; IN(L,S)
+
+
+define T15 L1 S P I : Somee(T12 L1 S P I, \
+   T14(L1,S))
+
+>> T15: [(.K_1:in Nat),(.L_1:in Nat),(L1_1:that
+>>      (Suc(.K_1) Le Suc(.L_1))),(S_1:in Set),
+>>      (P_1:that Progressive(S_1)),(I_1:that
+>>      (.K_1 In S_1)) => ((T12(L1_1,S_1,P_1,I_1)
+>>      Somee [(M_3:in Nat),(Q_3:that Propa1(S_1,
+>>         Suc(.L_1),M_3)) => (T14(L1_1,S_1,M_3,
+>>         Q_3):that (.L_1 In S_1))])
+>>      :that (.L_1 In S_1))]
+>>   {move 0}
+
+
+% -2
+
+% L1 * TH2 := [S,SET][T,PROGRESSIVE(S)[U,IN(K,S)]T15"-2"(S,T,U) ; LE(K,L)
+
+
+define pageline206 L1 S P : Imppf (T15(L1, \
+   S,P))
+
+>> pageline206: [(.K_1:in Nat),(.L_1:in Nat),
+>>      (L1_1:that (Suc(.K_1) Le Suc(.L_1))),(S_1:
+>>      in Set),(P_1:that Progressive(S_1)) =>
+>>      (Imppf([(I_2:that (.K_1 In S_1)) => (T15(L1_1,
+>>         S_1,P_1,I_2):that (.L_1 In S_1))])
+>>      :that ((.K_1 In S_1) Imp (.L_1 In S_1)))]
+>>   {move 0}
+
+
+
+define pageline207 L1 S : Imppf (pageline206(L1, \
+   S))
+
+>> pageline207: [(.K_1:in Nat),(.L_1:in Nat),
+>>      (L1_1:that (Suc(.K_1) Le Suc(.L_1))),(S_1:
+>>      in Set) => (Imppf([(P_2:that Progressive(S_1))
+>>         => (pageline206(L1_1,S_1,P_2):that
+>>         ((.K_1 In S_1) Imp (.L_1 In S_1)))])
+>>      :that (Progressive(S_1) Imp ((.K_1 In
+>>      S_1) Imp (.L_1 In S_1))))]
+>>   {move 0}
+
+
+
+define Tha2 L1 : Fixfun(K Le L,Allsi(pageline207(L1)))
+
+
+>> Tha2: [(.K_1:in Nat),(.L_1:in Nat),(L1_1:
+>>      that (Suc(.K_1) Le Suc(.L_1))) => (((.K_1
+>>      Le .L_1) Fixfun Allsi([(S_3:in Set) =>
+>>         ((L1_1 pageline207 S_3):that (Progressive(S_3)
+>>         Imp ((.K_1 In S_3) Imp (.L_1 In S_3))))]))
+>>      :that (.K_1 Le .L_1))]
+>>   {move 0}
+
+
+
+>> Inspector Lestrade says:  Done reading autoi37 to backups\autoi37_0:
+>>  type lines or type quit to exit interface
+
+quit
+
+

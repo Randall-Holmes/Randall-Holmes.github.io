@@ -1,0 +1,2582 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb}
+
+\title{Implementation of Zermelo's work of 1908 in Lestrade:  Part V, working out the consequences of the main result of part IV}
+
+\author{M. Randall Holmes}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+ 
+This document was originally titled as an essay on the proposition that mathematics is what can be done in Automath (as opposed to what can be done in ZFC, for example).  Such an essay is still in in my mind, but this particular document has transformed itself into the large project of implementing Zermelo's two important set theory papers of 1908 in Lestrade, with the further purpose of exploring the actual capabilities of Zermelo's system of 1908 as a mathematical foundation, which we think are perhaps underrated.
+
+This is a new version of this document in modules, designed to make it possible to work more efficiently without repeated execution of slow log files when they do not need to be revisited.
+
+\section{Consequences of the result of Part IV}
+
+\begin{verbatim}Lestrade execution:
+
+
+load whatismath4
+% stuff to be moved earlier at my convenience
+
+
+declare a17 obj
+
+>> a17: obj {move 1}
+
+
+
+declare b17 obj
+
+>> b17: obj {move 1}
+
+
+
+declare diffev that ~(a17 =b17)
+
+>> diffev: that ~((a17 = b17)) {move 1}
+
+
+
+open
+
+   declare sillyhyp that b17=a17
+
+>>    sillyhyp: that (b17 = a17) {move 2}
+
+
+
+   define linec1 sillyhyp: Mp(Eqsymm sillyhyp, \
+      diffev)
+
+>>    linec1: [(sillyhyp_1:that (b17 = a17))
+>>         => ((Eqsymm(sillyhyp_1) Mp diffev):
+>>         that ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Negeqsymm diffev: Negintro linec1
+
+
+>> Negeqsymm: [(.a17_1:obj),(.b17_1:obj),(diffev_1:
+>>      that ~((.a17_1 = .b17_1))) => (Negintro([(sillyhyp_2:
+>>         that (.b17_1 = .a17_1)) => ((Eqsymm(sillyhyp_2)
+>>         Mp diffev_1):that ??)])
+>>      :that ~((.b17_1 = .a17_1)))]
+>>   {move 0}
+
+
+
+open
+
+   declare s obj
+
+>>    s: obj {move 2}
+
+
+
+   declare t obj
+
+>>    t: obj {move 2}
+
+
+
+   declare u obj
+
+>>    u: obj {move 2}
+
+
+
+   open
+
+      declare dir1 that (s;t) <<= u
+
+>>       dir1: that ((s ; t) <<= u) {move 3}
+
+
+
+      define linea1 dir1: Conj Mp Inpair1 \
+         s t, Ui s Simp1 dir1, Mp Inpair2 s \
+         t, Ui t Simp1 dir1
+
+>>       linea1: [(dir1_1:that ((s ; t) <<=
+>>            u)) => ((((s Inpair1 t) Mp (s Ui
+>>            Simp1(dir1_1))) Conj ((s Inpair2
+>>            t) Mp (t Ui Simp1(dir1_1)))):that
+>>            ((s E u) & (t E u)))]
+>>         {move 2}
+
+
+
+      declare dir2 that (s E u) & t E u
+
+>>       dir2: that ((s E u) & (t E u)) {move
+>>         3}
+
+
+
+      open
+
+         declare x1 obj
+
+>>          x1: obj {move 4}
+
+
+
+         open
+
+            declare xev1 that x1 E s;t
+
+>>             xev1: that (x1 E (s ; t)) {move
+>>               5}
+
+
+
+            define linea2 xev1: Iff1 xev1, \
+               Ui x1, Pair s t
+
+>>             linea2: [(xev1_1:that (x1 E (s
+>>                  ; t))) => ((xev1_1 Iff1 (x1
+>>                  Ui (s Pair t))):that ((x1
+>>                  = s) V (x1 = t)))]
+>>               {move 4}
+
+
+
+            open
+
+               declare case1 that x1 = s
+
+
+>>                case1: that (x1 = s) {move
+>>                  6}
+
+
+
+               define linea3 case1: Subs1 \
+                  (Eqsymm case1,Simp1 dir2)
+
+
+>>                linea3: [(case1_1:that (x1
+>>                     = s)) => ((Eqsymm(case1_1)
+>>                     Subs1 Simp1(dir2)):that
+>>                     (x1 E u))]
+>>                  {move 5}
+
+
+
+               declare case2 that x1 = t
+
+
+>>                case2: that (x1 = t) {move
+>>                  6}
+
+
+
+               define linea4 case2: Subs1 \
+                  (Eqsymm case2,Simp2 dir2)
+
+
+>>                linea4: [(case2_1:that (x1
+>>                     = t)) => ((Eqsymm(case2_1)
+>>                     Subs1 Simp2(dir2)):that
+>>                     (x1 E u))]
+>>                  {move 5}
+
+
+
+               close
+
+            define linea5 xev1: Cases linea2 \
+               xev1, linea3, linea4
+
+>>             linea5: [(xev1_1:that (x1 E (s
+>>                  ; t))) => (Cases(linea2(xev1_1),
+>>                  [(case1_2:that (x1 = s)) =>
+>>                     ((Eqsymm(case1_2) Subs1
+>>                     Simp1(dir2)):that (x1 E
+>>                     u))]
+>>                  ,[(case2_4:that (x1 = t))
+>>                     => ((Eqsymm(case2_4) Subs1
+>>                     Simp2(dir2)):that (x1 E
+>>                     u))])
+>>                  :that (x1 E u))]
+>>               {move 4}
+
+
+
+            close
+
+         define linea6 x1: Ded linea5
+
+>>          linea6: [(x1_1:obj) => (Ded([(xev1_2:
+>>                  that (x1_1 E (s ; t))) =>
+>>                  (Cases((xev1_2 Iff1 (x1_1
+>>                  Ui (s Pair t))),[(case1_4:
+>>                     that (x1_1 = s)) => ((Eqsymm(case1_4)
+>>                     Subs1 Simp1(dir2)):that
+>>                     (x1_1 E u))]
+>>                  ,[(case2_6:that (x1_1 = t))
+>>                     => ((Eqsymm(case2_6) Subs1
+>>                     Simp2(dir2)):that (x1_1
+>>                     E u))])
+>>                  :that (x1_1 E u))])
+>>               :that ((x1_1 E (s ; t)) -> (x1_1
+>>               E u)))]
+>>            {move 3}
+
+
+
+         close
+
+      define linea7 dir2: Fixform((s;t)<<= \
+         u,Conj(Ug linea6,Conj(Inhabited Inpair1 \
+         s t , Inhabited Simp1 dir2)))
+
+>>       linea7: [(dir2_1:that ((s E u) & (t
+>>            E u))) => ((((s ; t) <<= u) Fixform
+>>            (Ug([(x1_4:obj) => (Ded([(xev1_5:
+>>                  that (x1_4 E (s ; t))) =>
+>>                  (Cases((xev1_5 Iff1 (x1_4
+>>                  Ui (s Pair t))),[(case1_7:
+>>                     that (x1_4 = s)) => ((Eqsymm(case1_7)
+>>                     Subs1 Simp1(dir2_1)):that
+>>                     (x1_4 E u))]
+>>                  ,[(case2_9:that (x1_4 = t))
+>>                     => ((Eqsymm(case2_9) Subs1
+>>                     Simp2(dir2_1)):that (x1_4
+>>                     E u))])
+>>                  :that (x1_4 E u))])
+>>               :that ((x1_4 E (s ; t)) -> (x1_4
+>>               E u)))])
+>>            Conj (Inhabited((s Inpair1 t)) Conj
+>>            Inhabited(Simp1(dir2_1))))):that
+>>            ((s ; t) <<= u))]
+>>         {move 2}
+
+
+
+      close
+
+   define Pairsubs s t u: Dediff linea1,linea7
+
+
+>>    Pairsubs: [(s_1:obj),(t_1:obj),(u_1:obj)
+>>         => (Dediff([(dir1_2:that ((s_1 ; t_1)
+>>            <<= u_1)) => ((((s_1 Inpair1 t_1)
+>>            Mp (s_1 Ui Simp1(dir1_2))) Conj
+>>            ((s_1 Inpair2 t_1) Mp (t_1 Ui Simp1(dir1_2)))):
+>>            that ((s_1 E u_1) & (t_1 E u_1)))]
+>>         ,[(dir2_7:that ((s_1 E u_1) & (t_1
+>>            E u_1))) => ((((s_1 ; t_1) <<= u_1)
+>>            Fixform (Ug([(x1_10:obj) => (Ded([(xev1_11:
+>>                  that (x1_10 E (s_1 ; t_1)))
+>>                  => (Cases((xev1_11 Iff1 (x1_10
+>>                  Ui (s_1 Pair t_1))),[(case1_13:
+>>                     that (x1_10 = s_1)) =>
+>>                     ((Eqsymm(case1_13) Subs1
+>>                     Simp1(dir2_7)):that (x1_10
+>>                     E u_1))]
+>>                  ,[(case2_15:that (x1_10 =
+>>                     t_1)) => ((Eqsymm(case2_15)
+>>                     Subs1 Simp2(dir2_7)):that
+>>                     (x1_10 E u_1))])
+>>                  :that (x1_10 E u_1))])
+>>               :that ((x1_10 E (s_1 ; t_1))
+>>               -> (x1_10 E u_1)))])
+>>            Conj (Inhabited((s_1 Inpair1 t_1))
+>>            Conj Inhabited(Simp1(dir2_7))))):
+>>            that ((s_1 ; t_1) <<= u_1))])
+>>         :that (((s_1 ; t_1) <<= u_1) == ((s_1
+>>         E u_1) & (t_1 E u_1))))]
+>>      {move 1}
+
+
+
+   open
+
+      declare dir1 that Usc s <<= t
+
+>>       dir1: that (Usc(s) <<= t) {move 3}
+
+
+
+      define linea8 dir1: Simp1 (Iff1 dir1, \
+         Pairsubs s s t)
+
+>>       linea8: [(dir1_1:that (Usc(s) <<= t))
+>>            => (Simp1((dir1_1 Iff1 Pairsubs(s,
+>>            s,t))):that (s E t))]
+>>         {move 2}
+
+
+
+      declare dir2 that s E t
+
+>>       dir2: that (s E t) {move 3}
+
+
+
+      define linea9 dir2: Fixform(Usc s <<= \
+         t, Iff2(Conj dir2 dir2,Pairsubs s \
+         s t))
+
+>>       linea9: [(dir2_1:that (s E t)) => (((Usc(s)
+>>            <<= t) Fixform ((dir2_1 Conj dir2_1)
+>>            Iff2 Pairsubs(s,s,t))):that (Usc(s)
+>>            <<= t))]
+>>         {move 2}
+
+
+
+      close
+
+   define Uscsubs s t: Dediff linea8, linea9
+
+
+>>    Uscsubs: [(s_1:obj),(t_1:obj) => (Dediff([(dir1_2:
+>>            that (Usc(s_1) <<= t_1)) => (Simp1((dir1_2
+>>            Iff1 Pairsubs(s_1,s_1,t_1))):that
+>>            (s_1 E t_1))]
+>>         ,[(dir2_3:that (s_1 E t_1)) => (((Usc(s_1)
+>>            <<= t_1) Fixform ((dir2_3 Conj dir2_3)
+>>            Iff2 Pairsubs(s_1,s_1,t_1))):that
+>>            (Usc(s_1) <<= t_1))])
+>>         :that ((Usc(s_1) <<= t_1) == (s_1 E
+>>         t_1)))]
+>>      {move 1}
+
+
+
+   define Pairinhabited s t: Ei s, [u=>u \
+         E s;t] \
+      , Inpair1 s t
+
+>>    Pairinhabited: [(s_1:obj),(t_1:obj) =>
+>>         (Ei(s_1,[(u_2:obj) => ((u_2 E (s_1
+>>            ; t_1)):prop)]
+>>         ,(s_1 Inpair1 t_1)):that Exists([(u_3:
+>>            obj) => ((u_3 E (s_1 ; t_1)):prop)]))
+>>         ]
+>>      {move 1}
+
+
+
+   close
+
+open
+clearcurrent
+
+
+   define Mbold:Mbold2 Misset thelawchooses
+
+
+>>    Mbold: [((Misset Mbold2 thelawchooses):
+>>         obj)]
+>>      {move 1}
+
+
+
+   declare A1 obj
+
+>>    A1: obj {move 2}
+
+
+
+   declare B1 obj
+
+>>    B1: obj {move 2}
+
+
+
+   declare aev that A1 E Mbold
+
+>>    aev: that (A1 E Mbold) {move 2}
+
+
+
+   declare bev that B1 E Mbold
+
+>>    bev: that (B1 E Mbold) {move 2}
+
+
+
+   define Mboldstrongtotal aev bev : Mboldstrongtotal2 \
+      Misset, thelawchooses, aev bev
+
+>>    Mboldstrongtotal: [(.A1_1:obj),(aev_1:
+>>         that (.A1_1 E Mbold)),(.B1_1:obj),(bev_1:
+>>         that (.B1_1 E Mbold)) => (Mboldstrongtotal2(Misset,
+>>         thelawchooses,aev_1,bev_1):that ((.B1_1
+>>         <<= prime2(thelaw,.A1_1)) V (.A1_1
+>>         <<= .B1_1)))]
+>>      {move 1}
+
+
+
+   define Mboldtotal aev bev : Mboldtotal2 \
+      Misset, thelawchooses, aev bev
+
+>>    Mboldtotal: [(.A1_1:obj),(aev_1:that (.A1_1
+>>         E Mbold)),(.B1_1:obj),(bev_1:that (.B1_1
+>>         E Mbold)) => (Mboldtotal2(Misset,thelawchooses,
+>>         aev_1,bev_1):that ((.B1_1 <<= .A1_1)
+>>         V (.A1_1 <<= .B1_1)))]
+>>      {move 1}
+
+
+
+   define Mboldtheta: Mboldtheta2 Misset \
+      thelawchooses
+
+>>    Mboldtheta: [((Misset Mboldtheta2 thelawchooses):
+>>         that thetachain1(M,thelaw,(Misset Mbold2
+>>         thelawchooses)))]
+>>      {move 1}
+
+
+
+   declare P obj
+
+>>    P: obj {move 2}
+
+
+
+   define prime P: prime2 thelaw, P
+
+>>    prime: [(P_1:obj) => (prime2(thelaw,P_1):
+>>         obj)]
+>>      {move 1}
+
+
+
+   declare Pev that P <<= M
+
+>>    Pev: that (P <<= M) {move 2}
+
+
+
+   declare x2 obj
+
+>>    x2: obj {move 2}
+
+
+
+   declare Pev2 that Exists[x2=>x2 E P] \
+      
+
+
+
+>>    Pev2: that Exists([(x2_1:obj) => ((x2_1
+>>         E P):prop)])
+>>      {move 2}
+
+
+
+   declare x obj
+
+>>    x: obj {move 2}
+
+
+
+   open
+
+      declare x1 obj
+
+>>       x1: obj {move 3}
+
+
+
+      define Pset: Set Mbold [x1 => P <<= \
+            x1] \
+         
+
+
+
+>>       Pset: [((Mbold Set [(x1_1:obj) => ((P
+>>               <<= x1_1):prop)])
+>>            :obj)]
+>>         {move 2}
+
+
+
+      define P0 : Intersection(Pset,M)
+
+>>       P0: [((Pset Intersection M):obj)]
+>>         {move 2}
+
+
+
+      goal that P0 E Mbold
+
+>>       Goal: that (P0 E Mbold)
+
+      define line1: Ui M,Ui Pset,(Simp2 Simp2 \
+         Simp2 Mboldtheta)
+
+>>       line1: [((M Ui (Pset Ui Simp2(Simp2(Simp2(Mboldtheta))))):
+>>            that (((Pset <<= (Misset Mbold2
+>>            thelawchooses)) & (M E Pset)) ->
+>>            ((Pset Intersection M) E (Misset
+>>            Mbold2 thelawchooses))))]
+>>         {move 2}
+
+
+
+      define line2: Fixform(Pset <<= Mbold, \
+         Sepsub2(Separation3 Refleq Mbold,Refleq \
+         Pset))
+
+>>       line2: [(((Pset <<= Mbold) Fixform
+>>            (Separation3(Refleq(Mbold)) Sepsub2
+>>            Refleq(Pset))):that (Pset <<= Mbold))]
+>>         {move 2}
+
+
+
+      define line3: Fixform(M E Pset,Iff2(Conj \
+         Simp1 Mboldtheta Pev,Ui M,Separation4 \
+         Refleq Pset))
+
+>>       line3: [(((M E Pset) Fixform ((Simp1(Mboldtheta)
+>>            Conj Pev) Iff2 (M Ui Separation4(Refleq(Pset))))):
+>>            that (M E Pset))]
+>>         {move 2}
+
+
+
+      define line4: Fixform(P0 E Mbold,Mp \
+         (Conj line2 line3, line1))
+
+>>       line4: [(((P0 E Mbold) Fixform ((line2
+>>            Conj line3) Mp line1)):that (P0
+>>            E Mbold))]
+>>         {move 2}
+
+
+
+      define p0: thelaw P0
+
+>>       p0: [(thelaw(P0):obj)]
+>>         {move 2}
+
+
+
+      goal that p0 E P
+
+>>       Goal: that (p0 E P)
+
+      open
+
+         declare z obj
+
+>>          z: obj {move 4}
+
+
+
+         declare zev that z E P
+
+>>          zev: that (z E P) {move 4}
+
+
+
+         goal that z E P0
+
+>>          Goal: that (z E P0)
+
+         define line6 z: Ui z,Separation4 \
+            Refleq P0
+
+>>          line6: [(z_1:obj) => ((z_1 Ui Separation4(Refleq(P0))):
+>>               that ((z_1 E (M Set [(x_8:obj)
+>>                  => (Forall([(B_9:obj) => (((B_9
+>>                     E Pset) -> (x_8 E B_9)):
+>>                     prop)])
+>>                  :prop)]))
+>>               == ((z_1 E M) & Forall([(B_10:
+>>                  obj) => (((B_10 E Pset) ->
+>>                  (z_1 E B_10)):prop)]))
+>>               ))]
+>>            {move 3}
+
+
+
+         define line7 zev: Mpsubs zev Pev
+
+
+>>          line7: [(.z_1:obj),(zev_1:that (.z_1
+>>               E P)) => ((zev_1 Mpsubs Pev):
+>>               that (.z_1 E M))]
+>>            {move 3}
+
+
+
+         open
+
+            declare B obj
+
+>>             B: obj {move 5}
+
+
+
+            open
+
+               declare Bev that B E Pset
+
+
+>>                Bev: that (B E Pset) {move
+>>                  6}
+
+
+
+               goal that z E B
+
+>>                Goal: that (z E B)
+
+               define line8 Bev: Mpsubs (zev, \
+                  Simp2(Iff1(Bev,Ui B,Separation4 \
+                  Refleq Pset)))
+
+>>                line8: [(Bev_1:that (B E Pset))
+>>                     => ((zev Mpsubs Simp2((Bev_1
+>>                     Iff1 (B Ui Separation4(Refleq(Pset)))))):
+>>                     that (z E B))]
+>>                  {move 5}
+
+
+
+               close
+
+            define line9 B: Ded line8
+
+>>             line9: [(B_1:obj) => (Ded([(Bev_2:
+>>                     that (B_1 E Pset)) => ((zev
+>>                     Mpsubs Simp2((Bev_2 Iff1
+>>                     (B_1 Ui Separation4(Refleq(Pset)))))):
+>>                     that (z E B_1))])
+>>                  :that ((B_1 E Pset) -> (z
+>>                  E B_1)))]
+>>               {move 4}
+
+
+
+            close
+
+         define line10 zev: Ug line9
+
+>>          line10: [(.z_1:obj),(zev_1:that
+>>               (.z_1 E P)) => (Ug([(B_3:obj)
+>>                  => (Ded([(Bev_4:that (B_3
+>>                     E Pset)) => ((zev_1 Mpsubs
+>>                     Simp2((Bev_4 Iff1 (B_3
+>>                     Ui Separation4(Refleq(Pset)))))):
+>>                     that (.z_1 E B_3))])
+>>                  :that ((B_3 E Pset) -> (.z_1
+>>                  E B_3)))])
+>>               :that Forall([(B_8:obj) => (((B_8
+>>                  E Pset) -> (.z_1 E B_8)):prop)]))
+>>               ]
+>>            {move 3}
+
+
+
+         define line11 zev: Fixform(z E P0, \
+            Iff2(Conj line7 zev line10 zev, \
+            line6 z))
+
+>>          line11: [(.z_1:obj),(zev_1:that
+>>               (.z_1 E P)) => (((.z_1 E P0)
+>>               Fixform ((line7(zev_1) Conj line10(zev_1))
+>>               Iff2 line6(.z_1))):that (.z_1
+>>               E P0))]
+>>            {move 3}
+
+
+
+         declare zev2 that z E P
+
+>>          zev2: that (z E P) {move 4}
+
+
+
+         define linea11 z: Ded [zev2 => line11 \
+               zev2] \
+            
+
+
+
+>>          linea11: [(z_1:obj) => (Ded([(zev2_2:
+>>                  that (z_1 E P)) => (line11(zev2_2):
+>>                  that (z_1 E P0))])
+>>               :that ((z_1 E P) -> (z_1 E P0)))]
+>>            {move 3}
+
+
+
+         declare w obj
+
+>>          w: obj {move 4}
+
+
+
+         define line12 zev: Fixform(Exists[w \
+               => w E P0] \
+            , Ei1 z line11 zev)
+
+>>          line12: [(.z_1:obj),(zev_1:that
+>>               (.z_1 E P)) => ((Exists([(w_2:
+>>                  obj) => ((w_2 E P0):prop)])
+>>               Fixform (.z_1 Ei1 line11(zev_1))):
+>>               that Exists([(w_4:obj) => ((w_4
+>>                  E P0):prop)]))
+>>               ]
+>>            {move 3}
+
+
+
+         close
+
+      define line13: Eg Pev2 line12
+
+>>       line13: [((Pev2 Eg [(.z_3:obj),(zev_3:
+>>               that (.z_3 E P)) => ((Exists([(w_4:
+>>                  obj) => ((w_4 E P0):prop)])
+>>               Fixform (.z_3 Ei1 ((.z_3 E P0)
+>>               Fixform (((zev_3 Mpsubs Pev)
+>>               Conj Ug([(B_9:obj) => (Ded([(Bev_10:
+>>                     that (B_9 E Pset)) => ((zev_3
+>>                     Mpsubs Simp2((Bev_10 Iff1
+>>                     (B_9 Ui Separation4(Refleq(Pset)))))):
+>>                     that (.z_3 E B_9))])
+>>                  :that ((B_9 E Pset) -> (.z_3
+>>                  E B_9)))]))
+>>               Iff2 (.z_3 Ui Separation4(Refleq(P0))))))):
+>>               that Exists([(w_2:obj) => ((w_2
+>>                  E P0):prop)]))
+>>               ])
+>>            :that Exists([(w_22:obj) => ((w_22
+>>               E P0):prop)]))
+>>            ]
+>>         {move 2}
+
+
+
+      define linea13: Fixform(P<<= P0,Conj(Ug \
+         linea11,Conj(Simp1 Simp2 Pev,Separation3 \
+         Refleq P0)))
+
+>>       linea13: [(((P <<= P0) Fixform (Ug([(z_2:
+>>               obj) => (Ded([(zev2_3:that (z_2
+>>                  E P)) => (((z_2 E P0) Fixform
+>>                  (((zev2_3 Mpsubs Pev) Conj
+>>                  Ug([(B_7:obj) => (Ded([(Bev_8:
+>>                        that (B_7 E Pset)) =>
+>>                        ((zev2_3 Mpsubs Simp2((Bev_8
+>>                        Iff1 (B_7 Ui Separation4(Refleq(Pset)))))):
+>>                        that (z_2 E B_7))])
+>>                     :that ((B_7 E Pset) ->
+>>                     (z_2 E B_7)))]))
+>>                  Iff2 (z_2 Ui Separation4(Refleq(P0))))):
+>>                  that (z_2 E P0))])
+>>               :that ((z_2 E P) -> (z_2 E P0)))])
+>>            Conj (Simp1(Simp2(Pev)) Conj Separation3(Refleq(P0))))):
+>>            that (P <<= P0))]
+>>         {move 2}
+
+
+
+      define line14: Fixform(p0 E P0,thelawchooses(Sepsub2 \
+         Misset Refleq P0,line13))
+
+>>       line14: [(((p0 E P0) Fixform ((Misset
+>>            Sepsub2 Refleq(P0)) thelawchooses
+>>            line13)):that (p0 E P0))]
+>>         {move 2}
+
+
+
+      open
+
+         declare absurdhyp that ~(p0 E P)
+
+
+>>          absurdhyp: that ~((p0 E P)) {move
+>>            4}
+
+
+
+         open
+
+            declare Q obj
+
+>>             Q: obj {move 5}
+
+
+
+            open
+
+               declare Qev that Q E P
+
+>>                Qev: that (Q E P) {move 6}
+
+
+
+               define line15 Qev: line11 \
+                  Qev
+
+>>                line15: [(Qev_1:that (Q E
+>>                     P)) => (line11(Qev_1):that
+>>                     (Q E P0))]
+>>                  {move 5}
+
+
+
+               open
+
+                  declare eqtest that Q E \
+                     Usc p0
+
+>>                   eqtest: that (Q E Usc(p0))
+>>                     {move 7}
+
+
+
+                  define line16 eqtest:Inusc1 \
+                     eqtest
+
+>>                   line16: [(eqtest_1:that
+>>                        (Q E Usc(p0))) => (Inusc1(eqtest_1):
+>>                        that (Q = p0))]
+>>                     {move 6}
+
+
+
+                  define line17 eqtest: Mp(Qev, \
+                     Subs1(Eqsymm line16 eqtest, \
+                     absurdhyp))
+
+>>                   line17: [(eqtest_1:that
+>>                        (Q E Usc(p0))) => ((Qev
+>>                        Mp (Eqsymm(line16(eqtest_1))
+>>                        Subs1 absurdhyp)):that
+>>                        ??)]
+>>                     {move 6}
+
+
+
+                  close
+
+               define line18 Qev : Negintro \
+                  line17
+
+>>                line18: [(Qev_1:that (Q E
+>>                     P)) => (Negintro([(eqtest_2:
+>>                        that (Q E Usc(p0)))
+>>                        => ((Qev_1 Mp (Eqsymm(Inusc1(eqtest_2))
+>>                        Subs1 absurdhyp)):that
+>>                        ??)])
+>>                     :that ~((Q E Usc(p0))))]
+>>                  {move 5}
+
+
+
+               define line19 Qev: Fixform(Q \
+                  E prime P0,Iff2(Conj(line15 \
+                  Qev,line18 Qev),Ui Q,Separation4 \
+                  Refleq (prime P0)))
+
+>>                line19: [(Qev_1:that (Q E
+>>                     P)) => (((Q E prime(P0))
+>>                     Fixform ((line15(Qev_1)
+>>                     Conj line18(Qev_1)) Iff2
+>>                     (Q Ui Separation4(Refleq(prime(P0)))))):
+>>                     that (Q E prime(P0)))]
+>>                  {move 5}
+
+
+
+               close
+
+            define line20 Q: Ded line19
+
+>>             line20: [(Q_1:obj) => (Ded([(Qev_2:
+>>                     that (Q_1 E P)) => (((Q_1
+>>                     E prime(P0)) Fixform ((line11(Qev_2)
+>>                     Conj Negintro([(eqtest_3:
+>>                        that (Q_1 E Usc(p0)))
+>>                        => ((Qev_2 Mp (Eqsymm(Inusc1(eqtest_3))
+>>                        Subs1 absurdhyp)):that
+>>                        ??)]))
+>>                     Iff2 (Q_1 Ui Separation4(Refleq(prime(P0)))))):
+>>                     that (Q_1 E prime(P0)))])
+>>                  :that ((Q_1 E P) -> (Q_1 E
+>>                  prime(P0))))]
+>>               {move 4}
+
+
+
+            save
+
+            close
+
+         define line21 absurdhyp: Fixform(P \
+            <<= prime P0,Conj(Ug line20,Conj(Add2(P=0, \
+            Pev2),Separation3 Refleq prime \
+            P0)))
+
+>>          line21: [(absurdhyp_1:that ~((p0
+>>               E P))) => (((P <<= prime(P0))
+>>               Fixform (Ug([(Q_4:obj) => (Ded([(Qev_5:
+>>                     that (Q_4 E P)) => (((Q_4
+>>                     E prime(P0)) Fixform ((line11(Qev_5)
+>>                     Conj Negintro([(eqtest_6:
+>>                        that (Q_4 E Usc(p0)))
+>>                        => ((Qev_5 Mp (Eqsymm(Inusc1(eqtest_6))
+>>                        Subs1 absurdhyp_1)):
+>>                        that ??)]))
+>>                     Iff2 (Q_4 Ui Separation4(Refleq(prime(P0)))))):
+>>                     that (Q_4 E prime(P0)))])
+>>                  :that ((Q_4 E P) -> (Q_4 E
+>>                  prime(P0))))])
+>>               Conj (((P = 0) Add2 Pev2) Conj
+>>               Separation3(Refleq(prime(P0)))))):
+>>               that (P <<= prime(P0)))]
+>>            {move 3}
+
+
+
+         define line22 absurdhyp: Ui prime \
+            P0, Simp2 Iff1(line14,Ui p0,Separation4 \
+            Refleq P0)
+
+>>          line22: [(absurdhyp_1:that ~((p0
+>>               E P))) => ((prime(P0) Ui Simp2((line14
+>>               Iff1 (p0 Ui Separation4(Refleq(P0)))))):
+>>               that ((prime(P0) E Pset) -> (p0
+>>               E prime(P0))))]
+>>            {move 3}
+
+
+
+         define linea23 absurdhyp: Mp(line4, \
+            Ui P0,Simp1 Simp2 Simp2 Mboldtheta)
+
+
+>>          linea23: [(absurdhyp_1:that ~((p0
+>>               E P))) => ((line4 Mp (P0 Ui Simp1(Simp2(Simp2(Mboldtheta))))):
+>>               that (prime2(thelaw,P0) E (Misset
+>>               Mbold2 thelawchooses)))]
+>>            {move 3}
+
+
+
+         define line23 absurdhyp: Fixform((prime \
+            P0) E Pset,Iff2(Conj(linea23 absurdhyp, \
+            line21 absurdhyp),Ui prime P0, \
+            Separation4 Refleq Pset))
+
+>>          line23: [(absurdhyp_1:that ~((p0
+>>               E P))) => (((prime(P0) E Pset)
+>>               Fixform ((linea23(absurdhyp_1)
+>>               Conj line21(absurdhyp_1)) Iff2
+>>               (prime(P0) Ui Separation4(Refleq(Pset))))):
+>>               that (prime(P0) E Pset))]
+>>            {move 3}
+
+
+
+         define line24 absurdhyp: Mp line23 \
+            absurdhyp line22 absurdhyp
+
+>>          line24: [(absurdhyp_1:that ~((p0
+>>               E P))) => ((line23(absurdhyp_1)
+>>               Mp line22(absurdhyp_1)):that
+>>               (p0 E prime(P0)))]
+>>            {move 3}
+
+
+
+         define line25 absurdhyp: Simp2(Iff1(line24 \
+            absurdhyp,Ui p0,Separation4 Refleq \
+            prime P0))
+
+>>          line25: [(absurdhyp_1:that ~((p0
+>>               E P))) => (Simp2((line24(absurdhyp_1)
+>>               Iff1 (p0 Ui Separation4(Refleq(prime(P0)))))):
+>>               that ~((p0 E Usc(thelaw(P0)))))]
+>>            {move 3}
+
+
+
+         define line26 absurdhyp: Mp (Inusc2 \
+            p0,line25 absurdhyp)
+
+>>          line26: [(absurdhyp_1:that ~((p0
+>>               E P))) => ((Inusc2(p0) Mp line25(absurdhyp_1)):
+>>               that ??)]
+>>            {move 3}
+
+
+
+         save
+
+         close
+
+      define line27 : Dneg Negintro line26
+
+
+>>       line27: [(Dneg(Negintro([(absurdhyp_1:
+>>               that ~((p0 E P))) => ((Inusc2(p0)
+>>               Mp Simp2(((((prime(P0) E Pset)
+>>               Fixform (((line4 Mp (P0 Ui Simp1(Simp2(Simp2(Mboldtheta)))))
+>>               Conj ((P <<= prime(P0)) Fixform
+>>               (Ug([(Q_14:obj) => (Ded([(Qev_15:
+>>                     that (Q_14 E P)) => (((Q_14
+>>                     E prime(P0)) Fixform ((((Q_14
+>>                     E P0) Fixform (((Qev_15
+>>                     Mpsubs Pev) Conj Ug([(B_19:
+>>                        obj) => (Ded([(Bev_20:
+>>                           that (B_19 E Pset))
+>>                           => ((Qev_15 Mpsubs
+>>                           Simp2((Bev_20 Iff1
+>>                           (B_19 Ui Separation4(Refleq(Pset)))))):
+>>                           that (Q_14 E B_19))])
+>>                        :that ((B_19 E Pset)
+>>                        -> (Q_14 E B_19)))]))
+>>                     Iff2 (Q_14 Ui Separation4(Refleq(P0)))))
+>>                     Conj Negintro([(eqtest_32:
+>>                        that (Q_14 E Usc(p0)))
+>>                        => ((Qev_15 Mp (Eqsymm(Inusc1(eqtest_32))
+>>                        Subs1 absurdhyp_1)):
+>>                        that ??)]))
+>>                     Iff2 (Q_14 Ui Separation4(Refleq(prime(P0)))))):
+>>                     that (Q_14 E prime(P0)))])
+>>                  :that ((Q_14 E P) -> (Q_14
+>>                  E prime(P0))))])
+>>               Conj (((P = 0) Add2 Pev2) Conj
+>>               Separation3(Refleq(prime(P0)))))))
+>>               Iff2 (prime(P0) Ui Separation4(Refleq(Pset)))))
+>>               Mp (prime(P0) Ui Simp2((line14
+>>               Iff1 (p0 Ui Separation4(Refleq(P0)))))))
+>>               Iff1 (p0 Ui Separation4(Refleq(prime(P0))))))):
+>>               that ??)]))
+>>            :that (p0 E P))]
+>>         {move 2}
+
+
+
+      declare P1 obj
+
+>>       P1: obj {move 3}
+
+
+
+      goal that ~(thelaw P1) E prime P1
+
+>>       Goal: that (~(thelaw(P1)) E prime(P1))
+
+
+      open
+
+         declare neghyp that (thelaw P1) \
+            E prime P1
+
+>>          neghyp: that (thelaw(P1) E prime(P1))
+>>            {move 4}
+
+
+
+         define line28 neghyp: Simp2(Separation5 \
+            neghyp)
+
+>>          line28: [(neghyp_1:that (thelaw(P1)
+>>               E prime(P1))) => (Simp2(Separation5(neghyp_1)):
+>>               that ~((thelaw(P1) E Usc(thelaw(P1)))))]
+>>            {move 3}
+
+
+
+         define line29 neghyp: Mp(Inusc2 \
+            thelaw P1,line28 neghyp)
+
+>>          line29: [(neghyp_1:that (thelaw(P1)
+>>               E prime(P1))) => ((Inusc2(thelaw(P1))
+>>               Mp line28(neghyp_1)):that ??)]
+>>            {move 3}
+
+
+
+         close
+
+      define primefact P1: Negintro line29
+
+
+>>       primefact: [(P1_1:obj) => (Negintro([(neghyp_2:
+>>               that (thelaw(P1_1) E prime(P1_1)))
+>>               => ((Inusc2(thelaw(P1_1)) Mp
+>>               Simp2(Separation5(neghyp_2))):
+>>               that ??)])
+>>            :that ~((thelaw(P1_1) E prime(P1_1))))]
+>>         {move 2}
+
+
+
+      open
+
+         declare phyp0 that P1 E Mbold
+
+>>          phyp0: that (P1 E Mbold) {move 4}
+
+
+
+         declare phyp1 that P <<= P1
+
+>>          phyp1: that (P <<= P1) {move 4}
+
+
+
+         declare phyp2 that ~(P1 = P0)
+
+>>          phyp2: that ~((P1 = P0)) {move 4}
+
+
+
+         goal that P0 <<= P1
+
+>>          Goal: that (P0 <<= P1)
+
+         open
+
+            declare z obj
+
+>>             z: obj {move 5}
+
+
+
+            open
+
+               declare zev that z E P0
+
+>>                zev: that (z E P0) {move 6}
+
+
+
+               goal that z E P1
+
+>>                Goal: that (z E P1)
+
+               define line30 zev: Ui P1 Simp2 \
+                  Separation5 zev
+
+>>                line30: [(zev_1:that (z E
+>>                     P0)) => ((P1 Ui Simp2(Separation5(zev_1))):
+>>                     that ((P1 E Pset) -> (z
+>>                     E P1)))]
+>>                  {move 5}
+
+
+
+               define line31 zev: Fixform(P1 \
+                  E Pset,Iff2(Conj phyp0 phyp1, \
+                  Ui P1 Separation4 Refleq \
+                  Pset))
+
+>>                line31: [(zev_1:that (z E
+>>                     P0)) => (((P1 E Pset) Fixform
+>>                     ((phyp0 Conj phyp1) Iff2
+>>                     (P1 Ui Separation4(Refleq(Pset))))):
+>>                     that (P1 E Pset))]
+>>                  {move 5}
+
+
+
+               define line32 zev : Mp line31 \
+                  zev, line30 zev
+
+>>                line32: [(zev_1:that (z E
+>>                     P0)) => ((line31(zev_1)
+>>                     Mp line30(zev_1)):that
+>>                     (z E P1))]
+>>                  {move 5}
+
+
+
+               close
+
+            define line33 z: Ded line32
+
+>>             line33: [(z_1:obj) => (Ded([(zev_2:
+>>                     that (z_1 E P0)) => ((((P1
+>>                     E Pset) Fixform ((phyp0
+>>                     Conj phyp1) Iff2 (P1 Ui
+>>                     Separation4(Refleq(Pset)))))
+>>                     Mp (P1 Ui Simp2(Separation5(zev_2)))):
+>>                     that (z_1 E P1))])
+>>                  :that ((z_1 E P0) -> (z_1
+>>                  E P1)))]
+>>               {move 4}
+
+
+
+            define line34: Fixform(P0 <<= \
+               P1,Conj(Ug line33, Conj(Separation3 \
+               Refleq P0,Simp2 Simp2 phyp1)))
+
+
+>>             line34: [(((P0 <<= P1) Fixform
+>>                  (Ug(line33) Conj (Separation3(Refleq(P0))
+>>                  Conj Simp2(Simp2(phyp1))))):
+>>                  that (P0 <<= P1))]
+>>               {move 4}
+
+
+
+            goal that P0 <<= prime P1
+
+>>             Goal: that (P0 <<= prime(P1))
+
+
+            goal that ~(P1 <<= P0)
+
+>>             Goal: that ~((P1 <<= P0))
+
+            open
+
+               declare sillyhyp that P1 <<= \
+                  P0
+
+>>                sillyhyp: that (P1 <<= P0)
+>>                  {move 6}
+
+
+
+               define line35 sillyhyp: Mp \
+                  Antisymsub sillyhyp line34 \
+                  phyp2
+
+>>                line35: [(sillyhyp_1:that
+>>                     (P1 <<= P0)) => (((sillyhyp_1
+>>                     Antisymsub line34) Mp phyp2):
+>>                     that ??)]
+>>                  {move 5}
+
+
+
+               close
+
+            define line36: Negintro line35
+
+
+>>             line36: [(Negintro([(sillyhyp_1:
+>>                     that (P1 <<= P0)) => (((sillyhyp_1
+>>                     Antisymsub line34) Mp phyp2):
+>>                     that ??)])
+>>                  :that ~((P1 <<= P0)))]
+>>               {move 4}
+
+
+
+            define line37: Fixform(P0 <<= \
+               prime P1,Ds1 Mboldstrongtotal \
+               phyp0 line4 line36)
+
+>>             line37: [(((P0 <<= prime(P1))
+>>                  Fixform ((phyp0 Mboldstrongtotal
+>>                  line4) Ds1 line36)):that (P0
+>>                  <<= prime(P1)))]
+>>               {move 4}
+
+
+
+            goal that ~(thelaw P1 E P)
+
+>>             Goal: that ~((thelaw(P1) E P))
+
+
+            open
+
+               declare sillyhyp that thelaw \
+                  P1 E P
+
+>>                sillyhyp: that (thelaw(P1)
+>>                  E P) {move 6}
+
+
+
+               define line38 sillyhyp: Mp \
+                  Mpsubs Mpsubs sillyhyp linea13 \
+                  line37 primefact P1
+
+>>                line38: [(sillyhyp_1:that
+>>                     (thelaw(P1) E P)) => ((((sillyhyp_1
+>>                     Mpsubs linea13) Mpsubs
+>>                     line37) Mp primefact(P1)):
+>>                     that ??)]
+>>                  {move 5}
+
+
+
+               close
+
+            define line39 : Negintro line38
+
+
+>>             line39: [(Negintro([(sillyhyp_1:
+>>                     that (thelaw(P1) E P))
+>>                     => ((((sillyhyp_1 Mpsubs
+>>                     linea13) Mpsubs line37)
+>>                     Mp primefact(P1)):that
+>>                     ??)])
+>>                  :that ~((thelaw(P1) E P)))]
+>>               {move 4}
+
+
+
+            close
+
+         define Line34 phyp0 phyp1 phyp2 \
+            : line34
+
+>>          Line34: [(phyp0_1:that (P1 E Mbold)),
+>>               (phyp1_1:that (P <<= P1)),(phyp2_1:
+>>               that ~((P1 = P0))) => (((P0 <<=
+>>               P1) Fixform (Ug([(z_4:obj) =>
+>>                  (Ded([(zev_5:that (z_4 E P0))
+>>                     => ((((P1 E Pset) Fixform
+>>                     ((phyp0_1 Conj phyp1_1)
+>>                     Iff2 (P1 Ui Separation4(Refleq(Pset)))))
+>>                     Mp (P1 Ui Simp2(Separation5(zev_5)))):
+>>                     that (z_4 E P1))])
+>>                  :that ((z_4 E P0) -> (z_4
+>>                  E P1)))])
+>>               Conj (Separation3(Refleq(P0))
+>>               Conj Simp2(Simp2(phyp1_1))))):
+>>               that (P0 <<= P1))]
+>>            {move 3}
+
+
+
+         define Line37 phyp0 phyp1 phyp2: \
+            line37
+
+>>          Line37: [(phyp0_1:that (P1 E Mbold)),
+>>               (phyp1_1:that (P <<= P1)),(phyp2_1:
+>>               that ~((P1 = P0))) => (((P0 <<=
+>>               prime(P1)) Fixform ((phyp0_1
+>>               Mboldstrongtotal line4) Ds1 Negintro([(sillyhyp_2:
+>>                  that (P1 <<= P0)) => (((sillyhyp_2
+>>                  Antisymsub ((P0 <<= P1) Fixform
+>>                  (Ug([(z_5:obj) => (Ded([(zev_6:
+>>                        that (z_5 E P0)) =>
+>>                        ((((P1 E Pset) Fixform
+>>                        ((phyp0_1 Conj phyp1_1)
+>>                        Iff2 (P1 Ui Separation4(Refleq(Pset)))))
+>>                        Mp (P1 Ui Simp2(Separation5(zev_6)))):
+>>                        that (z_5 E P1))])
+>>                     :that ((z_5 E P0) -> (z_5
+>>                     E P1)))])
+>>                  Conj (Separation3(Refleq(P0))
+>>                  Conj Simp2(Simp2(phyp1_1))))))
+>>                  Mp phyp2_1):that ??)]))
+>>               ):that (P0 <<= prime(P1)))]
+>>            {move 3}
+
+
+
+         define Line39 phyp0 phyp1 phyp2: \
+            line39
+
+>>          Line39: [(phyp0_1:that (P1 E Mbold)),
+>>               (phyp1_1:that (P <<= P1)),(phyp2_1:
+>>               that ~((P1 = P0))) => (Negintro([(sillyhyp_2:
+>>                  that (thelaw(P1) E P)) =>
+>>                  ((((sillyhyp_2 Mpsubs linea13)
+>>                  Mpsubs ((P0 <<= prime(P1))
+>>                  Fixform ((phyp0_1 Mboldstrongtotal
+>>                  line4) Ds1 Negintro([(sillyhyp_3:
+>>                     that (P1 <<= P0)) => (((sillyhyp_3
+>>                     Antisymsub ((P0 <<= P1)
+>>                     Fixform (Ug([(z_6:obj)
+>>                        => (Ded([(zev_7:that
+>>                           (z_6 E P0)) => ((((P1
+>>                           E Pset) Fixform ((phyp0_1
+>>                           Conj phyp1_1) Iff2
+>>                           (P1 Ui Separation4(Refleq(Pset)))))
+>>                           Mp (P1 Ui Simp2(Separation5(zev_7)))):
+>>                           that (z_6 E P1))])
+>>                        :that ((z_6 E P0) ->
+>>                        (z_6 E P1)))])
+>>                     Conj (Separation3(Refleq(P0))
+>>                     Conj Simp2(Simp2(phyp1_1))))))
+>>                     Mp phyp2_1):that ??)]))
+>>                  )) Mp primefact(P1)):that
+>>                  ??)])
+>>               :that ~((thelaw(P1) E P)))]
+>>            {move 3}
+
+
+
+         close
+
+      declare phyps that (P1 E Mbold) & (P \
+         <<= P1) & ~(P1=P0)
+
+>>       phyps: that ((P1 E Mbold) & ((P <<=
+>>         P1) & ~((P1 = P0)))) {move 3}
+
+
+
+      define Lemma34 phyps: Line34 Simp1 \
+         phyps Simp1 Simp2 phyps Simp2 Simp2 \
+         phyps
+
+>>       Lemma34: [(.P1_1:obj),(phyps_1:that
+>>            ((.P1_1 E Mbold) & ((P <<= .P1_1)
+>>            & ~((.P1_1 = P0))))) => (((P0 <<=
+>>            .P1_1) Fixform (Ug([(z_4:obj) =>
+>>               (Ded([(zev_5:that (z_4 E P0))
+>>                  => ((((.P1_1 E Pset) Fixform
+>>                  ((Simp1(phyps_1) Conj Simp1(Simp2(phyps_1)))
+>>                  Iff2 (.P1_1 Ui Separation4(Refleq(Pset)))))
+>>                  Mp (.P1_1 Ui Simp2(Separation5(zev_5)))):
+>>                  that (z_4 E .P1_1))])
+>>               :that ((z_4 E P0) -> (z_4 E .P1_1)))])
+>>            Conj (Separation3(Refleq(P0)) Conj
+>>            Simp2(Simp2(Simp1(Simp2(phyps_1))))))):
+>>            that (P0 <<= .P1_1))]
+>>         {move 2}
+
+
+
+      define Lemma37 phyps: Line37 Simp1 \
+         phyps Simp1 Simp2 phyps Simp2 Simp2 \
+         phyps
+
+>>       Lemma37: [(.P1_1:obj),(phyps_1:that
+>>            ((.P1_1 E Mbold) & ((P <<= .P1_1)
+>>            & ~((.P1_1 = P0))))) => (((P0 <<=
+>>            prime(.P1_1)) Fixform ((Simp1(phyps_1)
+>>            Mboldstrongtotal line4) Ds1 Negintro([(sillyhyp_2:
+>>               that (.P1_1 <<= P0)) => (((sillyhyp_2
+>>               Antisymsub ((P0 <<= .P1_1) Fixform
+>>               (Ug([(z_5:obj) => (Ded([(zev_6:
+>>                     that (z_5 E P0)) => ((((.P1_1
+>>                     E Pset) Fixform ((Simp1(phyps_1)
+>>                     Conj Simp1(Simp2(phyps_1)))
+>>                     Iff2 (.P1_1 Ui Separation4(Refleq(Pset)))))
+>>                     Mp (.P1_1 Ui Simp2(Separation5(zev_6)))):
+>>                     that (z_5 E .P1_1))])
+>>                  :that ((z_5 E P0) -> (z_5
+>>                  E .P1_1)))])
+>>               Conj (Separation3(Refleq(P0))
+>>               Conj Simp2(Simp2(Simp1(Simp2(phyps_1))))))))
+>>               Mp Simp2(Simp2(phyps_1))):that
+>>               ??)]))
+>>            ):that (P0 <<= prime(.P1_1)))]
+>>         {move 2}
+
+
+
+      define Lemma39 phyps: Line39 Simp1 \
+         phyps Simp1 Simp2 phyps Simp2 Simp2 \
+         phyps
+
+>>       Lemma39: [(.P1_1:obj),(phyps_1:that
+>>            ((.P1_1 E Mbold) & ((P <<= .P1_1)
+>>            & ~((.P1_1 = P0))))) => (Negintro([(sillyhyp_2:
+>>               that (thelaw(.P1_1) E P)) =>
+>>               ((((sillyhyp_2 Mpsubs linea13)
+>>               Mpsubs ((P0 <<= prime(.P1_1))
+>>               Fixform ((Simp1(phyps_1) Mboldstrongtotal
+>>               line4) Ds1 Negintro([(sillyhyp_3:
+>>                  that (.P1_1 <<= P0)) => (((sillyhyp_3
+>>                  Antisymsub ((P0 <<= .P1_1)
+>>                  Fixform (Ug([(z_6:obj) =>
+>>                     (Ded([(zev_7:that (z_6
+>>                        E P0)) => ((((.P1_1
+>>                        E Pset) Fixform ((Simp1(phyps_1)
+>>                        Conj Simp1(Simp2(phyps_1)))
+>>                        Iff2 (.P1_1 Ui Separation4(Refleq(Pset)))))
+>>                        Mp (.P1_1 Ui Simp2(Separation5(zev_7)))):
+>>                        that (z_6 E .P1_1))])
+>>                     :that ((z_6 E P0) -> (z_6
+>>                     E .P1_1)))])
+>>                  Conj (Separation3(Refleq(P0))
+>>                  Conj Simp2(Simp2(Simp1(Simp2(phyps_1))))))))
+>>                  Mp Simp2(Simp2(phyps_1))):
+>>                  that ??)]))
+>>               )) Mp primefact(.P1_1)):that
+>>               ??)])
+>>            :that ~((thelaw(.P1_1) E P)))]
+>>         {move 2}
+
+
+
+      declare phyps2 that (P1 E Mbold) & \
+         (P <<= P1) & thelaw P1 E P
+
+>>       phyps2: that ((P1 E Mbold) & ((P <<=
+>>         P1) & (thelaw(P1) E P))) {move 3}
+
+
+
+      goal that P1 = P0
+
+>>       Goal: that (P1 = P0)
+
+      open
+
+         declare sillyhyp that ~(P1 = P0)
+
+
+>>          sillyhyp: that ~((P1 = P0)) {move
+>>            4}
+
+
+
+         define line40 sillyhyp:Mp(Simp2 \
+            Simp2 phyps2, Lemma39 (Conj(Simp1 \
+            phyps2,Conj(Simp1 Simp2 phyps2, \
+            sillyhyp))))
+
+>>          line40: [(sillyhyp_1:that ~((P1
+>>               = P0))) => ((Simp2(Simp2(phyps2))
+>>               Mp Lemma39((Simp1(phyps2) Conj
+>>               (Simp1(Simp2(phyps2)) Conj sillyhyp_1)))):
+>>               that ??)]
+>>            {move 3}
+
+
+
+         close
+
+      define line41 phyps2: Dneg(Negintro \
+         line40)
+
+>>       line41: [(.P1_1:obj),(phyps2_1:that
+>>            ((.P1_1 E Mbold) & ((P <<= .P1_1)
+>>            & (thelaw(.P1_1) E P)))) => (Dneg(Negintro([(sillyhyp_2:
+>>               that ~((.P1_1 = P0))) => ((Simp2(Simp2(phyps2_1))
+>>               Mp Lemma39((Simp1(phyps2_1) Conj
+>>               (Simp1(Simp2(phyps2_1)) Conj
+>>               sillyhyp_2)))):that ??)]))
+>>            :that (.P1_1 = P0))]
+>>         {move 2}
+
+
+
+      close
+
+   define Rcal1 P: P0
+
+>>    Rcal1: [(P_1:obj) => (((Mbold Set [(x1_2:
+>>            obj) => ((P_1 <<= x1_2):prop)])
+>>         Intersection M):obj)]
+>>      {move 1}
+
+
+
+   define Rcal x: Rcal1 Usc x
+
+>>    Rcal: [(x_1:obj) => (Rcal1(Usc(x_1)):obj)]
+>>      {move 1}
+
+
+
+   goal that (thelaw Rcal x) = x
+
+>>    Goal: that (thelaw(Rcal(x)) = x)
+
+   define Line27 Pev Pev2 : Fixform((thelaw(Rcal1 \
+      P))E P,line27)
+
+>>    Line27: [(.P_1:obj),(Pev_1:that (.P_1
+>>         <<= M)),(Pev2_1:that Exists([(x2_2:
+>>            obj) => ((x2_2 E .P_1):prop)]))
+>>         => (((thelaw(Rcal1(.P_1)) E .P_1) Fixform
+>>         Dneg(Negintro([(absurdhyp_5:that ~((thelaw(((Mbold
+>>            Set [(x1_6:obj) => ((.P_1 <<= x1_6):
+>>               prop)])
+>>            Intersection M)) E .P_1))) => ((Inusc2(thelaw(((Mbold
+>>            Set [(x1_10:obj) => ((.P_1 <<= x1_10):
+>>               prop)])
+>>            Intersection M))) Mp Simp2(((((prime(((Mbold
+>>            Set [(x1_19:obj) => ((.P_1 <<= x1_19):
+>>               prop)])
+>>            Intersection M)) E (Mbold Set [(x1_20:
+>>               obj) => ((.P_1 <<= x1_20):prop)]))
+>>            Fixform (((((((Mbold Set [(x1_25:
+>>               obj) => ((.P_1 <<= x1_25):prop)])
+>>            Intersection M) E Mbold) Fixform
+>>            (((((Mbold Set [(x1_29:obj) => ((.P_1
+>>               <<= x1_29):prop)])
+>>            <<= Mbold) Fixform (Separation3(Refleq(Mbold))
+>>            Sepsub2 Refleq((Mbold Set [(x1_37:
+>>               obj) => ((.P_1 <<= x1_37):prop)]))
+>>            )) Conj ((M E (Mbold Set [(x1_39:
+>>               obj) => ((.P_1 <<= x1_39):prop)]))
+>>            Fixform ((Simp1(Mboldtheta) Conj
+>>            Pev_1) Iff2 (M Ui Separation4(Refleq((Mbold
+>>            Set [(x1_48:obj) => ((.P_1 <<= x1_48):
+>>               prop)]))
+>>            ))))) Mp (M Ui ((Mbold Set [(x1_54:
+>>               obj) => ((.P_1 <<= x1_54):prop)])
+>>            Ui Simp2(Simp2(Simp2(Mboldtheta)))))))
+>>            Mp (((Mbold Set [(x1_67:obj) =>
+>>               ((.P_1 <<= x1_67):prop)])
+>>            Intersection M) Ui Simp1(Simp2(Simp2(Mboldtheta)))))
+>>            Conj ((.P_1 <<= prime(((Mbold Set
+>>            [(x1_79:obj) => ((.P_1 <<= x1_79):
+>>               prop)])
+>>            Intersection M))) Fixform (Ug([(Q_84:
+>>               obj) => (Ded([(Qev_86:that (Q_84
+>>                  E .P_1)) => (((Q_84 E prime(((Mbold
+>>                  Set [(x1_87:obj) => ((.P_1
+>>                     <<= x1_87):prop)])
+>>                  Intersection M))) Fixform
+>>                  ((((Q_84 E ((Mbold Set [(x1_91:
+>>                     obj) => ((.P_1 <<= x1_91):
+>>                     prop)])
+>>                  Intersection M)) Fixform (((Qev_86
+>>                  Mpsubs Pev_1) Conj Ug([(B_98:
+>>                     obj) => (Ded([(Bev_100:
+>>                        that (B_98 E (Mbold
+>>                        Set [(x1_101:obj) =>
+>>                           ((.P_1 <<= x1_101):
+>>                           prop)]))
+>>                        ) => ((Qev_86 Mpsubs
+>>                        Simp2((Bev_100 Iff1
+>>                        (B_98 Ui Separation4(Refleq((Mbold
+>>                        Set [(x1_107:obj) =>
+>>                           ((.P_1 <<= x1_107):
+>>                           prop)]))
+>>                        ))))):that (Q_84 E B_98))])
+>>                     :that ((B_98 E (Mbold Set
+>>                     [(x1_108:obj) => ((.P_1
+>>                        <<= x1_108):prop)]))
+>>                     -> (Q_84 E B_98)))]))
+>>                  Iff2 (Q_84 Ui Separation4(Refleq(((Mbold
+>>                  Set [(x1_122:obj) => ((.P_1
+>>                     <<= x1_122):prop)])
+>>                  Intersection M)))))) Conj
+>>                  Negintro([(eqtest_125:that
+>>                     (Q_84 E Usc(thelaw(((Mbold
+>>                     Set [(x1_126:obj) => ((.P_1
+>>                        <<= x1_126):prop)])
+>>                     Intersection M))))) =>
+>>                     ((Qev_86 Mp (Eqsymm(Inusc1(eqtest_125))
+>>                     Subs1 absurdhyp_5)):that
+>>                     ??)]))
+>>                  Iff2 (Q_84 Ui Separation4(Refleq(prime(((Mbold
+>>                  Set [(x1_144:obj) => ((.P_1
+>>                     <<= x1_144):prop)])
+>>                  Intersection M))))))):that
+>>                  (Q_84 E prime(((Mbold Set
+>>                  [(x1_145:obj) => ((.P_1 <<=
+>>                     x1_145):prop)])
+>>                  Intersection M))))])
+>>               :that ((Q_84 E .P_1) -> (Q_84
+>>               E prime(((Mbold Set [(x1_146:
+>>                  obj) => ((.P_1 <<= x1_146):
+>>                  prop)])
+>>               Intersection M)))))])
+>>            Conj (((.P_1 = 0) Add2 Pev2_1) Conj
+>>            Separation3(Refleq(prime(((Mbold
+>>            Set [(x1_160:obj) => ((.P_1 <<=
+>>               x1_160):prop)])
+>>            Intersection M)))))))) Iff2 (prime(((Mbold
+>>            Set [(x1_163:obj) => ((.P_1 <<=
+>>               x1_163):prop)])
+>>            Intersection M)) Ui Separation4(Refleq((Mbold
+>>            Set [(x1_168:obj) => ((.P_1 <<=
+>>               x1_168):prop)]))
+>>            )))) Mp (prime(((Mbold Set [(x1_171:
+>>               obj) => ((.P_1 <<= x1_171):prop)])
+>>            Intersection M)) Ui Simp2((((thelaw(((Mbold
+>>            Set [(x1_181:obj) => ((.P_1 <<=
+>>               x1_181):prop)])
+>>            Intersection M)) E ((Mbold Set [(x1_182:
+>>               obj) => ((.P_1 <<= x1_182):prop)])
+>>            Intersection M)) Fixform ((Misset
+>>            Sepsub2 Refleq(((Mbold Set [(x1_189:
+>>               obj) => ((.P_1 <<= x1_189):prop)])
+>>            Intersection M))) thelawchooses
+>>            (Pev2_1 Eg [(.z_193:obj),(zev_193:
+>>               that (.z_193 E .P_1)) => ((Exists([(w_194:
+>>                  obj) => ((w_194 E ((Mbold
+>>                  Set [(x1_195:obj) => ((.P_1
+>>                     <<= x1_195):prop)])
+>>                  Intersection M)):prop)])
+>>               Fixform (.z_193 Ei1 ((.z_193
+>>               E ((Mbold Set [(x1_198:obj) =>
+>>                  ((.P_1 <<= x1_198):prop)])
+>>               Intersection M)) Fixform (((zev_193
+>>               Mpsubs Pev_1) Conj Ug([(B_205:
+>>                  obj) => (Ded([(Bev_207:that
+>>                     (B_205 E (Mbold Set [(x1_208:
+>>                        obj) => ((.P_1 <<= x1_208):
+>>                        prop)]))
+>>                     ) => ((zev_193 Mpsubs Simp2((Bev_207
+>>                     Iff1 (B_205 Ui Separation4(Refleq((Mbold
+>>                     Set [(x1_214:obj) => ((.P_1
+>>                        <<= x1_214):prop)]))
+>>                     ))))):that (.z_193 E B_205))])
+>>                  :that ((B_205 E (Mbold Set
+>>                  [(x1_215:obj) => ((.P_1 <<=
+>>                     x1_215):prop)]))
+>>                  -> (.z_193 E B_205)))]))
+>>               Iff2 (.z_193 Ui Separation4(Refleq(((Mbold
+>>               Set [(x1_229:obj) => ((.P_1 <<=
+>>                  x1_229):prop)])
+>>               Intersection M)))))))):that Exists([(w_230:
+>>                  obj) => ((w_230 E ((Mbold
+>>                  Set [(x1_231:obj) => ((.P_1
+>>                     <<= x1_231):prop)])
+>>                  Intersection M)):prop)]))
+>>               ]))
+>>            ) Iff1 (thelaw(((Mbold Set [(x1_236:
+>>               obj) => ((.P_1 <<= x1_236):prop)])
+>>            Intersection M)) Ui Separation4(Refleq(((Mbold
+>>            Set [(x1_247:obj) => ((.P_1 <<=
+>>               x1_247):prop)])
+>>            Intersection M)))))))) Iff1 (thelaw(((Mbold
+>>            Set [(x1_252:obj) => ((.P_1 <<=
+>>               x1_252):prop)])
+>>            Intersection M)) Ui Separation4(Refleq(prime(((Mbold
+>>            Set [(x1_263:obj) => ((.P_1 <<=
+>>               x1_263):prop)])
+>>            Intersection M)))))))):that ??)]))
+>>         ):that (thelaw(Rcal1(.P_1)) E .P_1))]
+>>      {move 1}
+
+
+
+   declare xinm that x E M
+
+>>    xinm: that (x E M) {move 2}
+
+
+
+   open
+
+      define line42: Iff2 xinm, Uscsubs x \
+         M
+
+>>       line42: [((xinm Iff2 (x Uscsubs M)):
+>>            that (Usc(x) <<= M))]
+>>         {move 2}
+
+
+
+      define line43: Pairinhabited x x
+
+>>       line43: [((x Pairinhabited x):that
+>>            Exists([(u_1:obj) => ((u_1 E (x
+>>               ; x)):prop)]))
+>>            ]
+>>         {move 2}
+
+
+
+      define line44: Fixform((thelaw(Rcal \
+         x)= x),Inusc1 Line27 line42 line43)
+
+
+>>       line44: [(((thelaw(Rcal(x)) = x) Fixform
+>>            Inusc1((line42 Line27 line43))):
+>>            that (thelaw(Rcal(x)) = x))]
+>>         {move 2}
+
+
+
+      close
+
+   define line45 xinm: line44
+
+>>    line45: [(.x_1:obj),(xinm_1:that (.x_1
+>>         E M)) => (((thelaw(Rcal(.x_1)) = .x_1)
+>>         Fixform Inusc1(((xinm_1 Iff2 (.x_1
+>>         Uscsubs M)) Line27 (.x_1 Pairinhabited
+>>         .x_1)))):that (thelaw(Rcal(.x_1)) =
+>>         .x_1))]
+>>      {move 1}
+
+
+
+   declare Q obj
+
+>>    Q: obj {move 2}
+
+
+
+   declare phypsq that (Q E Mbold) & (P <<= \
+      Q) & thelaw Q E P
+
+>>    phypsq: that ((Q E Mbold) & ((P <<= Q)
+>>      & (thelaw(Q) E P))) {move 2}
+
+
+
+   define Line41 Pev Pev2 phypsq: line41 \
+      phypsq
+
+>>    Line41: [(.P_1:obj),(Pev_1:that (.P_1
+>>         <<= M)),(Pev2_1:that Exists([(x2_2:
+>>            obj) => ((x2_2 E .P_1):prop)]))
+>>         ,(.Q_1:obj),(phypsq_1:that ((.Q_1 E
+>>         Mbold) & ((.P_1 <<= .Q_1) & (thelaw(.Q_1)
+>>         E .P_1)))) => (Dneg(Negintro([(sillyhyp_5:
+>>            that ~((.Q_1 = ((Mbold Set [(x1_6:
+>>               obj) => ((.P_1 <<= x1_6):prop)])
+>>            Intersection M)))) => ((Simp2(Simp2(phypsq_1))
+>>            Mp Negintro([(sillyhyp_7:that (thelaw(.Q_1)
+>>               E .P_1)) => ((((sillyhyp_7 Mpsubs
+>>               ((.P_1 <<= ((Mbold Set [(x1_10:
+>>                  obj) => ((.P_1 <<= x1_10):
+>>                  prop)])
+>>               Intersection M)) Fixform (Ug([(z_15:
+>>                  obj) => (Ded([(zev2_17:that
+>>                     (z_15 E .P_1)) => (((z_15
+>>                     E ((Mbold Set [(x1_18:obj)
+>>                        => ((.P_1 <<= x1_18):
+>>                        prop)])
+>>                     Intersection M)) Fixform
+>>                     (((zev2_17 Mpsubs Pev_1)
+>>                     Conj Ug([(B_25:obj) =>
+>>                        (Ded([(Bev_27:that (B_25
+>>                           E (Mbold Set [(x1_28:
+>>                              obj) => ((.P_1
+>>                              <<= x1_28):prop)]))
+>>                           ) => ((zev2_17 Mpsubs
+>>                           Simp2((Bev_27 Iff1
+>>                           (B_25 Ui Separation4(Refleq((Mbold
+>>                           Set [(x1_34:obj)
+>>                              => ((.P_1 <<=
+>>                              x1_34):prop)]))
+>>                           ))))):that (z_15
+>>                           E B_25))])
+>>                        :that ((B_25 E (Mbold
+>>                        Set [(x1_35:obj) =>
+>>                           ((.P_1 <<= x1_35):
+>>                           prop)]))
+>>                        -> (z_15 E B_25)))]))
+>>                     Iff2 (z_15 Ui Separation4(Refleq(((Mbold
+>>                     Set [(x1_49:obj) => ((.P_1
+>>                        <<= x1_49):prop)])
+>>                     Intersection M)))))):that
+>>                     (z_15 E ((Mbold Set [(x1_50:
+>>                        obj) => ((.P_1 <<= x1_50):
+>>                        prop)])
+>>                     Intersection M)))])
+>>                  :that ((z_15 E .P_1) -> (z_15
+>>                  E ((Mbold Set [(x1_51:obj)
+>>                     => ((.P_1 <<= x1_51):prop)])
+>>                  Intersection M))))])
+>>               Conj (Simp1(Simp2(Pev_1)) Conj
+>>               Separation3(Refleq(((Mbold Set
+>>               [(x1_63:obj) => ((.P_1 <<= x1_63):
+>>                  prop)])
+>>               Intersection M))))))) Mpsubs
+>>               ((((Mbold Set [(x1_64:obj) =>
+>>                  ((.P_1 <<= x1_64):prop)])
+>>               Intersection M) <<= prime(.Q_1))
+>>               Fixform ((Simp1((Simp1(phypsq_1)
+>>               Conj (Simp1(Simp2(phypsq_1))
+>>               Conj sillyhyp_5))) Mboldstrongtotal
+>>               ((((Mbold Set [(x1_71:obj) =>
+>>                  ((.P_1 <<= x1_71):prop)])
+>>               Intersection M) E Mbold) Fixform
+>>               (((((Mbold Set [(x1_75:obj) =>
+>>                  ((.P_1 <<= x1_75):prop)])
+>>               <<= Mbold) Fixform (Separation3(Refleq(Mbold))
+>>               Sepsub2 Refleq((Mbold Set [(x1_83:
+>>                  obj) => ((.P_1 <<= x1_83):
+>>                  prop)]))
+>>               )) Conj ((M E (Mbold Set [(x1_85:
+>>                  obj) => ((.P_1 <<= x1_85):
+>>                  prop)]))
+>>               Fixform ((Simp1(Mboldtheta) Conj
+>>               Pev_1) Iff2 (M Ui Separation4(Refleq((Mbold
+>>               Set [(x1_94:obj) => ((.P_1 <<=
+>>                  x1_94):prop)]))
+>>               ))))) Mp (M Ui ((Mbold Set [(x1_100:
+>>                  obj) => ((.P_1 <<= x1_100):
+>>                  prop)])
+>>               Ui Simp2(Simp2(Simp2(Mboldtheta))))))))
+>>               Ds1 Negintro([(sillyhyp_113:that
+>>                  (.Q_1 <<= ((Mbold Set [(x1_114:
+>>                     obj) => ((.P_1 <<= x1_114):
+>>                     prop)])
+>>                  Intersection M))) => (((sillyhyp_113
+>>                  Antisymsub ((((Mbold Set [(x1_117:
+>>                     obj) => ((.P_1 <<= x1_117):
+>>                     prop)])
+>>                  Intersection M) <<= .Q_1)
+>>                  Fixform (Ug([(z_122:obj) =>
+>>                     (Ded([(zev_124:that (z_122
+>>                        E ((Mbold Set [(x1_125:
+>>                           obj) => ((.P_1 <<=
+>>                           x1_125):prop)])
+>>                        Intersection M))) =>
+>>                        ((((.Q_1 E (Mbold Set
+>>                        [(x1_127:obj) => ((.P_1
+>>                           <<= x1_127):prop)]))
+>>                        Fixform ((Simp1((Simp1(phypsq_1)
+>>                        Conj (Simp1(Simp2(phypsq_1))
+>>                        Conj sillyhyp_5))) Conj
+>>                        Simp1(Simp2((Simp1(phypsq_1)
+>>                        Conj (Simp1(Simp2(phypsq_1))
+>>                        Conj sillyhyp_5)))))
+>>                        Iff2 (.Q_1 Ui Separation4(Refleq((Mbold
+>>                        Set [(x1_140:obj) =>
+>>                           ((.P_1 <<= x1_140):
+>>                           prop)]))
+>>                        )))) Mp (.Q_1 Ui Simp2(Separation5(zev_124)))):
+>>                        that (z_122 E .Q_1))])
+>>                     :that ((z_122 E ((Mbold
+>>                     Set [(x1_148:obj) => ((.P_1
+>>                        <<= x1_148):prop)])
+>>                     Intersection M)) -> (z_122
+>>                     E .Q_1)))])
+>>                  Conj (Separation3(Refleq(((Mbold
+>>                  Set [(x1_159:obj) => ((.P_1
+>>                     <<= x1_159):prop)])
+>>                  Intersection M))) Conj Simp2(Simp2(Simp1(Simp2((Simp1(phypsq_1)
+>>                  Conj (Simp1(Simp2(phypsq_1))
+>>                  Conj sillyhyp_5))))))))))
+>>                  Mp Simp2(Simp2((Simp1(phypsq_1)
+>>                  Conj (Simp1(Simp2(phypsq_1))
+>>                  Conj sillyhyp_5))))):that
+>>                  ??)]))
+>>               )) Mp Negintro([(neghyp_169:that
+>>                  (thelaw(.Q_1) E prime(.Q_1)))
+>>                  => ((Inusc2(thelaw(.Q_1))
+>>                  Mp Simp2(Separation5(neghyp_169))):
+>>                  that ??)]))
+>>               :that ??)]))
+>>            :that ??)]))
+>>         :that (.Q_1 = ((Mbold Set [(x1_171:
+>>            obj) => ((.P_1 <<= x1_171):prop)])
+>>         Intersection M)))]
+>>      {move 1}
+
+
+
+   declare Qinmbold that Q E Mbold
+
+>>    Qinmbold: that (Q E Mbold) {move 2}
+
+
+
+   declare y obj
+
+>>    y: obj {move 2}
+
+
+
+   declare Qev that y E Q
+
+>>    Qev: that (y E Q) {move 2}
+
+
+
+   goal that (thelaw Q = x) -> Q = Rcal x
+
+
+>>    Goal: that ((thelaw(Q) = x) -> (Q = Rcal(x)))
+
+
+   open
+
+      declare thehyp that thelaw Q = x
+
+>>       thehyp: that (thelaw(Q) = x) {move
+>>         3}
+
+
+
+      define line46: Iff1(Simp1 Separation5 \
+         Qinmbold,Ui Q,Scthm M)
+
+>>       line46: [((Simp1(Separation5(Qinmbold))
+>>            Iff1 (Q Ui Scthm(M))):that (Q <<=
+>>            M))]
+>>         {move 2}
+
+
+
+      define line47 thehyp:Iff2(Subs1 thehyp, \
+         thelawchooses line46, Ei1 y Qev,Uscsubs \
+         x Q)
+
+>>       line47: [(thehyp_1:that (thelaw(Q)
+>>            = x)) => (((thehyp_1 Subs1 (line46
+>>            thelawchooses (y Ei1 Qev))) Iff2
+>>            (x Uscsubs Q)):that (Usc(x) <<=
+>>            Q))]
+>>         {move 2}
+
+
+
+      declare y1 obj
+
+>>       y1: obj {move 3}
+
+
+
+      define line48 thehyp: Subs Eqsymm thehyp \
+         [y1 => y1 E Usc x] \
+         Inusc2 x
+
+>>       line48: [(thehyp_1:that (thelaw(Q)
+>>            = x)) => (Subs(Eqsymm(thehyp_1),
+>>            [(y1_2:obj) => ((y1_2 E Usc(x)):
+>>               prop)]
+>>            ,Inusc2(x)):that (thelaw(Q) E Usc(x)))]
+>>         {move 2}
+
+
+
+      define line49 thehyp: Fixform(Q = Rcal \
+         x,Line41 line42 line43 (Qinmbold Conj \
+         line47 thehyp Conj line48 thehyp))
+
+
+>>       line49: [(thehyp_1:that (thelaw(Q)
+>>            = x)) => (((Q = Rcal(x)) Fixform
+>>            Line41(line42,line43,(Qinmbold Conj
+>>            (line47(thehyp_1) Conj line48(thehyp_1))))):
+>>            that (Q = Rcal(x)))]
+>>         {move 2}
+
+
+
+      close
+
+   declare thehyp2 that thelaw Q = x
+
+>>    thehyp2: that (thelaw(Q) = x) {move 2}
+
+
+
+   define Line49 xinm Qinmbold Qev thehyp2: \
+      line49 thehyp2
+
+>>    Line49: [(.x_1:obj),(xinm_1:that (.x_1
+>>         E M)),(.Q_1:obj),(Qinmbold_1:that (.Q_1
+>>         E Mbold)),(.y_1:obj),(Qev_1:that (.y_1
+>>         E .Q_1)),(thehyp2_1:that (thelaw(.Q_1)
+>>         = .x_1)) => (((.Q_1 = Rcal(.x_1)) Fixform
+>>         Line41((xinm_1 Iff2 (.x_1 Uscsubs M)),
+>>         (.x_1 Pairinhabited .x_1),(Qinmbold_1
+>>         Conj (((thehyp2_1 Subs1 ((Simp1(Separation5(Qinmbold_1))
+>>         Iff1 (.Q_1 Ui Scthm(M))) thelawchooses
+>>         (.y_1 Ei1 Qev_1))) Iff2 (.x_1 Uscsubs
+>>         .Q_1)) Conj Subs(Eqsymm(thehyp2_1),
+>>         [(y1_10:obj) => ((y1_10 E Usc(.x_1)):
+>>            prop)]
+>>         ,Inusc2(.x_1)))))):that (.Q_1 = Rcal(.x_1)))]
+>>      {move 1}
+
+
+
+   declare a obj
+
+>>    a: obj {move 2}
+
+
+
+   declare b obj
+
+>>    b: obj {move 2}
+
+
+
+   declare ainm that a E M
+
+>>    ainm: that (a E M) {move 2}
+
+
+
+   declare binm that b E M
+
+>>    binm: that (b E M) {move 2}
+
+
+
+   define <~ a b: (a E M) & (b E M) & ~(a=b) \
+      & b E Rcal a
+
+>>    <~: [(a_1:obj),(b_1:obj) => (((a_1 E M)
+>>         & ((b_1 E M) & (~((a_1 = b_1)) & (b_1
+>>         E Rcal(a_1))))):prop)]
+>>      {move 1}
+
+
+% I am going to argue for the same result in this paragraph in a simpler (I hope) way.
+
+
+   goal that (b E Rcal a) == (Rcal b) <<= \
+      Rcal a
+
+>>    Goal: that ((b E Rcal(a)) == (Rcal(b)
+>>      <<= Rcal(a)))
+
+   define Line4 Pev Pev2: Fixform(P0 E Mbold, \
+      line4)
+
+>>    Line4: [(.P_1:obj),(Pev_1:that (.P_1 <<=
+>>         M)),(Pev2_1:that Exists([(x2_2:obj)
+>>            => ((x2_2 E .P_1):prop)]))
+>>         => (((((Mbold Set [(x1_3:obj) => ((.P_1
+>>            <<= x1_3):prop)])
+>>         Intersection M) E Mbold) Fixform ((((Mbold
+>>         Set [(x1_4:obj) => ((.P_1 <<= x1_4):
+>>            prop)])
+>>         Intersection M) E Mbold) Fixform (((((Mbold
+>>         Set [(x1_8:obj) => ((.P_1 <<= x1_8):
+>>            prop)])
+>>         <<= Mbold) Fixform (Separation3(Refleq(Mbold))
+>>         Sepsub2 Refleq((Mbold Set [(x1_16:obj)
+>>            => ((.P_1 <<= x1_16):prop)]))
+>>         )) Conj ((M E (Mbold Set [(x1_18:obj)
+>>            => ((.P_1 <<= x1_18):prop)]))
+>>         Fixform ((Simp1(Mboldtheta) Conj Pev_1)
+>>         Iff2 (M Ui Separation4(Refleq((Mbold
+>>         Set [(x1_27:obj) => ((.P_1 <<= x1_27):
+>>            prop)]))
+>>         ))))) Mp (M Ui ((Mbold Set [(x1_33:
+>>            obj) => ((.P_1 <<= x1_33):prop)])
+>>         Ui Simp2(Simp2(Simp2(Mboldtheta)))))))):
+>>         that (((Mbold Set [(x1_45:obj) => ((.P_1
+>>            <<= x1_45):prop)])
+>>         Intersection M) E Mbold))]
+>>      {move 1}
+
+
+
+   define Rcalinmbold xinm: Fixform(Rcal \
+      x E Mbold,Line4 line42 line43)
+
+>>    Rcalinmbold: [(.x_1:obj),(xinm_1:that
+>>         (.x_1 E M)) => (((Rcal(.x_1) E Mbold)
+>>         Fixform ((xinm_1 Iff2 (.x_1 Uscsubs
+>>         M)) Line4 (.x_1 Pairinhabited .x_1))):
+>>         that (Rcal(.x_1) E Mbold))]
+>>      {move 1}
+
+
+
+   define Line44 xinm: line44
+
+>>    Line44: [(.x_1:obj),(xinm_1:that (.x_1
+>>         E M)) => (((thelaw(Rcal(.x_1)) = .x_1)
+>>         Fixform Inusc1(((xinm_1 Iff2 (.x_1
+>>         Uscsubs M)) Line27 (.x_1 Pairinhabited
+>>         .x_1)))):that (thelaw(Rcal(.x_1)) =
+>>         .x_1))]
+>>      {move 1}
+
+
+
+   define Linea13 Pev Pev2: Fixform(P <<= \
+      Rcal1 P,linea13)
+
+>>    Linea13: [(.P_1:obj),(Pev_1:that (.P_1
+>>         <<= M)),(Pev2_1:that Exists([(x2_2:
+>>            obj) => ((x2_2 E .P_1):prop)]))
+>>         => (((.P_1 <<= Rcal1(.P_1)) Fixform
+>>         ((.P_1 <<= ((Mbold Set [(x1_3:obj)
+>>            => ((.P_1 <<= x1_3):prop)])
+>>         Intersection M)) Fixform (Ug([(z_8:
+>>            obj) => (Ded([(zev2_10:that (z_8
+>>               E .P_1)) => (((z_8 E ((Mbold
+>>               Set [(x1_11:obj) => ((.P_1 <<=
+>>                  x1_11):prop)])
+>>               Intersection M)) Fixform (((zev2_10
+>>               Mpsubs Pev_1) Conj Ug([(B_18:
+>>                  obj) => (Ded([(Bev_20:that
+>>                     (B_18 E (Mbold Set [(x1_21:
+>>                        obj) => ((.P_1 <<= x1_21):
+>>                        prop)]))
+>>                     ) => ((zev2_10 Mpsubs Simp2((Bev_20
+>>                     Iff1 (B_18 Ui Separation4(Refleq((Mbold
+>>                     Set [(x1_27:obj) => ((.P_1
+>>                        <<= x1_27):prop)]))
+>>                     ))))):that (z_8 E B_18))])
+>>                  :that ((B_18 E (Mbold Set
+>>                  [(x1_28:obj) => ((.P_1 <<=
+>>                     x1_28):prop)]))
+>>                  -> (z_8 E B_18)))]))
+>>               Iff2 (z_8 Ui Separation4(Refleq(((Mbold
+>>               Set [(x1_42:obj) => ((.P_1 <<=
+>>                  x1_42):prop)])
+>>               Intersection M)))))):that (z_8
+>>               E ((Mbold Set [(x1_43:obj) =>
+>>                  ((.P_1 <<= x1_43):prop)])
+>>               Intersection M)))])
+>>            :that ((z_8 E .P_1) -> (z_8 E ((Mbold
+>>            Set [(x1_44:obj) => ((.P_1 <<= x1_44):
+>>               prop)])
+>>            Intersection M))))])
+>>         Conj (Simp1(Simp2(Pev_1)) Conj Separation3(Refleq(((Mbold
+>>         Set [(x1_56:obj) => ((.P_1 <<= x1_56):
+>>            prop)])
+>>         Intersection M))))))):that (.P_1 <<=
+>>         Rcal1(.P_1)))]
+>>      {move 1}
+
+
+
+   define Lineb13 xinm: Iff1(Linea13 line42 \
+      line43,Uscsubs x Rcal x)
+
+>>    Lineb13: [(.x_1:obj),(xinm_1:that (.x_1
+>>         E M)) => ((((xinm_1 Iff2 (.x_1 Uscsubs
+>>         M)) Linea13 (.x_1 Pairinhabited .x_1))
+>>         Iff1 (.x_1 Uscsubs Rcal(.x_1))):that
+>>         (.x_1 E Rcal(.x_1)))]
+>>      {move 1}
+
+
+
+   open
+
+      declare dir1 that b E Rcal a
+
+>>       dir1: that (b E Rcal(a)) {move 3}
+
+
+
+      declare dir2 that (Rcal b) <<= Rcal \
+         a
+
+>>       dir2: that (Rcal(b) <<= Rcal(a)) {move
+>>         3}
+
+
+
+      define line50: Mboldstrongtotal Rcalinmbold \
+         binm Rcalinmbold ainm
+
+>>       line50: [((Rcalinmbold(binm) Mboldstrongtotal
+>>            Rcalinmbold(ainm)):that ((Rcal(a)
+>>            <<= prime2(thelaw,Rcal(b))) V (Rcal(b)
+>>            <<= Rcal(a))))]
+>>         {move 2}
+
+
+
+      open
+
+         declare case1 that Rcal b <<= Rcal \
+            a
+
+>>          case1: that (Rcal(b) <<= Rcal(a))
+>>            {move 4}
+
+
+
+         define line51 case1: case1
+
+>>          line51: [(case1_1:that (Rcal(b)
+>>               <<= Rcal(a))) => (case1_1:that
+>>               (Rcal(b) <<= Rcal(a)))]
+>>            {move 3}
+
+
+
+         declare case2 that Rcal a <<= prime \
+            Rcal b
+
+>>          case2: that (Rcal(a) <<= prime(Rcal(b)))
+>>            {move 4}
+
+
+
+         define line52 case2: Mpsubs dir1 \
+            case2
+
+>>          line52: [(case2_1:that (Rcal(a)
+>>               <<= prime(Rcal(b)))) => ((dir1
+>>               Mpsubs case2_1):that (b E prime(Rcal(b))))]
+>>            {move 3}
+
+
+
+         declare z1 obj
+
+>>          z1: obj {move 4}
+
+
+
+         define line53 case2: Subs(Eqsymm \
+            Line44 binm,[z1=>z1 E prime(Rcal \
+               b)] \
+            ,line52 case2)
+
+>>          line53: [(case2_1:that (Rcal(a)
+>>               <<= prime(Rcal(b)))) => (Subs(Eqsymm(Line44(binm)),
+>>               [(z1_2:obj) => ((z1_2 E prime(Rcal(b))):
+>>                  prop)]
+>>               ,line52(case2_1)):that (thelaw(Rcal(b))
+>>               E prime(Rcal(b))))]
+>>            {move 3}
+
+
+
+         define line54 case2: Mp line53 case2, \
+            primefact Rcal b
+
+>>          line54: [(case2_1:that (Rcal(a)
+>>               <<= prime(Rcal(b)))) => ((line53(case2_1)
+>>               Mp primefact(Rcal(b))):that ??)]
+>>            {move 3}
+
+
+
+         declare testobj obj
+
+>>          testobj: obj {move 4}
+
+
+
+         define line55 case2: Giveup(Rcal \
+            b <<= Rcal a,line54 case2)
+
+>>          line55: [(case2_1:that (Rcal(a)
+>>               <<= prime(Rcal(b)))) => (((Rcal(b)
+>>               <<= Rcal(a)) Giveup line54(case2_1)):
+>>               that (Rcal(b) <<= Rcal(a)))]
+>>            {move 3}
+
+
+
+         close
+
+      define line56 dir1: Cases line50, line55, \
+         line51
+
+>>       line56: [(dir1_1:that (b E Rcal(a)))
+>>            => (Cases(line50,[(case2_2:that
+>>               (Rcal(a) <<= prime(Rcal(b))))
+>>               => (((Rcal(b) <<= Rcal(a)) Giveup
+>>               (Subs(Eqsymm(Line44(binm)),[(z1_3:
+>>                  obj) => ((z1_3 E prime(Rcal(b))):
+>>                  prop)]
+>>               ,(dir1_1 Mpsubs case2_2)) Mp
+>>               primefact(Rcal(b)))):that (Rcal(b)
+>>               <<= Rcal(a)))]
+>>            ,[(case1_4:that (Rcal(b) <<= Rcal(a)))
+>>               => (case1_4:that (Rcal(b) <<=
+>>               Rcal(a)))])
+>>            :that (Rcal(b) <<= Rcal(a)))]
+>>         {move 2}
+
+
+
+      define line57 dir2: Mpsubs(Lineb13 \
+         binm,dir2)
+
+>>       line57: [(dir2_1:that (Rcal(b) <<=
+>>            Rcal(a))) => ((Lineb13(binm) Mpsubs
+>>            dir2_1):that (b E Rcal(a)))]
+>>         {move 2}
+
+
+
+      close
+
+   define line58 ainm binm: Dediff line56, \
+      line57
+
+>>    line58: [(.a_1:obj),(ainm_1:that (.a_1
+>>         E M)),(.b_1:obj),(binm_1:that (.b_1
+>>         E M)) => (Dediff([(dir1_2:that (.b_1
+>>            E Rcal(.a_1))) => (Cases((Rcalinmbold(binm_1)
+>>            Mboldstrongtotal Rcalinmbold(ainm_1)),
+>>            [(case2_3:that (Rcal(.a_1) <<= prime(Rcal(.b_1))))
+>>               => (((Rcal(.b_1) <<= Rcal(.a_1))
+>>               Giveup (Subs(Eqsymm(Line44(binm_1)),
+>>               [(z1_4:obj) => ((z1_4 E prime(Rcal(.b_1))):
+>>                  prop)]
+>>               ,(dir1_2 Mpsubs case2_3)) Mp
+>>               Negintro([(neghyp_5:that (thelaw(Rcal(.b_1))
+>>                  E prime(Rcal(.b_1)))) => ((Inusc2(thelaw(Rcal(.b_1)))
+>>                  Mp Simp2(Separation5(neghyp_5))):
+>>                  that ??)]))
+>>               ):that (Rcal(.b_1) <<= Rcal(.a_1)))]
+>>            ,[(case1_7:that (Rcal(.b_1) <<=
+>>               Rcal(.a_1))) => (case1_7:that
+>>               (Rcal(.b_1) <<= Rcal(.a_1)))])
+>>            :that (Rcal(.b_1) <<= Rcal(.a_1)))]
+>>         ,[(dir2_8:that (Rcal(.b_1) <<= Rcal(.a_1)))
+>>            => ((Lineb13(binm_1) Mpsubs dir2_8):
+>>            that (.b_1 E Rcal(.a_1)))])
+>>         :that ((.b_1 E Rcal(.a_1)) == (Rcal(.b_1)
+>>         <<= Rcal(.a_1))))]
+>>      {move 1}
+
+
+
+   goal that (a = b) V (a <~ b) V (b <~ a)
+
+
+>>    Goal: that ((a = b) V ((a <~ b) V (b <~
+>>      a)))
+
+   define line59 a b: Excmid (a=b)
+
+>>    line59: [(a_1:obj),(b_1:obj) => (Excmid((a_1
+>>         = b_1)):that ((a_1 = b_1) V ~((a_1
+>>         = b_1))))]
+>>      {move 1}
+
+
+
+   open
+
+      declare case1 that a=b
+
+>>       case1: that (a = b) {move 3}
+
+
+
+      define line60 case1: Add1((a<~b) V \
+         b <~ a,case1)
+
+>>       line60: [(case1_1:that (a = b)) =>
+>>            ((((a <~ b) V (b <~ a)) Add1 case1_1):
+>>            that ((a = b) V ((a <~ b) V (b <~
+>>            a))))]
+>>         {move 2}
+
+
+
+      declare case2 that ~(a=b)
+
+>>       case2: that ~((a = b)) {move 3}
+
+
+
+      define line61: Mboldtotal Rcalinmbold \
+         ainm Rcalinmbold binm
+
+>>       line61: [((Rcalinmbold(ainm) Mboldtotal
+>>            Rcalinmbold(binm)):that ((Rcal(b)
+>>            <<= Rcal(a)) V (Rcal(a) <<= Rcal(b))))]
+>>         {move 2}
+
+
+
+      open
+
+         declare casea1 that Rcal b <<= Rcal \
+            a
+
+>>          casea1: that (Rcal(b) <<= Rcal(a))
+>>            {move 4}
+
+
+
+         define line62 casea1: Iff2(casea1, \
+            line58 ainm binm)
+
+>>          line62: [(casea1_1:that (Rcal(b)
+>>               <<= Rcal(a))) => ((casea1_1 Iff2
+>>               (ainm line58 binm)):that (b E
+>>               Rcal(a)))]
+>>            {move 3}
+
+
+
+         define line63 casea1: Fixform(a \
+            <~ b,ainm Conj binm Conj case2 Conj \
+            line62 casea1)
+
+>>          line63: [(casea1_1:that (Rcal(b)
+>>               <<= Rcal(a))) => (((a <~ b) Fixform
+>>               (ainm Conj (binm Conj (case2
+>>               Conj line62(casea1_1))))):that
+>>               (a <~ b))]
+>>            {move 3}
+
+
+
+         declare casea2 that Rcal a <<= Rcal \
+            b
+
+>>          casea2: that (Rcal(a) <<= Rcal(b))
+>>            {move 4}
+
+
+
+         define line64 casea2: Iff2(casea2, \
+            line58 binm ainm)
+
+>>          line64: [(casea2_1:that (Rcal(a)
+>>               <<= Rcal(b))) => ((casea2_1 Iff2
+>>               (binm line58 ainm)):that (a E
+>>               Rcal(b)))]
+>>            {move 3}
+
+
+
+         define line65 casea2:Fixform(b <~a, \
+            binm Conj ainm Conj Negeqsymm case2 \
+            Conj line64 casea2)
+
+>>          line65: [(casea2_1:that (Rcal(a)
+>>               <<= Rcal(b))) => (((b <~ a) Fixform
+>>               (binm Conj (ainm Conj (Negeqsymm(case2)
+>>               Conj line64(casea2_1))))):that
+>>               (b <~ a))]
+>>            {move 3}
+
+
+
+         goal that ~((a=b) & a <~ b)
+
+>>          Goal: that ~(((a = b) & (a <~ b)))
+
+
+         goal that ~((a=b) & b <~ a)
+
+>>          Goal: that ~(((a = b) & (b <~ a)))
+
+
+         goal that ~((a <~ b) & b <~ a)
+
+>>          Goal: that ~(((a <~ b) & (b <~ a)))
+
+
+         declare c obj
+
+>>          c: obj {move 4}
+
+
+
+         declare cinm that c E M
+
+>>          cinm: that (c E M) {move 4}
+
+
+
+         goal that ((a <~b) & (b <~ c))-> \
+            a         <~ c
+
+>>          Goal: that (((a <~ b) & (b <~ c))
+>>            -> (a <~ c))
+\end{verbatim}
+
+\end{document}
+
+quit

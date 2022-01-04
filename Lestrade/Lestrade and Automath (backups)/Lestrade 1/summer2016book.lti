@@ -1,0 +1,4023 @@
+
+>> Inspector Lestrade says:  
+>> Welcome to the Lestrade Type Inspector,
+>>  
+>> User entered lambda terms (arguments)
+>> and function sorts (in declare)!
+>> literate programming with LaTeX comments in ML source
+>> version of  7/24/2019
+>>  12:30 pm Boise time
+
+
+% Lestrade book under development in summer 2016.
+
+
+declare p prop
+
+>> p: prop {move 1}
+
+
+
+declare q prop
+
+>> q: prop {move 1}
+
+
+
+declare pp that p
+
+>> pp: that p {move 1}
+
+
+
+declare qq that q
+
+>> qq: that q {move 1}
+
+
+% Declare the conjunction operator
+
+
+postulate & p q : prop
+
+>> &: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+% The rule of conjunction
+
+
+postulate Andproof p q pp qq : that p & q
+
+
+>> Andproof: [(p_1:prop),(q_1:prop),(pp_1:that
+>>      p_1),(qq_1:that q_1) => (---:that (p_1
+>>      & q_1))]
+>>   {move 0}
+
+
+
+declare rr that p & q
+
+>> rr: that (p & q) {move 1}
+
+
+% The rules of simplification
+
+
+postulate And1 p q rr : that p
+
+>> And1: [(p_1:prop),(q_1:prop),(rr_1:that (p_1
+>>      & q_1)) => (---:that p_1)]
+>>   {move 0}
+
+
+
+postulate And2 p q rr : that q
+
+>> And2: [(p_1:prop),(q_1:prop),(rr_1:that (p_1
+>>      & q_1)) => (---:that q_1)]
+>>   {move 0}
+
+
+% The implication operator
+
+
+postulate -> p q : prop
+
+>> ->: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+% Development of conditional proof
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+     %% Ded below does not need p or q in its argument list 
+     %% because they are not locally variables.
+
+   postulate Ded pp2 : that q
+
+>>    Ded: [(pp2_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   close
+%% Note that once the world in which Ded was postulateed closes, 
+% it is a variable of desirable function type
+
+
+postulate Ifproof p q Ded : that p -> q
+
+>> Ifproof: [(p_1:prop),(q_1:prop),(Ded_1:[(pp2_2:
+>>         that p_1) => (---:that q_1)])
+>>      => (---:that (p_1 -> q_1))]
+>>   {move 0}
+
+
+% Now, for fun, we will postulate an actual proof
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   define Ppid pp2 : pp2
+
+>>    Ppid: [(pp2_1:that p) => (---:that p)]
+>>      {move 1}
+
+
+
+   close
+
+define Selfimp p : Ifproof p p Ppid
+
+>> Selfimp: [(p_1:prop) => (Ifproof(p_1,p_1,
+>>      [(pp2_2:that p_1) => (pp2_2:that p_1)])
+>>      :that (p_1 -> p_1))]
+>>   {move 0}
+
+
+%% Notice in the sort of Selfimp that Ppid has
+% been expanded as a lambda-term.
+
+% Develop the rule of modus ponens
+
+
+declare ss that p -> q
+
+>> ss: that (p -> q) {move 1}
+
+
+
+postulate Mp p q pp ss : that q
+
+>> Mp: [(p_1:prop),(q_1:prop),(pp_1:that p_1),
+>>      (ss_1:that (p_1 -> q_1)) => (---:that
+>>      q_1)]
+>>   {move 0}
+
+
+% Opening an environment to set up definition of a predicate variable P
+
+
+open
+
+   declare xx obj
+
+>>    xx: obj {move 2}
+
+
+
+   postulate P xx : prop
+
+>>    P: [(xx_1:obj) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+% Declaring the universal quantifier
+
+
+postulate Forall P : prop
+
+>> Forall: [(P_1:[(xx_2:obj) => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+% Declaring the rule UI of universal instantiation
+
+
+declare P2 that Forall P
+
+>> P2: that Forall(P) {move 1}
+
+
+
+declare x obj
+
+>> x: obj {move 1}
+
+
+
+postulate Ui P, P2 x : that P x
+
+>> Ui: [(P_1:[(xx_2:obj) => (---:prop)]),
+>>      (P2_1:that Forall(P_1)),(x_1:obj) => (---:
+>>      that P_1(x_1))]
+>>   {move 0}
+
+
+%% Note in the previous line that we follow P 
+%% with a comma:  an abstraction argument may need to be 
+% guarded with commas so it will not be read as applied.
+
+%% Opening an environment to declare a function 
+% that witnesses provability of a universal statement
+
+
+open
+
+   declare u obj
+
+>>    u: obj {move 2}
+
+
+
+   postulate Q2 u : that P u
+
+>>    Q2: [(u_1:obj) => (---:that P(u_1))]
+>>      {move 1}
+
+
+
+   close
+% The rule of universal generalization
+
+
+postulate Ug P, Q2 : that Forall P
+
+>> Ug: [(P_1:[(xx_2:obj) => (---:prop)]),
+>>      (Q2_1:[(u_3:obj) => (---:that P_1(u_3))])
+>>      => (---:that Forall(P_1))]
+>>   {move 0}
+
+
+% Develop rules for negation (which will be classical!) and prove the contrapositive theorem.
+
+%  The absurd proposition.
+
+
+postulate ??:prop
+
+>> ??: prop {move 0}
+
+
+% The negation operation.
+
+
+define ~p: p -> ??
+
+>> ~: [(p_1:prop) => ((p_1 -> ??):prop)]
+>>   {move 0}
+
+
+% We make our logic classical:  the rule of double negation
+
+
+declare maybe that ~ ~p
+
+>> maybe: that ~(~(p)) {move 1}
+
+
+
+postulate Dneg p maybe : that p
+
+>> Dneg: [(p_1:prop),(maybe_1:that ~(~(p_1)))
+>>      => (---:that p_1)]
+>>   {move 0}
+
+
+% Contradictions are absurd.
+
+
+declare nn that ~p
+
+>> nn: that ~(p) {move 1}
+
+
+
+define Contra p pp nn : Mp p ?? pp nn
+
+>> Contra: [(p_1:prop),(pp_1:that p_1),(nn_1:
+>>      that ~(p_1)) => (Mp(p_1,??,pp_1,nn_1):
+>>      that ??)]
+>>   {move 0}
+
+
+%% Notice that Lestrade does expand the definition
+% of the negation operation as we expect.
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate Negded pp2: that ??
+
+>>    Negded: [(pp2_1:that p) => (---:that ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Negintro1 p Negded : Ifproof p ?? \
+   Negded
+
+>> Negintro1: [(p_1:prop),(Negded_1:[(pp2_2:
+>>         that p_1) => (---:that ??)])
+>>      => (Ifproof(p_1,??,Negded_1):that (p_1
+>>      -> ??))]
+>>   {move 0}
+
+
+%% Negation introduction.  But it is defective in actually 
+% reporting an implication type.  Let's see if we can fix this.
+
+
+open
+
+   declare proof1 that p -> ??
+
+>>    proof1: that (p -> ??) {move 2}
+
+
+
+   define Negproofid proof1:proof1
+
+>>    Negproofid: [(proof1_1:that (p -> ??))
+>>         => (---:that (p -> ??))]
+>>      {move 1}
+
+
+
+   close
+
+define Negfix p : Ifproof ((p -> ??), ~p \
+   , Negproofid)
+
+>> Negfix: [(p_1:prop) => (Ifproof((p_1 -> ??),
+>>      ~(p_1),[(proof1_2:that (p_1 -> ??)) =>
+>>         (proof1_2:that (p_1 -> ??))])
+>>      :that ((p_1 -> ??) -> ~(p_1)))]
+>>   {move 0}
+
+
+
+define Negintro p Negded : Mp ((p -> ??), \
+   ~p , Negintro1 p Negded , Negfix p)
+
+>> Negintro: [(p_1:prop),(Negded_1:[(pp2_2:that
+>>         p_1) => (---:that ??)])
+>>      => (Mp((p_1 -> ??),~(p_1),(p_1 Negintro1
+>>      Negded_1),Negfix(p_1)):that ~(p_1))]
+>>   {move 0}
+
+
+%% I succeed in defining a proper negation introduction rule
+%% using the defined symbol.  This is important because of limitations
+% of circumstances under which Lestrade expands definitions.
+
+% We define the biconditional.
+
+
+define <-> p q : (p -> q) & (q -> p)
+
+>> <->: [(p_1:prop),(q_1:prop) => (((p_1 ->
+>>      q_1) & (q_1 -> p_1)):prop)]
+>>   {move 0}
+
+
+% Biconditional elimination rules
+
+
+declare tt that p <-> q
+
+>> tt: that (p <-> q) {move 1}
+
+
+
+define Mpb1 p q pp tt : Mp p q pp, And1 ((p \
+   -> q), (q -> p), tt)
+
+>> Mpb1: [(p_1:prop),(q_1:prop),(pp_1:that p_1),
+>>      (tt_1:that (p_1 <-> q_1)) => (Mp(p_1,q_1,
+>>      pp_1,And1((p_1 -> q_1),(q_1 -> p_1),tt_1)):
+>>      that q_1)]
+>>   {move 0}
+
+
+
+define Mpb2 p q qq tt : Mp q p qq, And2((p->q), \
+   (q->p),tt)
+
+>> Mpb2: [(p_1:prop),(q_1:prop),(qq_1:that q_1),
+>>      (tt_1:that (p_1 <-> q_1)) => (Mp(q_1,p_1,
+>>      qq_1,And2((p_1 -> q_1),(q_1 -> p_1),tt_1)):
+>>      that p_1)]
+>>   {move 0}
+
+
+% In both of the last two commands, there are subtle parser issues.
+
+%% Before And1, And2, the comma is needed to prevent Andi 
+% from being read as an infix.
+
+%% Because we enclose the argument (p->q) in parentheses
+%% we need to enclose the entire argument list in parentheses
+%% because a parenthesis after a prefixed abstraction is
+%% always interpreted as enclosing an argument list,
+% not a term.
+
+% the classic Reductio ad Absurdum (which is not the same as neg intro!)
+
+
+open
+
+   declare aa that ~p
+
+>>    aa: that ~(p) {move 2}
+
+
+
+   postulate reductioarg aa : that ??
+
+>>    reductioarg: [(aa_1:that ~(p)) => (---:
+>>         that ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Reductio p reductioarg : Dneg p (Negintro \
+   ~p reductioarg)
+
+>> Reductio: [(p_1:prop),(reductioarg_1:[(aa_2:
+>>         that ~(p_1)) => (---:that ??)])
+>>      => ((p_1 Dneg (~(p_1) Negintro reductioarg_1)):
+>>      that p_1)]
+>>   {move 0}
+
+
+% Everything follows from the False!
+
+
+declare huh that ??
+
+>> huh: that ?? {move 1}
+
+
+
+open
+
+   declare negp that ~p
+
+>>    negp: that ~(p) {move 2}
+
+
+
+   define panick negp : huh
+
+>>    panick: [(negp_1:that ~(p)) => (---:that
+>>         ??)]
+>>      {move 1}
+
+
+
+   close
+
+define Panic p huh : Reductio p panick
+
+>> Panic: [(p_1:prop),(huh_1:that ??) => ((p_1
+>>      Reductio [(negp_2:that ~(p_1)) => (huh_1:
+>>         that ??)])
+>>      :that p_1)]
+>>   {move 0}
+
+
+% We develop the biconditional introduction rule.
+
+%% In this environment we postulate reasoning
+% leading from p to q and q to p
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate Ded1 pp2: that q
+
+>>    Ded1: [(pp2_1:that p) => (---:that q)]
+>>      {move 1}
+
+
+
+   declare qq2 that q
+
+>>    qq2: that q {move 2}
+
+
+
+   postulate Ded2 qq2: that p
+
+>>    Ded2: [(qq2_1:that q) => (---:that p)]
+>>      {move 1}
+
+
+
+   close
+%% Here we prove an initial version,
+% defective in having expanded output
+
+
+define Biintro1 p q, Ded1, Ded2: Andproof \
+   ((p->q),(q->p),Ifproof p q Ded1,Ifproof \
+   q   p Ded2)
+
+>> Biintro1: [(p_1:prop),(q_1:prop),(Ded1_1:
+>>      [(pp2_2:that p_1) => (---:that q_1)]),
+>>      (Ded2_1:[(qq2_3:that q_1) => (---:that
+>>         p_1)])
+>>      => (Andproof((p_1 -> q_1),(q_1 -> p_1),
+>>      Ifproof(p_1,q_1,Ded1_1),Ifproof(q_1,p_1,
+>>      Ded2_1)):that ((p_1 -> q_1) & (q_1 ->
+>>      p_1)))]
+>>   {move 0}
+
+
+
+open
+
+   declare bb that p <-> q
+
+>>    bb: that (p <-> q) {move 2}
+
+
+
+   define biid bb:bb
+
+>>    biid: [(bb_1:that (p <-> q)) => (---:that
+>>         (p <-> q))]
+>>      {move 1}
+
+
+
+   close
+% We fix the defective version much as we fixed Negintro above
+
+
+define Bifix p q: Ifproof (((p->q) & (q->p)), \
+   p<->q,biid)
+
+>> Bifix: [(p_1:prop),(q_1:prop) => (Ifproof(((p_1
+>>      -> q_1) & (q_1 -> p_1)),(p_1 <-> q_1),
+>>      [(bb_2:that (p_1 <-> q_1)) => (bb_2:that
+>>         (p_1 <-> q_1))])
+>>      :that (((p_1 -> q_1) & (q_1 -> p_1)) ->
+>>      (p_1 <-> q_1)))]
+>>   {move 0}
+
+
+
+define Biintro p q, Ded1, Ded2: Mp (((p->q)&(q->p)), \
+   p<->q,Biintro1 (p, q, Ded1, Ded2),Bifix \
+   p   q)
+
+>> Biintro: [(p_1:prop),(q_1:prop),(Ded1_1:[(pp2_2:
+>>         that p_1) => (---:that q_1)]),
+>>      (Ded2_1:[(qq2_3:that q_1) => (---:that
+>>         p_1)])
+>>      => (Mp(((p_1 -> q_1) & (q_1 -> p_1)),(p_1
+>>      <-> q_1),Biintro1(p_1,q_1,Ded1_1,Ded2_1),
+>>      (p_1 Bifix q_1)):that (p_1 <-> q_1))]
+>>   {move 0}
+
+
+%% We prove the contrapositive theorem,
+% (p->q) <-> (~q <-> ~p)
+
+
+open
+
+   declare aa that p->q
+
+>>    aa: that (p -> q) {move 2}
+
+
+     %% Our goal is to postulate a proof of ~q -> ~p
+     %% To do this, we need a function from
+     % proofs of ~q to proofs of ~p
+
+
+   open
+
+      declare bb that ~q
+
+>>       bb: that ~(q) {move 3}
+
+
+          %% Now our goal is to prove ~p.
+          %% For this we need a function from 
+          % proofs of p to proofs of ??
+
+
+      open
+
+         declare cc that p
+
+>>          cc: that p {move 4}
+
+
+               % prove q by m.p.
+
+
+         define dd cc: Mp p q cc aa
+
+>>          dd: [(cc_1:that p) => (---:that
+>>               q)]
+>>            {move 3}
+
+
+               % and we have a contradiction
+
+
+         define ee cc: Contra q (dd cc) bb
+
+
+>>          ee: [(cc_1:that p) => (---:that
+>>               ??)]
+>>            {move 3}
+
+
+
+         close
+
+      define ff bb : Negintro p ee
+
+>>       ff: [(bb_1:that ~(q)) => (---:that
+>>            ~(p))]
+>>         {move 2}
+
+
+
+      close
+
+   define gg aa: Ifproof ((~q),(~p),ff)
+
+>>    gg: [(aa_1:that (p -> q)) => (---:that
+>>         (~(q) -> ~(p)))]
+>>      {move 1}
+
+
+     %% Now we need the function acting in
+     % the other direction
+
+
+   declare hh that ~q -> ~p
+
+>>    hh: that (~(q) -> ~(p)) {move 2}
+
+
+     % Our goal is p->q so we want to assume p
+
+
+   open
+
+      declare ii that p
+
+>>       ii: that p {move 3}
+
+
+          %% Now our goal is q, but we will
+          %% actually aim for ~~q and so
+          % assume ~q
+
+
+      open
+
+         declare jj that ~q
+
+>>          jj: that ~(q) {move 4}
+
+
+               % Now use modus ponens to prove ~p
+
+
+         define kk jj : Mp(~q,~p,jj,hh)
+
+>>          kk: [(jj_1:that ~(q)) => (---:that
+>>               ~(p))]
+>>            {move 3}
+
+
+               % Now we have a contradiction
+
+
+         define ll jj : Contra p ii kk jj
+
+
+>>          ll: [(jj_1:that ~(q)) => (---:that
+>>               ??)]
+>>            {move 3}
+
+
+
+         close
+
+      define mm ii : Negintro (~q , ll)
+
+>>       mm: [(ii_1:that p) => (---:that ~(~(q)))]
+>>         {move 2}
+
+
+
+      define nn2 ii : Dneg q mm ii
+
+>>       nn2: [(ii_1:that p) => (---:that q)]
+>>         {move 2}
+
+
+
+      close
+
+   define oo hh : Ifproof p q nn2
+
+>>    oo: [(hh_1:that (~(q) -> ~(p))) => (---:
+>>         that (p -> q))]
+>>      {move 1}
+
+
+
+   close
+
+define Contrapositive p q: Biintro ((p->q), \
+   (~q -> ~p),gg,oo)
+
+>> Contrapositive: [(p_1:prop),(q_1:prop) =>
+>>      (Biintro((p_1 -> q_1),(~(q_1) -> ~(p_1)),
+>>      [(aa_2:that (p_1 -> q_1)) => (Ifproof(~(q_1),
+>>         ~(p_1),[(bb_3:that ~(q_1)) => ((p_1
+>>            Negintro [(cc_4:that p_1) => (Contra(q_1,
+>>               Mp(p_1,q_1,cc_4,aa_2),bb_3):that
+>>               ??)])
+>>            :that ~(p_1))])
+>>         :that (~(q_1) -> ~(p_1)))]
+>>      ,[(hh_5:that (~(q_1) -> ~(p_1))) => (Ifproof(p_1,
+>>         q_1,[(ii_6:that p_1) => ((q_1 Dneg
+>>            (~(q_1) Negintro [(jj_7:that ~(q_1))
+>>               => (Contra(p_1,ii_6,Mp(~(q_1),
+>>               ~(p_1),jj_7,hh_5)):that ??)]))
+>>            :that q_1)])
+>>         :that (p_1 -> q_1))])
+>>      :that ((p_1 -> q_1) <-> (~(q_1) -> ~(p_1))))]
+>>   {move 0}
+
+
+%% Now is a good point to notice that
+% Lestrade definitely saves proof objects in detail.
+
+% Develop indirect proof strategies for implication.
+
+% Modus Tollens
+
+
+declare negc that ~q
+
+>> negc: that ~(q) {move 1}
+
+
+
+define Mt p q ss negc : Mp(~q, ~p, negc , \
+   Mpb1 ((p -> q),(~q -> ~p),ss,Contrapositive \
+   p q))
+
+>> Mt: [(p_1:prop),(q_1:prop),(ss_1:that (p_1
+>>      -> q_1)),(negc_1:that ~(q_1)) => (Mp(~(q_1),
+>>      ~(p_1),negc_1,Mpb1((p_1 -> q_1),(~(q_1)
+>>      -> ~(p_1)),ss_1,(p_1 Contrapositive q_1))):
+>>      that ~(p_1))]
+>>   {move 0}
+
+
+% Rule of contrapositive or indirect proof
+
+
+open
+
+   declare negq that ~q
+
+>>    negq: that ~(q) {move 2}
+
+
+
+   postulate indarg negq : that ~p
+
+>>    indarg: [(negq_1:that ~(q)) => (---:that
+>>         ~(p))]
+>>      {move 1}
+
+
+
+   close
+
+define Indirect p q indarg : Mpb2 ((p->q), \
+   (~q -> ~p),Ifproof (~q,~p,indarg),Contrapositive \
+   p q)
+
+>> Indirect: [(p_1:prop),(q_1:prop),(indarg_1:
+>>      [(negq_2:that ~(q_1)) => (---:that ~(p_1))])
+>>      => (Mpb2((p_1 -> q_1),(~(q_1) -> ~(p_1)),
+>>      Ifproof(~(q_1),~(p_1),indarg_1),(p_1 Contrapositive
+>>      q_1)):that (p_1 -> q_1))]
+>>   {move 0}
+
+
+% Now start the development of disjunction.
+
+% disjunction declared
+
+
+postulate v p q:prop
+
+>> v: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+%% basic disjunction introduction rules (addition)
+
+postulate Addition1 p q pp: that p v q
+
+>> Addition1: [(p_1:prop),(q_1:prop),(pp_1:that
+>>      p_1) => (---:that (p_1 v q_1))]
+>>   {move 0}
+
+
+
+postulate Addition2 p q qq:that p v q
+
+>> Addition2: [(p_1:prop),(q_1:prop),(qq_1:that
+>>      q_1) => (---:that (p_1 v q_1))]
+>>   {move 0}
+
+
+%% the basic disjunction elimination rule (proof by cases)
+
+declare r prop
+
+>> r: prop {move 1}
+
+
+
+declare disj that p v q
+
+>> disj: that (p v q) {move 1}
+
+
+
+open
+
+   declare pp2 that p
+
+>>    pp2: that p {move 2}
+
+
+
+   postulate case1 pp2 : that r
+
+>>    case1: [(pp2_1:that p) => (---:that r)]
+>>      {move 1}
+
+
+
+   declare qq2 that q
+
+>>    qq2: that q {move 2}
+
+
+
+   postulate case2 qq2 : that r
+
+>>    case2: [(qq2_1:that q) => (---:that r)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Cases p q r disj , case1 , case2 \
+   : that r
+
+>> Cases: [(p_1:prop),(q_1:prop),(r_1:prop),
+>>      (disj_1:that (p_1 v q_1)),(case1_1:[(pp2_2:
+>>         that p_1) => (---:that r_1)]),
+>>      (case2_1:[(qq2_3:that q_1) => (---:that
+>>         r_1)])
+>>      => (---:that r_1)]
+>>   {move 0}
+
+
+%% The rule of proof by cases really is quite complicated!
+%% Prove the basic equivalence theorem which supports mixed rules for disjunction
+% The theorem is (p v q) <-> (~p -> q)
+
+
+open
+
+   declare aa that p v q
+
+>>    aa: that (p v q) {move 2}
+
+
+     % our goal is to prove ~p -> q
+
+
+   open
+
+      declare bb that ~p
+
+>>       bb: that ~(p) {move 3}
+
+
+          % prove this by cases
+
+
+      open
+
+         declare hyp1 that p
+
+>>          hyp1: that p {move 4}
+
+
+
+         declare hyp2 that q
+
+>>          hyp2: that q {move 4}
+
+
+
+         define casea2 hyp2 : hyp2
+
+>>          casea2: [(hyp2_1:that q) => (---:
+>>               that q)]
+>>            {move 3}
+
+
+
+         open
+
+            declare cc that ~q
+
+>>             cc: that ~(q) {move 5}
+
+
+
+            define panic cc : Contra p hyp1 \
+               bb
+
+>>             panic: [(cc_1:that ~(q)) => (---:
+>>                  that ??)]
+>>               {move 4}
+
+
+
+            close
+
+         define casea1 hyp1 : Dneg q (Negintro \
+            ~q panic)
+
+>>          casea1: [(hyp1_1:that p) => (---:
+>>               that q)]
+>>            {move 3}
+
+
+
+         close
+
+      define gotq bb : Cases p q q aa, casea1, \
+         casea2
+
+>>       gotq: [(bb_1:that ~(p)) => (---:that
+>>            q)]
+>>         {move 2}
+
+
+
+      close
+
+   define notpimpq aa : Ifproof ~p q gotq
+
+
+>>    notpimpq: [(aa_1:that (p v q)) => (---:
+>>         that (~(p) -> q))]
+>>      {move 1}
+
+
+
+   declare bb that ~p -> q
+
+>>    bb: that (~(p) -> q) {move 2}
+
+
+
+   open
+
+      declare cc that ~(p v q)
+
+>>       cc: that ~((p v q)) {move 3}
+
+
+          %% this is a hypothesis for reduction ad absurdum
+          % our aim is prove ~p so we can use the hypothesis bb
+
+
+      open
+
+         declare pp2 that p
+
+>>          pp2: that p {move 4}
+
+
+
+         define dd pp2 : Addition1 p q pp2
+
+
+>>          dd: [(pp2_1:that p) => (---:that
+>>               (p v q))]
+>>            {move 3}
+
+
+
+         define ee pp2 : Contra(p v q, dd \
+            pp2 , cc)
+
+>>          ee: [(pp2_1:that p) => (---:that
+>>               ??)]
+>>            {move 3}
+
+
+
+         close
+
+      define ff cc : Negintro p ee
+
+>>       ff: [(cc_1:that ~((p v q))) => (---:
+>>            that ~(p))]
+>>         {move 2}
+
+
+
+      define gg2 cc : Mp (~p,q,ff cc,bb)
+
+
+>>       gg2: [(cc_1:that ~((p v q))) => (---:
+>>            that q)]
+>>         {move 2}
+
+
+
+      define hh cc : Addition2 p q gg2 cc
+
+
+>>       hh: [(cc_1:that ~((p v q))) => (---:
+>>            that (p v q))]
+>>         {move 2}
+
+
+
+      define ii cc : Contra (p v q,hh cc, \
+         cc)
+
+>>       ii: [(cc_1:that ~((p v q))) => (---:
+>>            that ??)]
+>>         {move 2}
+
+
+
+      close
+
+   define jj bb : Reductio (p v q,ii)
+
+>>    jj: [(bb_1:that (~(p) -> q)) => (---:that
+>>         (p v q))]
+>>      {move 1}
+
+
+
+   close
+
+define Orthm p q : Biintro (p v q, ~p -> \
+   q, notpimpq, jj)
+
+>> Orthm: [(p_1:prop),(q_1:prop) => (Biintro((p_1
+>>      v q_1),(~(p_1) -> q_1),[(aa_2:that (p_1
+>>         v q_1)) => (Ifproof(~(p_1),q_1,[(bb_3:
+>>            that ~(p_1)) => (Cases(p_1,q_1,q_1,
+>>            aa_2,[(hyp1_4:that p_1) => ((q_1
+>>               Dneg (~(q_1) Negintro [(cc_5:
+>>                  that ~(q_1)) => (Contra(p_1,
+>>                  hyp1_4,bb_3):that ??)]))
+>>               :that q_1)]
+>>            ,[(hyp2_6:that q_1) => (hyp2_6:that
+>>               q_1)])
+>>            :that q_1)])
+>>         :that (~(p_1) -> q_1))]
+>>      ,[(bb_7:that (~(p_1) -> q_1)) => (((p_1
+>>         v q_1) Reductio [(cc_8:that ~((p_1
+>>            v q_1))) => (Contra((p_1 v q_1),
+>>            Addition2(p_1,q_1,Mp(~(p_1),q_1,
+>>            (p_1 Negintro [(pp2_9:that p_1)
+>>               => (Contra((p_1 v q_1),Addition1(p_1,
+>>               q_1,pp2_9),cc_8):that ??)]),
+>>            bb_7)),cc_8):that ??)])
+>>         :that (p_1 v q_1))])
+>>      :that ((p_1 v q_1) <-> (~(p_1) -> q_1)))]
+>>   {move 0}
+
+
+% Prove the symmetric version p v q <-> ~q -> p
+
+
+open
+
+   declare aa that p v q
+
+>>    aa: that (p v q) {move 2}
+
+
+
+   define bb aa : Mpb1 (p v q,~p -> q,aa, \
+      Orthm p q)
+
+>>    bb: [(aa_1:that (p v q)) => (---:that
+>>         (~(p) -> q))]
+>>      {move 1}
+
+
+
+   define cc aa : Mpb1 (~p -> q, ~q -> ~ \
+      ~ p,bb aa,Contrapositive ~p q)
+
+>>    cc: [(aa_1:that (p v q)) => (---:that
+>>         (~(q) -> ~(~(p))))]
+>>      {move 1}
+
+
+
+   open
+
+      declare negq that ~q
+
+>>       negq: that ~(q) {move 3}
+
+
+
+      define dd negq: Mp ~q ~ ~ p negq cc \
+         aa
+
+>>       dd: [(negq_1:that ~(q)) => (---:that
+>>            ~(~(p)))]
+>>         {move 2}
+
+
+
+      define yesp negq : Dneg p dd negq
+
+>>       yesp: [(negq_1:that ~(q)) => (---:that
+>>            p)]
+>>         {move 2}
+
+
+
+      close
+
+   define ee aa : Ifproof ~q p yesp
+
+>>    ee: [(aa_1:that (p v q)) => (---:that
+>>         (~(q) -> p))]
+>>      {move 1}
+
+
+
+   declare ff that ~q -> p
+
+>>    ff: that (~(q) -> p) {move 2}
+
+
+     % Prove that ~p implies q then use Orthm
+
+
+   open
+
+      declare negp that ~p
+
+>>       negp: that ~(p) {move 3}
+
+
+          %% prove q by reductio
+
+      open
+
+         declare negq that ~q
+
+>>          negq: that ~(q) {move 4}
+
+
+
+         define pfollows negq : Mp ~q p negq \
+            ff
+
+>>          pfollows: [(negq_1:that ~(q)) =>
+>>               (---:that p)]
+>>            {move 3}
+
+
+
+         define disaster negq : Contra p, \
+            pfollows negq negp
+
+>>          disaster: [(negq_1:that ~(q)) =>
+>>               (---:that ??)]
+>>            {move 3}
+
+
+
+         close
+
+      define kk negp : Reductio q disaster
+
+
+>>       kk: [(negp_1:that ~(p)) => (---:that
+>>            q)]
+>>         {move 2}
+
+
+
+      close
+
+   define ll ff : Ifproof ~p q kk
+
+>>    ll: [(ff_1:that (~(q) -> p)) => (---:that
+>>         (~(p) -> q))]
+>>      {move 1}
+
+
+
+   define mm ff : Mpb2 (p v q,~p -> q,ll \
+      ff,Orthm p q)
+
+>>    mm: [(ff_1:that (~(q) -> p)) => (---:that
+>>         (p v q))]
+>>      {move 1}
+
+
+
+   close
+
+define Orthm2 p q : Biintro (p v q, ~q -> \
+   p, ee, mm)
+
+>> Orthm2: [(p_1:prop),(q_1:prop) => (Biintro((p_1
+>>      v q_1),(~(q_1) -> p_1),[(aa_2:that (p_1
+>>         v q_1)) => (Ifproof(~(q_1),p_1,[(negq_3:
+>>            that ~(q_1)) => ((p_1 Dneg Mp(~(q_1),
+>>            ~(~(p_1)),negq_3,Mpb1((~(p_1) ->
+>>            q_1),(~(q_1) -> ~(~(p_1))),Mpb1((p_1
+>>            v q_1),(~(p_1) -> q_1),aa_2,(p_1
+>>            Orthm q_1)),(~(p_1) Contrapositive
+>>            q_1)))):that p_1)])
+>>         :that (~(q_1) -> p_1))]
+>>      ,[(ff_4:that (~(q_1) -> p_1)) => (Mpb2((p_1
+>>         v q_1),(~(p_1) -> q_1),Ifproof(~(p_1),
+>>         q_1,[(negp_5:that ~(p_1)) => ((q_1
+>>            Reductio [(negq_6:that ~(q_1)) =>
+>>               (Contra(p_1,Mp(~(q_1),p_1,negq_6,
+>>               ff_4),negp_5):that ??)])
+>>            :that q_1)]),
+>>         (p_1 Orthm q_1)):that (p_1 v q_1))])
+>>      :that ((p_1 v q_1) <-> (~(q_1) -> p_1)))]
+>>   {move 0}
+
+
+%% Develop the full dress disjunction introduction rule
+%% reversal of numbering is due to my proving the less favored
+% version of Orthm first.
+
+
+open
+
+   declare negq that ~q
+
+>>    negq: that ~(q) {move 2}
+
+
+
+   postulate thusp negq : that p
+
+>>    thusp: [(negq_1:that ~(q)) => (---:that
+>>         p)]
+>>      {move 1}
+
+
+
+   close
+
+define Disjintro p q thusp: Mpb2 (p v q, \
+   ~q -> p, Ifproof ~q p thusp, Orthm2 p q)
+
+
+>> Disjintro: [(p_1:prop),(q_1:prop),(thusp_1:
+>>      [(negq_2:that ~(q_1)) => (---:that p_1)])
+>>      => (Mpb2((p_1 v q_1),(~(q_1) -> p_1),Ifproof(~(q_1),
+>>      p_1,thusp_1),(p_1 Orthm2 q_1)):that (p_1
+>>      v q_1))]
+>>   {move 0}
+
+
+
+open
+
+   declare negp that ~p
+
+>>    negp: that ~(p) {move 2}
+
+
+
+   postulate thusq negp : that q
+
+>>    thusq: [(negp_1:that ~(p)) => (---:that
+>>         q)]
+>>      {move 1}
+
+
+
+   close
+
+define Disjintro2 p q thusq: Mpb2 (p v q, \
+   ~p -> q, Ifproof ~p q thusq, Orthm p q)
+
+
+>> Disjintro2: [(p_1:prop),(q_1:prop),(thusq_1:
+>>      [(negp_2:that ~(p_1)) => (---:that q_1)])
+>>      => (Mpb2((p_1 v q_1),(~(p_1) -> q_1),Ifproof(~(p_1),
+>>      q_1,thusq_1),(p_1 Orthm q_1)):that (p_1
+>>      v q_1))]
+>>   {move 0}
+
+
+% Rules of disjunctive syllogism
+
+
+declare line1 that p v q
+
+>> line1: that (p v q) {move 1}
+
+
+
+declare line2 that ~q
+
+>> line2: that ~(q) {move 1}
+
+
+
+define Ds1 p q line1 line2 : Mp (~q, p, line2, \
+   Mpb1 (p v q, ~q -> p, line1, Orthm2 p q))
+
+
+>> Ds1: [(p_1:prop),(q_1:prop),(line1_1:that
+>>      (p_1 v q_1)),(line2_1:that ~(q_1)) =>
+>>      (Mp(~(q_1),p_1,line2_1,Mpb1((p_1 v q_1),
+>>      (~(q_1) -> p_1),line1_1,(p_1 Orthm2 q_1))):
+>>      that p_1)]
+>>   {move 0}
+
+
+
+declare line3 that p v q
+
+>> line3: that (p v q) {move 1}
+
+
+
+declare line4 that ~p
+
+>> line4: that ~(p) {move 1}
+
+
+
+define Ds2 p q line3 line4 : Mp (~p, q, line4, \
+   Mpb1 (p v q, ~p -> q, line3, Orthm p q))
+
+
+>> Ds2: [(p_1:prop),(q_1:prop),(line3_1:that
+>>      (p_1 v q_1)),(line4_1:that ~(p_1)) =>
+>>      (Mp(~(p_1),q_1,line4_1,Mpb1((p_1 v q_1),
+>>      (~(p_1) -> q_1),line3_1,(p_1 Orthm q_1))):
+>>      that q_1)]
+>>   {move 0}
+
+
+%% The existential quantifier
+
+postulate Exists P : prop
+
+>> Exists: [(P_1:[(xx_2:obj) => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+% the rule EG (existential introduction)
+
+
+declare ev that P x
+
+>> ev: that P(x) {move 1}
+
+
+
+postulate Eg P, x ev : that Exists P
+
+>> Eg: [(P_1:[(xx_2:obj) => (---:prop)]),
+>>      (x_1:obj),(ev_1:that P_1(x_1)) => (---:
+>>      that Exists(P_1))]
+>>   {move 0}
+
+
+%% the rule EI (existential elimination)
+
+declare g prop
+
+>> g: prop {move 1}
+
+
+
+declare ex that Exists P
+
+>> ex: that Exists(P) {move 1}
+
+
+
+open
+
+   declare w obj
+
+>>    w: obj {move 2}
+
+
+
+   declare ev2 that P w
+
+>>    ev2: that P(w) {move 2}
+
+
+
+   postulate wi w ev2 : that g
+
+>>    wi: [(w_1:obj),(ev2_1:that P(w_1)) =>
+>>         (---:that g)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Ei P, g, ex, wi : that g
+
+>> Ei: [(P_1:[(xx_2:obj) => (---:prop)]),
+>>      (g_1:prop),(ex_1:that Exists(P_1)),(wi_1:
+>>      [(w_3:obj),(ev2_3:that P_1(w_3)) => (---:
+>>         that g_1)])
+>>      => (---:that g_1)]
+>>   {move 0}
+
+
+% A quantifier proof
+
+
+open
+
+   declare xx obj
+
+>>    xx: obj {move 2}
+
+
+
+   postulate Pp xx :prop
+
+>>    Pp: [(xx_1:obj) => (---:prop)]
+>>      {move 1}
+
+
+
+   postulate Qq xx : prop
+
+>>    Qq: [(xx_1:obj) => (---:prop)]
+>>      {move 1}
+
+
+
+   postulate Rr xx:prop
+
+>>    Rr: [(xx_1:obj) => (---:prop)]
+>>      {move 1}
+
+
+
+   define Ss xx: (Pp xx) -> (Qq xx)
+
+>>    Ss: [(xx_1:obj) => (---:prop)]
+>>      {move 1}
+
+
+
+   define Tt xx: (Qq xx) -> (Rr xx)
+
+>>    Tt: [(xx_1:obj) => (---:prop)]
+>>      {move 1}
+
+
+
+   define Uu xx: (Pp xx) -> (Rr xx)
+
+>>    Uu: [(xx_1:obj) => (---:prop)]
+>>      {move 1}
+
+
+
+   declare ss2 that Forall Ss
+
+>>    ss2: that Forall(Ss) {move 2}
+
+
+
+   declare tt2 that Forall Tt
+
+>>    tt2: that Forall(Tt) {move 2}
+
+
+     % Our goal is to prove Forall Uu
+
+
+   open
+
+      declare yy obj
+
+>>       yy: obj {move 3}
+
+
+          %% Our goal is to show (Pp yy) -> (Rr yy)
+
+      open
+
+         declare ppyy that Pp yy
+
+>>          ppyy: that Pp(yy) {move 4}
+
+
+
+         define imp1 : Ui Ss, ss2 yy
+
+>>          imp1: [(---:that Ss(yy))]
+>>            {move 3}
+
+
+
+         define line5 ppyy: Mp (Pp yy, Qq \
+            yy, ppyy, imp1)
+
+>>          line5: [(ppyy_1:that Pp(yy)) =>
+>>               (---:that Qq(yy))]
+>>            {move 3}
+
+
+
+         define imp2 : Ui Tt, tt2 yy
+
+>>          imp2: [(---:that Tt(yy))]
+>>            {move 3}
+
+
+
+         define line6 ppyy: Mp (Qq yy, Rr \
+            yy,line5 ppyy,imp2)
+
+>>          line6: [(ppyy_1:that Pp(yy)) =>
+>>               (---:that Rr(yy))]
+>>            {move 3}
+
+
+
+         close
+
+      define line7 yy: Ifproof (Pp yy, Rr \
+         yy,line6)
+
+>>       line7: [(yy_1:obj) => (---:that (Pp(yy_1)
+>>            -> Rr(yy_1)))]
+>>         {move 2}
+
+
+
+      close
+
+   define Univimp1 ss2 tt2: Ug Uu, line7
+
+
+>>    Univimp1: [(ss2_1:that Forall(Ss)),(tt2_1:
+>>         that Forall(Tt)) => (---:that Forall(Uu))]
+>>      {move 1}
+
+
+
+   declare conj1 that (Forall Ss) & (Forall \
+      Tt)
+
+>>    conj1: that (Forall(Ss) & Forall(Tt))
+>>      {move 2}
+
+
+
+   define Univimp2 conj1 : Univimp1 (And1(Forall \
+      Ss, Forall Tt,conj1),And2(Forall Ss, \
+      Forall      Tt,conj1))
+
+>>    Univimp2: [(conj1_1:that (Forall(Ss) &
+>>         Forall(Tt))) => (---:that Forall(Uu))]
+>>      {move 1}
+
+
+
+   close
+
+define Univimp Pp, Qq, Rr : Ifproof ((Forall \
+   Ss)&(Forall Tt),Forall Uu,Univimp2)
+
+>> Univimp: [(Pp_1:[(xx_2:obj) => (---:prop)]),
+>>      (Qq_1:[(xx_3:obj) => (---:prop)]),
+>>      (Rr_1:[(xx_4:obj) => (---:prop)])
+>>      => (Ifproof((Forall([(xx_5:obj) => ((Pp_1(xx_5)
+>>         -> Qq_1(xx_5)):prop)])
+>>      & Forall([(xx_6:obj) => ((Qq_1(xx_6) ->
+>>         Rr_1(xx_6)):prop)]))
+>>      ,Forall([(xx_7:obj) => ((Pp_1(xx_7) ->
+>>         Rr_1(xx_7)):prop)]),
+>>      [(conj1_8:that (Forall([(xx_9:obj) =>
+>>            ((Pp_1(xx_9) -> Qq_1(xx_9)):prop)])
+>>         & Forall([(xx_10:obj) => ((Qq_1(xx_10)
+>>            -> Rr_1(xx_10)):prop)]))
+>>         ) => (Ug([(xx_11:obj) => ((Pp_1(xx_11)
+>>            -> Rr_1(xx_11)):prop)]
+>>         ,[(yy_12:obj) => (Ifproof(Pp_1(yy_12),
+>>            Rr_1(yy_12),[(ppyy_13:that Pp_1(yy_12))
+>>               => (Mp(Qq_1(yy_12),Rr_1(yy_12),
+>>               Mp(Pp_1(yy_12),Qq_1(yy_12),ppyy_13,
+>>               Ui([(xx_14:obj) => ((Pp_1(xx_14)
+>>                  -> Qq_1(xx_14)):prop)]
+>>               ,And1(Forall([(xx_15:obj) =>
+>>                  ((Pp_1(xx_15) -> Qq_1(xx_15)):
+>>                  prop)]),
+>>               Forall([(xx_16:obj) => ((Qq_1(xx_16)
+>>                  -> Rr_1(xx_16)):prop)]),
+>>               conj1_8),yy_12)),Ui([(xx_17:obj)
+>>                  => ((Qq_1(xx_17) -> Rr_1(xx_17)):
+>>                  prop)]
+>>               ,And2(Forall([(xx_18:obj) =>
+>>                  ((Pp_1(xx_18) -> Qq_1(xx_18)):
+>>                  prop)]),
+>>               Forall([(xx_19:obj) => ((Qq_1(xx_19)
+>>                  -> Rr_1(xx_19)):prop)]),
+>>               conj1_8),yy_12)):that Rr_1(yy_12))])
+>>            :that (Pp_1(yy_12) -> Rr_1(yy_12)))])
+>>         :that Forall([(xx_20:obj) => ((Pp_1(xx_20)
+>>            -> Rr_1(xx_20)):prop)]))
+>>         ])
+>>      :that ((Forall([(xx_21:obj) => ((Pp_1(xx_21)
+>>         -> Qq_1(xx_21)):prop)])
+>>      & Forall([(xx_22:obj) => ((Qq_1(xx_22)
+>>         -> Rr_1(xx_22)):prop)]))
+>>      -> Forall([(xx_23:obj) => ((Pp_1(xx_23)
+>>         -> Rr_1(xx_23)):prop)]))
+>>      )]
+>>   {move 0}
+
+
+%  Declarations of typed objects
+
+%% The type of (true) natural numbers.  The theory of these
+%% objects will be second order arithmetic.  Peano arithmetic
+% will be defined:  it will be instructive how hard it is to do this.
+
+
+postulate Nat : type
+
+>> Nat: type {move 0}
+
+
+
+postulate 1 : in Nat
+
+>> 1: in Nat {move 0}
+
+
+
+declare n in Nat
+
+>> n: in Nat {move 1}
+
+
+
+postulate Succ n : in Nat
+
+>> Succ: [(n_1:in Nat) => (---:in Nat)]
+>>   {move 0}
+
+
+
+open
+
+   declare n2 in Nat
+
+>>    n2: in Nat {move 2}
+
+
+
+   postulate Pn n2 : prop
+
+>>    Pn: [(n2_1:in Nat) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+declare basis that Pn 1
+
+>> basis: that Pn(1) {move 1}
+
+
+
+open
+
+   declare k in Nat
+
+>>    k: in Nat {move 2}
+
+
+
+   declare indhyp that Pn k
+
+>>    indhyp: that Pn(k) {move 2}
+
+
+
+   postulate indstep k indhyp : that Pn Succ \
+      k
+
+>>    indstep: [(k_1:in Nat),(indhyp_1:that
+>>         Pn(k_1)) => (---:that Pn(Succ(k_1)))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Induction n Pn, basis, indstep \
+   : that Pn n
+
+>> Induction: [(n_1:in Nat),(Pn_1:[(n2_2:in
+>>         Nat) => (---:prop)]),
+>>      (basis_1:that Pn_1(1)),(indstep_1:[(k_3:
+>>         in Nat),(indhyp_3:that Pn_1(k_3)) =>
+>>         (---:that Pn_1(Succ(k_3)))])
+>>      => (---:that Pn_1(n_1))]
+>>   {move 0}
+
+
+%% We introduce the declarations for the properties
+% of equality of natural numbers.
+
+
+declare m in Nat
+
+>> m: in Nat {move 1}
+
+
+
+declare m2 in Nat
+
+>> m2: in Nat {move 1}
+
+
+
+postulate Eqn n m : prop
+
+>> Eqn: [(n_1:in Nat),(m_1:in Nat) => (---:prop)]
+>>   {move 0}
+
+
+% We develop the substitution rule (equality elimination)
+
+
+declare eqev that Eqn m m2
+
+>> eqev: that (m Eqn m2) {move 1}
+
+
+
+declare pnpf that Pn m
+
+>> pnpf: that Pn(m) {move 1}
+
+
+
+postulate Subs Pn, m m2 eqev pnpf: that Pn \
+   m2
+
+>> Subs: [(Pn_1:[(n2_2:in Nat) => (---:prop)]),
+>>      (m_1:in Nat),(m2_1:in Nat),(eqev_1:that
+>>      (m_1 Eqn m2_1)),(pnpf_1:that Pn_1(m_1))
+>>      => (---:that Pn_1(m2_1))]
+>>   {move 0}
+
+
+% We develop the equality introduction rule (Leibniz)
+
+
+open
+
+   open
+
+      declare n3 in Nat
+
+>>       n3: in Nat {move 3}
+
+
+
+      postulate Pn2 n3: prop
+
+>>       Pn2: [(n3_1:in Nat) => (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   declare pnn that Pn2 n
+
+>>    pnn: that Pn2(n) {move 2}
+
+
+
+   postulate eqpf Pn2, pnn: that Pn2 m
+
+>>    eqpf: [(Pn2_1:[(n3_2:in Nat) => (---:prop)]),
+>>         (pnn_1:that Pn2_1(n)) => (---:that
+>>         Pn2_1(m))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Eqnproof n m, eqpf : that n Eqn \
+   m
+
+>> Eqnproof: [(n_1:in Nat),(m_1:in Nat),(eqpf_1:
+>>      [(Pn2_2:[(n3_3:in Nat) => (---:prop)]),
+>>         (pnn_2:that Pn2_2(n_1)) => (---:that
+>>         Pn2_2(m_1))])
+>>      => (---:that (n_1 Eqn m_1))]
+>>   {move 0}
+
+
+%% We test the equality introduction rule
+% by proving reflexivity of equality.
+
+
+open
+
+   open
+
+      declare n3 in Nat
+
+>>       n3: in Nat {move 3}
+
+
+
+      postulate Pn2 n3:prop
+
+>>       Pn2: [(n3_1:in Nat) => (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   declare pnn that Pn2 n
+
+>>    pnn: that Pn2(n) {move 2}
+
+
+
+   define eqpftest Pn2, pnn: pnn
+
+>>    eqpftest: [(Pn2_1:[(n3_2:in Nat) => (---:
+>>            prop)]),
+>>         (pnn_1:that Pn2_1(n)) => (---:that
+>>         Pn2_1(n))]
+>>      {move 1}
+
+
+
+   close
+
+define Refln n : Eqnproof n n, eqpftest
+
+>> Refln: [(n_1:in Nat) => (Eqnproof(n_1,n_1,
+>>      [(Pn2_2:[(n3_3:in Nat) => (---:prop)]),
+>>         (pnn_2:that Pn2_2(n_1)) => (pnn_2:that
+>>         Pn2_2(n_1))])
+>>      :that (n_1 Eqn n_1))]
+>>   {move 0}
+
+
+
+postulate Pa3 n : that ~(Succ n Eqn 1)
+
+>> Pa3: [(n_1:in Nat) => (---:that ~((Succ(n_1)
+>>      Eqn 1)))]
+>>   {move 0}
+
+
+
+postulate Pa4 n m : that (Succ n Eqn Succ \
+   m) -> n Eqn m
+
+>> Pa4: [(n_1:in Nat),(m_1:in Nat) => (---:that
+>>      ((Succ(n_1) Eqn Succ(m_1)) -> (n_1 Eqn
+>>      m_1)))]
+>>   {move 0}
+
+
+%% These definitions are by no means exhaustive.  One wants
+% to declare quantifiers over natural numbers for example.
+
+% Declarations for second order type theory.
+
+
+postulate level n : type
+
+>> level: [(n_1:in Nat) => (---:type)]
+>>   {move 0}
+
+
+% level n is what we usually call type n.  The bottom type will be type 1.
+
+
+declare n3 in Nat
+
+>> n3: in Nat {move 1}
+
+
+
+declare x10 in level n3
+
+>> x10: in level(n3) {move 1}
+
+
+
+declare y10 in level Succ n3
+
+>> y10: in level(Succ(n3)) {move 1}
+
+
+% Declare the membership relation (with a type argument)
+
+
+postulate E n3 x10 y10 : prop
+
+>> E: [(n3_1:in Nat),(x10_1:in level(n3_1)),
+>>      (y10_1:in level(Succ(n3_1))) => (---:prop)]
+>>   {move 0}
+
+
+% Declare the set abstract postulateor
+
+
+open
+
+   declare x11 in level n3
+
+>>    x11: in level(n3) {move 2}
+
+
+
+   postulate Pt x11 : prop
+
+>>    Pt: [(x11_1:in level(n3)) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+% Declare the comprehension axioms
+
+
+postulate setof n3 Pt : in level Succ n3
+
+
+>> setof: [(n3_1:in Nat),(Pt_1:[(x11_2:in level(n3_1))
+>>         => (---:prop)])
+>>      => (---:in level(Succ(n3_1)))]
+>>   {move 0}
+
+
+
+declare compev1 that E(n3,x10,setof n3 Pt)
+
+
+>> compev1: that E(n3,x10,(n3 setof Pt)) {move
+>>   1}
+
+
+
+postulate Comp1 n3 x10, Pt : that Pt x10
+
+
+>> Comp1: [(n3_1:in Nat),(x10_1:in level(n3_1)),
+>>      (Pt_1:[(x11_2:in level(n3_1)) => (---:
+>>         prop)])
+>>      => (---:that Pt_1(x10_1))]
+>>   {move 0}
+
+
+
+declare compev2 that Pt x10
+
+>> compev2: that Pt(x10) {move 1}
+
+
+
+postulate Comp2 n3 x10, Pt : that E(n3,x10, \
+   setof n3 Pt)
+
+>> Comp2: [(n3_1:in Nat),(x10_1:in level(n3_1)),
+>>      (Pt_1:[(x11_2:in level(n3_1)) => (---:
+>>         prop)])
+>>      => (---:that E(n3_1,x10_1,(n3_1 setof
+>>      Pt_1)))]
+>>   {move 0}
+
+
+% Declare the extensionality axiom
+
+
+declare xx10 in level Succ n3
+
+>> xx10: in level(Succ(n3)) {move 1}
+
+
+
+declare yy10 in level Succ n3
+
+>> yy10: in level(Succ(n3)) {move 1}
+
+
+
+declare ww10 in level Succ(Succ n3)
+
+>> ww10: in level(Succ(Succ(n3))) {move 1}
+
+
+
+declare xinw that (Succ n3) E xx10 ww10
+
+>> xinw: that E(Succ(n3),xx10,ww10) {move 1}
+
+
+
+open
+
+   declare z11 in level n3
+
+>>    z11: in level(n3) {move 2}
+
+
+
+   declare zinx that n3 E z11 xx10
+
+>>    zinx: that E(n3,z11,xx10) {move 2}
+
+
+
+   declare ziny that n3 E z11 yy10
+
+>>    ziny: that E(n3,z11,yy10) {move 2}
+
+
+
+   postulate xincy z11 zinx : that n3 E z11 \
+      yy10
+
+>>    xincy: [(z11_1:in level(n3)),(zinx_1:that
+>>         E(n3,z11_1,xx10)) => (---:that E(n3,
+>>         z11_1,yy10))]
+>>      {move 1}
+
+
+
+   postulate yincx z11 ziny : that n3 E z11 \
+      xx10
+
+>>    yincx: [(z11_1:in level(n3)),(ziny_1:that
+>>         E(n3,z11_1,yy10)) => (---:that E(n3,
+>>         z11_1,xx10))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Extensionality n3 xx10 yy10 ww10, \
+   xinw, xincy, yincx : that (Succ n3) E yy10 \
+   ww10
+
+>> Extensionality: [(n3_1:in Nat),(xx10_1:in
+>>      level(Succ(n3_1))),(yy10_1:in level(Succ(n3_1))),
+>>      (ww10_1:in level(Succ(Succ(n3_1)))),(xinw_1:
+>>      that E(Succ(n3_1),xx10_1,ww10_1)),(xincy_1:
+>>      [(z11_2:in level(n3_1)),(zinx_2:that E(n3_1,
+>>         z11_2,xx10_1)) => (---:that E(n3_1,
+>>         z11_2,yy10_1))]),
+>>      (yincx_1:[(z11_3:in level(n3_1)),(ziny_3:
+>>         that E(n3_1,z11_3,yy10_1)) => (---:
+>>         that E(n3_1,z11_3,xx10_1))])
+>>      => (---:that E(Succ(n3_1),yy10_1,ww10_1))]
+>>   {move 0}
+
+
+%% All of these declarations are shockingly economical:  a useful treatment
+%% would at least provide quantifiers and quantifier rules for the types shown.
+% This can be done readily.
+
+% Declaring the universal quantifier for general types.
+
+
+declare tau type
+
+>> tau: type {move 1}
+
+
+
+open
+
+   declare uu in tau
+
+>>    uu: in tau {move 2}
+
+
+
+   postulate Ptt uu : prop
+
+>>    Ptt: [(uu_1:in tau) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Forallt tau Ptt: prop
+
+>> Forallt: [(tau_1:type),(Ptt_1:[(uu_2:in tau_1)
+>>         => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+% Declaring the rule UI of universal instantiation (for general types)
+
+
+declare Ptt2 that Forallt tau Ptt
+
+>> Ptt2: that (tau Forallt Ptt) {move 1}
+
+
+
+declare xt in tau
+
+>> xt: in tau {move 1}
+
+
+
+postulate Uit tau Ptt, Ptt2 xt : that Ptt \
+   xt
+
+>> Uit: [(tau_1:type),(Ptt_1:[(uu_2:in tau_1)
+>>         => (---:prop)]),
+>>      (Ptt2_1:that (tau_1 Forallt Ptt_1)),(xt_1:
+>>      in tau_1) => (---:that Ptt_1(xt_1))]
+>>   {move 0}
+
+
+%% Note in the previous line that we follow P 
+%% with a comma:  an abstraction argument may need to be 
+% guarded with commas so it will not be read as applied.
+
+%% Opening an environment to declare a function 
+% that witnesses provability of a universal statement
+
+
+open
+
+   declare ut in tau
+
+>>    ut: in tau {move 2}
+
+
+
+   postulate Qt2 ut : that Ptt ut
+
+>>    Qt2: [(ut_1:in tau) => (---:that Ptt(ut_1))]
+>>      {move 1}
+
+
+
+   close
+% The rule of universal generalization (for general types)
+
+
+postulate Ugt tau Ptt, Qt2 : that Forallt \
+   tau Ptt
+
+>> Ugt: [(tau_1:type),(Ptt_1:[(uu_2:in tau_1)
+>>         => (---:prop)]),
+>>      (Qt2_1:[(ut_3:in tau_1) => (---:that Ptt_1(ut_3))])
+>>      => (---:that (tau_1 Forallt Ptt_1))]
+>>   {move 0}
+
+
+% The existential quantifier (for general types)
+
+
+postulate Existst tau Ptt : prop
+
+>> Existst: [(tau_1:type),(Ptt_1:[(uu_2:in tau_1)
+>>         => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+% the rule EG (existential introduction) (for general types)
+
+
+declare evt that Ptt xt
+
+>> evt: that Ptt(xt) {move 1}
+
+
+
+postulate Egt tau Ptt, xt evt : that Existst \
+   tau Ptt
+
+>> Egt: [(tau_1:type),(Ptt_1:[(uu_2:in tau_1)
+>>         => (---:prop)]),
+>>      (xt_1:in tau_1),(evt_1:that Ptt_1(xt_1))
+>>      => (---:that (tau_1 Existst Ptt_1))]
+>>   {move 0}
+
+
+% the rule EI (existential elimination) (for general types)
+
+
+declare gt prop
+
+>> gt: prop {move 1}
+
+
+
+declare ext that Existst tau Ptt
+
+>> ext: that (tau Existst Ptt) {move 1}
+
+
+
+open
+
+   declare wt in tau
+
+>>    wt: in tau {move 2}
+
+
+
+   declare evt2 that Ptt wt
+
+>>    evt2: that Ptt(wt) {move 2}
+
+
+
+   postulate wit wt evt2 : that gt
+
+>>    wit: [(wt_1:in tau),(evt2_1:that Ptt(wt_1))
+>>         => (---:that gt)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Eit tau Ptt, gt, ext, wit : that \
+   gt
+
+>> Eit: [(tau_1:type),(Ptt_1:[(uu_2:in tau_1)
+>>         => (---:prop)]),
+>>      (gt_1:prop),(ext_1:that (tau_1 Existst
+>>      Ptt_1)),(wit_1:[(wt_3:in tau_1),(evt2_3:
+>>         that Ptt_1(wt_3)) => (---:that gt_1)])
+>>      => (---:that gt_1)]
+>>   {move 0}
+
+
+%  Equality uniqueness and definite description
+
+
+declare y obj
+
+>> y: obj {move 1}
+
+
+% Equality of untyped objects
+
+
+postulate = x y : prop
+
+>> =: [(x_1:obj),(y_1:obj) => (---:prop)]
+>>   {move 0}
+
+
+% Develop equality introduction rule (indiscernibility)
+
+
+open
+
+   open
+
+      declare x2 obj
+
+>>       x2: obj {move 3}
+
+
+
+      postulate Peq2 x2: prop
+
+>>       Peq2: [(x2_1:obj) => (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   declare pxev that Peq2 x
+
+>>    pxev: that Peq2(x) {move 2}
+
+
+
+   postulate pyev Peq2, pxev : that Peq2 \
+      y
+
+>>    pyev: [(Peq2_1:[(x2_2:obj) => (---:prop)]),
+>>         (pxev_1:that Peq2_1(x)) => (---:that
+>>         Peq2_1(y))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Eqintro x y pyev :that x = y
+
+>> Eqintro: [(x_1:obj),(y_1:obj),(pyev_1:[(Peq2_2:
+>>         [(x2_3:obj) => (---:prop)]),
+>>         (pxev_2:that Peq2_2(x_1)) => (---:that
+>>         Peq2_2(y_1))])
+>>      => (---:that (x_1 = y_1))]
+>>   {move 0}
+
+
+% postulate equality elimination rule (substitution)
+
+
+declare xyeqev that x = y
+
+>> xyeqev: that (x = y) {move 1}
+
+
+
+declare pxev that P x
+
+>> pxev: that P(x) {move 1}
+
+
+
+postulate Eqelim P, x y xyeqev pxev : that \
+   P y
+
+>> Eqelim: [(P_1:[(xx_2:obj) => (---:prop)]),
+>>      (x_1:obj),(y_1:obj),(xyeqev_1:that (x_1
+>>      = y_1)),(pxev_1:that P_1(x_1)) => (---:
+>>      that P_1(y_1))]
+>>   {move 0}
+
+
+%% The same rules for equality, adapted to general types
+
+declare yt in tau
+
+>> yt: in tau {move 1}
+
+
+
+postulate eqt tau xt yt : prop
+
+>> eqt: [(tau_1:type),(xt_1:in tau_1),(yt_1:
+>>      in tau_1) => (---:prop)]
+>>   {move 0}
+
+
+% Develop equality introduction rule (indiscernibility)
+
+
+open
+
+   open
+
+      declare x2 in tau
+
+>>       x2: in tau {move 3}
+
+
+
+      postulate Peqt2 x2: prop
+
+>>       Peqt2: [(x2_1:in tau) => (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   declare pxevt that Peqt2 xt
+
+>>    pxevt: that Peqt2(xt) {move 2}
+
+
+
+   postulate pyevt Peqt2, pxevt : that Peqt2 \
+      yt
+
+>>    pyevt: [(Peqt2_1:[(x2_2:in tau) => (---:
+>>            prop)]),
+>>         (pxevt_1:that Peqt2_1(xt)) => (---:
+>>         that Peqt2_1(yt))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Eqintrot tau xt yt pyevt :that \
+   tau eqt xt yt
+
+>> Eqintrot: [(tau_1:type),(xt_1:in tau_1),(yt_1:
+>>      in tau_1),(pyevt_1:[(Peqt2_2:[(x2_3:in
+>>            tau_1) => (---:prop)]),
+>>         (pxevt_2:that Peqt2_2(xt_1)) => (---:
+>>         that Peqt2_2(yt_1))])
+>>      => (---:that eqt(tau_1,xt_1,yt_1))]
+>>   {move 0}
+
+
+%% postulate equality elimination rule (substitution)
+
+declare xyeqevt that tau eqt xt yt
+
+>> xyeqevt: that eqt(tau,xt,yt) {move 1}
+
+
+
+declare pxevt that Ptt xt
+
+>> pxevt: that Ptt(xt) {move 1}
+
+
+
+postulate Eqelimt tau Ptt, xt yt xyeqevt \
+   pxevt : that Ptt yt
+
+>> Eqelimt: [(tau_1:type),(Ptt_1:[(uu_2:in tau_1)
+>>         => (---:prop)]),
+>>      (xt_1:in tau_1),(yt_1:in tau_1),(xyeqevt_1:
+>>      that eqt(tau_1,xt_1,yt_1)),(pxevt_1:that
+>>      Ptt_1(xt_1)) => (---:that Ptt_1(yt_1))]
+>>   {move 0}
+
+
+% The definite description operator
+
+
+declare atleast1 that Exists P
+
+>> atleast1: that Exists(P) {move 1}
+
+
+
+open
+
+   declare x1 obj
+
+>>    x1: obj {move 2}
+
+
+
+   declare x2 obj
+
+>>    x2: obj {move 2}
+
+
+
+   declare thatpx1 that P x1
+
+>>    thatpx1: that P(x1) {move 2}
+
+
+
+   declare thatpx2 that P x2
+
+>>    thatpx2: that P(x2) {move 2}
+
+
+
+   postulate atmost1 x1 x2 thatpx1 thatpx2 \
+      : that x1 = x2
+
+>>    atmost1: [(x1_1:obj),(x2_1:obj),(thatpx1_1:
+>>         that P(x1_1)),(thatpx2_1:that P(x2_1))
+>>         => (---:that (x1_1 = x2_1))]
+>>      {move 1}
+
+
+
+   close
+
+postulate The P, atleast1 atmost1 : obj
+
+>> The: [(P_1:[(xx_2:obj) => (---:prop)]),
+>>      (atleast1_1:that Exists(P_1)),(atmost1_1:
+>>      [(x1_3:obj),(x2_3:obj),(thatpx1_3:that
+>>         P_1(x1_3)),(thatpx2_3:that P_1(x2_3))
+>>         => (---:that (x1_3 = x2_3))])
+>>      => (---:obj)]
+>>   {move 0}
+
+
+
+postulate Theprop P, atleast1 atmost1 : that \
+   P The P, atleast1 atmost1
+
+>> Theprop: [(P_1:[(xx_2:obj) => (---:prop)]),
+>>      (atleast1_1:that Exists(P_1)),(atmost1_1:
+>>      [(x1_3:obj),(x2_3:obj),(thatpx1_3:that
+>>         P_1(x1_3)),(thatpx2_3:that P_1(x2_3))
+>>         => (---:that (x1_3 = x2_3))])
+>>      => (---:that P_1(The(P_1,atleast1_1,atmost1_1)))]
+>>   {move 0}
+
+
+%% The definite description operator (for general types)
+
+declare atleastt1 that Existst tau Ptt
+
+>> atleastt1: that (tau Existst Ptt) {move 1}
+
+
+
+open
+
+   declare x1 in tau
+
+>>    x1: in tau {move 2}
+
+
+
+   declare x2 in tau
+
+>>    x2: in tau {move 2}
+
+
+
+   declare thatpx1 that Ptt x1
+
+>>    thatpx1: that Ptt(x1) {move 2}
+
+
+
+   declare thatpx2 that Ptt x2
+
+>>    thatpx2: that Ptt(x2) {move 2}
+
+
+
+   postulate atmostt1 x1 x2 thatpx1 thatpx2 \
+      : that tau eqt x1 x2
+
+>>    atmostt1: [(x1_1:in tau),(x2_1:in tau),
+>>         (thatpx1_1:that Ptt(x1_1)),(thatpx2_1:
+>>         that Ptt(x2_1)) => (---:that eqt(tau,
+>>         x1_1,x2_1))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Thet tau Ptt, atleastt1 atmostt1 \
+   : in tau
+
+>> Thet: [(tau_1:type),(Ptt_1:[(uu_2:in tau_1)
+>>         => (---:prop)]),
+>>      (atleastt1_1:that (tau_1 Existst Ptt_1)),
+>>      (atmostt1_1:[(x1_3:in tau_1),(x2_3:in
+>>         tau_1),(thatpx1_3:that Ptt_1(x1_3)),
+>>         (thatpx2_3:that Ptt_1(x2_3)) => (---:
+>>         that eqt(tau_1,x1_3,x2_3))])
+>>      => (---:in tau_1)]
+>>   {move 0}
+
+
+
+postulate Thepropt tau Ptt, atleastt1 atmostt1 \
+   : that Ptt Thet tau Ptt, atleastt1 atmostt1
+
+
+>> Thepropt: [(tau_1:type),(Ptt_1:[(uu_2:in
+>>         tau_1) => (---:prop)]),
+>>      (atleastt1_1:that (tau_1 Existst Ptt_1)),
+>>      (atmostt1_1:[(x1_3:in tau_1),(x2_3:in
+>>         tau_1),(thatpx1_3:that Ptt_1(x1_3)),
+>>         (thatpx2_3:that Ptt_1(x2_3)) => (---:
+>>         that eqt(tau_1,x1_3,x2_3))])
+>>      => (---:that Ptt_1(Thet(tau_1,Ptt_1,atleastt1_1,
+>>      atmostt1_1)))]
+>>   {move 0}
+
+
+%% Drafting Zermelo-style set theory in untyped objects
+% The membership relation
+
+
+postulate e x y : prop
+
+>> e: [(x_1:obj),(y_1:obj) => (---:prop)]
+>>   {move 0}
+
+
+% The axiom of extensionality
+
+
+open
+
+   declare z obj
+
+>>    z: obj {move 2}
+
+
+
+   declare zinx that z e x
+
+>>    zinx: that (z e x) {move 2}
+
+
+
+   postulate xcy z zinx: that z e y
+
+>>    xcy: [(z_1:obj),(zinx_1:that (z_1 e x))
+>>         => (---:that (z_1 e y))]
+>>      {move 1}
+
+
+
+   declare ziny that z e y
+
+>>    ziny: that (z e y) {move 2}
+
+
+
+   postulate ycx z ziny: that z e x
+
+>>    ycx: [(z_1:obj),(ziny_1:that (z_1 e y))
+>>         => (---:that (z_1 e x))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Zext x y, xcy, ycx: that x=y
+
+>> Zext: [(x_1:obj),(y_1:obj),(xcy_1:[(z_2:obj),
+>>         (zinx_2:that (z_2 e x_1)) => (---:that
+>>         (z_2 e y_1))]),
+>>      (ycx_1:[(z_3:obj),(ziny_3:that (z_3 e
+>>         y_1)) => (---:that (z_3 e x_1))])
+>>      => (---:that (x_1 = y_1))]
+>>   {move 0}
+
+
+%% more to do here of course
+%% development of iterators
+%% develop the definition of the relation
+% which is the graph of a function (easy)
+
+
+declare sigma type
+
+>> sigma: type {move 1}
+
+
+
+open
+
+   declare xf in tau
+
+>>    xf: in tau {move 2}
+
+
+
+   postulate ff xf: in sigma
+
+>>    ff: [(xf_1:in tau) => (---:in sigma)]
+>>      {move 1}
+
+
+
+   close
+
+declare xtt in tau
+
+>> xtt: in tau {move 1}
+
+
+
+declare yss in sigma
+
+>> yss: in sigma {move 1}
+
+
+
+define Graph tau sigma ff, xtt yss: sigma \
+   eqt yss ff xtt
+
+>> Graph: [(tau_1:type),(sigma_1:type),(ff_1:
+>>      [(xf_2:in tau_1) => (---:in sigma_1)]),
+>>      (xtt_1:in tau_1),(yss_1:in sigma_1) =>
+>>      (eqt(sigma_1,yss_1,ff_1(xtt_1)):prop)]
+>>   {move 0}
+
+
+%%  Then develop the function whose graph is a given 
+%  functional relation (much trickier)
+
+
+open
+
+   declare xt2 in tau
+
+>>    xt2: in tau {move 2}
+
+
+
+   declare ys in sigma
+
+>>    ys: in sigma {move 2}
+
+
+
+   postulate Rst xt2 ys:prop
+
+>>    Rst: [(xt2_1:in tau),(ys_1:in sigma) =>
+>>         (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+open
+
+   declare xt2 in tau
+
+>>    xt2: in tau {move 2}
+
+
+
+   open
+
+      declare ys2 in sigma
+
+>>       ys2: in sigma {move 3}
+
+
+
+      define Rst2 ys2: Rst xt2 ys2
+
+>>       Rst2: [(ys2_1:in sigma) => (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   postulate Rstex xt2: that Existst sigma \
+      Rst2
+
+>>    Rstex: [(xt2_1:in tau) => (---:that (sigma
+>>         Existst [(ys2_2:in sigma) => ((xt2_1
+>>            Rst ys2_2):prop)]))
+>>         ]
+>>      {move 1}
+
+
+
+   close
+
+open
+
+   declare xt2 in tau
+
+>>    xt2: in tau {move 2}
+
+
+
+   declare ys3 in sigma
+
+>>    ys3: in sigma {move 2}
+
+
+
+   declare ys4 in sigma
+
+>>    ys4: in sigma {move 2}
+
+
+
+   declare ysfact3 that xt2 Rst ys3
+
+>>    ysfact3: that (xt2 Rst ys3) {move 2}
+
+
+
+   declare ysfact4 that xt2 Rst ys4
+
+>>    ysfact4: that (xt2 Rst ys4) {move 2}
+
+
+
+   postulate Rsunique xt2 ys3 ys4 ysfact3 \
+      ysfact4: that sigma eqt ys3 ys4
+
+>>    Rsunique: [(xt2_1:in tau),(ys3_1:in sigma),
+>>         (ys4_1:in sigma),(ysfact3_1:that (xt2_1
+>>         Rst ys3_1)),(ysfact4_1:that (xt2_1
+>>         Rst ys4_1)) => (---:that eqt(sigma,
+>>         ys3_1,ys4_1))]
+>>      {move 1}
+
+
+
+   close
+
+open
+
+   declare xt2 in tau
+
+>>    xt2: in tau {move 2}
+
+
+
+   open
+
+      declare ys2 in sigma
+
+>>       ys2: in sigma {move 3}
+
+
+
+      define Rst2 ys2: Rst xt2 ys2
+
+>>       Rst2: [(ys2_1:in sigma) => (---:prop)]
+>>         {move 2}
+
+
+
+      declare ys3 in sigma
+
+>>       ys3: in sigma {move 3}
+
+
+
+      declare ys4 in sigma
+
+>>       ys4: in sigma {move 3}
+
+
+
+      declare ysfact3 that xt2 Rst ys3
+
+>>       ysfact3: that (xt2 Rst ys3) {move 3}
+
+
+
+      declare ysfact4 that xt2 Rst ys4
+
+>>       ysfact4: that (xt2 Rst ys4) {move 3}
+
+
+
+      define Rsunique2 ys3 ys4 ysfact3 ysfact4: \
+         Rsunique xt2 ys3 ys4 ysfact3 ysfact4
+
+
+>>       Rsunique2: [(ys3_1:in sigma),(ys4_1:
+>>            in sigma),(ysfact3_1:that (xt2 Rst
+>>            ys3_1)),(ysfact4_1:that (xt2 Rst
+>>            ys4_1)) => (---:that eqt(sigma,ys3_1,
+>>            ys4_1))]
+>>         {move 2}
+
+
+
+      close
+
+   define Rstarget xt2 : Thet sigma, Rst2, \
+      Rstex xt2, Rsunique2
+
+>>    Rstarget: [(xt2_1:in tau) => (---:in sigma)]
+>>      {move 1}
+
+
+
+   define Rstargetprop xt2 : Thepropt sigma \
+      Rst2, Rstex xt2, Rsunique2
+
+>>    Rstargetprop: [(xt2_1:in tau) => (---:
+>>         that (xt2_1 Rst Thet(sigma,[(ys2_4:
+>>            in sigma) => ((xt2_1 Rst ys2_4):
+>>            prop)]
+>>         ,Rstex(xt2_1),[(ys3_5:in sigma),(ys4_5:
+>>            in sigma),(ysfact3_5:that (xt2_1
+>>            Rst ys3_5)),(ysfact4_5:that (xt2_1
+>>            Rst ys4_5)) => (Rsunique(xt2_1,ys3_5,
+>>            ys4_5,ysfact3_5,ysfact4_5):that
+>>            eqt(sigma,ys3_5,ys4_5))]))
+>>         )]
+>>      {move 1}
+
+
+
+   close
+
+declare xttt in tau
+
+>> xttt: in tau {move 1}
+
+
+
+define Ungraph tau sigma, Rst, Rstex, Rsunique, \
+   xttt: Rstarget xttt
+
+>> Ungraph: [(tau_1:type),(sigma_1:type),(Rst_1:
+>>      [(xt2_2:in tau_1),(ys_2:in sigma_1) =>
+>>         (---:prop)]),
+>>      (Rstex_1:[(xt2_3:in tau_1) => (---:that
+>>         (sigma_1 Existst [(ys2_4:in sigma_1)
+>>            => ((xt2_3 Rst_1 ys2_4):prop)]))
+>>         ]),
+>>      (Rsunique_1:[(xt2_5:in tau_1),(ys3_5:in
+>>         sigma_1),(ys4_5:in sigma_1),(ysfact3_5:
+>>         that (xt2_5 Rst_1 ys3_5)),(ysfact4_5:
+>>         that (xt2_5 Rst_1 ys4_5)) => (---:that
+>>         eqt(sigma_1,ys3_5,ys4_5))]),
+>>      (xttt_1:in tau_1) => (Thet(sigma_1,[(ys2_6:
+>>         in sigma_1) => ((xttt_1 Rst_1 ys2_6):
+>>         prop)]
+>>      ,Rstex_1(xttt_1),[(ys3_7:in sigma_1),(ys4_7:
+>>         in sigma_1),(ysfact3_7:that (xttt_1
+>>         Rst_1 ys3_7)),(ysfact4_7:that (xttt_1
+>>         Rst_1 ys4_7)) => (Rsunique_1(xttt_1,
+>>         ys3_7,ys4_7,ysfact3_7,ysfact4_7):that
+>>         eqt(sigma_1,ys3_7,ys4_7))])
+>>      :in sigma_1)]
+>>   {move 0}
+
+
+
+define Ungraphprop tau sigma, Rst, Rstex, \
+   Rsunique, xttt: Rstargetprop xttt
+
+>> Ungraphprop: [(tau_1:type),(sigma_1:type),
+>>      (Rst_1:[(xt2_2:in tau_1),(ys_2:in sigma_1)
+>>         => (---:prop)]),
+>>      (Rstex_1:[(xt2_3:in tau_1) => (---:that
+>>         (sigma_1 Existst [(ys2_4:in sigma_1)
+>>            => ((xt2_3 Rst_1 ys2_4):prop)]))
+>>         ]),
+>>      (Rsunique_1:[(xt2_5:in tau_1),(ys3_5:in
+>>         sigma_1),(ys4_5:in sigma_1),(ysfact3_5:
+>>         that (xt2_5 Rst_1 ys3_5)),(ysfact4_5:
+>>         that (xt2_5 Rst_1 ys4_5)) => (---:that
+>>         eqt(sigma_1,ys3_5,ys4_5))]),
+>>      (xttt_1:in tau_1) => (Thepropt(sigma_1,
+>>      [(ys2_6:in sigma_1) => ((xttt_1 Rst_1
+>>         ys2_6):prop)]
+>>      ,Rstex_1(xttt_1),[(ys3_7:in sigma_1),(ys4_7:
+>>         in sigma_1),(ysfact3_7:that (xttt_1
+>>         Rst_1 ys3_7)),(ysfact4_7:that (xttt_1
+>>         Rst_1 ys4_7)) => (Rsunique_1(xttt_1,
+>>         ys3_7,ys4_7,ysfact3_7,ysfact4_7):that
+>>         eqt(sigma_1,ys3_7,ys4_7))])
+>>      :that (xttt_1 Rst_1 Thet(sigma_1,[(ys2_8:
+>>         in sigma_1) => ((xttt_1 Rst_1 ys2_8):
+>>         prop)]
+>>      ,Rstex_1(xttt_1),[(ys3_9:in sigma_1),(ys4_9:
+>>         in sigma_1),(ysfact3_9:that (xttt_1
+>>         Rst_1 ys3_9)),(ysfact4_9:that (xttt_1
+>>         Rst_1 ys4_9)) => (Rsunique_1(xttt_1,
+>>         ys3_9,ys4_9,ysfact3_9,ysfact4_9):that
+>>         eqt(sigma_1,ys3_9,ys4_9))]))
+>>      )]
+>>   {move 0}
+
+
+% Now begin to define iterators (f^n(x))
+
+clearcurrent
+
+
+declare tau type
+
+>> tau: type {move 1}
+
+
+
+open
+
+   declare y in tau
+
+>>    y: in tau {move 2}
+
+
+
+   postulate f y : in tau
+
+>>    f: [(y_1:in tau) => (---:in tau)]
+>>      {move 1}
+
+
+
+   close
+
+declare x in tau
+
+>> x: in tau {move 1}
+
+
+
+declare u in Nat
+
+>> u: in Nat {move 1}
+
+
+
+declare vv in tau
+
+>> vv: in tau {move 1}
+
+
+% We will now define a way to iterate f
+
+
+open
+
+   open
+
+      declare y in Nat
+
+>>       y: in Nat {move 3}
+
+
+
+      declare z in tau
+
+>>       z: in tau {move 3}
+
+
+
+      postulate R y z : prop
+
+>>       R: [(y_1:in Nat),(z_1:in tau) => (---:
+>>            prop)]
+>>         {move 2}
+
+
+
+      close
+     %% F is a variable property of 
+     % binary relations from Nat to tau
+
+
+   postulate F, R : prop
+
+>>    F: [(R_1:[(y_2:in Nat),(z_2:in tau) =>
+>>            (---:prop)])
+>>         => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+%% Forallrel is the universal quantifier over
+% a variable representing a binary relation from Nat to tau
+
+
+postulate Forallrel tau F : prop
+
+>> Forallrel: [(tau_1:type),(F_1:[(R_2:[(y_3:
+>>            in Nat),(z_3:in tau_1) => (---:prop)])
+>>         => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+% develop the reasoning rules for Forallrel
+
+% Declaring the rule UI of universal instantiation (for binary relations)
+
+%  The fact that we CAN define second order quantifiers is interesting.
+
+
+declare Funiv that Forallrel tau F
+
+>> Funiv: that (tau Forallrel F) {move 1}
+
+
+
+open
+
+   declare y3 in Nat
+
+>>    y3: in Nat {move 2}
+
+
+
+   declare z3 in tau
+
+>>    z3: in tau {move 2}
+
+
+
+   postulate S y3 z3 : prop
+
+>>    S: [(y3_1:in Nat),(z3_1:in tau) => (---:
+>>         prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Uitrel tau F, Funiv, S : that F \
+   S
+
+>> Uitrel: [(tau_1:type),(F_1:[(R_2:[(y_3:in
+>>            Nat),(z_3:in tau_1) => (---:prop)])
+>>         => (---:prop)]),
+>>      (Funiv_1:that (tau_1 Forallrel F_1)),(S_1:
+>>      [(y3_4:in Nat),(z3_4:in tau_1) => (---:
+>>         prop)])
+>>      => (---:that F_1(S_1))]
+>>   {move 0}
+
+
+
+open
+
+   open
+
+      declare y3 in Nat
+
+>>       y3: in Nat {move 3}
+
+
+
+      declare z3 in tau
+
+>>       z3: in tau {move 3}
+
+
+
+      postulate S2 y3 z3 : prop
+
+>>       S2: [(y3_1:in Nat),(z3_1:in tau) =>
+>>            (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   postulate Qrel2 S2 : that F S2
+
+>>    Qrel2: [(S2_1:[(y3_2:in Nat),(z3_2:in
+>>            tau) => (---:prop)])
+>>         => (---:that F(S2_1))]
+>>      {move 1}
+
+
+
+   close
+% The rule of universal generalization (for binary relations)
+
+
+postulate Ugtrel tau F, Qrel2 : that Forallrel \
+   tau F
+
+>> Ugtrel: [(tau_1:type),(F_1:[(R_2:[(y_3:in
+>>            Nat),(z_3:in tau_1) => (---:prop)])
+>>         => (---:prop)]),
+>>      (Qrel2_1:[(S2_4:[(y3_5:in Nat),(z3_5:in
+>>            tau_1) => (---:prop)])
+>>         => (---:that F_1(S2_4))])
+>>      => (---:that (tau_1 Forallrel F_1))]
+>>   {move 0}
+
+
+
+open
+
+   open
+
+      declare y in Nat
+
+>>       y: in Nat {move 3}
+
+
+
+      declare z in tau
+
+>>       z: in tau {move 3}
+
+
+
+      postulate R y z : prop
+
+>>       R: [(y_1:in Nat),(z_1:in tau) => (---:
+>>            prop)]
+>>         {move 2}
+
+
+
+      close
+
+   open
+
+      declare y2 in Nat
+
+>>       y2: in Nat {move 3}
+
+
+
+      open
+
+         declare z2 in tau
+
+>>          z2: in tau {move 4}
+
+
+
+         define Zpred z2 : (y2 R z2) -> (Succ \
+            y2) R (f z2)
+
+>>          Zpred: [(z2_1:in tau) => (---:prop)]
+>>            {move 3}
+
+
+
+         close
+
+      define Ypred y2 : Forallt tau Zpred
+
+
+>>       Ypred: [(y2_1:in Nat) => (---:prop)]
+>>         {move 2}
+
+
+
+      close
+
+   define Rpred R : (1 R x) & Forallt Nat \
+      Ypred
+
+>>    Rpred: [(R_1:[(y_2:in Nat),(z_2:in tau)
+>>            => (---:prop)])
+>>         => (---:prop)]
+>>      {move 1}
+
+
+     % Define Iterfx y z as holding when for all R, Rpred R -> y R z
+
+
+   define Preiter R : (Rpred R) -> u R vv
+
+
+>>    Preiter: [(R_1:[(y_2:in Nat),(z_2:in tau)
+>>            => (---:prop)])
+>>         => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+define Iter tau f, x u vv : Forallrel tau \
+   Preiter
+
+>> Iter: [(tau_1:type),(f_1:[(y_2:in tau_1)
+>>         => (---:in tau_1)]),
+>>      (x_1:in tau_1),(u_1:in Nat),(vv_1:in tau_1)
+>>      => ((tau_1 Forallrel [(R_3:[(y_4:in Nat),
+>>            (z_4:in tau_1) => (---:prop)])
+>>         => ((((1 R_3 x_1) & (Nat Forallt [(y2_5:
+>>            in Nat) => ((tau_1 Forallt [(z2_6:
+>>               in tau_1) => (((y2_5 R_3 z2_6)
+>>               -> (Succ(y2_5) R_3 f_1(z2_6))):
+>>               prop)])
+>>            :prop)]))
+>>         -> (u_1 R_3 vv_1)):prop)])
+>>      :prop)]
+>>   {move 0}
+
+
+%% There remains the serious work of showing that Iter really does 
+%% allow us to define iterator functions.  This is a nasty higher
+%% order induction proof which should really put the system 
+%% through its paces.  I am beginning to master the discipline of
+%% scope needed to set up "bound variable expressions"
+% without binding any variables.
+
+%%  I should add second order ZF and Church's simple theory of types as a full
+% demonstration of untyped and typed object building capabilities.
+
+% Church's type theory
+
+% one point type
+
+
+postulate One type
+
+>> One: type {move 0}
+
+
+
+postulate Unique : in One
+
+>> Unique: in One {move 0}
+
+
+
+declare xx1 in One
+
+>> xx1: in One {move 1}
+
+
+
+postulate Oneproof xx1 : that One eqt xx1 \
+   Unique
+
+>> Oneproof: [(xx1_1:in One) => (---:that eqt(One,
+>>      xx1_1,Unique))]
+>>   {move 0}
+
+
+% cartesian product postulateion
+
+
+declare sigma type
+
+>> sigma: type {move 1}
+
+
+
+postulate X tau sigma : type
+
+>> X: [(tau_1:type),(sigma_1:type) => (---:type)]
+>>   {move 0}
+
+
+
+declare xt in tau
+
+>> xt: in tau {move 1}
+
+
+
+declare ys in sigma
+
+>> ys: in sigma {move 1}
+
+
+
+postulate pair tau sigma xt ys : in tau X \
+   sigma
+
+>> pair: [(tau_1:type),(sigma_1:type),(xt_1:
+>>      in tau_1),(ys_1:in sigma_1) => (---:in
+>>      (tau_1 X sigma_1))]
+>>   {move 0}
+
+
+
+declare zp in tau X sigma
+
+>> zp: in (tau X sigma) {move 1}
+
+
+
+postulate pi1 tau sigma zp : in tau
+
+>> pi1: [(tau_1:type),(sigma_1:type),(zp_1:in
+>>      (tau_1 X sigma_1)) => (---:in tau_1)]
+>>   {move 0}
+
+
+
+postulate pi2 tau sigma zp : in sigma
+
+>> pi2: [(tau_1:type),(sigma_1:type),(zp_1:in
+>>      (tau_1 X sigma_1)) => (---:in sigma_1)]
+>>   {move 0}
+
+
+
+postulate Xexact tau sigma zp : that (tau \
+   X sigma) eqt zp, pair tau sigma (pi1 tau \
+   sigma zp) (pi2 tau sigma zp)
+
+>> Xexact: [(tau_1:type),(sigma_1:type),(zp_1:
+>>      in (tau_1 X sigma_1)) => (---:that eqt((tau_1
+>>      X sigma_1),zp_1,pair(tau_1,sigma_1,pi1(tau_1,
+>>      sigma_1,zp_1),pi2(tau_1,sigma_1,zp_1))))]
+>>   {move 0}
+
+
+% power set type postulateor (use this to build bool from one point type)
+
+
+postulate Pow tau type
+
+>> Pow: [(tau_1:type) => (---:type)]
+>>   {move 0}
+
+
+
+open
+
+   declare xt2 in tau
+
+>>    xt2: in tau {move 2}
+
+
+
+   postulate tausub xt2 : prop
+
+>>    tausub: [(xt2_1:in tau) => (---:prop)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Setc tau tausub : in Pow tau
+
+>> Setc: [(tau_1:type),(tausub_1:[(xt2_2:in
+>>         tau_1) => (---:prop)])
+>>      => (---:in Pow(tau_1))]
+>>   {move 0}
+
+
+
+declare Ac in Pow tau
+
+>> Ac: in Pow(tau) {move 1}
+
+
+
+postulate Ec tau xt Ac :prop
+
+>> Ec: [(tau_1:type),(xt_1:in tau_1),(Ac_1:in
+>>      Pow(tau_1)) => (---:prop)]
+>>   {move 0}
+
+
+
+declare ev1 that tausub xt
+
+>> ev1: that tausub(xt) {move 1}
+
+
+
+declare ev2 that tau Ec xt tau Setc tausub
+
+
+>> ev2: that Ec(tau,xt,(tau Setc tausub)) {move
+>>   1}
+
+
+
+postulate Compc1 tau xt ,tausub, ev1 : that \
+   tau Ec xt tau Setc tausub
+
+>> Compc1: [(tau_1:type),(xt_1:in tau_1),(tausub_1:
+>>      [(xt2_2:in tau_1) => (---:prop)]),
+>>      (ev1_1:that tausub_1(xt_1)) => (---:that
+>>      Ec(tau_1,xt_1,(tau_1 Setc tausub_1)))]
+>>   {move 0}
+
+
+
+postulate Compc2 tau xt ,tausub, ev2 : that \
+   tausub xt
+
+>> Compc2: [(tau_1:type),(xt_1:in tau_1),(tausub_1:
+>>      [(xt2_2:in tau_1) => (---:prop)]),
+>>      (ev2_1:that Ec(tau_1,xt_1,(tau_1 Setc
+>>      tausub_1))) => (---:that tausub_1(xt_1))]
+>>   {move 0}
+
+
+
+declare Bc in Pow tau
+
+>> Bc: in Pow(tau) {move 1}
+
+
+
+open
+
+   declare xt1 in tau
+
+>>    xt1: in tau {move 2}
+
+
+
+   declare xtina1 that tau Ec xt1 Ac
+
+>>    xtina1: that Ec(tau,xt1,Ac) {move 2}
+
+
+
+   postulate aincb xt1 xtina1 : that tau \
+      Ec xt1 Bc
+
+>>    aincb: [(xt1_1:in tau),(xtina1_1:that
+>>         Ec(tau,xt1_1,Ac)) => (---:that Ec(tau,
+>>         xt1_1,Bc))]
+>>      {move 1}
+
+
+
+   declare xtinb1 that tau Ec xt1 Bc
+
+>>    xtinb1: that Ec(tau,xt1,Bc) {move 2}
+
+
+
+   postulate binca xt1 xtinb1 : that tau \
+      Ec xt1 Ac
+
+>>    binca: [(xt1_1:in tau),(xtinb1_1:that
+>>         Ec(tau,xt1_1,Bc)) => (---:that Ec(tau,
+>>         xt1_1,Ac))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Extc tau Ac Bc , aincb, binca : \
+   that (Pow tau) eqt Ac Bc
+
+>> Extc: [(tau_1:type),(Ac_1:in Pow(tau_1)),
+>>      (Bc_1:in Pow(tau_1)),(aincb_1:[(xt1_2:
+>>         in tau_1),(xtina1_2:that Ec(tau_1,xt1_2,
+>>         Ac_1)) => (---:that Ec(tau_1,xt1_2,
+>>         Bc_1))]),
+>>      (binca_1:[(xt1_3:in tau_1),(xtinb1_3:that
+>>         Ec(tau_1,xt1_3,Bc_1)) => (---:that
+>>         Ec(tau_1,xt1_3,Ac_1))])
+>>      => (---:that eqt(Pow(tau_1),Ac_1,Bc_1))]
+>>   {move 0}
+
+
+% arrow type postulateor
+
+
+postulate ==> tau sigma : type
+
+>> ==>: [(tau_1:type),(sigma_1:type) => (---:
+>>      type)]
+>>   {move 0}
+
+
+
+open
+
+   declare var in tau
+
+>>    var: in tau {move 2}
+
+
+
+   postulate lambdabody var : in sigma
+
+>>    lambdabody: [(var_1:in tau) => (---:in
+>>         sigma)]
+>>      {move 1}
+
+
+
+   close
+
+postulate Lambda tau sigma lambdabody : in \
+   tau ==> sigma
+
+>> Lambda: [(tau_1:type),(sigma_1:type),(lambdabody_1:
+>>      [(var_2:in tau_1) => (---:in sigma_1)])
+>>      => (---:in (tau_1 ==> sigma_1))]
+>>   {move 0}
+
+
+
+declare Fc in tau ==> sigma
+
+>> Fc: in (tau ==> sigma) {move 1}
+
+
+
+declare Gc in tau ==> sigma
+
+>> Gc: in (tau ==> sigma) {move 1}
+
+
+
+declare xt2 in tau
+
+>> xt2: in tau {move 1}
+
+
+
+postulate Applyc tau sigma Fc, xt2 : in sigma
+
+
+>> Applyc: [(tau_1:type),(sigma_1:type),(Fc_1:
+>>      in (tau_1 ==> sigma_1)),(xt2_1:in tau_1)
+>>      => (---:in sigma_1)]
+>>   {move 0}
+
+
+
+postulate Beta tau sigma lambdabody, xt2 \
+   : that sigma eqt Applyc tau sigma (Lambda \
+   tau sigma lambdabody) xt2 lambdabody xt2
+
+
+>> Beta: [(tau_1:type),(sigma_1:type),(lambdabody_1:
+>>      [(var_2:in tau_1) => (---:in sigma_1)]),
+>>      (xt2_1:in tau_1) => (---:that eqt(sigma_1,
+>>      Applyc(tau_1,sigma_1,Lambda(tau_1,sigma_1,
+>>      lambdabody_1),xt2_1),lambdabody_1(xt2_1)))]
+>>   {move 0}
+
+
+%  There remains extensionality for arrow types
+
+
+open
+
+   declare xt3 in tau
+
+>>    xt3: in tau {move 2}
+
+
+
+   postulate sameval xt3 : that sigma eqt \
+      (Applyc tau sigma Fc xt3) (Applyc tau \
+      sigma Gc xt3)
+
+>>    sameval: [(xt3_1:in tau) => (---:that
+>>         eqt(sigma,Applyc(tau,sigma,Fc,xt3_1),
+>>         Applyc(tau,sigma,Gc,xt3_1)))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Extfnc tau sigma Fc Gc sameval \
+   : that (tau ==> sigma) eqt Fc Gc
+
+>> Extfnc: [(tau_1:type),(sigma_1:type),(Fc_1:
+>>      in (tau_1 ==> sigma_1)),(Gc_1:in (tau_1
+>>      ==> sigma_1)),(sameval_1:[(xt3_2:in tau_1)
+>>         => (---:that eqt(sigma_1,Applyc(tau_1,
+>>         sigma_1,Fc_1,xt3_2),Applyc(tau_1,sigma_1,
+>>         Gc_1,xt3_2)))])
+>>      => (---:that eqt((tau_1 ==> sigma_1),Fc_1,
+>>      Gc_1))]
+>>   {move 0}
+
+
+% add dependent product and dependent function types, which 
+
+% allow internalization of abstraction sorts of the Lestrade framework.
+
+% declarations for dependent types
+
+
+open
+
+   declare ys5 in tau
+
+>>    ys5: in tau {move 2}
+
+
+
+   postulate Rhofun ys5 : type
+
+>>    Rhofun: [(ys5_1:in tau) => (---:type)]
+>>      {move 1}
+
+
+
+   close
+% dependent product postulateion
+
+
+postulate Xx tau Rhofun : type
+
+>> Xx: [(tau_1:type),(Rhofun_1:[(ys5_2:in tau_1)
+>>         => (---:type)])
+>>      => (---:type)]
+>>   {move 0}
+
+
+
+declare xt5 in tau
+
+>> xt5: in tau {move 1}
+
+
+
+declare ys5 in Rhofun xt5
+
+>> ys5: in Rhofun(xt5) {move 1}
+
+
+
+postulate paird tau Rhofun, xt5 ys5 : in \
+   tau Xx Rhofun
+
+>> paird: [(tau_1:type),(Rhofun_1:[(ys5_2:in
+>>         tau_1) => (---:type)]),
+>>      (xt5_1:in tau_1),(ys5_1:in Rhofun_1(xt5_1))
+>>      => (---:in (tau_1 Xx Rhofun_1))]
+>>   {move 0}
+
+
+
+declare zp5 in tau Xx Rhofun
+
+>> zp5: in (tau Xx Rhofun) {move 1}
+
+
+
+postulate Pi1 tau Rhofun, zp5 : in tau
+
+>> Pi1: [(tau_1:type),(Rhofun_1:[(ys5_2:in tau_1)
+>>         => (---:type)]),
+>>      (zp5_1:in (tau_1 Xx Rhofun_1)) => (---:
+>>      in tau_1)]
+>>   {move 0}
+
+
+
+postulate Pi2 tau Rhofun, zp5 : in Rhofun \
+   (Pi1 tau Rhofun, zp5)
+
+>> Pi2: [(tau_1:type),(Rhofun_1:[(ys5_2:in tau_1)
+>>         => (---:type)]),
+>>      (zp5_1:in (tau_1 Xx Rhofun_1)) => (---:
+>>      in Rhofun_1(Pi1(tau_1,Rhofun_1,zp5_1)))]
+>>   {move 0}
+
+
+
+postulate Xxexact tau Rhofun, zp5 : that \
+   (tau Xx Rhofun) eqt zp5, paird tau Rhofun, \
+   (Pi1 tau Rhofun, zp5) (Pi2 tau Rhofun, zp5)
+
+
+>> Xxexact: [(tau_1:type),(Rhofun_1:[(ys5_2:
+>>         in tau_1) => (---:type)]),
+>>      (zp5_1:in (tau_1 Xx Rhofun_1)) => (---:
+>>      that eqt((tau_1 Xx Rhofun_1),zp5_1,paird(tau_1,
+>>      Rhofun_1,Pi1(tau_1,Rhofun_1,zp5_1),Pi2(tau_1,
+>>      Rhofun_1,zp5_1))))]
+>>   {move 0}
+
+
+% dependent function type postulateor
+
+
+postulate ==>> tau Rhofun : type
+
+>> ==>>: [(tau_1:type),(Rhofun_1:[(ys5_2:in
+>>         tau_1) => (---:type)])
+>>      => (---:type)]
+>>   {move 0}
+
+
+
+open
+
+   declare var in tau
+
+>>    var: in tau {move 2}
+
+
+
+   postulate lambdabodyd var : in Rhofun \
+      var
+
+>>    lambdabodyd: [(var_1:in tau) => (---:in
+>>         Rhofun(var_1))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Lambdad tau Rhofun, lambdabodyd \
+   : in tau ==>> Rhofun
+
+>> Lambdad: [(tau_1:type),(Rhofun_1:[(ys5_2:
+>>         in tau_1) => (---:type)]),
+>>      (lambdabodyd_1:[(var_3:in tau_1) => (---:
+>>         in Rhofun_1(var_3))])
+>>      => (---:in (tau_1 ==>> Rhofun_1))]
+>>   {move 0}
+
+
+
+declare Fd in tau ==>> Rhofun
+
+>> Fd: in (tau ==>> Rhofun) {move 1}
+
+
+
+declare Gd in tau ==>> Rhofun
+
+>> Gd: in (tau ==>> Rhofun) {move 1}
+
+
+
+declare xt6 in tau
+
+>> xt6: in tau {move 1}
+
+
+
+postulate Applyd tau Rhofun, Fd, xt6 : in \
+   Rhofun xt6
+
+>> Applyd: [(tau_1:type),(Rhofun_1:[(ys5_2:in
+>>         tau_1) => (---:type)]),
+>>      (Fd_1:in (tau_1 ==>> Rhofun_1)),(xt6_1:
+>>      in tau_1) => (---:in Rhofun_1(xt6_1))]
+>>   {move 0}
+
+
+
+postulate Betad tau Rhofun, lambdabodyd, \
+   xt6 : that (Rhofun xt6) eqt Applyd tau Rhofun, \
+   (Lambdad tau Rhofun, lambdabodyd) xt6 lambdabodyd \
+   xt6
+
+>> Betad: [(tau_1:type),(Rhofun_1:[(ys5_2:in
+>>         tau_1) => (---:type)]),
+>>      (lambdabodyd_1:[(var_3:in tau_1) => (---:
+>>         in Rhofun_1(var_3))]),
+>>      (xt6_1:in tau_1) => (---:that eqt(Rhofun_1(xt6_1),
+>>      Applyd(tau_1,Rhofun_1,Lambdad(tau_1,Rhofun_1,
+>>      lambdabodyd_1),xt6_1),lambdabodyd_1(xt6_1)))]
+>>   {move 0}
+
+
+%  There remains extensionality for arrow types
+
+
+open
+
+   declare xt7 in tau
+
+>>    xt7: in tau {move 2}
+
+
+
+   postulate samevald xt7 : that (Rhofun \
+      xt7) eqt (Applyd tau Rhofun, Fd xt7) \
+      (Applyd      tau Rhofun, Gd xt7)
+
+>>    samevald: [(xt7_1:in tau) => (---:that
+>>         eqt(Rhofun(xt7_1),Applyd(tau,Rhofun,
+>>         Fd,xt7_1),Applyd(tau,Rhofun,Gd,xt7_1)))]
+>>      {move 1}
+
+
+
+   close
+
+postulate Extfnd tau Rhofun, Fd Gd samevald \
+   : that (tau ==>> Rhofun) eqt Fd Gd
+
+>> Extfnd: [(tau_1:type),(Rhofun_1:[(ys5_2:in
+>>         tau_1) => (---:type)]),
+>>      (Fd_1:in (tau_1 ==>> Rhofun_1)),(Gd_1:
+>>      in (tau_1 ==>> Rhofun_1)),(samevald_1:
+>>      [(xt7_3:in tau_1) => (---:that eqt(Rhofun_1(xt7_3),
+>>         Applyd(tau_1,Rhofun_1,Fd_1,xt7_3),Applyd(tau_1,
+>>         Rhofun_1,Gd_1,xt7_3)))])
+>>      => (---:that eqt((tau_1 ==>> Rhofun_1),
+>>      Fd_1,Gd_1))]
+>>   {move 0}
+
+
+%% further remarks about internalization:  Pow One
+%% implements prop.  Then all the propositional operations
+%% correspond to type postulateors just given, with all types
+% that p actually being identified with either One or Empty.
+
+
+postulate Empty : type
+
+>> Empty: type {move 0}
+
+
+
+declare xnot in Empty
+
+>> xnot: in Empty {move 1}
+
+
+
+postulate notthere xnot : that ??
+
+>> notthere: [(xnot_1:in Empty) => (---:that
+>>      ??)]
+>>   {move 0}
+
+
+%% this means that the entire logical framework can 
+%% be internalized, at least in its classical version:
+%% the full type system of abstraction sorts
+% can be studied internally to Lestrade.
+
+
+>> Inspector Lestrade says:  Done reading scratch to summer2016book:
+>>  type lines or type quit to exit interface
+
+quit
+
+

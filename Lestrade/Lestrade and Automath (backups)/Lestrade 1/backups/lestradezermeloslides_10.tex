@@ -1,0 +1,400 @@
+\documentclass{slides}
+
+\title{Implementing Zermelo's axiomatics and proof of the well-ordering theorem in Lestrade, a dependent types theorem prover}
+
+\author{M. Randall Holmes}
+
+\date{Boise State Math Dept graduate seminar, 9/27/2019}
+
+\begin{document}
+
+\begin{slide}
+
+\maketitle
+
+\end{slide}
+
+\begin{slide}
+
+{\Large Abstract}
+
+Over a few weeks in the summer, we implemented much of the content of Zermelo's important set theory papers of 1908, including the original axiomatization of Zermelo set theory, the precursor of our current set theory ZFC, and Zermelo's proof of the Well-Ordering Theorem, under our dependent type theory based theorem proving system Lestrade.  We will give an overview of this work.
+
+
+\end{slide}
+
+\begin{slide}
+
+{\Large Zermelo's 1908 papers}
+
+The papers appearing in 1908 were a second (?) version of Zermelo's proof of the Well-Ordering theorem (if one has the axiom of choice, then every set is well-ordered) and a paper describing the axioms of something close to what we now call ``Zermelo set theory", which with the addition of axioms of Replacement and Choice (around 1920) became the currently dominant system of set theory ZFC.
+
+It is a reasonable premise that the exact purpose of Zermelo's axiomatics paper was to provide a firm foundation for his proof of the Well-Ordering Theorem.  The paper does, however, include further investigations of the notion of transfinite cardinal number.
+
+\end{slide}
+
+\begin{slide}
+
+Lestrade is a theorem proving system which I have been developing for a number of years, belonging to a class of such systems based on dependent type theory.  We will discuss what this means.
+
+The motivations of Lestrade are actually ultimately in philosophy of mathematics, and I will indulge myself by briefly describing these.  But it turns out to be recognizably a member of a known family of theorem proving systems, the descendants of the system Automath developed by N de Bruijn in the 1970's.
+
+\end{slide}
+
+\begin{slide}
+
+{\Large First philosophical point:  the nature of functions}
+
+We learn in university math classes at a certain point that a function is ``a set of ordered pairs in which no two elements have the same first projection".  But we all know that that is not what we learned a function was at first.  A function is initially presented to us as a rule or procedure for getting an output given an input.  In the most basic case, a function is simply an expression with holes in it into which we are to insert the input to replace an unknown:  $$f(x) = x^2 + x +1$$ can be taken as an archetypal example.
+
+\end{slide}
+
+\begin{slide}
+
+This bears on whether we think a function is an infinite object (infinity being an important consideration in philosophy of mathematics).  The ordered pair definition of a function
+is appealing if one has no qualms about actual infinities:  we simply tabulate the values of the function in every individual case.
+
+A function understood as a machine which reacts to any given input to produce an output is compatible with the notion of a function as a finite object (with a potential infinity of possible outputs determined by a potential infinity of possible inputs).  The expression $x^2+x+1$ looks finite!
+
+\end{slide}
+
+\begin{slide}
+
+{\Large Second philosophical point:  proofs as mathematical objects}
+
+Lestrade was further intended to implement a certain view of proofs as being themselves mathematical objects.  This view is often called the ``Curry-Howard isomorphism".
+
+Under this view, each proposition $A$ is associated with a type {\tt that} $A$ (this is Lestrade notation, not standard) inhabited by proofs of or evidence for $A$.
+
+Logical operations then correspond to operations on types (sometimes very familiar operations on types).
+
+
+\end{slide}
+
+\begin{slide}
+
+{\Large Conjunction (``and")}
+
+We have a proof of $A \wedge B$ iff we have a proof of $A$ and a proof of $B$.
+
+This can be handled by saying that a proof of $A \wedge B$ is a pair $(a,b)$ where $a$ is a proof of $A$ and $b$ is a proof of $B$, whence the
+type {\tt that} $A \wedge B$ can simply be identified with ${\tt that}\, A \times {\tt that}\, B$.
+
+The logical operation of conjunction corresponds to the type theory or set theory operation of cartesian product.
+\end{slide}
+
+\begin{slide}
+
+{\Large Implication}
+
+A typical way of proving $A \rightarrow B$ is to show that if we assume $A$, $B$ must follow.
+
+That is, if we are presented with $a$ of type {\tt that} $A$, we should have $b$ of type {\tt that} $B$.  So we identify proofs of $A \rightarrow B$ with functions
+from {\tt that} $A$ to {\tt that} $B$ \footnote{This is not exactly what we do in Lestrade, but it is very close.}:  the type {\tt that} $A \rightarrow B$ is implemented as ${\tt that}\, B^{{\tt that}\, A}$, and the logical operation of implication corresponds to the type theory or set theory construction of spaces of functions.
+
+For example, for any $A$, the identity function which takes any $a$ in ${\tt that}\,A$ to $a$ itself is a proof of $A \rightarrow A$.
+
+\end{slide}
+
+\begin{slide}
+
+{\Large Universal quantifier}
+
+A typical way of proving $(\forall x \in D:P(x))$ is to assume that $t$ is an arbitrary element of $D$ and show how to get a proof of $P(t)$.
+
+This suggests the implementation of a proof of $(\forall x \in D:P(x))$ as a function taking each $d \in D$ to a proof of $P(d)$.
+
+In set theoretical terms, we are identifying $${\tt that}\,(\forall x \in D:P(x))$$ with $\Pi_{d \in D} ({\tt that}\,P(d))$, the infinite cartesian product of the sets ${\tt that}\, P(d)$ indexed by the domain $D$.
+
+In type theory, the implementation would be the same:  this would be a theory with dependent types, as the type ${\tt that}\,P(d)$ of the output for input $d$ depends on the value of $d$.
+
+\end{slide}
+
+\begin{slide}
+
+We describe how this looks in Lestrade.
+
+\begin{verbatim}Lestrade execution:
+
+
+declare p prop
+
+>> p: prop {move 1}
+
+
+
+declare q prop
+
+>> q: prop {move 1}
+
+
+
+postulate & p q prop
+
+>> &: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+\end{verbatim}
+
+\end{slide}
+
+\begin{slide}
+
+In a Lestrade environment, the {\tt declare} command introduces parameters of given types to be supplied to postulated operations.  {\tt postulate} introduces objects and constructions which we actually postulate.
+
+So the text here declares an operation (intended, it appears, to be conjunction) which takes two propositions as input and outputs a proposition.  {\tt prop}, the type of propositions, is a primitive of Lestrade.
+
+\end{slide}
+
+\begin{slide}
+
+\begin{verbatim}Lestrade execution:
+
+
+declare pp that p
+
+>> pp: that p {move 1}
+
+
+
+declare qq that q
+
+>> qq: that q {move 1}
+
+
+
+declare rr that p & q
+
+>> rr: that (p & q) {move 1}
+
+
+\end{verbatim}
+
+\end{slide}
+
+\begin{slide}
+
+Here we declare some parameters which will be used as input to constructions postulated on the next slide.  Note that for any proposition $p$, {\tt that} $p$ is a type (intended to be inhabited by evidence that $p$ is true, which may be understood as proofs of $p$ but need not be so understood).
+
+Note that Lestrade does understand use of \& as an infix.
+
+\end{slide}
+
+\begin{slide}
+
+{\small \begin{verbatim}Lestrade execution:
+
+postulate Conj pp qq that p & q
+
+>> Conj: [(.p_1:prop),(pp_1:that .p_1),(.q_1:
+>>      prop),(qq_1:that .q_1) => (---:that (.p_1
+>>      & .q_1))]
+>>   {move 0}
+
+
+
+postulate Simp1 rr that p
+
+>> Simp1: [(.p_1:prop),(.q_1:prop),(rr_1:that
+>>      (.p_1 & .q_1)) => (---:that .p_1)]
+>>   {move 0}
+
+
+
+postulate Simp2 rr that p
+
+>> Simp2: [(.p_1:prop),(.q_1:prop),(rr_1:that
+>>      (.p_1 & .q_1)) => (---:that .p_1)]
+>>   {move 0}
+
+
+\end{verbatim}}
+
+\end{slide}
+
+\begin{slide}
+
+On this slide we postulate the rules of inference for the conjunction connective, the familiar rules
+
+$$\begin{array}{cc}
+A & \\
+
+B & \\ \hline
+
+A \wedge B& \mathrm{by \,  conjunction}\end{array}$$
+
+$$\begin{array}{cc}
+
+A \wedge B & \\ \hline
+
+A & \mathrm{by \, simplification(1)}\end{array}$$
+
+$$\begin{array}{cc}
+
+A \wedge B & \\ \hline
+
+B & \mathrm{by \, simplification(2)}\end{array}$$
+
+\end{slide}
+
+\begin{slide}
+
+{\Large Implicit arguments}
+
+If one looks carefully at the declarations of the rules of inference for conjunction, one sees that their explicit arguments are not the only arguments they have:
+the rule {\tt Conj} of conjunction actually has four parameters, $p$, $q$, $pp$, and $qq$.  But $p$ and $q$ can be left implicit because they can be deduced from the types of the explicitly given parameters.
+
+Implementing this was a fair amount of work but made the system much more practical.
+
+\end{slide}
+
+\begin{slide}
+
+\begin{verbatim}Lestrade execution:
+
+
+postulate -> p q prop
+
+>> ->: [(p_1:prop),(q_1:prop) => (---:prop)]
+>>   {move 0}
+
+
+
+declare ss that p -> q
+
+>> ss: that (p -> q) {move 1}
+
+
+
+postulate Mp pp ss that q
+
+>> Mp: [(.p_1:prop),(pp_1:that .p_1),(.q_1:prop),
+>>      (ss_1:that (.p_1 -> .q_1)) => (---:that
+>>      .q_1)]
+>>   {move 0}
+
+
+\end{verbatim}
+
+\end{slide}
+
+\begin{slide}
+
+Here we declare the implication connective and the rule of modus ponens.  The parameters declared earlier are still available to us.
+
+\end{slide}
+
+\begin{slide}
+
+\begin{verbatim}Lestrade execution:
+
+
+declare ded [pp => that q] \
+   
+
+
+
+>> ded: [(pp_1:that p) => (---:that q)]
+>>   {move 1}
+
+
+
+postulate Ded ded that p -> q
+
+>> Ded: [(.p_1:prop),(.q_1:prop),(ded_1:[(pp_2:
+>>         that .p_1) => (---:that .q_1)])
+>>      => (---:that (.p_1 -> .q_1))]
+>>   {move 0}
+
+
+\end{verbatim}
+\end{slide}
+
+\begin{slide}
+
+On this slide we declare our primitive technique of proving implications, which is usually called the deduction theorem.
+
+We declare the parameter {\tt ded} as a construction taking a proof of $p$ as input and having output a proof of $q$.  {\tt [pp => that q} is a notation for a construction type.  If we have such a construction,
+we should believe $p \rightarrow q$, and that is what we postulate via the declaration of {\tt Ded}.
+
+Notice that we do not actually identify the proof of $p \rightarrow q$ with the construction (function) witnessing it.  There are reasons for this.
+
+\end{slide}
+
+\begin{slide}
+{\small
+\begin{verbatim}Lestrade execution:
+
+
+declare D type
+
+>> D: type {move 1}
+
+
+
+declare d in D
+
+>> d: in D {move 1}
+
+
+
+declare pred [d => prop] \
+   
+
+
+
+>> pred: [(d_1:in D) => (---:prop)]
+>>   {move 1}
+
+
+\end{verbatim}
+}
+
+\end{slide}
+
+\begin{slide}
+
+\begin{verbatim}Lestrade execution:
+
+
+postulate Forall pred prop
+
+>> Forall: [(.D_1:type),(pred_1:[(d_2:in .D_1)
+>>         => (---:prop)])
+>>      => (---:prop)]
+>>   {move 0}
+
+
+
+declare univev that Forall pred
+
+>> univev: that Forall(pred) {move 1}
+
+
+
+declare d2 in D
+
+>> d2: in D {move 1}
+
+
+
+postulate Ui univev d2 that pred d2
+
+>> Ui: [(.D_1:type),(.pred_1:[(d_2:in .D_1)
+>>         => (---:prop)]),
+>>      (univev_1:that Forall(.pred_1)),(d2_1:
+>>      in .D_1) => (---:that .pred_1(d2_1))]
+>>   {move 0}
+
+
+\end{verbatim}
+
+\end{slide}
+
+
+
+
+\end{document}
+
+quit
