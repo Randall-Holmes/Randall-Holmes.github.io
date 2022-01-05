@@ -13,7 +13,7 @@
 
 
 
-\date{4/13/2020 -- This is a beta version of the second release, without rewriting.  It runs the entire  Zermelo implementation. It also ran the Automath translations without any changes.}
+\date{1/5/2022 -- This is a beta version of the second release, without rewriting.  It runs the entire  Zermelo implementation. It also ran the Automath translations without any changes.  This version is adaptable to PolyML.}
 
 
 \begin{document}
@@ -873,6 +873,46 @@ Now we begin the actual code of the Type Inspector with some utilities.
 
 *)
 
+(* moscow ml preamble *)
+
+fun desome x = x;
+
+(* BEGIN for PolyML decomment this; 
+for Moscow ML 2.10 in addition comment out first line
+
+open PolyML
+
+fun desome (SOME x) = x |
+
+desome NONE = "";
+
+END *)
+
+fun Inputline x = desome(TextIO.inputLine x);
+
+(* end moscow ml preamble *)
+
+(* smlnj premable 
+
+fun desome x = x;
+
+fun makestring s = Int.toString s;
+
+(* BEGIN for PolyML decomment this; 
+for Moscow ML 2.10 in addition comment out first line
+
+open PolyML *)
+
+fun desome (SOME x) = x |
+
+desome NONE = "";
+
+(* END *)
+
+fun Inputline x = desome(TextIO.inputLine x);
+
+ end smlnj preamble *)
+
 (* utility code *)
 
 open TextIO;
@@ -915,7 +955,7 @@ fun say2D s = if (!DIAGNOSTIC) then say2 s else (); (* diagnostic messages *)
 
 fun versiondate() = say3
 ("Welcome to the Lestrade Type Inspector\n"^
-"version 2.0, release of 4/13/2020\n4:30  pm Boise time.")
+"version 2.0, release of 1/5/20222\n4:30  pm Boise time, for PolyML")
 
 fun explain b s = if b then b else (say s;b);
 
@@ -1198,7 +1238,7 @@ fun Getline() = let val TEXT = getline() in
 
 output(stdOut,displaytokens (Tokenize TEXT)) end;
 
-fun getline2() = (LINESOFAR:=inputLine(!READFILE);
+fun getline2() = (LINESOFAR:=Inputline(!READFILE);
     if (!LINESOFAR) <> "\n"
 	andalso Hd #"\n" (despace(Tl(rev(explode (!LINESOFAR)))))= #"\\"
 	then (output(stdOut,">> ");flushOut(stdOut);(!LINESOFAR)^(getline2()))
@@ -4682,7 +4722,7 @@ end end end
  
 
 matchfunctionst v (Lambda((s,(i,m,n,b,TT))::B,t,T))
-   (Lambda((s2,(i,m2,n2,b2,TT2))::B2,t2,T2)) =
+   (Lambda((s2,(i2,m2,n2,b2,TT2))::B2,t2,T2)) =
    
    if find Ferror v (!LOCALMATCHES) <> Ferror 
 then (!LOCALMATCHES) else
@@ -4701,7 +4741,7 @@ if islambda2 TT then
 
 matchfunctionst v (subsfunction0 (n+1) s m n b TT 
 (Lambda(B,t,T)))
-(Lambda((s2,(i,m2,n2,b2,TT2))::B2,t2,T2))
+(Lambda((s2,(i2,m2,n2,b2,TT2))::B2,t2,T2))
 
 else if islambda2 TT2 then
 

@@ -1,20 +1,19 @@
 
-  (*
+
 
 \documentclass[12pt]{article}
 
 \usepackage{amssymb}
 
 
-\title{My Own Private Automath:  the Lestrade dependent typed system and the specification and code for its implementation, the Lestrade Type Inspector}
+\title{My Own Private Automath:  the Lestrade dependent typed system and the specification code for its implementation, the Lestrade Type Inspector}
 
 
 \author{M. Randall Holmes}
 
 
 
-\date{1/5/2022  installation of rewrites in progress \\
---- This is a beta version of the second release, without rewriting.  It runs the entire  Zermelo implementation. It also ran the Automath translations without any changes.  Adaptable for PolyML.}
+\date{1/5/2022 -- This is a beta version of the second release, without rewriting.  It runs the entire  Zermelo implementation. It also ran the Automath translations without any changes.  This version is adapted to PolyML.}
 
 
 \begin{document}
@@ -28,75 +27,6 @@
 \subsection{Version Notes}
 
 \begin{description}
-
-\item[10/28/2021:]  Another change to consider.  Can we have parameters which are object sorts?  Can we have
-two species of parameters, one for object sorts, one for sorts in general?
-
-\item[5/25/2021:]  I have now installed rewrites as an object type, parsable and displayable.  Next I have to actually make them do something.
-
-The additional object type construction of rewrite rules present, and all the usual effects should work.  What is needed in addition is the application of rewrites -- in which functions
-do we expect these to operate?  We expect rewrite rules to be actively applied in the output of definition commands (this is an implementation of computation).
-In addition, we expect to be able to use rewriting to establish equality of types, to strengthen the type system.
-
-\item[5/21/2020:]  I seem to have settled on an approach.  For objects $t$, $u$ of the same type, there is an object type ${\tt Rewrite}(t,u)$:  an object of this
-type is a rewrite rule rewriting $t$ to $u$.  A general rewrite rule is a function $[x_1 \ldots x_n \Rightarrow {\tt Rewrite}(t(x_1\ldots x_n),u(x_1\ldots x_n))]$, representing
-a rule rewriting terms matching $t(x_1\ldots x_n)$ to the corresponding terms $u(x_1\ldots x_n)$.
-
-\item[5/14/2020:]  Some revisions made already before branching;  correct treatment of errors in format doesn't have any effect on performance
-but implements what is clearly actually intended.  Minor edits to text.
-
-This branch is devoted to adding rewriting.  My intention is not necessarily to duplicate the rewrite feature of the first implementation, though I'm open to it.
-
-I see three possible approaches:
-
-1.  implement something like the approach in the first version, where rewrite rules are bound to functions.  I would like to make sure that dependences
-are managed correctly so that environments with rewrites can be closed while preserving the results proved and objects declared.  There are very clever
-ideas realized in the first implementation about this to be cloned.
-
-2.  implement something just like the Watson rewrite language.  There is considerable charm to this idea from a personal standpoint if it can be made to work.  It can
-be simulated under approach 1.
-
-3.  implement inductive types with definition expansion.  The idea is that one can keep declaring constructors in a declared type until one declares something involving
-functions with that type as domain.  Ths is theoretically safe and has the merit that computations will be terminating, but it does not give the same freedom of implementation
-of computations...or is there an argument against this?
-
-I have the idea that a rewrite is a peculiar sort of object, $t \mapsto u$ where $t$ and $u$ are terms of the same type $\tau$ (speaking here of approach 1 or 2;
-approach 3  has quite simple metaphysics).  A rewrite rule is a function with rewrite outputs.  Declaration of a rewrite rule (or a simple rewrite) then has side effects:
-if its left side is a pattern, the rewrite rule is bound to it (when multiple rewrite rules are bound to the same function, the most recently declared one is applied first).
-Computation of dependencies must consult the rewrite list
-
-There are important issues with patterns:  they have to exactly force the types of their inputs.
-
-Matching of a pattern to a term will exclude matching of its non-atomic subterms to terms that match patterns:  this cleverly enforces Curry-Howard.
-
-New idea which would implement something like 2:  this addresses the problem of dependencies of rewrites.  The idea is that a rewrite is an equality theorem appearing
-in the next move, which has to be supplied as an argument to a definition using it.   One then defines the behavior of the rewrite rule application operator (or possibly
-as in Watson a suite of rewrite rule application operators).  Rewrite rules can be introduced as variables or as let terms (based on actual proved theorems).  The fact
-that they must appear as arguments ensures that dependences are not lost.  Can recursively chained rewrites be achieved?
-
-New idea:  rewrites are arguments in a defintion (they might be let arguments).
-
-\item[4/15/2020:]  List updates which ought to be made but which are not high priority.
-
-\begin{enumerate}
-
-\item Figure out how to display functions in curried format where possible and as far as possible.  This might not be hard.  This goes with a fugitive thought that pairs
-might be treated as a native Lestrade sort -- but a function sort, presented in curried form.
-
-
-
-\item Set up the close command so that it deletes non-default extensions of default moves when they are closed.
-
-\item It might be a good idea to be alerted to changes in order of arguments.  These have caused interesting confusions in porting files and recently in development of new material.
-
-\item Is there a way to reduce the suppression of let terms in arguments?
-
-\item The import command is a nice feature.  Additionally, it would be good to have the ability to save theory states to files which can be rebuilt directly without checking.  Backups as in the first version to prevent accidental destruction of scripts is a good thing.
-
-\item In the last few days I have updated the big code examples to the new version, and they do seem to work.   I have inserted new text in foundationsintroport.tex which illustrates
-how type checking which relies on rewriting can be implemented without rewriting, at least in principle.
-
-\end{enumerate}
 
 \item[4/14/2020:]  Improved Showmoves command.  Refined save command so that when it overwrites a saved move
 it will eliminate extensions of that saved move.  These things are motivated by rewriting a Lestrade manual for the previous version to accord with this one.
@@ -236,7 +166,7 @@ from the previous argument by a comma if it is mixfix;  the previous version det
 
 \item[3/10/2020:] 
 
-Interesting innovation in pretty printing:  put breaks before \verb ({def}  and \verb ({let} .  This further suggests that we should not put the def into lambda terms appearing as arguments.
+Interesting innovation in pretty printing:  put breaks before \verb |({def}}|  and \verb|({let}|.  This further suggests that we should not put the def into lambda terms appearing as arguments.
 
 I found a subtle parser difference between the old version and the new which I think I will leave as is
 (and make corrections when it arises in files).  There is already a difference involving the need
@@ -313,14 +243,14 @@ We indicate our philosophical motivations, though these may be better explored i
 
 We are inclined to view functions as determined by expressions with holes in them (finite objects) rather than infinite tables of values.  This does not mean that we identify
 functions with pieces of text\footnote{For example, the identity conditions of functions are different from those of associated text:  renaming of bound variables illustrates this.}.  Looking at the status of the ``holes"  suggests that we should be friendly to the idea of variables as representing ``arbitrary entities" [though this is known to be perilous].  In a sense to be made concrete in the description of the system, we view a variable or parameter of a definition as an object in a ``possible world" (the ``next move":  the ``worlds" are actually called ``moves" in Lestrade parlance).  The declaration of a function in Lestrade involves defining an expression for an entity in the ``next move" (an expression with the same tenuous metaphysical status
-as the parameters living in it); one then postulates a function implementing this, an entity in the ``last move", one step less tenuous:  the variables free in the original expression for the variable-dependent object declared  in the next move are bound in the expression for the function declared in the last move.  This may sound mysterious, but it is concretely implemented in the Lestrade declaration commands.  Our underlying philosophy is Aristotelean (we want to appeal to potential rather than actual infinities) but not constructivist.
+as the parameters living in it); one then postulates a function implementing this, an entity in the ``last move", one step less tenuous:  the variables free in the original expression for the variable-dependent object declared  in the next move are bound in the expression for the function declared in the last move.  This may sound mysterious, but it is concretely implemented in the Lestrade declaration commands.  Our underlying philosophy is Aristotelean:  we want to appeal to potential rather than actual infinities.
 
 We view proofs as a species of mathematical object.  This is implemented using the Curry-Howard isomorphism:  for example, a proof of the implication $p \rightarrow q$ is associated with a function from proofs of $p$ to proofs of $q$.  This means that each proposition has to have a correlated sort of proofs of (we prefer to say evidence for) that proposition.  This in turn commits us to type theory, and in fact dependent type theory (as we will see when we look at examples).
 
 It should be noted that the ingredients we have mentioned so far might imply that we have a constructive viewpoint.  In fact, we do not.  We are charmed by the apparent fact that classical
 Cantorian mathematics is perfectly well accommodated by the framework we develop.  Lestrade also implements a constructive viewpoint easily:  Lestrade has very few primitive notions, and the user has a great deal of freedom in setting up the basics of her logic.  It can be noted that the original Automath system, development of which was the context of one of the independent inventions of the Curry-Howard isomorphism, also was used primarily to implement theories with classical logic, though its descendant Coq now encourages a constructive approach.
 
-We also note that our major implementation project is an implementation of Zermelo's 1908 proof of the Well-Ordering Theorem from the Axiom of Choice, which can hardly be viewed as a constructive result!
+We also note that our major implementation project is an implementation of Zermelo's 1908 proof of the Well-Ordering Theorem from the Axiom of Choice, which can hardly be viewed a constructive result!
 
 Further, it appears that our philosophical prejudices strongly suggest a project of computer implementation of mathematics.  And this is what we proceed to carry out.
 
@@ -334,7 +264,7 @@ are best thought of as proper class functions\footnote{with the odd point that t
 The metaphysical primacy of objects over functions is also seen in our implementation of proofs as objects.  The proof of an implication $p \rightarrow q$ is not identified with
 the associated function from proofs of $p$ to proofs of $q$:  proofs are objects, not functions.  We provide a constructor sending functions witnessing an implication to proofs of the implication.  This can be seen in examples which will be presented.
 
-We describe the primitive system of object sorts\footnote{The implementation of rewriting under construction 5/21/2021 involves another flavor of object sort inhabited by rewrite rules.}. 
+We describe the primitive system of object sorts. 
 
 \begin{enumerate}
 
@@ -351,8 +281,8 @@ We describe the primitive system of object sorts\footnote{The implementation of 
 \end{enumerate}
 
 Each Lestrade function takes a fixed positive number of arguments.  The sort of each of its arguments is fixed by the sort of the function, in a way which may depend
-on earlier arguments.  The output of the function must be of an object sort fixed by the sort of the function and the sorts of arguments presented to it.  The fact that we require that function outputs be objects is related to
-our views on the metaphysical primacy of objects, and also encouraged by features of the Lestrade declaration environment.  It can be noted that functions supplied with incomplete
+on earlier arguments.  The output of the function must be of an object sort fixed by the sort of the function.  The fact that we require that function outputs be objects is related to
+our views on the metaphysical primacy of objects, and also encouraged by features of the Lestrade declaration environment.  It can be noted that functions supplied with short
 argument lists are read as functions (by a version of the well-known device of currying) and in this way a Lestrade function may be read as having function output in some contexts.
 
 In the context of this philosophical introduction, this might best be communicated by giving some examples.  A more formal description appears below in the comments on the code.
@@ -361,7 +291,7 @@ Logical conjunction is a function taking two arguments of type {\tt prop} to a p
 
 The rule of conjunction takes a proof $pp$ of $p$ and a proof $qq$ of $q$ to a proof of $p \wedge q$.    The type of this is 
 
-$$[(p:\verb prop ),(q:{\tt prop}),(pp: \verb that   \, p),(qq:{\tt that}\, q) \Rightarrow {\tt that}\, p \wedge q].$$
+$$[(p:\verb|prop|),(q:{\tt prop}),(pp: \verb|that|  \, p),(qq:{\tt that}\, q) \Rightarrow {\tt that}\, p \wedge q].$$
 
 One might think that the rule of conjunction has only two arguments, the proofs of the two components.  But it also needs to know what the two propositions are.  On the other hand, having to enter the first two arguments and display them seems excessive, since they can be inferred from the last two.  The intention is that Lestrade will type the rule of conjunction as shown but allow the suppression of the first two arguments in input and output (the feature of implicit argument inference).  This illustrates what is meant by the assertion that the
 sorts of arguments may depend on earlier arguments.
@@ -945,10 +875,10 @@ Now we begin the actual code of the Type Inspector with some utilities.
 
 (* moscow ml preamble *)
 
-fun desome x = x; 
+(* fun desome x = x; *)
 
 (* BEGIN for PolyML decomment this; 
-for Moscow ML 2.10 in addition comment out first line 
+for Moscow ML 2.10 in addition comment out first line *)
 
 open PolyML
 
@@ -956,7 +886,7 @@ fun desome (SOME x) = x |
 
 desome NONE = "";
 
- END *)
+(* END *)
 
 fun Inputline x = desome(TextIO.inputLine x);
 
@@ -1015,26 +945,6 @@ output(!LOGFILE,"\n"^s);
 (* output (!LOGFILE,"\n"); *) flushOut(!LOGFILE);
 (* input(stdIn); *)());
 
-(* fun say s = (output(stdOut,"\n"^s);flushOut(stdOut);
-output (stdOut,"\n\n(paused, type something to continue) >");
- flushOut(stdOut);
-output(!LOGFILE,"\n Inspector Lestrade says:  "^s);
-output (!LOGFILE,"\n\n(paused, type something to continue) >");
- flushOut(!LOGFILE);
-input(stdIn);());
-
-fun say2 s = (output(stdOut,"\n"^s);flushOut(stdOut);
-output (stdOut,"\n >>"); flushOut(stdOut);
-output(!LOGFILE,"\n"^s);flushOut(!LOGFILE);
-(* output (!LOGFILE,"\n >>"); *) flushOut(!LOGFILE);
-(* input(stdIn); *)());
-
-fun say3 s = (output(stdOut,"\n"^s);flushOut(stdOut);
-output (stdOut,"\n"); flushOut(stdOut);
-output(!LOGFILE,"\n"^s);flushOut(!LOGFILE);
-output (!LOGFILE,"\n"); flushOut(!LOGFILE);
-(* input(stdIn); *)()); *)
-
 val DIAGNOSTIC = ref false;
 
 fun diagnostic() = DIAGNOSTIC := not(!DIAGNOSTIC);
@@ -1045,7 +955,7 @@ fun say2D s = if (!DIAGNOSTIC) then say2 s else (); (* diagnostic messages *)
 
 fun versiondate() = say3
 ("Welcome to the Lestrade Type Inspector\n"^
-"version 2.0, release of 1/5/2022\n4  pm Boise time, for PolyML")
+"version 2.0, release of 1/5/20222\n4:30  pm Boise time, for PolyML")
 
 fun explain b s = if b then b else (say s;b);
 
@@ -1136,7 +1046,7 @@ We begin the discussion of Lestrade notation.  It should be noted that Lestrade'
 
 Tokens are open and close parentheses, open and close brackets, commas, colons,  and identifiers.
 
-If a double quote \verb|"| occurs in a line, the entire rest of the line is a token (dropping the quote).  This allows tokens of
+If a double quote \verb|"|  occurs in a line, the entire rest of the line is a token (dropping the quote).  This allows tokens of
 quite uncontrolled form to be supplied (for example, file names).  This could be changed to support quoted strings as tokens, probably a good thing.
 
 Identifiers come in three  flavors:  
@@ -1145,14 +1055,14 @@ Identifiers come in three  flavors:
 
 \item strings of digits (not zero-initial unless of length one;  this is true of all strings of digits in this definition) optionally followed by one or more single quotes;  
 
-\item strings of letters with the first optionally capitalized followed optionally by a string of digits followed optionally by one or more single quotation marks  \verb:':; 
+\item strings of letters with the first optionally capitalized followed optionally by a string of digits followed optionally by one or more single quotation marks  \verb|'|; 
 
 \item strings of special characters
-(any typewriter character which is not a letter, a token, a period, a single quotation mark, or an underscore \verb|_ |) followed optionally by a string of digits followed optionally by one or more single quotes.
+(any typewriter character which is not a letter, a token, a period, a single quotation mark, or an underscore \verb|_|) followed optionally by a string of digits followed optionally by one or more single quotes.
 
 \end{enumerate}
 
-Whitespace (made up of spaces and backslashes \verb|\| , and units composed of a backslash followed by zero or more spaces followed by a carriage return)  is only significant to the tokenizer where it separates identifiers which might otherwise run together.   A carriage return ends text to be tokenized unless it is preceded by a backslash followed optionally by additional whitespace.
+Whitespace (made up of spaces and backslashes \verb|\|, and units composed of a backslash followed by zero or more spaces followed by a carriage return)  is only significant to the tokenizer where it separates identifiers which might otherwise run together.   A carriage return ends text to be tokenized unless it is preceded by a backslash followed optionally by additional whitespace.
 
 Identifiers ending in single quotes are usually generated automatically by Lestrade, though users can declare them\footnote{In the previous implementation, identifiers with special characters were extended with dollar signs. Also note that at the moment one may use identifiers which are strings of single quotes, which turned out to be convenient while debugging the code.  It would be easy to forbid such identifiers but I haven't bothered.}.  When Lestrade needs to generate an identifier from an existing name for various special purposes, it will add enough single quotes  to get an identifier which is not declared yet.\footnote{For the moment, the only use for automatically generated identifiers is for matching variables in the implicit argument inference mechanism.  These can occasionally end up embedded in prover output as bound variables.}
 
@@ -1328,7 +1238,7 @@ fun Getline() = let val TEXT = getline() in
 
 output(stdOut,displaytokens (Tokenize TEXT)) end;
 
-fun getline2() = (LINESOFAR:=inputLine(!READFILE);
+fun getline2() = (LINESOFAR:=Inputline(!READFILE);
     if (!LINESOFAR) <> "\n"
 	andalso Hd #"\n" (despace(Tl(rev(explode (!LINESOFAR)))))= #"\\"
 	then (output(stdOut,">> ");flushOut(stdOut);(!LINESOFAR)^(getline2()))
@@ -1361,10 +1271,6 @@ Further food for thought: perhaps the error atoms should have an obligatory argu
 
 The {\tt Deferred} field is intended to support a feature in the original implementation which we have not added here, which allows declaration of a defined notion whose
 actual definition body is deferred, and which may be set automatically by matching.
-
-5/17/2021:  introducing the {\tt Rewrite} function type.  ${\tt Rewrite}(t,u)$ is an instruction to rewrite object terms matching $t$ to the corresponding object terms matching $u$.
-The only way in which a rewrite term is a subterm of another object term is as an argument driving rewrites.  Functions generating rewrites can be postulated.  It is wirth noting that
-all veriables taken from the next move in a rewrite object are actually bound.
 
 \begin{verbatim}
 
@@ -1406,17 +1312,6 @@ and Otype =
     IN of Object |
 
    THAT of Object |
-
-  Rewrite of (Object*Object)
-
-  (* Rewrite(t,u) is the type of a rule allowing
-rewriting of t to u.  Rewrite rules are functions
-with values of Rewrite types: 
-(Lx_1...x_n:Rewrite(t(x_1...x_n),u(x_1,...,x_n)))
-will rewrite terms matching t(x_1...x_n) to
-terms matching u(x_1,...,x_n) *)
-
-|
    
    Tdummy |
    
@@ -1431,8 +1326,6 @@ and Function =
 
   (* the second integer is binding context and the first is
   context of declaration *) |
-
-
 
    Lambda of ((((string*(int*int*int*bool*Function))) list)*Object*Otype) 
 
@@ -1477,8 +1370,6 @@ number of explicit arguments and the number of non-let arguments.  The number of
 to the parser.  This format information was initially recorded as a separate table used by the parser, but format is now deduced on the fly from
 identifier declarations.  The tables may be reintroduced later to enhance performance.
 
-Revised 5/14/2021 to get the error treatment of final implicit arguments to work as must have been intended.
-
 
 \begin{verbatim}
 
@@ -1497,8 +1388,7 @@ fun formattoarity1 nil = 0 |
 
 formattoarity1 [Implicit]= ~1 |
 
-formattoarity1 (Explicit::L) = let val A = formattoarity1 L 
-in if A = ~1 then ~1 else A+1 end |
+formattoarity1 (Explicit::L) = formattoarity1 L +1 |
 
 formattoarity1 (x::L) = formattoarity1 L;
 
@@ -1508,8 +1398,7 @@ formattoarity2 [Implicit]= ~1 |
 
 formattoarity2 (LetTerm::L) = formattoarity2 L |
 
-formattoarity2 (x::L) = let val A = formattoarity2 L in
-if A = ~1 then ~1 else A+ 1 end;
+formattoarity2 (x::L) = formattoarity2 L + 1;
 
 (*
 
@@ -1789,12 +1678,12 @@ breaks and indentation.  The degree of indentation is determined by the move we 
 the degree of nesting within brackets \verb|[]| at which we are processing.  Note the theme of identification of declaration environments (moves) with variable binding environments (lambda terms and function sorts).
 
 There are separate pretty printers for output and for command lines, since backslashes need to be inserted in command lines.
-The special prompt \verb >>>  is inserted by the pretty printer, and the log file reader uses the prompt to identify commands to be executed.\footnote{This has the effect that the file format for this version is quite different from that of the previous version;  but the previous version has a facility to export files in a format this version can read.}
+The special prompt \verb|>>>|  is inserted by the pretty printer, and the log file reader uses the prompt to identify commands to be executed.\footnote{This has the effect that the file format for this version is quite different from that of the previous version;  but the previous version has a facility to export files in a format this version can read.}
 
 The pretty printer is devious about the appearance of underscores in bound variables in output, and it takes special account of the behavior of parentheses,
 braces, brackets and commas when deciding whether to insert spaces.
 
-There are user commands to widen or narrow the text (increment or decrement the margin parameter).
+There are user commands to widen or narrrow the text (increment or decrement the margin parameter).
 
 \begin{verbatim}
 
@@ -1924,7 +1813,7 @@ prettyprint2 n (n*(slen INDENT)) (Tokenize s))))
 
 \section{Features of identifiers}
 
-The identifiers {\tt prop}, {\tt type}, {\tt obj}, {\tt in}, {\tt that}, {\tt =>}, {\tt ---}, {\tt +++}, {\tt >>>}, {\tt begin}, {\tt end}, {\tt -->} are reserved.  We refer to non-reserved identifiers as {\em names}.  It is worth noting that it does not seem necessary to reserve the names of Lestrade commands, though this may eventually seem advisable.
+The identifiers {\tt prop}, {\tt type}, {\tt obj}, {\tt in}, {\tt that}, {\tt =>}, {\tt ---}, {\tt +++}, {\tt >>>}, {\tt begin}, {\tt end} are reserved.  We refer to non-reserved identifiers as {\em names}.  It is worth noting that it does not seem necessary to reserve the names of Lestrade commands, though this may eventually seem advisable.
 
 Each name has some limited information about its arguments which is supplied independently of full type declarations.  The base information is
 a format list for its arguments, identifying them as explicit, implicit and let terms.  From this, two different flavors of arity can be computed.  For the parser,
@@ -1940,8 +1829,6 @@ in the next move on which a term depends, to catch errors in the innards of a te
 
 The implicit argument list construction reads through the next move and produces a list, in the order of appearance in the next move (the order of the explicit arguments may automatically be changed) including the values which appear as dependencies of explicit arguments, the explicit arguments themselves, and defined values which appear as dependencies of the output.  Variable implicit arguments must be dependencies of an explicit argument.  Let terms can be dependencies of the output.
 
-5/18/2021 adding new reserved symbol {\tt -->} used in the representation of rewrites.
-
 
 \begin{verbatim}
 
@@ -1951,13 +1838,10 @@ The implicit argument list construction reads through the next move and produces
 
 fun isreserved s = 
 find0 s 
-["prop", "type","obj", "in", "that","=>",
-"---", "+++",">>>","begin","end","-->"];		
+["prop", "type","obj", "in", "that","=>","---", "+++",">>>","begin","end"];		
 
 
      (* development of dependencies on free variables *)
-
-
 
 fun objectdeplist (Oatom(s,m,n,b)) =
 
@@ -2000,14 +1884,6 @@ and typedeplist (THAT p) = objectdeplist p |
 
 typedeplist (IN tau) = objectdeplist tau |
 
-typedeplist(Rewrite(t,u)) =
-
-merge0(objectdeplist t)
-(objectdeplist u)
-
-
-|
-
 typedeplist x = nil
 
 and functiondeplist (Lambda(nil,t,T)) =
@@ -2049,9 +1925,6 @@ and typeerrorsfound Terror = true |
 typeerrorsfound (THAT p) = objecterrorsfound p |
 
 typeerrorsfound (IN tau) = objecterrorsfound tau |
-
-typeerrorsfound (Rewrite(t,u)) = 
-objecterrorsfound t orelse objecterrorsfound u |
 
 typeerrorsfound x = false 
 
@@ -2104,10 +1977,6 @@ and typeoccurrences s m n (THAT p) = objectoccurrences s m n p |
 
 typeoccurrences s m n (IN p) = objectoccurrences s m n p |
 
-typeoccurrences s m n (Rewrite(t,u)) =
-(objectoccurrences s m n t) + 
-(objectoccurrences s m n u) |
-
 typeoccurrences s m n x = 0;
 
 fun  maxdepthobject (Oatom(s,m,n,b)) = n |
@@ -2122,9 +1991,6 @@ maxdepthobject x = 0
 and  maxdepthtype (THAT p) = maxdepthobject p |
 
 maxdepthtype (IN p) = maxdepthobject p | 
-
-maxdepthtype (Rewrite(t,u)) =
-max(maxdepthobject t,maxdepthobject u) |
 
 maxdepthtype x = 0 
 
@@ -2185,14 +2051,14 @@ implicitarglist x = (say "implicitarglist failure line 1905";Ferror);
 is followed by a comma and each non-initial name of arity greater than one  is preceded by a comma, and in which no comma is followed by another comma.  Additional commas
 between names are allowed.
 
-\item [A closed argument list] is an open parenthesis \verb|(| followed by an open argument list followed by a close parenthesis \verb|)|.
+\item [A closed argument list] is an open parenthesis \verb|(|  followed by an open argument list followed by a close parenthesis \verb|)|.
 
 \item [An open term list]  is a sequence of function terms and commas  in which each non-final name of positive arity serving as a function term in the sequence
 is followed by a comma and each name which is of arity greater than one  and initial in one of the non-initial function terms in the sequence  is preceded by a comma, and in which no comma is followed by another comma.  Additional commas between function terms are allowed.
 
-The final term of an open term list is not a mixfix term unless it is followed by a non-identifier or end of text.
+The final term of an open argument list is not a mixfix term unless it is followed by a non-identifier or end of text.
 
-\item [A closed term list] is an open parenthesis \verb|(| followed by an open term list followed by a close parenthesis \verb|)|.
+\item [A closed term list] is an open parenthesis \verb|(|  followed by an open term list followed by a close parenthesis \verb|)| .
 
 \item [The length of an open or closed term list] is the number of function terms in it (commas are not counted).
 
@@ -2202,11 +2068,11 @@ The final term of an open term list is not a mixfix term unless it is followed b
 
 \item[name:]   a name of arity 0 
 
-\item[applicative:]   or a name of positive arity followed by a closed term list of length equal to its arity, or by an open term list of length equal to its arity whose first token is not a open parenthesis \verb|(|. 
+\item[applicative:]   or a name of positive arity followed by a closed term list of length equal to its arity, or by an open term list of length equal to its arity whose first token is not a open parenthesis \verb|(|  . 
 
 The meaning of an applicative term depends only on the list of function terms appearing in its term list, not on whether it is open or closed.
 
-\item[parenthesized:]   or an open parenthesis \verb|(|  followed by an object term followed by a close parenthesis \verb|)|, 
+\item[parenthesized:]   or an open parenthesis \verb|(|  followed by an object term followed by a close parenthesis \verb|)| , 
 
 The meaning of a parenthesized term is the same as the meaning of the term enclosed in the parentheses.
 
@@ -2214,7 +2080,7 @@ The meaning of a parenthesized term is the same as the meaning of the term enclo
 
 (Implicit in this description is that all names when used as mixfixes are of the same precedence and group to the rignt.)
 
-The meaning of a mixfix term is the same as the meaning of the applicative term beginning with the name used as the mixfix, followed by \verb ( , followed by the initial object term, followed by a comma, followed by the final open term list, followed by \verb ) .  The parentheses and comma are likely not be be needed here, but in certain cases they would be necessary (if the intial open term were parenthesized, or if the final open term list began with a name of arity greater than one).
+The meaning of a mixfix term is the same as the meaning of the applicative term beginning with the name used as the mixfix, followed by \verb|(| , followed by the initial object term, followed by a comma, followed by the final open term list, followed by \verb|)| .  The parentheses and comma are likely not be be needed here, but in certain cases they would be necessary (if the intial open term were parenthesized, or if the final open term list began with a name of arity greater than one).
 
 \end{description}
 
@@ -2229,7 +2095,7 @@ The meaning of a mixfix term is the same as the meaning of the applicative term 
 \item or a name of arity greater than 1 followed by a closed term list of length less than the arity of the initial name, 
 
 \item or
-an open bracket \verb|[| followed by an open argument list (in which commas are completely optional) followed by the reserved identifier {\tt =>} followed by an object term followed by a close bracket \verb|] |.
+an open bracket \verb|[|  followed by an open argument list (in which commas are completely optional) followed by the reserved identifier {\tt =>} followed by an object term followed by a close bracket \verb|]|.
 
 \end{enumerate}
 
@@ -2242,8 +2108,6 @@ an open bracket \verb|[| followed by an open argument list (in which commas are 
 \item a single token, which must be {\tt prop}  {\tt type} or {\tt obj};
 
 \item  one of the tokens {\tt that} or {\tt in} followed by an object term.
-
-\item a opening brace followed by an object term followed by {\tt -->} followed by an object term followed by a closing brace
 
 \end{enumerate}
 
@@ -2471,10 +2335,6 @@ displaytype (THAT p) = "that "^(displayobject p) |
 
 displaytype (IN tau) = "in "^(displayobject tau) |
 
-displaytype (Rewrite(t,u)) = 
-"{"^(displayobject t)^"-->"
-^(displayobject u)^"}" |
-
 displaytype Tdummy = "{dummy type}" |
 
 displaytype Terror = "{error type}"
@@ -2679,26 +2539,9 @@ let val (TT,LL) = getobjectE L in
 if TT = Oerror then (Terror,s::L)
 else (IN TT,LL) end
 
-else if s = "{" then
-let val (TT1,LL1) = getobjectE L in (* 2 *)
-
-if TT1 = Oerror orelse  LL1 = nil orelse hd LL1 <> "-->"
-
-then (Terror,s::L)
-
-else let val (TT2,LL2) = getobjectE(tl LL1) in  (* 1 *)
-
-if TT2 = Oerror orelse LL2 = nil orelse hd LL2 <> "}"
-
-then (Terror,s::L)
-
-else (Rewrite(TT1,TT2),tl LL2)
-
-end (* 1 *)
-
-end (* 2 *)
-
 else (Terror,s::L)
+
+
 
 and getfunction L = p1(getfunctionE L)
 
@@ -2711,7 +2554,7 @@ getfunctionE (s::L) =
 (* object type *)
 
 if s="prop" orelse s = "type" orelse s = "obj"
-orelse s = "that" orelse s = "in"  orelse s = "{"
+orelse s = "that" orelse s = "in"
 
 then let val T = gettypeE (s::L) in
 
@@ -2792,7 +2635,7 @@ getfunction1E (s::L) =
 (* object type *)
 
 if s="prop" orelse s = "type" orelse s = "obj"
-orelse s = "that" orelse s = "in" orelse s = "{"
+orelse s = "that" orelse s = "in"
 
 then let val T = gettypeE (s::L) in
 
@@ -3345,10 +3188,6 @@ and Substype0 depth s m n b T (THAT p) =
 
 Substype0 depth s m n b T (IN p) =
  IN (Subsobject0 depth s m n b T p) |
- 
-Substype0 depth s m n b T (Rewrite(TT,UU)) =
-
-Rewrite(Subsobject0 depth s m n b T TT,Subsobject0 depth s m n b T UU) |
 
 Substype0 depth s m n b T x = x
 
@@ -3795,10 +3634,6 @@ equalobjects p P |
 equalobjectsorts (IN p) (IN P) =
 equalobjects p P  |
 
-equalobjectsorts (Rewrite(t1,u1)) (Rewrite(t2,u2))
-
-= equalobjects t1 t2 andalso equalobjects u1 u2 |
-
 equalobjectsorts x y = x=y andalso x <> Terror
 
 
@@ -4196,10 +4031,6 @@ unsubstype S x (IN tau) =
 
 IN (unsubsobject S x tau) |
 
-unsubstype S x (Rewrite(t,u)) =
-
-Rewrite(unsubsobject S x t,unsubsobject S x u) |
-
 unsubstype S x y = y
 
 and  unsubsobject  S x (Oatom(s,m,n,b)) =
@@ -4418,10 +4249,6 @@ THAT (matchsubsobject depth match p) |
 
 matchsubstype depth match (IN tau) = 
 IN (matchsubsobject depth match tau) |
-
-matchsubstype depth match (Rewrite(t,u)) =
-
-Rewrite(matchsubsobject depth match t, matchsubsobject depth match u) |
 
 matchsubstype depth x y = y
 
@@ -4734,18 +4561,6 @@ matchobjectst v p P |
 matchtypest v Terror Terror = 
 ((* sayD "matchesfail 4388"; *)matchesfail()) |
 
-matchtypest v (Rewrite(t1,u1)) (Rewrite(t2,u2)) =
-
-if find Ferror v (!LOCALMATCHES) <> Ferror 
-then (!LOCALMATCHES) else
-
-
-let val MM = matchobjectst v t1 t2 in
-
-(LOCALMATCHES := mergematch (MM) (!LOCALMATCHES);
-if (!LOCALMATCHES) = [("",Ferror)] then [("",Ferror)]
-else mergematch(MM) (matchobjectst v u1 u2)) end |
-
 matchtypest v x y = if 
 
 find Ferror v (!LOCALMATCHES) <> Ferror 
@@ -4907,7 +4722,7 @@ end end end
  
 
 matchfunctionst v (Lambda((s,(i,m,n,b,TT))::B,t,T))
-   (Lambda((s2,(i,m2,n2,b2,TT2))::B2,t2,T2)) =
+   (Lambda((s2,(i2,m2,n2,b2,TT2))::B2,t2,T2)) =
    
    if find Ferror v (!LOCALMATCHES) <> Ferror 
 then (!LOCALMATCHES) else
@@ -4926,7 +4741,7 @@ if islambda2 TT then
 
 matchfunctionst v (subsfunction0 (n+1) s m n b TT 
 (Lambda(B,t,T)))
-(Lambda((s2,(i,m2,n2,b2,TT2))::B2,t2,T2))
+(Lambda((s2,(i2,m2,n2,b2,TT2))::B2,t2,T2))
 
 else if islambda2 TT2 then
 
@@ -5259,8 +5074,6 @@ fun objectsortcheck (THAT t) = objectsort t = Lambda(nil,Unknown,PROP) |
 
 objectsortcheck (IN t) = objectsort t = Lambda(nil,Unknown,TYPE) |
 
-objectsortcheck (Rewrite(t,u)) = equalfunctions(objectsort t)(objectsort u) |
-
 objectsortcheck Terror = false |
 
 objectsortcheck t = true;
@@ -5286,12 +5099,7 @@ else (say "bad proof/evidence type, body not prop line 3913";Terror) end |
 
 typefixtype (IN tau) = let val TT = IN (typefixobject tau) 
 in if objectsortcheck TT then TT 
-else (say "bad typed object sort: body not type line 3916";Terror) end |
-
-typefixtype (Rewrite(t,u)) = 
-let val TT = Rewrite(typefixobject t, typefixobject u) in
-if objectsortcheck TT then TT
-else (say "bad typed rewrite sort: line 5226";Terror) end |
+else (say "bad typed object sor: body not type line 3916";Terror) end |
 
 typefixtype x = x 
 
@@ -5395,15 +5203,13 @@ Important examples are {\tt open} followed optionally by an identifier, {\tt clo
 
 (*  beginning test declaration commands *)
 
-val SHOWFULL = ref false;
-
 fun showmove n = say2(
 reprocess(length(!CONTEXT)-1)
 ("{move "^(makestring n)^
 (if worldname n = makestring n 
 then "}" else ": "^(worldname n)^"}")));
 
-fun Showdec s = (if length(!CONTEXT) = 2 orelse (!SHOWFULL)
+fun Showdec s = (if length(!CONTEXT) = 2 
 then say3(reprocess (length(!CONTEXT)-1)
 (s^": "^(displayfunction(sortof s)))) else ()
 ;if islambda2 (sortof s)
@@ -5412,8 +5218,7 @@ then say3(reprocess(length(!CONTEXT)-1)(s^": "^
 (referentof("?!?",0,0,true,
 Lambda(nil,Unknown,OBJ)))(functionsort (sortof s))))))
 else (
-if length(!CONTEXT)<>2 andalso not (!SHOWFULL) 
-then say3(reprocess (length(!CONTEXT)-1)
+if length(!CONTEXT)<>2 then say3(reprocess (length(!CONTEXT)-1)
 (s^": "^(displayfunction(sortof s)))) else ()
 );showmove(env s))
 
@@ -5862,12 +5667,6 @@ Readline ["Readtex",s,t] = Readtex s t|
 Readline ["Readonbook",s,t] = Readonbook s t|
 
 Readline ["Readontex",s,t] = Readontex s t|
-
-(* toggle display of definition bodies in
-local environments *)
-
-Readline["Showfull"] = (SHOWFULL := not(!SHOWFULL);
-showmove(length(!CONTEXT)-1)) |
 
 
 Readline x = let val T1 = typefix(getfunction x) in

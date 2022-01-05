@@ -1,5 +1,5 @@
+(*
 
-   (*
 
 \documentclass[12pt]{article}
 
@@ -13,7 +13,7 @@
 
 
 
-\date{4/13/2020 -- This is a beta version of the second release, without rewriting.  It runs the entire  Zermelo implementation. It also ran the Automath translations without any changes.}
+\date{1/5/2022 -- This is a beta version of the second release, without rewriting.  It runs the entire  Zermelo implementation. It also ran the Automath translations without any changes.  This version is adaptable to PolyML.}
 
 
 \begin{document}
@@ -35,7 +35,7 @@ it will eliminate extensions of that saved move.  These things are motivated by 
 
 \item[4/12/2020:]  I have realized why there are so few let terms even after minimizing obvious expansions:  there is heavy expansion going on in arguments, which I might be able to suppress.  Actually, it doesn't seem so easy.  The idea for preserving more let terms would be to allow object arguments to have let binders.
 
-Fixed error which allowed colons \verb :  to be special characters.
+Fixed error which allowed colons \verb|:| to be special characters.
 
 \item[4/10/2020:]  No code update.  I should attend to updating all the existing text not using rewrites for testing and demonstration purposes.
 
@@ -166,7 +166,7 @@ from the previous argument by a comma if it is mixfix;  the previous version det
 
 \item[3/10/2020:] 
 
-Interesting innovation in pretty printing:  put breaks before \verb ({def}  and \verb ({let} .  This further suggests that we should not put the def into lambda terms appearing as arguments.
+Interesting innovation in pretty printing:  put breaks before \verb |({def}}|  and \verb|({let}|.  This further suggests that we should not put the def into lambda terms appearing as arguments.
 
 I found a subtle parser difference between the old version and the new which I think I will leave as is
 (and make corrections when it arises in files).  There is already a difference involving the need
@@ -291,7 +291,7 @@ Logical conjunction is a function taking two arguments of type {\tt prop} to a p
 
 The rule of conjunction takes a proof $pp$ of $p$ and a proof $qq$ of $q$ to a proof of $p \wedge q$.    The type of this is 
 
-$$[(p:\verb prop ),(q:{\tt prop}),(pp: \verb that   \, p),(qq:{\tt that}\, q) \Rightarrow {\tt that}\, p \wedge q].$$
+$$[(p:\verb|prop|),(q:{\tt prop}),(pp: \verb|that|  \, p),(qq:{\tt that}\, q) \Rightarrow {\tt that}\, p \wedge q].$$
 
 One might think that the rule of conjunction has only two arguments, the proofs of the two components.  But it also needs to know what the two propositions are.  On the other hand, having to enter the first two arguments and display them seems excessive, since they can be inferred from the last two.  The intention is that Lestrade will type the rule of conjunction as shown but allow the suppression of the first two arguments in input and output (the feature of implicit argument inference).  This illustrates what is meant by the assertion that the
 sorts of arguments may depend on earlier arguments.
@@ -873,6 +873,46 @@ Now we begin the actual code of the Type Inspector with some utilities.
 
 *)
 
+(* moscow ml preamble *)
+
+fun desome x = x;
+
+(* BEGIN for PolyML decomment this; 
+for Moscow ML 2.10 in addition comment out first line
+
+open PolyML
+
+fun desome (SOME x) = x |
+
+desome NONE = "";
+
+END *)
+
+fun Inputline x = desome(TextIO.inputLine x);
+
+(* end moscow ml preamble *)
+
+(* smlnj premable 
+
+fun desome x = x;
+
+fun makestring s = Int.toString s;
+
+(* BEGIN for PolyML decomment this; 
+for Moscow ML 2.10 in addition comment out first line
+
+open PolyML *)
+
+fun desome (SOME x) = x |
+
+desome NONE = "";
+
+(* END *)
+
+fun Inputline x = desome(TextIO.inputLine x);
+
+ end smlnj preamble *)
+
 (* utility code *)
 
 open TextIO;
@@ -915,7 +955,7 @@ fun say2D s = if (!DIAGNOSTIC) then say2 s else (); (* diagnostic messages *)
 
 fun versiondate() = say3
 ("Welcome to the Lestrade Type Inspector\n"^
-"version 2.0, release of 4/13/2020\n4:30  pm Boise time.")
+"version 2.0, release of 1/5/20222\n4:30  pm Boise time, for PolyML")
 
 fun explain b s = if b then b else (say s;b);
 
@@ -1006,7 +1046,7 @@ We begin the discussion of Lestrade notation.  It should be noted that Lestrade'
 
 Tokens are open and close parentheses, open and close brackets, commas, colons,  and identifiers.
 
-If a double quote \verb "  occurs in a line, the entire rest of the line is a token (dropping the quote).  This allows tokens of
+If a double quote \verb|"|  occurs in a line, the entire rest of the line is a token (dropping the quote).  This allows tokens of
 quite uncontrolled form to be supplied (for example, file names).  This could be changed to support quoted strings as tokens, probably a good thing.
 
 Identifiers come in three  flavors:  
@@ -1015,14 +1055,14 @@ Identifiers come in three  flavors:
 
 \item strings of digits (not zero-initial unless of length one;  this is true of all strings of digits in this definition) optionally followed by one or more single quotes;  
 
-\item strings of letters with the first optionally capitalized followed optionally by a string of digits followed optionally by one or more single quotation marks  \verb ' ; 
+\item strings of letters with the first optionally capitalized followed optionally by a string of digits followed optionally by one or more single quotation marks  \verb|'|; 
 
 \item strings of special characters
-(any typewriter character which is not a letter, a token, a period, a single quotation mark, or an underscore \verb _ ) followed optionally by a string of digits followed optionally by one or more single quotes.
+(any typewriter character which is not a letter, a token, a period, a single quotation mark, or an underscore \verb|_|) followed optionally by a string of digits followed optionally by one or more single quotes.
 
 \end{enumerate}
 
-Whitespace (made up of spaces and backslashes \verb \ , and units composed of a backslash followed by zero or more spaces followed by a carriage return)  is only significant to the tokenizer where it separates identifiers which might otherwise run together.   A carriage return ends text to be tokenized unless it is preceded by a backslash followed optionally by additional whitespace.
+Whitespace (made up of spaces and backslashes \verb|\|, and units composed of a backslash followed by zero or more spaces followed by a carriage return)  is only significant to the tokenizer where it separates identifiers which might otherwise run together.   A carriage return ends text to be tokenized unless it is preceded by a backslash followed optionally by additional whitespace.
 
 Identifiers ending in single quotes are usually generated automatically by Lestrade, though users can declare them\footnote{In the previous implementation, identifiers with special characters were extended with dollar signs. Also note that at the moment one may use identifiers which are strings of single quotes, which turned out to be convenient while debugging the code.  It would be easy to forbid such identifiers but I haven't bothered.}.  When Lestrade needs to generate an identifier from an existing name for various special purposes, it will add enough single quotes  to get an identifier which is not declared yet.\footnote{For the moment, the only use for automatically generated identifiers is for matching variables in the implicit argument inference mechanism.  These can occasionally end up embedded in prover output as bound variables.}
 
@@ -1198,7 +1238,7 @@ fun Getline() = let val TEXT = getline() in
 
 output(stdOut,displaytokens (Tokenize TEXT)) end;
 
-fun getline2() = (LINESOFAR:=inputLine(!READFILE);
+fun getline2() = (LINESOFAR:=Inputline(!READFILE);
     if (!LINESOFAR) <> "\n"
 	andalso Hd #"\n" (despace(Tl(rev(explode (!LINESOFAR)))))= #"\\"
 	then (output(stdOut,">> ");flushOut(stdOut);(!LINESOFAR)^(getline2()))
@@ -1635,10 +1675,10 @@ fun extend s = if env s <> ~1 then extend(s^"'") else s;
 
 The aim here is to present functions which will reformat tokenized output with helpful line
 breaks and indentation.  The degree of indentation is determined by the move we are in and
-the degree of nesting within brackets \verb []  at which we are processing.  Note the theme of identification of declaration environments (moves) with variable binding environments (lambda terms and function sorts).
+the degree of nesting within brackets \verb|[]| at which we are processing.  Note the theme of identification of declaration environments (moves) with variable binding environments (lambda terms and function sorts).
 
 There are separate pretty printers for output and for command lines, since backslashes need to be inserted in command lines.
-The special prompt \verb >>>  is inserted by the pretty printer, and the log file reader uses the prompt to identify commands to be executed.\footnote{This has the effect that the file format for this version is quite different from that of the previous version;  but the previous version has a facility to export files in a format this version can read.}
+The special prompt \verb|>>>|  is inserted by the pretty printer, and the log file reader uses the prompt to identify commands to be executed.\footnote{This has the effect that the file format for this version is quite different from that of the previous version;  but the previous version has a facility to export files in a format this version can read.}
 
 The pretty printer is devious about the appearance of underscores in bound variables in output, and it takes special account of the behavior of parentheses,
 braces, brackets and commas when deciding whether to insert spaces.
@@ -2011,14 +2051,14 @@ implicitarglist x = (say "implicitarglist failure line 1905";Ferror);
 is followed by a comma and each non-initial name of arity greater than one  is preceded by a comma, and in which no comma is followed by another comma.  Additional commas
 between names are allowed.
 
-\item [A closed argument list] is an open parenthesis \verb (  followed by an open argument list followed by a close parenthesis \verb ) .
+\item [A closed argument list] is an open parenthesis \verb|(|  followed by an open argument list followed by a close parenthesis \verb|)|.
 
 \item [An open term list]  is a sequence of function terms and commas  in which each non-final name of positive arity serving as a function term in the sequence
 is followed by a comma and each name which is of arity greater than one  and initial in one of the non-initial function terms in the sequence  is preceded by a comma, and in which no comma is followed by another comma.  Additional commas between function terms are allowed.
 
 The final term of an open argument list is not a mixfix term unless it is followed by a non-identifier or end of text.
 
-\item [A closed term list] is an open parenthesis \verb (  followed by an open term list followed by a close parenthesis \verb ) .
+\item [A closed term list] is an open parenthesis \verb|(|  followed by an open term list followed by a close parenthesis \verb|)| .
 
 \item [The length of an open or closed term list] is the number of function terms in it (commas are not counted).
 
@@ -2028,11 +2068,11 @@ The final term of an open argument list is not a mixfix term unless it is follow
 
 \item[name:]   a name of arity 0 
 
-\item[applicative:]   or a name of positive arity followed by a closed term list of length equal to its arity, or by an open term list of length equal to its arity whose first token is not a open parenthesis \verb (  . 
+\item[applicative:]   or a name of positive arity followed by a closed term list of length equal to its arity, or by an open term list of length equal to its arity whose first token is not a open parenthesis \verb|(|  . 
 
 The meaning of an applicative term depends only on the list of function terms appearing in its term list, not on whether it is open or closed.
 
-\item[parenthesized:]   or an open parenthesis \verb (  followed by an object term followed by a close parenthesis \verb ) , 
+\item[parenthesized:]   or an open parenthesis \verb|(|  followed by an object term followed by a close parenthesis \verb|)| , 
 
 The meaning of a parenthesized term is the same as the meaning of the term enclosed in the parentheses.
 
@@ -2040,7 +2080,7 @@ The meaning of a parenthesized term is the same as the meaning of the term enclo
 
 (Implicit in this description is that all names when used as mixfixes are of the same precedence and group to the rignt.)
 
-The meaning of a mixfix term is the same as the meaning of the applicative term beginning with the name used as the mixfix, followed by \verb ( , followed by the initial object term, followed by a comma, followed by the final open term list, followed by \verb ) .  The parentheses and comma are likely not be be needed here, but in certain cases they would be necessary (if the intial open term were parenthesized, or if the final open term list began with a name of arity greater than one).
+The meaning of a mixfix term is the same as the meaning of the applicative term beginning with the name used as the mixfix, followed by \verb|(| , followed by the initial object term, followed by a comma, followed by the final open term list, followed by \verb|)| .  The parentheses and comma are likely not be be needed here, but in certain cases they would be necessary (if the intial open term were parenthesized, or if the final open term list began with a name of arity greater than one).
 
 \end{description}
 
@@ -2055,7 +2095,7 @@ The meaning of a mixfix term is the same as the meaning of the applicative term 
 \item or a name of arity greater than 1 followed by a closed term list of length less than the arity of the initial name, 
 
 \item or
-an open bracket \verb [  followed by an open argument list (in which commas are completely optional) followed by the reserved identifier {\tt =>} followed by an object term followed by a close bracket \verb ] .
+an open bracket \verb|[|  followed by an open argument list (in which commas are completely optional) followed by the reserved identifier {\tt =>} followed by an object term followed by a close bracket \verb|]|.
 
 \end{enumerate}
 
@@ -2071,8 +2111,8 @@ an open bracket \verb [  followed by an open argument list (in which commas are 
 
 \end{enumerate}
 
-\item [A function sort term] consists of an open bracket \verb [  followed by an open argument list (in which commas are completely optional) followed by the reserved identifier {\tt =>} followed by an object  sort term followed by
-a close bracket \verb ] .
+\item [A function sort term] consists of an open bracket \verb|[| followed by an open argument list (in which commas are completely optional) followed by the reserved identifier {\tt =>} followed by an object  sort term followed by
+a close bracket \verb|]|.
 
 \end{description}
 
@@ -4682,7 +4722,7 @@ end end end
  
 
 matchfunctionst v (Lambda((s,(i,m,n,b,TT))::B,t,T))
-   (Lambda((s2,(i,m2,n2,b2,TT2))::B2,t2,T2)) =
+   (Lambda((s2,(i2,m2,n2,b2,TT2))::B2,t2,T2)) =
    
    if find Ferror v (!LOCALMATCHES) <> Ferror 
 then (!LOCALMATCHES) else
@@ -4701,7 +4741,7 @@ if islambda2 TT then
 
 matchfunctionst v (subsfunction0 (n+1) s m n b TT 
 (Lambda(B,t,T)))
-(Lambda((s2,(i,m2,n2,b2,TT2))::B2,t2,T2))
+(Lambda((s2,(i2,m2,n2,b2,TT2))::B2,t2,T2))
 
 else if islambda2 TT2 then
 

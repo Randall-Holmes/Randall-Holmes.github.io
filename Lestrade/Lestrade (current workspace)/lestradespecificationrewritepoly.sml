@@ -1,5 +1,5 @@
 
-  (*
+(*
 
 \documentclass[12pt]{article}
 
@@ -13,8 +13,8 @@
 
 
 
-\date{1/5/2022  installation of rewrites in progress \\
---- This is a beta version of the second release, without rewriting.  It runs the entire  Zermelo implementation. It also ran the Automath translations without any changes.  Adaptable for PolyML.}
+\date{1/5/202  installation of rewrites in progress \\
+--- This is a beta version of the second release, without rewriting.  It runs the entire  Zermelo implementation. It also ran the Automath translations without any changes.  Adapted for PolyML.}
 
 
 \begin{document}
@@ -945,10 +945,10 @@ Now we begin the actual code of the Type Inspector with some utilities.
 
 (* moscow ml preamble *)
 
-fun desome x = x; 
+(* fun desome x = x; *)
 
 (* BEGIN for PolyML decomment this; 
-for Moscow ML 2.10 in addition comment out first line 
+for Moscow ML 2.10 in addition comment out first line *)
 
 open PolyML
 
@@ -956,7 +956,7 @@ fun desome (SOME x) = x |
 
 desome NONE = "";
 
- END *)
+(* END *)
 
 fun Inputline x = desome(TextIO.inputLine x);
 
@@ -1328,7 +1328,7 @@ fun Getline() = let val TEXT = getline() in
 
 output(stdOut,displaytokens (Tokenize TEXT)) end;
 
-fun getline2() = (LINESOFAR:=inputLine(!READFILE);
+fun getline2() = (LINESOFAR:=Inputline(!READFILE);
     if (!LINESOFAR) <> "\n"
 	andalso Hd #"\n" (despace(Tl(rev(explode (!LINESOFAR)))))= #"\\"
 	then (output(stdOut,">> ");flushOut(stdOut);(!LINESOFAR)^(getline2()))
@@ -4907,7 +4907,7 @@ end end end
  
 
 matchfunctionst v (Lambda((s,(i,m,n,b,TT))::B,t,T))
-   (Lambda((s2,(i,m2,n2,b2,TT2))::B2,t2,T2)) =
+   (Lambda((s2,(i2,m2,n2,b2,TT2))::B2,t2,T2)) =
    
    if find Ferror v (!LOCALMATCHES) <> Ferror 
 then (!LOCALMATCHES) else
@@ -4926,7 +4926,7 @@ if islambda2 TT then
 
 matchfunctionst v (subsfunction0 (n+1) s m n b TT 
 (Lambda(B,t,T)))
-(Lambda((s2,(i,m2,n2,b2,TT2))::B2,t2,T2))
+(Lambda((s2,(i2,m2,n2,b2,TT2))::B2,t2,T2))
 
 else if islambda2 TT2 then
 
