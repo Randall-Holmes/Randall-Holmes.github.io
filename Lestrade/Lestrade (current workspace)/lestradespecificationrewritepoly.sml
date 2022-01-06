@@ -1,5 +1,5 @@
 
-(*
+ (*
 
 \documentclass[12pt]{article}
 
@@ -13,7 +13,7 @@
 
 
 
-\date{1/5/202  installation of rewrites in progress \\
+\date{1/5/2022  installation of rewrites in progress \\
 --- This is a beta version of the second release, without rewriting.  It runs the entire  Zermelo implementation. It also ran the Automath translations without any changes.  Adapted for PolyML.}
 
 
@@ -28,6 +28,20 @@
 \subsection{Version Notes}
 
 \begin{description}
+
+\item[1/5/2022:]  PolyML runs the Zermelo interpretation much faster than Moscow ML, so I am contemplating using it.
+
+This file has a preamble which will probably support modification of the code to run in several versions of ML.
+
+An issue which occurred in Linux, not handled in this copy of the file, is that one needs to replace "LTXTs\\" with
+"LTXTs/":  this is probably also best handled in a preamble.
+
+This is still the flagship file, because I ought to make the rewrites work for me.  This is more encouraging now that
+the new version looks more usable.
+
+An issue only handled in this exact copy of the file (which should be implemented in others as well) is that
+PolyML insists on closing instreams, and I have Readtex and Readontex closing instreams so that I can edit .tex
+files in the way I am used to.
 
 \item[10/28/2021:]  Another change to consider.  Can we have parameters which are object sorts?  Can we have
 two species of parameters, one for object sorts, one for sorts in general?
@@ -5897,7 +5911,7 @@ flushOut(!LOGFILE);
 closeOut(!LOGFILE);
 LOGFILE:=openOut("LTXTs\\"^y^".tex");
 Readfile();flushOut(!LOGFILE);
-closeOut(!LOGFILE);LOGFILE:=openOut("default");
+closeOut(!LOGFILE);closeIn(!READFILE); LOGFILE:=openOut("default");
 SAVED:=(x,(!CONTEXT,!CONTEXTNAMES,!CONTEXTS))
 ::(drop x (!SAVED)))
 
@@ -5923,7 +5937,7 @@ flushOut(!LOGFILE);
 closeOut(!LOGFILE);
 LOGFILE:=openOut("LTXTs\\"^y^".tex");
 Readfile();flushOut(!LOGFILE);
-closeOut(!LOGFILE);LOGFILE:=openOut("default");
+closeOut(!LOGFILE);closeIn(!READFILE);LOGFILE:=openOut("default");
 SAVED:=(x,(!CONTEXT,!CONTEXTNAMES,!CONTEXTS))
 ::(drop x (!SAVED)));
 

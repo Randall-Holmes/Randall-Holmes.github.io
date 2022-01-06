@@ -1,5 +1,5 @@
 
-%  (*
+% (*
 
 \documentclass[12pt]{article}
 
@@ -13,7 +13,7 @@
 
 
 
-\date{1/5/202  installation of rewrites in progress \\
+\date{1/5/2022  installation of rewrites in progress \\
 --- This is a beta version of the second release, without rewriting.  It runs the entire  Zermelo implementation. It also ran the Automath translations without any changes.  Adapted for PolyML.}
 
 
@@ -28,6 +28,20 @@
 \subsection{Version Notes}
 
 \begin{description}
+
+\item[1/5/2022:]  PolyML runs the Zermelo interpretation much faster than Moscow ML, so I am contemplating using it.
+
+This file has a preamble which will probably support modification of the code to run in several versions of ML.
+
+An issue which occurred in Linux, not handled in this copy of the file, is that one needs to replace "LTXTs\\" with
+"LTXTs/":  this is probably also best handled in a preamble.
+
+This is still the flagship file, because I ought to make the rewrites work for me.  This is more encouraging now that
+the new version looks more usable.
+
+An issue only handled in this exact copy of the file (which should be implemented in others as well) is that
+PolyML insists on closing instreams, and I have Readtex and Readontex closing instreams so that I can edit .tex
+files in the way I am used to.
 
 \item[10/28/2021:]  Another change to consider.  Can we have parameters which are object sorts?  Can we have
 two species of parameters, one for object sorts, one for sorts in general?
@@ -1328,7 +1342,7 @@ fun Getline() = let val TEXT = getline() in
 
 output(stdOut,displaytokens (Tokenize TEXT)) end;
 
-fun getline2() = (LINESOFAR:=inputLine(!READFILE);
+fun getline2() = (LINESOFAR:=Inputline(!READFILE);
     if (!LINESOFAR) <> "\n"
 	andalso Hd #"\n" (despace(Tl(rev(explode (!LINESOFAR)))))= #"\\"
 	then (output(stdOut,">> ");flushOut(stdOut);(!LINESOFAR)^(getline2()))
@@ -4907,7 +4921,7 @@ end end end
  
 
 matchfunctionst v (Lambda((s,(i,m,n,b,TT))::B,t,T))
-   (Lambda((s2,(i,m2,n2,b2,TT2))::B2,t2,T2)) =
+   (Lambda((s2,(i2,m2,n2,b2,TT2))::B2,t2,T2)) =
    
    if find Ferror v (!LOCALMATCHES) <> Ferror 
 then (!LOCALMATCHES) else
@@ -4926,7 +4940,7 @@ if islambda2 TT then
 
 matchfunctionst v (subsfunction0 (n+1) s m n b TT 
 (Lambda(B,t,T)))
-(Lambda((s2,(i,m2,n2,b2,TT2))::B2,t2,T2))
+(Lambda((s2,(i2,m2,n2,b2,TT2))::B2,t2,T2))
 
 else if islambda2 TT2 then
 
@@ -5897,7 +5911,7 @@ flushOut(!LOGFILE);
 closeOut(!LOGFILE);
 LOGFILE:=openOut("LTXTs\\"^y^".tex");
 Readfile();flushOut(!LOGFILE);
-closeOut(!LOGFILE);LOGFILE:=openOut("default");
+closeOut(!LOGFILE);closeIn(!READFILE); LOGFILE:=openOut("default");
 SAVED:=(x,(!CONTEXT,!CONTEXTNAMES,!CONTEXTS))
 ::(drop x (!SAVED)))
 
@@ -5923,7 +5937,7 @@ flushOut(!LOGFILE);
 closeOut(!LOGFILE);
 LOGFILE:=openOut("LTXTs\\"^y^".tex");
 Readfile();flushOut(!LOGFILE);
-closeOut(!LOGFILE);LOGFILE:=openOut("default");
+closeOut(!LOGFILE);closeIn(!READFILE);LOGFILE:=openOut("default");
 SAVED:=(x,(!CONTEXT,!CONTEXTNAMES,!CONTEXTS))
 ::(drop x (!SAVED)));
 
