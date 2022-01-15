@@ -2,6 +2,17 @@
 
 # Dated updates now to appear here
 
+# a note, not reflecting a modification.  I'm wondering whether the pause required in <fo tonira> (<fotonira> means something quite
+# different) should be a mandatory comma pause.  It looks as if it might not be hard to implement.
+
+# a note:  there is a problem with interaction of quoted forms with alien text operators.
+
+# a serious problem with ICA, an actual ambiguity which has existed since the beginning of the language,
+# hopefully fixed:  the fix is that an apparent ICA initial utterance which could without the period be
+# a continuation of a sentence is read as such.  The important point is that there is no audible difference
+# between comma followed by ICA and period followed by ICA:  we solve the problem by reading the latter
+# as the former where possible.
+
 # 11/24/2021  KIA, the one "word" deletion operator, is installed.  What it actually does is a bit subtle.
 
 # 2/4/2021  Imposed the rule that two final consonants cannot be consonants from voiced/unvoiced pairs
@@ -702,7 +713,7 @@ Nearly <- (!predstart [Nn])
 # these appear here for historical reasons and could be moved later
 
 
-connective <- [ ]* !predstart ([Nn] [Oo] juncture?)? (a/e/o/u/Hearly a/Nearly UU) juncture? !V2 !(!predstart [Ff] [Ii]) !(!predstart [Mm] [Aa]) !(!predstart [Zz] [Ii])
+connective <- [ ]* !predstart ([Nn] [Oo] juncture? !i)? (a/e/i/o/u/Hearly a/Nearly UU) juncture? !V2 !(!predstart [Ff] [Ii]) !(!predstart [Mm] [Aa]) !(!predstart [Zz] [Ii])
 
 
 # cmapua units starting with consonants.  This is the exact description from NB3.  The fancy tail in each of the 
@@ -1862,7 +1873,7 @@ invvoc <- (HUE0 comma2? name/HUE freemod? descpred guea? namesuffix?/(HUE freemo
 
 # deletion of a previous word or wordlike unit (or more than one) using K IA
 
-kiamod <- comma2? !(!PreName !predstart K IA) ((PreName/LIU1/AlienWord/Word) kiamod? comma2? K IA) comma2?
+kiamod <- comma2? !(!PreName !predstart K IA) ((PreName/LIU1/AlienWord/Cmapua ([ ]* (!(K IA)) !PreName !predstart Cmapua)*/Word) kiamod* comma2? !PreName !predstart K IA) comma2?
 
 # the comma is a freemod with no semantic content:  this is a device for discarding phonetically required pauses
 # and the speaker's optional pauses alike.   The pause before a non-pause marked prename is part of the NameWord and so
@@ -2353,7 +2364,7 @@ sen1 <- (neghead freemod?)* (imperative/statement/keksent)
 
 # the class [sentence] consists of sen1's afterthought connected with A connectives
 
-sentence <- (sen1 (ICA freemod? sen1)*)
+sentence <- (sen1 ([!.:;?]? ICA freemod? sen1)*)
 
 # [headterms] is a list of terms (arguments and predicate modifiers) ending in <gi>.  Preceding a [sen1] with these
 # causes all predicates in the [sen1] to share these arguments.  We propose either that the headterms arguments be directly
@@ -2400,7 +2411,7 @@ uttF <- (uttE (I freemod? uttE)*)
 
 # the utterance class for use in the context of parenthetical freemods or quotations, in which it does not go to end of text.
 
-utterance0 <- (!GE ((!PAUSE freemod period? utterance0)/(!PAUSE freemod period?)/(uttF IGE utterance0)/uttF/(I freemod? uttF?)/(I freemod? period?)/(ICA freemod? uttF)) (&I utterance0)?)
+utterance0 <- (!GE ((ICA freemod? uttF)/(!PAUSE freemod period? utterance0)/(!PAUSE freemod period?)/(uttF IGE utterance0)/uttF/(I freemod? uttF?)/(I freemod? period?)) (&I utterance0)?)
 
 # Notice that there are two passes here:  the parser first checks that the entire utterance
 # is phonetically valid, then returns and checks for grammatical validity.
@@ -2409,6 +2420,6 @@ utterance0 <- (!GE ((!PAUSE freemod period? utterance0)/(!PAUSE freemod period?)
 # in which a freemod is initial.   The IGE connectives bind even more loosely than the I connectives and right-group instead of 
 # left grouping.
 
-utterance <- &(phoneticutterance !.) (!GE ((!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end)/(ICA freemod? uttF (&I utterance)? end)))
+utterance <- &(phoneticutterance !.) (!GE ((ICA freemod? uttF (&I utterance)? end)/(!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end)))
 
 
