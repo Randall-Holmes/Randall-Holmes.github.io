@@ -2419,13 +2419,15 @@ L("subject <- ((modifiers freemod?)? ((argxx subject)/(argument (modifiersx free
 
 L("statement1 <- (subject freemod? (GIO freemod? terms1)? predicate)")
 
-L("argumentA <- (!statement1 argument)")
+L("statement1x <- 'xxx'")
 
-L("argumentB <- (!statement1 argument)")
+L("argumentA <- (!statement1x argument)")
 
-L("argumentC <- (!statement1 argument)")
+L("argumentB <- (!statement1x argument)")
 
-L("argumentD <- (!statement1 argument)")
+L("argumentC <- (!statement1x argument)")
+
+L("argumentD <- (!statement1x argument)")
 
 L("argumentA1 <- argument")
 
@@ -2441,9 +2443,9 @@ L("terms1 <- ((modifiersx? argumentA1 (freemod? modifiersx)? argumentB1? (freemo
 
 L("word <- (arg1a/indef2)")
 
-L("words1 <- (word (ZEIA word)*)")
+L("words1 <- (word (ZEIA? word)*)")
 
-L("words2 <- (word (ZEIO word)*)")
+L("words2 <- (word (ZEIO? word)*)")
 
 L("wordset1 <- (words1? LUA)")
 
@@ -2511,6 +2513,5 @@ L("utterance0 <- (!GE ((ICA freemod? uttF)/(!PAUSE freemod period? utterance0)/(
 
 L("utterance <- (&(phoneticutterance !.) (!GE ((ICA freemod? uttF (&I utterance)? end)/(!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end))))")
 
-
-if __name__ == '__main__':interface();
+if __name__ == '__main__':interface();       
 
