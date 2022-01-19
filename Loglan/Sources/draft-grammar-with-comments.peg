@@ -2,6 +2,22 @@
 
 # Dated updates now to appear here
 
+# a note, not reflecting a modification.  I'm wondering whether the pause required in <fo tonira> (<fotonira> means something quite
+# different) should be a mandatory comma pause.  It looks as if it might not be hard to implement.
+
+# a note:  there is a problem with interaction of quoted forms with alien text operators.
+
+# a serious problem with ICA, an actual ambiguity which has existed since the beginning of the language,
+# hopefully fixed:  the fix is that an apparent ICA initial utterance which could without the period be
+# a continuation of a sentence is read as such.  The important point is that there is no audible difference
+# between comma followed by ICA and period followed by ICA:  we solve the problem by reading the latter
+# as the former where possible.
+
+# 11/24/2021  KIA, the one "word" deletion operator, is installed.  What it actually does is a bit subtle.
+
+# 2/4/2021  Imposed the rule that two final consonants cannot be consonants from voiced/unvoiced pairs
+# with different voice.  Also forbid second final consonant to be h.
+
 # I have further fine-tuning of djifoa gluing in mind.
 # Allow the -r glue to be expressed as
 # -rr after all mandatory monosyllables, removing the annoying pronunciation problem?
@@ -325,6 +341,17 @@ V2 <- [aeiouAEIOU]
 
 C1 <- [bcdfghjklmnprstvzBCDFGHJKLMNPRSTVZ]
 
+#consonants in voiced/unvoiced pairs
+
+Cvoiced <- [bdgjvzBDGJVZ]
+
+Cunvoiced <- [ptkcfsPTKCFS]
+
+# bad voice pair (or pair second term of which is h)
+# forbidden as pairs of final consonants
+
+Badvoice <- (Cvoiced (Cunvoiced/[Hh])/Cunvoiced (Cvoiced/[Hh]))
+
 # letters
 
 letter <- (![qwxQWX] [a-zA-Z])
@@ -482,7 +509,12 @@ Syllable <- ((SyllableA/SyllableB) juncture?)
 # is natural and obvious but not in our Sources.  Such a pair of consonants would seem to 
 # naturally form another syllable.
 
-FinalConsonant <- !syllabic (!(!continuant C1 !Syllable continuant) !NoMedial2 !NoMedial3 C1 !(juncture? (V2/syllabic)))
+
+# a pair of final consonants cannot be differently voiced
+
+FinalConsonant <- !syllabic !(&Badvoice C1 !Syllable) (!(!continuant C1 !Syllable continuant) !NoMedial2 !NoMedial3 C1 !(juncture? (V2/syllabic)))
+
+#!((!MaybeInitial)C1 juncture? !syllabic C1 juncture? !syllabic C1) !(&MaybeInitial C1 juncture C1 !(juncture? C1))
 
 # Here are various flavors of syllable we may need.
 
@@ -681,7 +713,7 @@ Nearly <- (!predstart [Nn])
 # these appear here for historical reasons and could be moved later
 
 
-connective <- [ ]* !predstart ([Nn] [Oo] juncture?)? (a/e/o/u/Hearly a/Nearly UU) juncture? !V2 !(!predstart [Ff] [Ii]) !(!predstart [Mm] [Aa]) !(!predstart [Zz] [Ii])
+connective <- [ ]* !predstart ([Nn] [Oo] juncture? !i)? (a/e/i/o/u/Hearly a/Nearly UU) juncture? !V2 !(!predstart [Ff] [Ii]) !(!predstart [Mm] [Aa]) !(!predstart [Zz] [Ii])
 
 
 # cmapua units starting with consonants.  This is the exact description from NB3.  The fancy tail in each of the 
@@ -982,7 +1014,7 @@ LiQuote <- (&caprule [Ll][Ii]juncture? comma2? [\"] phoneticutterance [\"] comma
 # with mere whitespace between was used by <liu> quotation, but is now redundant,
 # because I have required that <liu> quotations be closed with explicit pauses in all cases.
 
-Word <- (NameWord / Cmapua !([ ]*Cmapua)/ Complex/CCVNOY)
+Word <- (NameWord / Cmapua / Complex/CCVNOY)
 
 # it is an odd point that all borrowings parse as complexes -- so when I parsed all the words the first time they all
 # parsed as complexes.  A borrowing is a complex consisting of a single final borrowing djifoa!
@@ -1839,11 +1871,15 @@ invvoc <- (HUE0 comma2? name/HUE freemod? descpred guea? namesuffix?/(HUE freemo
 
 # JO is a scare quote device.
 
+# deletion of a previous word or wordlike unit (or more than one) using K IA
+
+kiamod <- comma2? !(!PreName !predstart K IA) ((PreName/LIU1/AlienWord/Cmapua ([ ]* (!(K IA)) !PreName !predstart Cmapua)*/Word) kiamod* comma2? !PreName !predstart K IA) comma2?
+
 # the comma is a freemod with no semantic content:  this is a device for discarding phonetically required pauses
 # and the speaker's optional pauses alike.   The pause before a non-pause marked prename is part of the NameWord and so
 # is excluded.  Ellipses and dashes are fancy pauses supported as freemods.
 
-freemod <- ((NOUI/(SOI freemod? descpred guea?)/DIE/(NO1 DIE)/(KIE comma? utterance0 comma? KIU)/(KIE2 comma? utterance0 comma? KIU2)/invvoc/voc/(comma !(!FalseMarked PreName))/JO/UI1/([ ]* '...' ([ ]* &letter)?)/([ ]* '--' ([ ]* &letter)?)) freemod?)
+freemod <- ((kiamod/NOUI/(SOI freemod? descpred guea?)/DIE/(NO1 DIE)/(KIE comma? utterance0 comma? KIU)/(KIE2 comma? utterance0 comma? KIU2)/invvoc/voc/(comma !(!FalseMarked PreName))/JO/UI1/([ ]* '...' ([ ]* &letter)?)/([ ]* '--' ([ ]* &letter)?)) freemod?)
 
 # the classes juelink to linkargs describe very tightly bound arguments which can be firmly attached to predicates in 
 # the context of metaphorical modifications and the use of predicates in descriptive arguments.
@@ -2128,6 +2164,10 @@ subject <- ((modifiers freemod?)? ((argxx subject)/(argument (modifiersx freemod
 
 statement1 <- (subject freemod? (GIO freemod? terms1)? predicate)
 
+# change this to something you wont encounter to turn off the alternative parser
+
+statement1x <- 'xxx'
+
 # these classes are exactly argument, but are used to signal
 # which argument position after the predicate an argument occupies.
 # I think the grammar is set up so that these will actually
@@ -2137,21 +2177,21 @@ statement1 <- (subject freemod? (GIO freemod? terms1)? predicate)
 # a term list will refuse to digest an argument which starts a new
 # SVO sentence (statement1).
 
-# argumentA <- !statement1 argument 
+argumentA <- !statement1x argument 
 
-argumentA <- argument
+# argumentA <- argument
 
-# argumentB <- !statement1 argument 
+argumentB <- !statement1x argument 
 
-argumentB <- argument
+#  argumentB <- argument
 
-# argumentC <- !statement1 argument 
+argumentC <- !statement1x argument 
 
-argumentC <- argument
+#  argumentC <- argument
 
-# argumentD <- !statement1 argument 
+argumentD <- !statement1x argument 
 
-argumentD <- argument
+#  argumentD <- argument
 
 # for argument lists not guarded against absorbing a following subject
 
@@ -2177,9 +2217,9 @@ terms1 <- ((modifiersx? argumentA1 (freemod? modifiersx)? argumentB1? (freemod? 
 
 word <- (arg1a/indef2)
 
-words1 <- (word (ZEIA word)*)
+words1 <- (word (ZEIA? word)*)
 
-words2 <- (word (ZEIO word)*)
+words2 <- (word (ZEIO? word)*)
 
 wordset1 <- (words1? LUA)
 
@@ -2328,7 +2368,7 @@ sen1 <- (neghead freemod?)* (imperative/statement/keksent)
 
 # the class [sentence] consists of sen1's afterthought connected with A connectives
 
-sentence <- (sen1 (ICA freemod? sen1)*)
+sentence <- (sen1 ([!.:;?]? ICA freemod? sen1)*)
 
 # [headterms] is a list of terms (arguments and predicate modifiers) ending in <gi>.  Preceding a [sen1] with these
 # causes all predicates in the [sen1] to share these arguments.  We propose either that the headterms arguments be directly
@@ -2375,7 +2415,7 @@ uttF <- (uttE (I freemod? uttE)*)
 
 # the utterance class for use in the context of parenthetical freemods or quotations, in which it does not go to end of text.
 
-utterance0 <- (!GE ((!PAUSE freemod period? utterance0)/(!PAUSE freemod period?)/(uttF IGE utterance0)/uttF/(I freemod? uttF?)/(I freemod? period?)/(ICA freemod? uttF)) (&I utterance0)?)
+utterance0 <- (!GE ((ICA freemod? uttF)/(!PAUSE freemod period? utterance0)/(!PAUSE freemod period?)/(uttF IGE utterance0)/uttF/(I freemod? uttF?)/(I freemod? period?)) (&I utterance0)?)
 
 # Notice that there are two passes here:  the parser first checks that the entire utterance
 # is phonetically valid, then returns and checks for grammatical validity.
@@ -2384,6 +2424,6 @@ utterance0 <- (!GE ((!PAUSE freemod period? utterance0)/(!PAUSE freemod period?)
 # in which a freemod is initial.   The IGE connectives bind even more loosely than the I connectives and right-group instead of 
 # left grouping.
 
-utterance <- &(phoneticutterance !.) (!GE ((!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end)/(ICA freemod? uttF (&I utterance)? end)))
+utterance <- &(phoneticutterance !.) (!GE ((ICA freemod? uttF (&I utterance)? end)/(!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end)))
 
 

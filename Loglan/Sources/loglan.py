@@ -6,6 +6,12 @@ L("V2 <- [aeiouAEIOU]")
 
 L("C1 <- [bcdfghjklmnprstvzBCDFGHJKLMNPRSTVZ]")
 
+L("Cvoiced <- [bdgjvzBDGJVZ]")
+
+L("Cunvoiced <- [ptkcfsPTKCFS]")
+
+L("Badvoice <- ((Cvoiced (Cunvoiced/[Hh]))/(Cunvoiced (Cvoiced/[Hh])))")
+
 L("letter <- (![qwxQWX] [a-zA-Z])")
 
 L("lowercase <- (![qwx] [a-z])")
@@ -62,7 +68,7 @@ L("SyllableB <- (InitialConsonants? Vocalic (!Syllable FinalConsonant)? (!Syllab
 
 L("Syllable <- ((SyllableA/SyllableB) juncture?)")
 
-L("FinalConsonant <- (!syllabic (!(!continuant C1 !Syllable continuant) !NoMedial2 !NoMedial3 C1 !(juncture? (V2/syllabic))))")
+L("FinalConsonant <- (!syllabic !(&Badvoice C1 !Syllable) (!(!continuant C1 !Syllable continuant) !NoMedial2 !NoMedial3 C1 !(juncture? (V2/syllabic))))")
 
 L("SyllableD <- (&(InitialConsonants? ([Yy]/DoubleVowel/BrokenMono/(&Mono V2 DoubleVowel)/(!MustMono &Mono V2 BrokenMono))) Syllable)")
 
@@ -130,7 +136,7 @@ L("Hearly <- (!predstart [Hh])")
 
 L("Nearly <- (!predstart [Nn])")
 
-L("connective <- ([ ]* !predstart ([Nn] [Oo] juncture?)? (a/e/o/u/(Hearly a)/(Nearly UU)) juncture? !V2 !(!predstart [Ff] [Ii]) !(!predstart [Mm] [Aa]) !(!predstart [Zz] [Ii]))")
+L("connective <- ([ ]* !predstart ([Nn] [Oo] juncture? !i)? (a/e/i/o/u/(Hearly a)/(Nearly UU)) juncture? !V2 !(!predstart [Ff] [Ii]) !(!predstart [Mm] [Aa]) !(!predstart [Zz] [Ii]))")
 
 L("CmapuaUnit <- ((C1 Mono juncture? V2 !([\'*] [ ]* &C1 predstart) juncture? !V1)/(C1 (VV/([Ii] [Yy])/([Uu] [Yy])) !([\'*] [ ]* &C1 predstart) juncture? !V1)/(C1 V2 !([\'*] [ ]* &C1 predstart) juncture? !V1))")
 
@@ -252,7 +258,7 @@ L("Complex <- (&caprule &PreComplex PhoneticComplex !([ ]* connective))")
 
 L("LiQuote <- ((&caprule [Ll] [Ii] juncture? comma2? [\"] phoneticutterance [\"] comma2? &caprule [Ll] [Uu] juncture? !([ ]* connective))/(&caprule [Kk] [Ii] juncture? [Ee] juncture? comma2? [(] phoneticutterance [)] comma2? &caprule [Kk] [Ii] juncture? [Uu] juncture? !([ ]* connective)))")
 
-L("Word <- (NameWord/(Cmapua !([ ]* Cmapua))/Complex/CCVNOY)")
+L("Word <- (NameWord/Cmapua/Complex/CCVNOY)")
 
 L("SingleWord <- (((Borrowing !.)/(Complex !.)/(Word !.)/(PreName !.)/CCVNOY) !.)")
 
@@ -710,7 +716,9 @@ L("HUE0 <- ([ ]* &caprule [Hh] [Uu] juncture? [Ee] juncture? !V1)")
 
 L("invvoc <- ((HUE0 comma2? name)/(HUE freemod? descpred guea? namesuffix?)/(HUE freemod? statement giuo?)/(HUE freemod? argument1 guu?)/([ ]* &([Hh] [Uu] juncture? [Ee] juncture?) AlienWord))")
 
-L("freemod <- ((NOUI/(SOI freemod? descpred guea?)/DIE/(NO1 DIE)/(KIE comma? utterance0 comma? KIU)/(KIE2 comma? utterance0 comma? KIU2)/invvoc/voc/(comma !(!FalseMarked PreName))/JO/UI1/([ ]* '...' ([ ]* &letter)?)/([ ]* '--' ([ ]* &letter)?)) freemod?)")
+L("kiamod <- (comma2? !(!PreName !predstart K IA) ((PreName/LIU1/AlienWord/(Cmapua ([ ]* !(K IA) !PreName !predstart Cmapua)*)/Word) kiamod* comma2? !PreName !predstart K IA) comma2?)")
+
+L("freemod <- ((kiamod/NOUI/(SOI freemod? descpred guea?)/DIE/(NO1 DIE)/(KIE comma? utterance0 comma? KIU)/(KIE2 comma? utterance0 comma? KIU2)/invvoc/voc/(comma !(!FalseMarked PreName))/JO/UI1/([ ]* '...' ([ ]* &letter)?)/([ ]* '--' ([ ]* &letter)?)) freemod?)")
 
 L("juelink <- (JUE freemod? (term/(PA2 freemod? gap?)))")
 
@@ -818,13 +826,15 @@ L("subject <- ((modifiers freemod?)? ((argxx subject)/(argument (modifiersx free
 
 L("statement1 <- (subject freemod? (GIO freemod? terms1)? predicate)")
 
-L("argumentA <- argument")
+L("statement1x <- 'xxx'")
 
-L("argumentB <- argument")
+L("argumentA <- (!statement1x argument)")
 
-L("argumentC <- argument")
+L("argumentB <- (!statement1x argument)")
 
-L("argumentD <- argument")
+L("argumentC <- (!statement1x argument)")
+
+L("argumentD <- (!statement1x argument)")
 
 L("argumentA1 <- argument")
 
@@ -840,9 +850,9 @@ L("terms1 <- ((modifiersx? argumentA1 (freemod? modifiersx)? argumentB1? (freemo
 
 L("word <- (arg1a/indef2)")
 
-L("words1 <- (word (ZEIA word)*)")
+L("words1 <- (word (ZEIA? word)*)")
 
-L("words2 <- (word (ZEIO word)*)")
+L("words2 <- (word (ZEIO? word)*)")
 
 L("wordset1 <- (words1? LUA)")
 
@@ -886,7 +896,7 @@ L("imperative <- ((modifiers freemod?)? GAA? !gasent predicate)")
 
 L("sen1 <- ((neghead freemod?)* (imperative/statement/keksent))")
 
-L("sentence <- (sen1 (ICA freemod? sen1)*)")
+L("sentence <- (sen1 ([!.:;?]? ICA freemod? sen1)*)")
 
 L("headterms <- (terms GI)+")
 
@@ -906,8 +916,8 @@ L("uttE <- (uttD (ICA freemod? uttD)*)")
 
 L("uttF <- (uttE (I freemod? uttE)*)")
 
-L("utterance0 <- (!GE ((!PAUSE freemod period? utterance0)/(!PAUSE freemod period?)/(uttF IGE utterance0)/uttF/(I freemod? uttF?)/(I freemod? period?)/(ICA freemod? uttF)) (&I utterance0)?)")
+L("utterance0 <- (!GE ((ICA freemod? uttF)/(!PAUSE freemod period? utterance0)/(!PAUSE freemod period?)/(uttF IGE utterance0)/uttF/(I freemod? uttF?)/(I freemod? period?)) (&I utterance0)?)")
 
-L("utterance <- (&(phoneticutterance !.) (!GE ((!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end)/(ICA freemod? uttF (&I utterance)? end))))")
+L("utterance <- (&(phoneticutterance !.) (!GE ((ICA freemod? uttF (&I utterance)? end)/(!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end))))")
 
 if __name__ == '__main__':interface();

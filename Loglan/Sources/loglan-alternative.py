@@ -136,7 +136,7 @@ L("Hearly <- (!predstart [Hh])")
 
 L("Nearly <- (!predstart [Nn])")
 
-L("connective <- ([ ]* !predstart ([Nn] [Oo] juncture?)? (a/e/o/u/(Hearly a)/(Nearly UU)) juncture? !V2 !(!predstart [Ff] [Ii]) !(!predstart [Mm] [Aa]) !(!predstart [Zz] [Ii]))")
+L("connective <- ([ ]* !predstart ([Nn] [Oo] juncture? !i)? (a/e/i/o/u/(Hearly a)/(Nearly UU)) juncture? !V2 !(!predstart [Ff] [Ii]) !(!predstart [Mm] [Aa]) !(!predstart [Zz] [Ii]))")
 
 L("CmapuaUnit <- ((C1 Mono juncture? V2 !([\'*] [ ]* &C1 predstart) juncture? !V1)/(C1 (VV/([Ii] [Yy])/([Uu] [Yy])) !([\'*] [ ]* &C1 predstart) juncture? !V1)/(C1 V2 !([\'*] [ ]* &C1 predstart) juncture? !V1))")
 
@@ -826,13 +826,15 @@ L("subject <- ((modifiers freemod?)? ((argxx subject)/(argument (modifiersx free
 
 L("statement1 <- (subject freemod? (GIO freemod? terms1)? predicate)")
 
-L("argumentA <- (!statement1 argument)")
+L("statement1x <- statement1")
 
-L("argumentB <- (!statement1 argument)")
+L("argumentA <- (!statement1x argument)")
 
-L("argumentC <- (!statement1 argument)")
+L("argumentB <- (!statement1x argument)")
 
-L("argumentD <- (!statement1 argument)")
+L("argumentC <- (!statement1x argument)")
+
+L("argumentD <- (!statement1x argument)")
 
 L("argumentA1 <- argument")
 
@@ -848,9 +850,9 @@ L("terms1 <- ((modifiersx? argumentA1 (freemod? modifiersx)? argumentB1? (freemo
 
 L("word <- (arg1a/indef2)")
 
-L("words1 <- (word (ZEIA word)*)")
+L("words1 <- (word (ZEIA? word)*)")
 
-L("words2 <- (word (ZEIO word)*)")
+L("words2 <- (word (ZEIO? word)*)")
 
 L("wordset1 <- (words1? LUA)")
 
@@ -894,7 +896,7 @@ L("imperative <- ((modifiers freemod?)? GAA? !gasent predicate)")
 
 L("sen1 <- ((neghead freemod?)* (imperative/statement/keksent))")
 
-L("sentence <- (sen1 (ICA freemod? sen1)*)")
+L("sentence <- (sen1 ([!.:;?]? ICA freemod? sen1)*)")
 
 L("headterms <- (terms GI)+")
 
@@ -914,8 +916,8 @@ L("uttE <- (uttD (ICA freemod? uttD)*)")
 
 L("uttF <- (uttE (I freemod? uttE)*)")
 
-L("utterance0 <- (!GE ((!PAUSE freemod period? utterance0)/(!PAUSE freemod period?)/(uttF IGE utterance0)/uttF/(I freemod? uttF?)/(I freemod? period?)/(ICA freemod? uttF)) (&I utterance0)?)")
+L("utterance0 <- (!GE ((ICA freemod? uttF)/(!PAUSE freemod period? utterance0)/(!PAUSE freemod period?)/(uttF IGE utterance0)/uttF/(I freemod? uttF?)/(I freemod? period?)) (&I utterance0)?)")
 
-L("utterance <- (&(phoneticutterance !.) (!GE ((!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end)/(ICA freemod? uttF (&I utterance)? end))))")
+L("utterance <- (&(phoneticutterance !.) (!GE ((ICA freemod? uttF (&I utterance)? end)/(!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end))))")
 
 if __name__ == '__main__':interface();
