@@ -1,4 +1,7 @@
-#  version of 12/6/2017 10 pm laptop
+#  version of 1/20/2022 7 am
+
+# 1/20/22 declutter was a bit too energetic and removed some
+# occurrences of important classes
 
 # 12/6 fixed bug in parsing of grammar rules with double quotes in them.
 # improved display of escape sequences.  Query:  are escape sequences
@@ -95,7 +98,7 @@ def parse(thegrammar,expression,string):
    SE=showrule(expression)
 
    if len (expression) == 0 or len(expression)>2 :  return 'bad expression'
-   if (SE,(string)) in thecache.keys():
+   if expression[0]=='identifier' and(SE,(string)) in thecache.keys():
        cachehits=cachehits+1
        #print(cachehits)
        return thecache[(SE,(string))]
@@ -547,7 +550,8 @@ def declutter(P):
             if Q==str(Q):  return [P[0],P[1],W]
             if Q[0]==label and Q[1] in compactclasses:  return [P[0],P[1],W]
             if Q[0]==label and W[1] in importantclasses and not Q[1] in importantclasses:  return ([P[0],P[1],[W[0],W[1],Q[2]]])
-            if Q[0]==label:  return ([P[0],P[1],Q])
+            #if Q[0]==label:  return ([P[0],P[1],Q])
+            if Q[0]==label and not W[1] in importantclasses : return ([P[0],P[1],Q])
         return ([P[0],P[1],W])
     Q=declutter(P[0])
     if Q==[] or Q==' ' or Q==[' ']:  return declutter(P[1:])

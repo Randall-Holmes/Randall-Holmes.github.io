@@ -25,11 +25,6 @@
 # word.  One of the uses of this is to test possible syllable break
 # and stress patterns.
 
-# 4/16/2019 extensive updates since the last note made here.  I have
-# just reinstalled John Cowan's zao proposal after the massive phonetic
-# upgrade.  To see what has been done lately, look at the comments in
-# the PEG source file.
-
 # 5/16 main parser loglan.py and test parser loglantest.py
 # the main parser has a different treatment of guu,
 # also in the test parser, with few effects.
@@ -573,14 +568,12 @@ def niceprecs():
     Compact('CI0')
     Compact('LAE')
     Compact('DIO2')
-    Compact('GAA')
-#    Compact('Name')
-#    Compact('NameWord')
+    Compact('Name')
+    Compact('NameWord')
     Compact('PreName')
-#    Compact('Borrowing')
-#    Compact('Complex')
-#    Compact('Cmapua')
-    Compact('AlienWord')
+    Compact('Borrowing')
+    Compact('Complex')
+    Compact('Cmapua')
 
 
     MakeImportant('juelink')
@@ -601,12 +594,12 @@ def niceprecs():
     MakeImportant('argumentE')
     MakeImportant('barepred')
     MakeImportant('predicate')
-    MakeImportant('imperative')
     MakeImportant('statement')
     MakeImportant('sentence')
     MakeImportant('freemod')
     MakeImportant('uttC')
     MakeImportant('uttF')
+    MakeImportant('termsA')
 
 Indent()
 niceprecs()

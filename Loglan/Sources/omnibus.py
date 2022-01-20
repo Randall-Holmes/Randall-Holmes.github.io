@@ -1,4 +1,9 @@
-#  version of 12/6/2017 10 pm laptop
+# new omnibus file 1/20/2022, incorporating update to the PEG engine
+
+#  version of 1/20/2022 7 am
+
+# 1/20/22 declutter was a bit too energetic and removed some
+# occurrences of important classes
 
 # 12/6 fixed bug in parsing of grammar rules with double quotes in them.
 # improved display of escape sequences.  Query:  are escape sequences
@@ -95,7 +100,7 @@ def parse(thegrammar,expression,string):
    SE=showrule(expression)
 
    if len (expression) == 0 or len(expression)>2 :  return 'bad expression'
-   if (SE,(string)) in thecache.keys():
+   if expression[0]=='identifier' and(SE,(string)) in thecache.keys():
        cachehits=cachehits+1
        #print(cachehits)
        return thecache[(SE,(string))]
@@ -547,7 +552,8 @@ def declutter(P):
             if Q==str(Q):  return [P[0],P[1],W]
             if Q[0]==label and Q[1] in compactclasses:  return [P[0],P[1],W]
             if Q[0]==label and W[1] in importantclasses and not Q[1] in importantclasses:  return ([P[0],P[1],[W[0],W[1],Q[2]]])
-            if Q[0]==label:  return ([P[0],P[1],Q])
+            #if Q[0]==label:  return ([P[0],P[1],Q])
+            if Q[0]==label and not W[1] in importantclasses : return ([P[0],P[1],Q])
         return ([P[0],P[1],W])
     Q=declutter(P[0])
     if Q==[] or Q==' ' or Q==[' ']:  return declutter(P[1:])
@@ -624,7 +630,6 @@ def printparse(P):
 
 # more feedback from commands will be useful.
 
-
 # recent updates
 
 #try out the new interface.   It does basically everything that
@@ -651,11 +656,6 @@ def printparse(P):
 # quote is the apostrophe, which can appear as a stress marker in a
 # word.  One of the uses of this is to test possible syllable break
 # and stress patterns.
-
-# 4/16/2019 extensive updates since the last note made here.  I have
-# just reinstalled John Cowan's zao proposal after the massive phonetic
-# upgrade.  To see what has been done lately, look at the comments in
-# the PEG source file.
 
 # 5/16 main parser loglan.py and test parser loglantest.py
 # the main parser has a different treatment of guu,
@@ -1200,14 +1200,12 @@ def niceprecs():
     Compact('CI0')
     Compact('LAE')
     Compact('DIO2')
-    Compact('GAA')
-#    Compact('Name')
-#    Compact('NameWord')
+    Compact('Name')
+    Compact('NameWord')
     Compact('PreName')
-#    Compact('Borrowing')
-#    Compact('Complex')
-#    Compact('Cmapua')
-    Compact('AlienWord')
+    Compact('Borrowing')
+    Compact('Complex')
+    Compact('Cmapua')
 
 
     MakeImportant('juelink')
@@ -1228,12 +1226,12 @@ def niceprecs():
     MakeImportant('argumentE')
     MakeImportant('barepred')
     MakeImportant('predicate')
-    MakeImportant('imperative')
     MakeImportant('statement')
     MakeImportant('sentence')
     MakeImportant('freemod')
     MakeImportant('uttC')
     MakeImportant('uttF')
+    MakeImportant('termsA')
 
 Indent()
 niceprecs()
@@ -1590,8 +1588,8 @@ def grammarbatch(gfile):
         while not line1=='' and (line1[len(line1)-1]==' ' or line1[len(line1)-1]=='\n' or line1[len(line1)-1]=='\r'):line1=line1[0:len(line1)-1]
         while not line1=='' and line1[0]==' ':line1=line1[1:]
         if not(line1=='' or line1[0]=='#'):  rundef(loglan,line1)
-
-#from loglanpreamble import *
+        
+# from loglanpreamble import *
 
 L("V1 <- [aeiouyAEIOUY]")
 
@@ -2513,5 +2511,6 @@ L("utterance0 <- (!GE ((ICA freemod? uttF)/(!PAUSE freemod period? utterance0)/(
 
 L("utterance <- (&(phoneticutterance !.) (!GE ((ICA freemod? uttF (&I utterance)? end)/(!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end))))")
 
-if __name__ == '__main__':interface();       
+if __name__ == '__main__':interface();
+    
 
