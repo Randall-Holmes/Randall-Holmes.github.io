@@ -404,7 +404,8 @@ additem1(peggrammar,'Spacing',['zeroormore',['alternatives',[['identifier','Spac
 
 additem1(peggrammar,'Comment',
          ['sequence',[['literal','#'],['zeroormore',['sequence',[['not',['identifier','EndOfLine']],['dot']]]],['identifier','EndOfLine']]])
-
+additem1(peggrammar,'Html',
+         ['sequence',[['literal','<'],['zeroormore',['sequence',[['not',['identifier','EndOfLine']],['dot']]]],['identifier','EndOfLine']]])
 additem1(peggrammar,'Space',['alternatives',[['literal',' '],['literal','\t'],['identifier','EndOfLine']]])
 
 additem1(peggrammar,'EndOfLine',['alternatives',[['literal','\r\n'],['literal','\n'],['literal','\r']]])
@@ -476,6 +477,7 @@ def rundef(thegrammar,s):
     global TheString
     global thecache
     thecache.clear();
+    if s[0] =='#' or s[0] == '<':return 'comments'
     TheString=s
     T=parse(peggrammar,['identifier','Definition'],0)
     if T[0]=='fail' or not T[1]==len(TheString):

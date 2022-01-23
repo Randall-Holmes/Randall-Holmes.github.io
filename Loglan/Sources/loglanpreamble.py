@@ -600,6 +600,8 @@ def niceprecs():
     MakeImportant('uttC')
     MakeImportant('uttF')
     MakeImportant('termsA')
+    MakeImportant('DefaultStressedSyllable')
+
 
 Indent()
 niceprecs()
