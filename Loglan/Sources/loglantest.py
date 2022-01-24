@@ -98,9 +98,9 @@ L("MarkedName <- (&caprule ((([Ll] !pause [Aa] juncture?)/([Hh] [Oo] !pause [Ii]
 
 L("FalseMarked <- (&PreName (!MarkedName character)* MarkedName)")
 
-L("NameWord <- (((&caprule MarkedName)/([,] [ ]+ !FalseMarked &caprule PreName)/(&V1 !FalseMarked &caprule PreName)/(&caprule ((([Ll] [Aa] juncture?)/([Hh] [Oo] [Ii] juncture?)/([Cc] &pause [Ii] juncture?)/([Ll] [Ii] juncture? [Uu] juncture?)/([Mm] [Uu] juncture? [Ee] juncture?)/([Gg] [Aa] [Oo] juncture?)) !V1 [,]? [ ]* &caprule PreName))) (([,]? [ ]+ !FalseMarked &caprule PreName)/([,]? [ ]+ &([Cc] &pause [Ii]) NameWord))* &(([ ]* [Cc] [Ii] predunit)/(&(([,] [ ]+)/terminal/[\")]/!.) .)/!.))")
+L("NameWord <- (((&caprule MarkedName)/([,] [ ]+ !FalseMarked &caprule PreName)/(&V1 !FalseMarked &caprule PreName)/(&caprule ((([Ll] [Aa] juncture?)/([Hh] [Oo] [Ii] juncture?)/([Cc] [Ii] juncture?)/([Ll] [Ii] juncture? [Uu] juncture?)/([Mm] [Uu] juncture? [Ee] juncture?)/([Gg] [Aa] [Oo] juncture?)) !V1 [,]? [ ]* &caprule PreName))) (([,]? [ ]+ !FalseMarked &caprule PreName)/([,]? [ ]+ &([Cc] [Ii]) NameWord))* &(([ ]* [Cc] [Ii] predunit)/(&(([,] [ ]+)/terminal/[\")]/!.) .)/!.))")
 
-L("namemarker <- ((([Ll] [Aa] juncture?)/([Hh] [Oo] [Ii] juncture?)/([Hh] [Uu] juncture? [Ee] juncture?)/([Cc] &pause [Ii] juncture?)/([Ll] [Ii] juncture? [Uu] juncture?)/([Gg] [Aa] [Oo] juncture?)/([Mm] [Uu] juncture? [Ee] juncture?)) !V1)")
+L("namemarker <- ((([Ll] [Aa] juncture?)/([Hh] [Oo] [Ii] juncture?)/([Hh] [Uu] juncture? [Ee] juncture?)/([Cc] &(pause/([Ii] juncture? [ ]* PreName)) [Ii] juncture?)/([Ll] [Ii] juncture? [Uu] juncture?)/([Gg] [Aa] [Oo] juncture?)/([Mm] [Uu] juncture? [Ee] juncture?)) !V1)")
 
 L("badnamemarker <- (namemarker !V1 [, ]? [ ]* BadPreName)")
 
@@ -734,7 +734,7 @@ L("linkargs1 <- (jelink freemod? (links/gue)?)")
 
 L("linkargs <- ((linkargs1/(KA freemod? linkargs freemod? KI freemod? linkargs1)) (freemod? A1 freemod? linkargs1)*)")
 
-L("abstractpred <- ((POA freemod? uttAx guoa?)/(POA freemod? sentence guoa?)/(POE freemod? uttAx guoe?)/(POE freemod? sentence guoe?)/(POI freemod? uttAx guoi?)/(POI freemod? sentence guoi?)/(POO freemod? uttAx guoo?)/(POO freemod? sentence guoo?)/(POU freemod? uttAx guou?)/(POU freemod? sentence guou?)/(PO freemod? uttAx guo?)/(PO freemod? sentence guo?))")
+L("abstractpred <- ((POA freemod? uttAxclone guoa?)/(POA freemod? sentenceclone guoa?)/(POE freemod? uttAxclone guoe?)/(POE freemod? sentenceclone guoe?)/(POI freemod? uttAxclone guoi?)/(POI freemod? sentenceclone guoi?)/(POO freemod? uttAxclone guoo?)/(POO freemod? sentenceclone guoo?)/(POU freemod? uttAxclone guou?)/(POU freemod? sentenceclone guou?)/(PO freemod? uttAxclone guo?)/(PO freemod? sentenceclone guo?))")
 
 L("predunit1 <- ((SUE/(NU freemod? GE freemod? despredE (freemod? geu comma?)?)/(NU freemod? PREDA)/(comma? GE freemod? descpred (freemod? geu comma?)?)/abstractpred/(ME freemod? argument1 meu?)/PREDA) freemod?)")
 
@@ -780,7 +780,7 @@ L("LANAME <- (LA0 comma2? name)")
 
 L("descriptn <- (!LANAME ((LAU wordset1)/(LOU wordset2)/(LE freemod? ((!mex arg1a freemod?)? (PA2 freemod?)?)? ((mex freemod? arg1a)/(mex freemod? descpred)/descpred))/(GE freemod? mex freemod? descpred)))")
 
-L("abstractn <- ((LEFORPO freemod? POA freemod? uttAx guoa?)/(LEFORPO freemod? POA freemod? sentence guoa?)/(LEFORPO freemod? POE freemod? uttAx guoe?)/(LEFORPO freemod? POE freemod? sentence guoe?)/(LEFORPO freemod? POI freemod? uttAx guoi?)/(LEFORPO freemod? POI freemod? sentence guoi?)/(LEFORPO freemod? POO freemod? uttAx guoo?)/(LEFORPO freemod? POO freemod? sentence guoo?)/(LEFORPO freemod? POU freemod? uttAx guou?)/(LEFORPO freemod? POU freemod? sentence guou?)/(LEFORPO freemod? PO freemod? uttAx guo?)/(LEFORPO freemod? PO freemod? sentence guo?))")
+L("abstractn <- ((LEFORPO freemod? POA freemod? uttAxclone guoa?)/(LEFORPO freemod? POA freemod? sentenceclone guoa?)/(LEFORPO freemod? POE freemod? uttAxclone guoe?)/(LEFORPO freemod? POE freemod? sentenceclone guoe?)/(LEFORPO freemod? POI freemod? uttAxclone guoi?)/(LEFORPO freemod? POI freemod? sentenceclone guoi?)/(LEFORPO freemod? POO freemod? uttAxclone guoo?)/(LEFORPO freemod? POO freemod? sentenceclone guoo?)/(LEFORPO freemod? POU freemod? uttAxclone guou?)/(LEFORPO freemod? POU freemod? sentenceclone guou?)/(LEFORPO freemod? PO freemod? uttAxclone guo?)/(LEFORPO freemod? PO freemod? sentenceclone guo?))")
 
 L("namesuffix <- (&((comma2 !FalseMarked PreName)/([ ]* [Cc] [Ii] juncture? comma2? (PreName/AcronymicName))) (([ ]* [Cc] [Ii] juncture? comma2?)/comma2)? name)")
 
@@ -892,21 +892,33 @@ L("statement <- (gasent/(modifiers freemod? gasent)/(subject freemod? GAA? freem
 
 L("keksent <- (modifiers? freemod? (NO1 freemod?)* (KA freemod? headterms? freemod? sentence freemod? KI freemod? uttA0))")
 
+L("keksentclone <- (modifiers? freemod? (NO1 freemod?)* (KA freemod? headterms? freemod? sentenceclone freemod? KI freemod? uttA0clone))")
+
 L("neghead <- ((NO1 freemod? gap)/(NO2 PAUSE))")
 
 L("imperative <- ((modifiers freemod?)? GAA? !gasent predicate)")
 
+L("nosubject <- ((modifiers freemod?)? GAA? !gasent predicate)")
+
 L("sen1 <- ((neghead freemod?)* (imperative/statement/keksent))")
 
+L("sen1clone <- ((neghead freemod?)* (nosubject/statement/keksent))")
+
 L("sentence <- (sen1 ([!.:;?]? ICA freemod? sen1)*)")
+
+L("sentenceclone <- (sen1clone ([!.:;?]? ICA freemod? sen1clone)*)")
 
 L("headterms <- (terms GI)+")
 
 L("uttAx <- (headterms freemod? sentence giuo?)")
 
+L("uttAxclone <- (headterms freemod? sentenceclone giuo?)")
+
 L("uttA <- ((A1/mex) freemod?)")
 
 L("uttA0 <- (sen1/uttAx)")
+
+L("uttA0clone <- (sen1clone/uttAxclone)")
 
 L("uttA1 <- ((sen1/uttAx/links/linkargs/argmod/(modifiers freemod? keksent)/terms/uttA/NO1) freemod? period?)")
 
