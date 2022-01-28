@@ -100,7 +100,7 @@ L("FalseMarked <- (&PreName (!MarkedName character)* MarkedName)")
 
 L("NameWord <- (((&caprule MarkedName)/([,] [ ]+ !FalseMarked &caprule PreName)/(&V1 !FalseMarked &caprule PreName)/(&caprule ((([Ll] [Aa] juncture?)/([Hh] [Oo] [Ii] juncture?)/([Cc] [Ii] juncture?)/([Ll] [Ii] juncture? [Uu] juncture?)/([Mm] [Uu] juncture? [Ee] juncture?)/([Gg] [Aa] [Oo] juncture?)) !V1 [,]? [ ]* &caprule PreName))) (([,]? [ ]+ !FalseMarked &caprule PreName)/([,]? [ ]+ &([Cc] [Ii]) NameWord))* &(([ ]* [Cc] [Ii] predunit)/(&(([,] [ ]+)/terminal/[\")]/!.) .)/!.))")
 
-L("namemarker <- ((([Ll] [Aa] juncture?)/([Hh] [Oo] [Ii] juncture?)/([Hh] [Uu] juncture? [Ee] juncture?)/([Cc] &(pause/([Ii] juncture? [ ]* PreName)) [Ii] juncture?)/([Ll] [Ii] juncture? [Uu] juncture?)/([Gg] [Aa] [Oo] juncture?)/([Mm] [Uu] juncture? [Ee] juncture?)) !V1)")
+L("namemarker <- ((([Ll] [Aa] juncture?)/([Hh] [Oo] [Ii] juncture?)/([Hh] [Uu] juncture? [Ee] juncture?)/([Cc] &(pause/([Ii] juncture? [ ]+ PreName)) [Ii] juncture?)/([Ll] [Ii] juncture? [Uu] juncture?)/([Gg] [Aa] [Oo] juncture?)/([Mm] [Uu] juncture? [Ee] juncture?)) !V1)")
 
 L("badnamemarker <- (namemarker !V1 [, ]? [ ]* BadPreName)")
 
@@ -660,8 +660,6 @@ L("HUE <- ([ ]* (H UE))")
 
 L("NO1 <- ([ ]* !KOU1 !NOUI (N o) !(comma2? Z AO comma2? Predicate) !([ ]* KOU) !([ ]* (JIO/JI/JIZA/JIOZA/JIZI/JIOZI/JIZU/JIOZU)))")
 
-L("GAA <- ((NO1 freemod?)* ([ ]* (G AA)))")
-
 L("AcronymicName <- (Acronym &(comma/period/end))")
 
 L("DJAN <- (PreName/AcronymicName)")
@@ -826,17 +824,13 @@ L("modifiersx <- ((modifier/argxx) (freemod? (modifier/argxx))*)")
 
 L("subject <- ((modifiers freemod?)? ((argxx subject)/(argument (modifiersx freemod?)?)))")
 
-L("statement1 <- (subject freemod? (GIO freemod? terms1)? predicate)")
+L("argumentA <- argument")
 
-L("statement1x <- 'xxx'")
+L("argumentB <- argument")
 
-L("argumentA <- (!statement1x argument)")
+L("argumentC <- argument")
 
-L("argumentB <- (!statement1x argument)")
-
-L("argumentC <- (!statement1x argument)")
-
-L("argumentD <- (!statement1x argument)")
+L("argumentD <- argument")
 
 L("argumentA1 <- argument")
 
@@ -882,13 +876,13 @@ L("identpred <- ((NO1 freemod?)* (BI freemod? argument1 guu?))")
 
 L("predicate <- (predicate1/identpred)")
 
-L("gasent1 <- ((NO1 freemod?)* (GAA? freemod? &markpred predicate (GA2 freemod? subject)?))")
+L("gasent1 <- ((NO1 freemod?)* (freemod? &markpred predicate (GA2 freemod? subject)?))")
 
-L("gasent2 <- ((NO1 freemod?)* (GAA? PA1 freemod? sentpred modifiers? (GA2 freemod? subject freemod? GIO? freemod? terms?)))")
+L("gasent2 <- ((NO1 freemod?)* (PA1 freemod? sentpred modifiers? (GA2 freemod? subject freemod? GIO? freemod? terms?)))")
 
 L("gasent <- (gasent2/gasent1)")
 
-L("statement <- (gasent/(modifiers freemod? gasent)/(subject freemod? GAA? freemod? (GIO? freemod? terms1)? predicate))")
+L("statement <- (gasent/(modifiers freemod? gasent)/(subject freemod? freemod? (GIO? freemod? terms1)? predicate))")
 
 L("keksent <- (modifiers? freemod? (NO1 freemod?)* (KA freemod? headterms? freemod? sentence freemod? KI freemod? uttA0))")
 
@@ -896,9 +890,9 @@ L("keksentclone <- (modifiers? freemod? (NO1 freemod?)* (KA freemod? headterms? 
 
 L("neghead <- ((NO1 freemod? gap)/(NO2 PAUSE))")
 
-L("imperative <- ((modifiers freemod?)? GAA? !gasent predicate)")
+L("imperative <- ((modifiers freemod?)? !gasent predicate)")
 
-L("nosubject <- ((modifiers freemod?)? GAA? !gasent predicate)")
+L("nosubject <- ((modifiers freemod?)? !gasent predicate)")
 
 L("sen1 <- ((neghead freemod?)* (imperative/statement/keksent))")
 

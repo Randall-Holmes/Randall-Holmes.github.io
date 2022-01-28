@@ -52,6 +52,8 @@
 
 <p>
 
+<LI> 1/26/2022 complete elimination of the alternative parser and all constituent rules (including the word [gaa]) as I have abandoned this idea.
+
 <LI>a note:  there is a problem with interaction of quoted forms with alien text operators.
 <p>
 <LI> 1/23/2022  made imperative important and cloned sentence and uttAx in versions which will not be marked as imperative if they lack subjects.  Considering simply forbidding jio clauses to contain no subject sentences, but this is not implemented (ji should be used).  Fixing the restriction on <ci> as a name marker to allow it to be followed by whitespace and a name.
@@ -973,7 +975,7 @@ NameWord <- (&caprule MarkedName/([,] [ ]+ !FalseMarked &caprule PreName)/(&V1 !
 
 <p>
 
-namemarker <- ([Ll] [Aa] juncture?/[Hh][Oo][Ii] juncture?/([Hh] [Uu] juncture? [Ee] juncture?)/[Cc] &(pause/ [Ii] juncture? [ ]* PreName) [Ii] juncture?/[Ll][Ii] juncture? [Uu] juncture?/[Gg][Aa][Oo] juncture?/[Mm] [Uu] juncture? [Ee] juncture?) !V1
+namemarker <- ([Ll] [Aa] juncture?/[Hh][Oo][Ii] juncture?/([Hh] [Uu] juncture? [Ee] juncture?)/[Cc] &(pause/ [Ii] juncture? [ ]+ PreName) [Ii] juncture?/[Ll][Ii] juncture? [Uu] juncture?/[Gg][Aa][Oo] juncture?/[Mm] [Uu] juncture? [Ee] juncture?) !V1
 
 <p>
 
@@ -2516,12 +2518,7 @@ HUE <- ([ ]* (H UE))
 <p>
 NO1 <- ([ ]* !KOU1 !NOUI (N o) !(comma2? Z AO comma2? Predicate) !([ ]* KOU) !([ ]* (JIO/JI/JIZA/JIOZA/JIZI/JIOZI/JIZU/JIOZU)) )
 <p>
-<H4> gaa, the large subject marker in the alternative parser </H4>
 
-<LI>a technical closure for the alternative parser approach:  the "large subject marker"
-<p>
-GAA <- (NO1 freemod?)* ([ ]* (G AA))
-<p>
 <H3> The large word classes (names and predicates)</H3>
 <LI>Names, acronyms and PreNames from above.
 <p>
@@ -3081,20 +3078,6 @@ modifiersx <- ((modifier/argxx) (freemod? (modifier/argxx))*)
 
 subject <- ((modifiers freemod?)? ((argxx subject)/(argument (modifiersx freemod?)?)))
 
-<p>
-
-<LI>this case is identified as an aid to experimental termination of argument lists
-<LI>this only makes sense if GIO is not optional
-
-statement1 <- (subject freemod? (GIO freemod? terms1)? predicate)
-
-<p>
-
-<LI>change this to something you wont encounter to turn off the alternative parser or to statement1 to turn it on
-
-<p>
-
-statement1x <- 'xxx'
 
 <p>
 
@@ -3105,29 +3088,15 @@ statement1x <- 'xxx'
 
 <p>
 
-<LI>I am trying a simple version of the "alternative parser" approach:
-<LI>a term list will refuse to digest an argument which starts a new
-<LI>SVO sentence (statement1).
+argumentA <- argument 
 
 <p>
 
-argumentA <- !statement1x argument 
+argumentB <- argument 
 
 <p>
 
-<LI>argumentA <- argument
-
-<p>
-
-argumentB <- !statement1x argument 
-
-<p>
-
-<LI> argumentB <- argument
-
-<p>
-
-argumentC <- !statement1x argument 
+argumentC <- argument 
 
 <p>
 
@@ -3135,15 +3104,11 @@ argumentC <- !statement1x argument
 
 <p>
 
-argumentD <- !statement1x argument 
+argumentD <- argument 
 
 <p>
 
-<LI> argumentD <- argument
-
-<p>
-
-<LI>for argument lists not guarded against absorbing a following subject
+<LI>for argument lists not guarded against absorbing a following subject (now redundant)
 
 <p>
 
@@ -3172,7 +3137,7 @@ terms <- ((modifiersx? argumentA (freemod? modifiersx)? argumentB? (freemod? mod
 
 <p>
 
-<LI>terms list not guarded against absorbing a following subject
+<LI>terms list not guarded against absorbing a following subject (now the same as terms)
 
 <p>
 
@@ -3297,17 +3262,16 @@ predicate <- (predicate1/identpred)
 <LI>in [gasent1] the final (ga subject) is optional.  When it does not appear, the resulting
 <LI>sentence is an observative (a sentence with subject omitted), not an imperative.
 <LI>Imperatives for us are unmarked.
-<p>
-<LI>In the alternative version, the use of the large subject marker GAA can prevent inadvertant absorption of a preceding trailing argument into a statement
+
 <p>
 <LI>4/22 allowing general predicates in gasent.  Otherwise the spaces of observatives and imperatives become quite confused.
 <p>
 
-gasent1 <- ((NO1 freemod?)* (GAA? freemod? &markpred predicate (GA2 freemod? subject)?))
+gasent1 <- ((NO1 freemod?)* (freemod? &markpred predicate (GA2 freemod? subject)?))
 
 <p>
 
-gasent2 <- ((NO1 freemod?)* (GAA? PA1 freemod? sentpred modifiers? (GA2 freemod? subject freemod? GIO? freemod? terms?)))
+gasent2 <- ((NO1 freemod?)* (PA1 freemod? sentpred modifiers? (GA2 freemod? subject freemod? GIO? freemod? terms?)))
 
 <p>
 
@@ -3333,9 +3297,9 @@ gasent <- (gasent2/gasent1)
 <LI>(which would not have been hard for JCB to implement, in fact) is our restriction of the form "terms gasent" to "modifiers gasent".
 <LI>His comments make it clear that he does not want arguments among those terms.
 <p>
-# statement <- (gasent/(modifiers freemod? gasent)/(subject freemod? GAA? freemod? (GIO freemod? terms1)? predicate))
+# statement <- (gasent/(modifiers freemod? gasent)/(subject freemod? freemod? (GIO freemod? terms1)? predicate))
 <p>
-statement <- (gasent/(modifiers freemod? gasent)/(subject freemod? GAA? freemod? (GIO? freemod? terms1)? predicate))
+statement <- (gasent/(modifiers freemod? gasent)/(subject freemod? freemod? (GIO? freemod? terms1)? predicate))
 <p>
 <LI>this is a forethought connected basic sentence.  It is odd (and actual odd results can be exhibited) that the final segment in both
 <LI>of these rules is of the very general class uttA1, which includes some quite fragmentary utterances usually intended as answers.
@@ -3361,13 +3325,12 @@ neghead <- ((NO1 freemod? gap)/(NO2 PAUSE))
 
 <LI>this class includes [statement], predicate modifiers preceding a predicate (which may contain arguments), a statement,
 <LI>a predicate, and a keksent.  Of these, the first and third are imperatives.
-<p>
-<LI>in the alternative version, the large subject marker GAA can prevent inadvertant absorption of preceding trailing arguments into a statement
+
 <p>
 <LI>4/23/2019 added actual rule for imperative sentences.  This should not
 <LI>affect the parse in any essential way.
 <p>
-imperative <- ((modifiers freemod?)? GAA? !gasent predicate)
+imperative <- ((modifiers freemod?)?  !gasent predicate)
 
 <p>
 
@@ -3375,7 +3338,7 @@ imperative <- ((modifiers freemod?)? GAA? !gasent predicate)
 
 <p>
 
-nosubject <- ((modifiers freemod?)? GAA? !gasent predicate)
+nosubject <- ((modifiers freemod?)?  !gasent predicate)
 
 <p>
 sen1 <- (neghead freemod?)* (imperative/statement/keksent)
@@ -3388,8 +3351,7 @@ sen1 <- (neghead freemod?)* (imperative/statement/keksent)
 
 sen1clone <- (neghead freemod?)* (nosubject/statement/keksent)
 
-<p>
-# sen1 <- ((neghead freemod?)* ((modifiers freemod? GAA? !gasent predicate)/statement/GAA? predicate/keksent))
+
 <p>
 <LI>the class [sentence] consists of sen1's afterthought connected with A connectives
 <p>
