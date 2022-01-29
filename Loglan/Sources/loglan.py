@@ -30,7 +30,21 @@ L("character <- (letter/juncture)")
 
 L("AlienText <- (([,]? [ ]+ [\"] (![\"] .)+ [\"])/([,]? [ ]+ (![, ] !terminal .)+ ([,]? [ ]+ [y] [,]? [ ]+ (![, ] !terminal .)+)*))")
 
-L("AlienWord <- (&caprule (([Hh] [Oo] [Ii] juncture? &([,]? [ ]+ [\"]))/([Hh] [Uu] juncture? [Ee] juncture? &([,]? [ ]+ [\"]))/([Ll] [Ii] juncture? [Ee] juncture?)/([Ll] [Aa] [Oo] juncture?)/([Ll] [Ii] juncture? [Oo] juncture?)/([Ss] [Aa] [Oo] juncture?)/([Ss] [Uu] juncture? [Ee] juncture?)) AlienText)")
+L("HOIalien <- ([Hh] [Oo] [Ii])")
+
+L("HUEalien <- ([Hh] [Uu] juncture? [Ee])")
+
+L("LIEalien <- ([Ll] [Ii] juncture? [Ee])")
+
+L("LAOalien <- ([Ll] [Aa] [Oo])")
+
+L("LIOalien <- ([Ll] [Ii] juncture? [Oo])")
+
+L("SAOalien <- ([Ss] [Aa] [Oo])")
+
+L("SUEalien <- ([Ss] [Uu] juncture? [Ee])")
+
+L("AlienWord <- (&caprule ((HOIalien juncture? &([,]? [ ]+ [\"]))/(HUEalien juncture? &([,]? [ ]+ [\"]))/(LIEalien juncture?)/(LAOalien juncture?)/(LIOalien juncture?)/(SAOalien juncture?)/(SUEalien juncture?)) AlienText)")
 
 L("alienmarker <- ((([Hh] [Oo] [Ii] juncture? &([,]? [ ]+ [\"]))/([Hh] [Uu] juncture? [Ee] juncture? &([,]? [ ]+ [\"]))/([Ll] [Ii] juncture? [Ee] juncture?)/([Ll] [Aa] [Oo] juncture?)/([Ll] [Ii] juncture? [Oo] juncture?)/([Ss] [Aa] [Oo] juncture?)/([Ss] [Uu] juncture? [Ee] juncture?)) !V1)")
 
@@ -94,11 +108,37 @@ L("PreName <- ((Syllable &Syllable)* NameEndSyllable)")
 
 L("BadPreName <- (((MaybePauseSyllable [ ]+)/(Syllable &Syllable))* NameEndSyllable)")
 
-L("MarkedName <- (&caprule ((([Ll] !pause [Aa] juncture?)/([Hh] [Oo] !pause [Ii] juncture?)/([Hh] [Uu] juncture? !pause [Ee] juncture?)/([Ll] [Ii] juncture? !pause [Uu] juncture?)/([Gg] [Aa] !pause [Oo] juncture?)/([Mm] [Uu] juncture? !pause [Ee] juncture?)) [ ]* &C1 &caprule PreName))")
+L("LAname <- ([Ll] [Aa])")
+
+L("HOIname <- ([Hh] [Oo] [Ii])")
+
+L("CIname <- ([Cc] [Ii])")
+
+L("LIUname <- ([Ll] [Ii] juncture? [Uu])")
+
+L("MUEname <- ([Mm] [Uu] juncture? [Ee])")
+
+L("GAOname <- ([Gg] [Aa] [Oo])")
+
+L("HUEname <- ([Hh] [Uu] juncture? [Ee])")
+
+L("LAname2 <- ([Ll] !pause [Aa])")
+
+L("HOIname2 <- ([Hh] [Oo] !pause [Ii])")
+
+L("LIUname2 <- ([Ll] [Ii] juncture? !pause [Uu])")
+
+L("MUEname2 <- ([Mm] [Uu] juncture? !pause [Ee])")
+
+L("GAOname2 <- ([Gg] [Aa] !pause [Oo])")
+
+L("HUEname2 <- ([Hh] [Uu] juncture? !pause [Ee])")
+
+L("MarkedName <- (&caprule ((LAname2 juncture?)/(HOIname2 juncture?)/(HUEname2 juncture?)/(LIUname2 juncture?)/(GAOname2 juncture?)/(MUEname2 juncture?)) [ ]* &C1 &caprule PreName)")
 
 L("FalseMarked <- (&PreName (!MarkedName character)* MarkedName)")
 
-L("NameWord <- (((&caprule MarkedName)/([,] [ ]+ !FalseMarked &caprule PreName)/(&V1 !FalseMarked &caprule PreName)/(&caprule ((([Ll] [Aa] juncture?)/([Hh] [Oo] [Ii] juncture?)/([Cc] [Ii] juncture?)/([Ll] [Ii] juncture? [Uu] juncture?)/([Mm] [Uu] juncture? [Ee] juncture?)/([Gg] [Aa] [Oo] juncture?)) !V1 [,]? [ ]* &caprule PreName))) (([,]? [ ]+ !FalseMarked &caprule PreName)/([,]? [ ]+ &([Cc] [Ii]) NameWord))* &(([ ]* [Cc] [Ii] predunit)/(&(([,] [ ]+)/terminal/[\")]/!.) .)/!.))")
+L("NameWord <- (((&caprule MarkedName)/([,] [ ]+ !FalseMarked &caprule PreName)/(&V1 !FalseMarked &caprule PreName)/(&caprule (((LAname juncture?)/(HOIname juncture?)/(HUEname juncture?)/(CIname juncture?)/(LIUname juncture?)/(MUEname juncture?)/(GAOname juncture?)) !V1 [,]? [ ]* &caprule PreName))) (([,]? [ ]+ !FalseMarked &caprule PreName)/([,]? [ ]+ &([Cc] [Ii]) NameWord))* &(([ ]* [Cc] [Ii] predunit)/(&(([,] [ ]+)/terminal/[\")]/!.) .)/!.))")
 
 L("namemarker <- ((([Ll] [Aa] juncture?)/([Hh] [Oo] [Ii] juncture?)/([Hh] [Uu] juncture? [Ee] juncture?)/([Cc] &(pause/([Ii] juncture? [ ]+ PreName)) [Ii] juncture?)/([Ll] [Ii] juncture? [Uu] juncture?)/([Gg] [Aa] [Oo] juncture?)/([Mm] [Uu] juncture? [Ee] juncture?)) !V1)")
 
@@ -474,7 +514,9 @@ L("DA1 <- ((TAI0/DA0) (C i ![ ] NI0)?)")
 
 L("DA <- ([ ]* DA1)")
 
-L("PA0 <- (NI2? (N u !KOU)? ((G IA)/(G UA)/(P AU)/(P IA)/(P UA)/(N IA)/(N UA)/(B IU)/(F EA)/(F IA)/(F UA)/(V IA)/(V II)/(V IU)/(C OI)/(D AU)/(D II)/(D UO)/(F OI)/(F UI)/(G AU)/(H EA)/(K AU)/(K II)/(K UI)/(L IA)/(L UI)/(M IA)/(N UI)/(P EU)/(R OI)/(R UI)/(S EA)/(S IO)/(T IE)/(V IE)/(V a)/(V i)/(V u)/(P a)/(N a)/(F a)/(V a)/(KOU !(N OI) !KI)) (N OI)? ZI?)")
+L("PAX <- ((G IA)/(G UA)/(P AU)/(P IA)/(P UA)/(N IA)/(N UA)/(B IU)/(F EA)/(F IA)/(F UA)/(V IA)/(V II)/(V IU)/(C OI)/(D AU)/(D II)/(D UO)/(F OI)/(F UI)/(G AU)/(H EA)/(K AU)/(K II)/(K UI)/(L IA)/(L UI)/(M IA)/(N UI)/(P EU)/(R OI)/(R UI)/(S EA)/(S IO)/(T IE)/(V IE)/(V a)/(V i)/(V u)/(P a)/(N a)/(F a)/(V a)/(KOU !(N OI) !KI))")
+
+L("PA0 <- (NI2? (N u !KOU)? PAX (N OI)? ZI?)")
 
 L("PANOPAUSES <- ((KOU2/PA0)+ ((comma2? CA0 comma2?) (KOU2/PA0)+)*)")
 
@@ -514,17 +556,19 @@ L("LU1 <- (L u)")
 
 L("LI <- (([ ]* LI1 comma2? utterance0 comma2? LU1)/([ ]* LI1 comma2? [\"] utterance0 [\"] comma2? LU1))")
 
-L("LAO <- ([ ]* &([Ll] [Aa] [Oo] juncture?) AlienWord)")
+L("LAO <- ([ ]* &(LAOalien juncture?) AlienWord)")
 
-L("LIE <- ([ ]* &([Ll] [Ii] juncture? [Ee] juncture?) AlienWord)")
+L("LIE <- ([ ]* &(LIEalien juncture?) AlienWord)")
 
-L("LIO1 <- ([ ]* &([Ll] [Ii] juncture? [Oo] juncture?) AlienWord)")
+L("LIO1 <- ([ ]* &(LIOalien juncture?) AlienWord)")
 
 L("LW <- Cmapua")
 
 L("LIU0 <- ((L IU)/(N IU))")
 
-L("LIU1 <- (([ ]* ([Ll]/[Nn]) [iI] juncture? [Uu] juncture? !V1 comma2? (PreName/Word) &(comma/terminal/end))/([ ]* (L II TAI)))")
+L("LNIU <- (([Ll]/[Nn]) [iI] juncture? [Uu])")
+
+L("LIU1 <- (([ ]* LNIU juncture? !V1 comma2? (PreName/Word) &(comma/terminal/end))/([ ]* (L II TAI)))")
 
 L("SUE <- ([ ]* &(([Ss] [Uu] juncture? [Ee] juncture?)/([Ss] [Aa] [Oo] juncture?)) AlienWord)")
 
@@ -780,7 +824,9 @@ L("descriptn <- (!LANAME ((LAU wordset1)/(LOU wordset2)/(LE freemod? ((!mex arg1
 
 L("abstractn <- ((LEFORPO freemod? POA freemod? uttAxclone guoa?)/(LEFORPO freemod? POA freemod? sentenceclone guoa?)/(LEFORPO freemod? POE freemod? uttAxclone guoe?)/(LEFORPO freemod? POE freemod? sentenceclone guoe?)/(LEFORPO freemod? POI freemod? uttAxclone guoi?)/(LEFORPO freemod? POI freemod? sentenceclone guoi?)/(LEFORPO freemod? POO freemod? uttAxclone guoo?)/(LEFORPO freemod? POO freemod? sentenceclone guoo?)/(LEFORPO freemod? POU freemod? uttAxclone guou?)/(LEFORPO freemod? POU freemod? sentenceclone guou?)/(LEFORPO freemod? PO freemod? uttAxclone guo?)/(LEFORPO freemod? PO freemod? sentenceclone guo?))")
 
-L("namesuffix <- (&((comma2 !FalseMarked PreName)/([ ]* [Cc] [Ii] juncture? comma2? (PreName/AcronymicName))) (([ ]* [Cc] [Ii] juncture? comma2?)/comma2)? name)")
+L("CIforsuffix <- ([Cc] [Ii])")
+
+L("namesuffix <- (&((comma2 !FalseMarked PreName)/([ ]* CIforsuffix juncture? comma2? (PreName/AcronymicName))) (([ ]* CIforsuffix juncture? comma2?)/comma2)? name)")
 
 L("arg1 <- (abstractn/(LIO freemod? descpred guea?)/(LIO freemod? argument1 guua?)/(LIO freemod? mex gap?)/LIO1/LAO/LANAME/(descriptn guua? namesuffix?)/LIU1/LIE/LI)")
 
@@ -823,8 +869,6 @@ L("modifiers <- (modifier (freemod? modifier)*)")
 L("modifiersx <- ((modifier/argxx) (freemod? (modifier/argxx))*)")
 
 L("subject <- ((modifiers freemod?)? ((argxx subject)/(argument (modifiersx freemod?)?)))")
-
-L("statement1 <- (subject freemod? (GIO freemod? terms1)? predicate)")
 
 L("argumentA <- argument")
 
@@ -904,7 +948,7 @@ L("sentence <- (sen1 ([!.:;?]? ICA freemod? sen1)*)")
 
 L("sentenceclone <- (sen1clone ([!.:;?]? ICA freemod? sen1clone)*)")
 
-L("headterms <- (terms GI)+")
+L("headterms <- (terms GI freemod?)+")
 
 L("uttAx <- (headterms freemod? sentence giuo?)")
 
