@@ -972,6 +972,6 @@ L("uttF <- (uttE (I freemod? uttE)*)")
 
 L("utterance0 <- (!GE ((ICA freemod? uttF)/(!PAUSE freemod period? utterance0)/(!PAUSE freemod period?)/(uttF IGE utterance0)/uttF/(I freemod? uttF?)/(I freemod? period?)) (&I utterance0)?)")
 
-L("utterance <- (&(phoneticutterance !.) (!GE ((ICA freemod? uttF (&I utterance)? end)/(!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end))))")
+L("utterance <- (&(phoneticutterance end) (!GE ((ICA freemod? uttF (&I utterance)? end)/(!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end))))")
 
 if __name__ == '__main__':interface();
