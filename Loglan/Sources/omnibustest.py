@@ -2229,19 +2229,21 @@ L("JE <- (sp? (J e))")
 
 L("JUE <- (sp? (J UE))")
 
-L("JIZA <- (sp? ((J IE)/(J AE)/(P e)/(J i)/(J a)/(N u J i)) (Z a))")
+L("JIZA <- (sp? ((J IE)/(J AE)/(P e)/(J i)/(J a)) (Z a))")
 
 L("JIOZA <- (sp? ((J IO)/(J AO)) (Z a))")
 
-L("JIZI <- (sp? ((J IE)/(J AE)/(P e)/(J i)/(J a)/(N u J i)) (Z i))")
+L("JIZI <- (sp? ((J IE)/(J AE)/(P e)/(J i)/(J a)) (Z i))")
 
 L("JIOZI <- (sp? ((J IO)/(J AO)) (Z i))")
 
-L("JIZU <- (sp? ((J IE)/(J AE)/(P e)/(J i)/(J a)/(N u J i)) (Z u))")
+L("JIZU <- (sp? ((J IE)/(J AE)/(P e)/(J i)/(J a)) (Z u))")
 
 L("JIOZU <- (sp? ((J IO)/(J AO)) (Z u))")
 
-L("JI <- (!JIZA !JIZI !JIZU (sp? ((J IE)/(J AE)/(P e)/(J i)/(J a)/(N u J i))))")
+L("JI <- (!JIZA !JIZI !JIZU (sp? ((J IE)/(J AE)/(P e)/(J i)/(J a))))")
+
+L("NUJI <- (sp? N u !sp JI)")
 
 L("JIO <- (!JIOZA !JIOZI !JIOZU (sp? ((J IO)/(J AO))))")
 
@@ -2439,7 +2441,7 @@ L("arg1 <- (abstractn/(LIO freemod? descpred guea?)/(LIO freemod? argument1 guua
 
 L("arg1a <- ((DA/TAI/arg1/(GE freemod? arg1a)) freemod?)")
 
-L("argmod1 <- (((sp? (N o) sp?)? ((JI freemod? predicate)/(JIO freemod? sentence)/(JIO freemod? uttAx)/(JI freemod? modifier)/(JI freemod? argument1)))/((sp? (N o) sp?)? (((JIZA freemod? predicate) guiza?)/((JIOZA freemod? sentence) guiza?)/((JIOZA freemod? uttAx) guiza?)/((JIZA freemod? modifier) guiza?)/(JIZA freemod? argument1 guiza?)))/((sp? (N o) sp?)? ((JIZI freemod? predicate guizi?)/(JIOZI freemod? sentence guizi?)/(JIOZI freemod? uttAx guizi?)/(JIZI freemod? modifier guizi?)/(JIZI freemod? argument1 guizi?)))/((sp? (N o) sp?)? ((JIZU freemod? predicate guizu?)/(JIOZU freemod? sentence guizu?)/(JIOZU freemod? uttAx guizu?)/(JIZU freemod? modifier guizu?)/(JIZU freemod? argument1 guizu?))))")
+L("argmod1 <- (((sp? (N o) sp?)? ((JI freemod? predicate)/(JIO freemod? sentence)/(JIO freemod? uttAx)/(JI freemod? modifier)/((JI/NUJI) freemod? argument1)))/((sp? (N o) sp?)? (((JIZA freemod? predicate) guiza?)/((JIOZA freemod? sentence) guiza?)/((JIOZA freemod? uttAx) guiza?)/((JIZA freemod? modifier) guiza?)/(JIZA freemod? argument1 guiza?)))/((sp? (N o) sp?)? ((JIZI freemod? predicate guizi?)/(JIOZI freemod? sentence guizi?)/(JIOZI freemod? uttAx guizi?)/(JIZI freemod? modifier guizi?)/(JIZI freemod? argument1 guizi?)))/((sp? (N o) sp?)? ((JIZU freemod? predicate guizu?)/(JIOZU freemod? sentence guizu?)/(JIOZU freemod? uttAx guizu?)/(JIZU freemod? modifier guizu?)/(JIZU freemod? argument1 guizu?))))")
 
 L("argmod <- (argmod1 (A1 freemod? argmod1)* gui?)")
 
