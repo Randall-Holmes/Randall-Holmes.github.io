@@ -12,34 +12,34 @@
 
 #LI#A PEG (Parsing Expression Grammar) is made up of lines of the form
 
-#TT# class_name <- PEG  notation</TT>
+#TT# class_name <- PEG  notation#/TT#
 
 #LI#Each PEG notation describes a set of strings with conditions on the context in which they occur.#p#
 
-#LI#Concrete strings: #TT#'string'</TT> or #TT#"string"</TT> literally denotes the 6 character string given.#p#
+#LI#Concrete strings: #TT#'string'#/TT# or #TT#"string"#/TT# literally denotes the 6 character string given.#p#
 
-#LI#Classes of characters: #TT#[aeiou]</TT> describes the set of one character strings which are either
-#LI#a, e, i, o, or u.  Ranges can appear: #TT#[a-zA-z]</TT> describes the union of the sets of lower case letters and upper case letters, considered as one character strings.#p#
+#LI#Classes of characters: #TT#[aeiou]#/TT# describes the set of one character strings which are either
+#LI#a, e, i, o, or u.  Ranges can appear: #TT#[a-zA-z]#/TT# describes the union of the sets of lower case letters and upper case letters, considered as one character strings.#p#
 
-#LI#If #TT#A</TT> and #TT#B</TT> are PEG notations, #TT#(A B)</TT> denotes a string of class #TT#A</TT> followed by a string of class #TT#B</TT> (in which the string of class #TT#A</TT> is the preferred string of this class read from the beginning of the source string).#p#
+#LI#If #TT#A#/TT# and #TT#B#/TT# are PEG notations, #TT#(A B)#/TT# denotes a string of class #TT#A#/TT# followed by a string of class #TT#B#/TT# (in which the string of class #TT#A#/TT# is the preferred string of this class read from the beginning of the source string).#p#
 
-#LI#If #TT#A</TT> and #TT#B</TT> are PEG notations, #TT#(A / B)</TT> denotes a string of either class #TT#A</TT> or a string of class #TT#B</TT>, with a string of class #TT#A</TT> being read by preference if possible.  The fact that a preference is indicated in alternative lists makes PEG reading deterministic (in a sense, there are no ambiguities for a PEG grammar).  The problem in a PEG corresponding to ambiguity in a BNF  grammar is incorrectly ordered lists of alternatives.#p#
+#LI#If #TT#A#/TT# and #TT#B#/TT# are PEG notations, #TT#(A / B)#/TT# denotes a string of either class #TT#A#/TT# or a string of class #TT#B#/TT#, with a string of class #TT#A#/TT# being read by preference if possible.  The fact that a preference is indicated in alternative lists makes PEG reading deterministic (in a sense, there are no ambiguities for a PEG grammar).  The problem in a PEG corresponding to ambiguity in a BNF  grammar is incorrectly ordered lists of alternatives.#p#
 
-#LI#If #TT#A</TT> is a PEG notation, #TT#(A)?</TT> represents a string of class #TT#A</TT> (preferred) or an empty string if there is no string of class #TT#A</TT>:  this represents optional appearance of #TT#A</TT>.  #TT#(A)*</TT> represents zero or more consecutive strings of class #TT#A</TT> (as many as possible) and #TT#(A)+</TT> represents one or more consecutive such strings.#p#
+#LI#If #TT#A#/TT# is a PEG notation, #TT#(A)?#/TT# represents a string of class #TT#A#/TT# (preferred) or an empty string if there is no string of class #TT#A#/TT#:  this represents optional appearance of #TT#A#/TT#.  #TT#(A)*#/TT# represents zero or more consecutive strings of class #TT#A#/TT# (as many as possible) and #TT#(A)+#/TT# represents one or more consecutive such strings.#p#
 
-#LI#If #TT#A</TT> is a PEG notation, #TT#&(A)</TT> represents a length 0 string which is followed by a string of class #TT#A</TT>, and #TT#!(A)</TT> represents a length 0 string which is <B>not</B> followed by a string of class #TT#A</TT>.  This gives us powerful lookahead features:  for example, #TT#((A)! B</TT> represents a string of class #TT#B</TT> whose beginning is not also the beginning of a string of class
-#LI##TT#A</TT>:  it is tempting but not accurate to say that it does not have an initial segment of class #TT#A</TT>, because detection of a string of class #TT#A</TT> longer than the string of class #TT#B</TT> read would cause reading of this class to fail.#p#
+#LI#If #TT#A#/TT# is a PEG notation, #TT#&(A)#/TT# represents a length 0 string which is followed by a string of class #TT#A#/TT#, and #TT#!(A)#/TT# represents a length 0 string which is <B>not</B> followed by a string of class #TT#A#/TT#.  This gives us powerful lookahead features:  for example, #TT#((A)! B#/TT# represents a string of class #TT#B#/TT# whose beginning is not also the beginning of a string of class
+#LI##TT#A#/TT#:  it is tempting but not accurate to say that it does not have an initial segment of class #TT#A#/TT#, because detection of a string of class #TT#A#/TT# longer than the string of class #TT#B#/TT# read would cause reading of this class to fail.#p#
 
 #LI#The period . represents the class of single characters (so !. is end of text).#p#
 
 #LI#New notations are introduced by lines #p#
 
-#LI##TT# class_name <- PEG  notation</TT>:#p#
+#LI##TT# class_name <- PEG  notation#/TT#:#p#
 
 #LI#this is not just an abbreviation facility because such definitions may be mutually recursive.#p#
 
 #LI#A PEG notation applied to a source string will give either failure or a uniquely determined initial string of the source (parsed suitably); in a sense PEG is unambiguous.  What corresponds as an issue to ambiguity for a BNF grammar is
-#LI#inappropriate choice of order of alternatives in PEG disjunctions #TT#(A / B)</TT>:  what often represents a problem with a grammar is what I call #LI##LI##LI#    #LI#"preemption", where an earlier alternative reads an initial segment of a string where a later alternative could have read more of it.#p#
+#LI#inappropriate choice of order of alternatives in PEG disjunctions #TT#(A / B)#/TT#:  what often represents a problem with a grammar is what I call #LI##LI##LI#    #LI#"preemption", where an earlier alternative reads an initial segment of a string where a later alternative could have read more of it.#p#
 
 #LI#It's possible to have a PEG go into an infinite loop and fail to produce a parse.  My PEG generator has a termination checker, so the Loglan grammar does not have these problems.  I have contemplated writing a preemption checker, but this is a rather difficult problem.#p#
 
@@ -3608,4 +3608,4 @@ utterance0 <- (!GE ((ICA freemod? uttF)/(!PAUSE freemod period? utterance0)/(!PA
 #p#
 utterance <- &(phoneticutterance end) (!GE ((ICA freemod? uttF (&I utterance)? end)/(!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end)))
 
-</TT>
+#/TT#
