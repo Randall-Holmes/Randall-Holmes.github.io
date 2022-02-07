@@ -25,6 +25,13 @@
 # word.  One of the uses of this is to test possible syllable break
 # and stress patterns.
 
+# 2/7/2022 comments wildly out of date.  There has been adjustment
+# of compacted and important classes.  I am in the process of arranging
+# for comments to be included in grammars preparatory to installing
+# a rule name change function.  This is no longer the place
+# to look for comments on the grammar:  see the head of the commented
+# PEG files.
+
 # 5/16 main parser loglan.py and test parser loglantest.py
 # the main parser has a different treatment of guu,
 # also in the test parser, with few effects.
@@ -574,6 +581,7 @@ def niceprecs():
     Compact('Borrowing')
     Compact('Complex')
     Compact('Cmapua')
+    Compact('sp')
 
 
     MakeImportant('juelink')
@@ -958,5 +966,6 @@ def grammarbatch(gfile):
         line1=line
         while not line1=='' and (line1[len(line1)-1]==' ' or line1[len(line1)-1]=='\n' or line1[len(line1)-1]=='\r'):line1=line1[0:len(line1)-1]
         while not line1=='' and line1[0]==' ':line1=line1[1:]
-        if not(line1=='' or line1[0]=='#'):  rundef(loglan,line1)
+        #if not(line1=='' or line1[0]=='#'):  rundef(loglan,line1)
+        if not (line1==''): rundef(loglan,line1)
     

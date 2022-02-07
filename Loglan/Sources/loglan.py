@@ -500,7 +500,7 @@ L("KOU2 <- (KOU1 !KI)")
 
 L("BadNIStress <- ((C1 V2 V2? stress (M a)? (M OA)? NI RA)/(C1 V2 stress V2 (M a)? (M OA)? NI RA))")
 
-L("NI0 <- (!BadNIStress ((K UA)/(G IE)/(G IU)/(H IE)/(H IU)/(K UE)/(N EA)/(N IO)/(P EA)/(P IO)/(S UU)/(S UA)/(T IA)/(Z OA)/(Z OO)/(H o)/(N i)/(N e)/(T o)/(T e)/(F o)/(F e)/(V o)/(V e)/(P i)/(R e)/(R u)/(S e)/(S o)/(H i)))")
+L("NI0 <- (!BadNIStress ((K UA)/(G IE)/(G IU)/(H IE)/(H IU)/(N EA)/(N IO)/(P EA)/(P IO)/(S UU)/(S UA)/(T IA)/(Z OA)/(Z OO)/(H o)/(N i)/(N e)/(T o)/(T e)/(F o)/(F e)/(V o)/(V e)/(P i)/(R e)/(R u)/(S e)/(S o)/(H i)))")
 
 L("SA <- (!BadNIStress ((S a)/(S i)/(S u)/(IE (comma2? !IE SA)?)) NOI?)")
 
@@ -662,9 +662,9 @@ L("ME <- (sp? ((M EA)/(M e)))")
 
 L("MEU <- (sp? M EU)")
 
-L("NU0 <- ((N UO)/(F UO)/(J UO)/(N u)/(F u)/(J u))")
+L("NU0 <- ((N UO)/(F UO)/(J UO)/(N u)/(F u)/(J u)/(K UE))")
 
-L("NU <- (sp? ((((N u)/(N UO)) !(sp (NI0/RA)) (NI0/RA)?)/NU0)+ freemod?)")
+L("NU <- (sp? ((((N u)/(N UO)/(K UE)) !(sp (NI0/RA)) (NI0/RA)?)/NU0)+ freemod?)")
 
 L("PO1 <- (sp? ((P o)/(P u)/(Z o)))")
 
