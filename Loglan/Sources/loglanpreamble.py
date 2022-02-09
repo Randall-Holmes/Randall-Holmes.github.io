@@ -582,6 +582,7 @@ def niceprecs():
     Compact('Complex')
     Compact('Cmapua')
     Compact('sp')
+    Compact('AlienText')
 
 
     MakeImportant('juelink')
@@ -888,8 +889,10 @@ def saverules2(s):
     openrules2(s)
     #therules.write('from loglanpreamble import *\n\n')
     for r in loglan:
-        therules.write(r+' <- '+showrule(loglan[r])+'\n\n')
-    #therules.write("if __name__ == '__main__':interface();")
+        if (r[0]=='#' or r[0] == "<"):
+            therules.write(r[0]+loglan[r][1]+'\n\n')
+        if not(r[0]=='#' or r[0] == "<"):
+            therules.write(r+' <- '+showrule(loglan[r])+'\n\n')
     therules.close()
 
 def commentize(s):

@@ -1,4 +1,8 @@
-#  version of 1/20/2022 7 am
+#  version of 2/7/2022 2 pm
+
+# 2/7/2022 declutter no longer removes spaces.  This is preparatory
+# to making sure comments are included in grammar and developing a tool
+# for changing rule names.  The effect on parses is if anything good.
 
 # 1/20/22 declutter was a bit too energetic and removed some
 # occurrences of important classes
@@ -269,6 +273,62 @@ def parse(thegrammar,expression,string):
    print ('badly formed expression encountered '+str(expression[0]))
    return 'fail'
 
+def subs(s,t,expression):
+
+     if expression[0]=='sequence':
+        if expression[1]==[]:  return ['sequence',[]]
+        L=expression[1]
+        return ['sequence',[subs(s,t,L[0])]+subs(s,t,['sequence',L[1:]])[1]]
+     if expression[0]=='alternatives':
+        if expression[1]==[]:  return ['alternatives',[]]
+        L=expression[1]
+        return ['alternatives',[subs(s,t,L[0])]+subs(s,t,['alternatives',L[1:]])[1]]
+     if expression[0] in ['not','and','optional','zeroormore','oneormore']:
+        return [expression[0],subs(s,t,expression[1])]
+     if expression[0] == 'identifier':
+          if expression[1]==s:  return ['identifier',t]
+          if expression[1]==t:  print('variable name collision')
+          return expression
+     return expression
+
+def subslist(s,expression):
+
+     if expression[0]=='sequence':
+        if expression[1]==[]:  return ['sequence',[]]
+        L=expression[1]
+        return ['sequence',[subslist(s,L[0])]+subslist(s,['sequence',L[1:]])[1]]
+     if expression[0]=='alternatives':
+        if expression[1]==[]:  return ['alternatives',[]]
+        L=expression[1]
+        return ['alternatives',[subslist(s,L[0])]+subslist(s,['alternatives',L[1:]])[1]]
+     if expression[0] in ['not','and','optional','zeroormore','oneormore']:
+        return [expression[0],subslist(s,expression[1])]
+     if expression[0] == 'identifier':
+          if len(s)<2:  return expression
+          if expression[1]==s[0]:  return ['identifier',s[1]]
+          if expression[1]==s[1]:  print('variable name collision')
+          return subslist(s[2:],expression)
+     return expression
+
+
+substarget = {}
+
+def stringsub(s,t):
+    if len(s)<2:  return t
+    if s[0]==t: return s[1]
+    return stringsub(s[2:],t)
+
+def sub(s,t,grammar1):
+    global substarget
+    for r in grammar1:
+        if r==s:substarget[t] = subs(s,t,grammar1[r])
+        if not(r==s):  substarget[r]= subs(s,t,grammar1[r])
+
+def sublist(s,grammar1):
+    global substarget
+    for r in grammar1:
+        substarget[stringsub(s,r)]=subslist(s,grammar1[r])  
+
 def guardform(c):
 
    if c=='"':  return '\\\"'
@@ -471,13 +531,17 @@ def parsetopeg(P):
 def classtest(s):
     return parsetopeg(parse(peggrammar,['identifier','Expression'],s)[0])
 
-
+commentcounter=0
 
 def rundef(thegrammar,s):
     global TheString
     global thecache
+    global commentcounter
     thecache.clear();
-    if s[0] =='#' or s[0] == '<':return 'comments'
+    if s[0] =='#' or s[0] == '<':
+        commentcounter=commentcounter+1
+        additem2(thegrammar,s[0]+str(commentcounter),['literal',s[1:]])
+        return 'comment'
     TheString=s
     T=parse(peggrammar,['identifier','Definition'],0)
     if T[0]=='fail' or not T[1]==len(TheString):
@@ -530,25 +594,28 @@ def Shallow():
 
 def declutter(P):
     if len(P)==0:  return []
-    if P==' ': return []
+    #if P==' ': return []
     if P==str(P):  return P
     if len(P)==1:
         R=declutter(P[0])
-        if R==' ' or R==[' ']:  return []
+        #if R==' ' or R==[' ']:  return []
         if R==str(R):  return [R]
         return declutter(R)
     if P[0]==label:
-        if len(P[2])==0 or P[2]==' ' or P[2]==[' ']:  return []
+        #if len(P[2])==0 or P[2]==' ' or P[2]==[' ']:  return []
+        if len(P[2])==0: return []
         if P[1] in compactclasses:  return P
         if P[2]==str(P[2]):  return P
         W= declutter(P[2])
         if len(W)==1: W=W[0]
-        if len(W)==0 or W== ' ' or W==[' ']:  return []
+        #if len(W)==0 or W== ' ' or W==[' ']:  return []
+        if len(W)==0:return[]
         if W==str(W): return [P[0],P[1],W]
         if W[0]==label:
             if W[1] in compactclasses:  return [P[0],P[1],W]
             Q= (W[2])
-            if len(Q)==0 or Q==' ' or Q==[' ']:  return []
+            #if len(Q)==0 or Q==' ' or Q==[' ']:  return []
+            if len(Q)==0: return[]
             if Q==str(Q):  return [P[0],P[1],W]
             if Q[0]==label and Q[1] in compactclasses:  return [P[0],P[1],W]
             if Q[0]==label and W[1] in importantclasses and not Q[1] in importantclasses:  return ([P[0],P[1],[W[0],W[1],Q[2]]])
@@ -556,7 +623,8 @@ def declutter(P):
             if Q[0]==label and not W[1] in importantclasses : return ([P[0],P[1],Q])
         return ([P[0],P[1],W])
     Q=declutter(P[0])
-    if Q==[] or Q==' ' or Q==[' ']:  return declutter(P[1:])
+    #if Q==[] or Q==' ' or Q==[' ']:  return declutter(P[1:])
+    if Q == []: return declutter(P[1:])
     X=declutter(P[1:])
     if X==[] and not Q==str(Q): return Q
     return [Q]+X
