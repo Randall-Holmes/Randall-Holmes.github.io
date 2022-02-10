@@ -5,49 +5,51 @@
 
 <p>
 
-<tt>
+<TT>
 <LI>In this file I will develop the entire Loglan grammar on top of the phonetic proposal
 
-<h2> PEG notation </H2>
+<H2> PEG notation </H2>
 
 <LI>A PEG (Parsing Expression Grammar) is made up of lines of the form
 
-<tt> class_name <- PEG  notation</tt>
+<TT> class_name <- PEG  notation</TT>
 
 <LI>Each PEG notation describes a set of strings with conditions on the context in which they occur.<p>
 
-<LI>Concrete strings: <tt>'string'</tt> or <tt>"string"</tt> literally denotes the 6 character string given.<p>
+<LI>Concrete strings: <TT>'string'</TT> or <TT>"string"</TT> literally denotes the 6 character string given.<p>
 
-<LI>Classes of characters: <tt>[aeiou]</tt> describes the set of one character strings which are either
-<LI>a, e, i, o, or u.  Ranges can appear: <tt>[a-zA-z]</tt> describes the union of the sets of lower case letters and upper case letters, considered as one character strings.<p>
+<LI>Classes of characters: <TT>[aeiou]</TT> describes the set of one character strings which are either
+<LI>a, e, i, o, or u.  Ranges can appear: <TT>[a-zA-z]</TT> describes the union of the sets of lower case letters and upper case letters, considered as one character strings.<p>
 
-<LI>If <tt>A</tt> and <tt>B</tt> are PEG notations, <tt>(A B)</tt> denotes a string of class <tt>A</tt> followed by a string of class <tt>B</tt> (in which the string of class <tt>A</tt> is the preferred string of this class read from the beginning of the source string).<p>
+<LI>If <TT>A</TT> and <TT>B</TT> are PEG notations, <TT>(A B)</TT> denotes a string of class <TT>A</TT> followed by a string of class <TT>B</TT> (in which the string of class <TT>A</TT> is the preferred string of this class read from the beginning of the source string).<p>
 
-<LI>If <tt>A</tt> and <tt>B</tt> are PEG notations, <tt>(A / B)</tt> denotes a string of either class <tt>A</tt> or a string of class <tt>B</tt>, with a string of class <tt>A</tt> being read by preference if possible.  The fact that a preference is indicated in alternative lists makes PEG reading deterministic (in a sense, there are no ambiguities for a PEG grammar).  The problem in a PEG corresponding to ambiguity in a BNF  grammar is incorrectly ordered lists of alternatives.<p>
+<LI>If <TT>A</TT> and <TT>B</TT> are PEG notations, <TT>(A / B)</TT> denotes a string of either class <TT>A</TT> or a string of class <TT>B</TT>, with a string of class <TT>A</TT> being read by preference if possible.  The fact that a preference is indicated in alternative lists makes PEG reading deterministic (in a sense, there are no ambiguities for a PEG grammar).  The problem in a PEG corresponding to ambiguity in a BNF  grammar is incorrectly ordered lists of alternatives.<p>
 
-<LI>If <tt>A</tt> is a PEG notation, <tt>(A)?</tt> represents a string of class <tt>A</tt> (preferred) or an empty string if there is no string of class <tt>A</tt>:  this represents optional appearance of <tt>A</tt>.  <tt>(A)*</tt> represents zero or more consecutive strings of class <tt>A</tt> (as many as possible) and <tt>(A)+</tt> represents one or more consecutive such strings.<p>
+<LI>If <TT>A</TT> is a PEG notation, <TT>(A)?</TT> represents a string of class <TT>A</TT> (preferred) or an empty string if there is no string of class <TT>A</TT>:  this represents optional appearance of <TT>A</TT>.  <TT>(A)*</TT> represents zero or more consecutive strings of class <TT>A</TT> (as many as possible) and <TT>(A)+</TT> represents one or more consecutive such strings.<p>
 
-<LI>If <tt>A</tt> is a PEG notation, <tt>&(A)</tt> represents a length 0 string which is followed by a string of class <tt>A</tt>, and <tt>!(A)</tt> represents a length 0 string which is <B>not</B> followed by a string of class <tt>A</tt>.  This gives us powerful lookahead features:  for example, <tt>((A)! B</tt> represents a string of class <tt>B</tt> whose beginning is not also the beginning of a string of class
-<LI><tt>A</tt>:  it is tempting but not accurate to say that it does not have an initial segment of class <tt>A</tt>, because detection of a string of class <tt>A</tt> longer than the string of class <tt>B</tt> read would cause reading of this class to fail.<p>
+<LI>If <TT>A</TT> is a PEG notation, <TT>&(A)</TT> represents a length 0 string which is followed by a string of class <TT>A</TT>, and <TT>!(A)</TT> represents a length 0 string which is <B>not</B> followed by a string of class <TT>A</TT>.  This gives us powerful lookahead features:  for example, <TT>((A)! B</TT> represents a string of class <TT>B</TT> whose beginning is not also the beginning of a string of class
+<LI><TT>A</TT>:  it is tempting but not accurate to say that it does not have an initial segment of class <TT>A</TT>, because detection of a string of class <TT>A</TT> longer than the string of class <TT>B</TT> read would cause reading of this class to fail.<p>
 
 <LI>The period . represents the class of single characters (so !. is end of text).<p>
 
 <LI>New notations are introduced by lines <p>
 
-<LI><tt> class_name <- PEG  notation</tt>:<p>
+<LI><TT> class_name <- PEG  notation</TT>:<p>
 
 <LI>this is not just an abbreviation facility because such definitions may be mutually recursive.<p>
 
 <LI>A PEG notation applied to a source string will give either failure or a uniquely determined initial string of the source (parsed suitably); in a sense PEG is unambiguous.  What corresponds as an issue to ambiguity for a BNF grammar is
-<LI>inappropriate choice of order of alternatives in PEG disjunctions <tt>(A / B)</tt>:  what often represents a problem with a grammar is what I call <LI><LI><LI>    <LI>"preemption", where an earlier alternative reads an initial segment of a string where a later alternative could have read more of it.<p>
+<LI>inappropriate choice of order of alternatives in PEG disjunctions <TT>(A / B)</TT>:  what often represents a problem with a grammar is what I call <LI><LI><LI>    <LI>"preemption", where an earlier alternative reads an initial segment of a string where a later alternative could have read more of it.<p>
 
 <LI>It's possible to have a PEG go into an infinite loop and fail to produce a parse.  My PEG generator has a termination checker, so the Loglan grammar does not have these problems.  I have contemplated writing a preemption checker, but this is a rather difficult problem.<p>
 
 <p>
 
-<h2>Dated updates now to appear here</H2>
+<H2>Dated updates now to appear here</H2>
 
 <p>
+
+<LI>  2/9/2022 added the [bao] lambda quantifier for constructing abstract relations between more than two objects
 
 <LI>  2/6/2022 removed kue from NI0 and added it (allowing digit suffixes) to NU0
 
@@ -424,7 +426,7 @@
 
 <p>
 
-<h2>Comments on the initial release of this grammar</H2>
+<H2>Comments on the initial release of this grammar</H2>
 
 <LI>This is now done, in a first pass.  That is, the grammar is adapted and appears to work, more or less.
 <LI>What is needed is comments on the lexicography and the grammar...Phonetics has now pretty clearly been sorted
@@ -447,7 +449,7 @@
 <LI>break (and sometimes resume) at name markers or alien text markers, but it will not change any grammatical
 <LI>parses.
 <p>
-<h2>Part I Phonetics</H2>
+<H2>Part I Phonetics</H2>
 
 <LI>Mod bugs, I have implemented all of Loglan phonetics as described in my proposal.  Borrowing djifoa are pretty tricky.
 <p>
@@ -520,8 +522,27 @@
 <LI>it is now allowed to insert [, mue] into an acronym, which would be necessary for example
 <LI>between a Ceo letteral and a following VCV letteral.
 <p>
+<LI>  Rule name conventions
 
-<h3>Sounds</H3>
+<p>
+
+<LI> We define a way to sort rule names into layers, which an automated tool ought to be able to use. <p>
+
+<LI>  Phonemes:  a rule name with one or two lower case letters optionally followed by digits. <p>
+
+<LI>  Intermediate phonetic and morphological groups: a rule name whose first two characters are an Uppercase L and a Lowercase L.  This includes both classes of phonemes and classes of strings of phonemes.<p>
+
+<LI>  Lexemes (words, take this with a grain of salt):  names made entirely of Uppercase letters.  
+
+<LI>  Lexeme-like:  Names made of more than one Uppercase L followed by Lowercase letters are of lexeme-like things (name and alien text markers).<p>
+
+<LI> Lexeme precursors:  Names made of more than one Uppercase L followed by digits are precursors of lexeme classes.  Cmapua components which are true affixes will be labelled with such a class and not with a lexeme class.  The point here is that some of the lexeme classes have internal grammar.<p>
+
+<LI> Grammar classes:  Names made of at least three lower case letters, optionally followed by digits are grammar classes.  Ones the speaker should be aware of will not usually be followed by digits. <p>
+
+<p>
+
+<H3>Sounds</H3>
 
 <p>
 
@@ -531,7 +552,7 @@
 
 sp <- [ ]+
 
-<h4>Vowels</H4>
+<H4>Vowels</H4>
 <p>
 #all vowels
 <p>
@@ -541,7 +562,7 @@ V1 <- [aeiouyAEIOUY]
 <p>
 V2 <- [aeiouAEIOU]
 
-<h3>Consonants</H3>
+<H3>Consonants</H3>
 <p>
 #consonants
 <p>
@@ -559,7 +580,7 @@ Cunvoiced <- [ptkcfsPTKCFS]
 Badvoice <- (Cvoiced (Cunvoiced/[Hh])/Cunvoiced (Cvoiced/[Hh]))
 <p>
 
-<h4>Letters and capitalization</H4>
+<H4>Letters and capitalization</H4>
 <LI>letters
 <p>
 letter <- (![qwxQWX] [a-zA-Z])
@@ -576,7 +597,7 @@ uppercase <- (![QWX] [A-Z])
 <p>
 caprule <- [\"(]? &([z] V1 (!uppercase/&TAI0)/lowercase TAI0 (!uppercase/&TAI0)/!(lowercase uppercase).) letter (&([z] V1 (!uppercase/&TAI0)/lowercase TAI0 (!uppercase/&TAI0)/!(lowercase uppercase).) (letter/juncture))* !(letter/juncture)
 <p>
-<h4>Junctures:  syllable breaks and stresses</H4>
+<H4>Junctures:  syllable breaks and stresses</H4>
 
 <LI>syllable markers:  the hyphen is always medial so must be followed by a letter.
 <LI>the stress marks can be syllable final and word final.  A juncture is never followed
@@ -591,7 +612,7 @@ stress <- [\'*] !juncture
 
 
 
-<h4>Terminal punctuations and general characters</H4>
+<H4>Terminal punctuations and general characters</H4>
 
 <LI>terminal punctuation
 
@@ -607,7 +628,7 @@ character <- (letter/juncture)
 
 <p>
 
-<h3>Alien text</H3>
+<H3>Alien text</H3>
 
 <LI>to really get all Loglan text, we should add the alien text constructions and the markers of alien text,
 <LI>[lie], [lao], [sao], [sue] and certain quotations which violate the phonetic rules.
@@ -684,7 +705,7 @@ alienmarker <- ([Hh] [Oo] [Ii] juncture? &([,]? sp [\"])/[Hh][Uu] juncture? [Ee]
 
 <LI>the continuant consonants and the syllabic pairs they can form
 
-<h3>Complex Vowel Forms</H3>
+<H3>Complex Vowel Forms</H3>
 
 continuant <- [mnlrMNLR]
 
@@ -758,7 +779,7 @@ Vocalic <- (NextVowels/syllabic/[Yy])
 
 <p>
 
-<h3>Complex Consonant Forms</H3>
+<H3>Complex Consonant Forms</H3>
 
 <p>
 
@@ -811,7 +832,7 @@ NoMedial3 <- (([Cc] juncture? [Dd] juncture? [Zz])/([Cc] juncture? [Vv] juncture
 
 <p>
 
-<h3>The Syllable</H3>
+<H3>The Syllable</H3>
 
 <LI>there are no formal rules about syllables as such in our Sources, which is odd since
 <LI>the definition of predicates depends on the placement of stresses on syllables.
@@ -871,7 +892,7 @@ FinalConsonant <- !syllabic !(&Badvoice C1 !Syllable) (!(!continuant C1 !Syllabl
 
 #!((!MaybeInitial)C1 juncture? !syllabic C1 juncture? !syllabic C1) !(&MaybeInitial C1 juncture C1 !(juncture? C1))
 
-<h4>Varieties of Syllable</H4>
+<H4>Varieties of Syllable</H4>
 
 <LI>Here are various flavors of syllable we may need.
 
@@ -932,7 +953,7 @@ StressedSyllable <- ((SyllableA/SyllableB) stress2)
 
 <p>
 
-<h3>Name Words</H3>
+<H3>Name Words</H3>
 
 <LI>a final syllable in a word, ending in a consonant.
 
@@ -942,7 +963,7 @@ NameEndSyllable <- (InitialConsonants? (syllabic/Vocalic &FinalConsonant) FinalC
 
 <p>
 
-<h4>The Pause</H4>
+<H4>The Pause</H4>
 
 <LI>the pause classes actually hang on the letter before the pause.
 
@@ -963,7 +984,7 @@ pause <- ((C1 stress2? sp &letter)/(letter stress2? sp &V1)/(letter stress2? [,]
 
 <p>
 
-<h4>The full analysis of names</H4>
+<H4>The full analysis of names</H4>
 
 <LI>these are final syllables in words followed by whitespace which might not be a pause.
 <LI>the definition actually doesnt mention the maybepause class.
@@ -1147,7 +1168,7 @@ badnamemarker <- namemarker !V1 [, ]? sp? BadPreName
 
 <p>
 
-<h3>Predicate Start Test</H3>
+<H3>Predicate Start Test</H3>
 
 <LI>predicate start tests:  the idea is the same as class "connective" below, to recognize
 <LI>the start of a predicate without recursive appeals to the whole nasty definition of predicate.
@@ -1228,7 +1249,7 @@ predstart <- predstartA1/predstartA2/predstartA3/predstartA4/predstartA5/predsta
 
 <p>
 
-<h3>Structure Word Phonetics</H3>
+<H3>Structure Word Phonetics</H3>
 
 <LI>this class requires pauses before it, after all the phonetic word classes.
 <LI>what is being recognized is the beginning of a logical connective.
@@ -1337,11 +1358,11 @@ Cmapua <- &caprule !badnamemarker (!predstart (VV/[Ii][Yy]/[Uu][Yy]) !(stress2 s
 
 <p>
 
-<h3>Predicate Phonetics</H3>
+<H3>Predicate Phonetics</H3>
 
 <LI>Now for predicates.
 
-<h4>Djifoa ("affixes")</H4>
+<H4>Djifoa ("affixes")</H4>
 
 <p>
 
@@ -1526,7 +1547,7 @@ CVCCYStressed <- (C1 V2 stress2 Initial why dash?/C1 V2 !NoMedial2 C1 stress2 C1
 
 <p>
 
-<h4>Borrowed Predicates</H4>
+<H4>Borrowed Predicates</H4>
 
 <LI>to reason about resolution of borrowings into both syllables and djifoa (we want to exclude the latter
 <LI>but we need to define it adequately) we need to recognize where to stop.  A predicate word ends either
@@ -1708,7 +1729,7 @@ StressedBorrowingDjifoa <- !ResolvedBorrowing &caprule PreBorrowing3 why dash? (
 
 <p>
 
-<h4>Complex Predicates</H4>
+<H4>Complex Predicates</H4>
 
 <LI>We resolve complexes twice, once into syllables and once into djifoa.  We again have to ensure that
 <LI>we end up in the same place!  The syllable resolution is very similar to that of borrowings;
@@ -1820,7 +1841,7 @@ Complex <- &caprule &PreComplex PhoneticComplex !(sp? (connective))
 
 <p>
 
-<h3>Quotation and Parenthesis of well-formed Loglan utterances; word classes</H3>
+<H3>Quotation and Parenthesis of well-formed Loglan utterances; word classes</H3>
 
 <LI>format for the LI quote and KIE parenthesis
 
@@ -1858,7 +1879,7 @@ SingleWord <- (Borrowing !./Complex !./ Word !./PreName !. /CCVNOY) !.
 
 <LI>name word appearing initially without leading spaces is important, because one type of NameWord includes a leading comma.
 
-<h3>The full phonetic utterance classes</H3>
+<H3>The full phonetic utterance classes</H3>
 
 <p>
 
@@ -1870,9 +1891,9 @@ phoneticutterance <- (phoneticutterance1/[,]sp/terminal)+
 
 <p>
 
-<h2>Interlude:  Phonemes and Pauses</H2>
+<H2>Interlude:  Phonemes and Pauses</H2>
 
-<h3>Consonants and vowel groups in cmapua</H3>
+<H3>Consonants and vowel groups in cmapua</H3>
 
 <LI>as noted above, !predstart stands in for the computationally disastrous &Cmapua
 
@@ -2011,7 +2032,7 @@ IY <- [Ii] [Yy] !badstress juncture? !V1
 <p>
 UY <- [Uu] [Yy] !badstress juncture? !V1
 <p>
-<h3>The optional pause and commas</H3>
+<H3>The optional pause and commas</H3>
 <p>
 <LI>this is a pause not required by the phonetics.  This is the only
 <LI>sort of pause which could in principle carry semantic freight (the
@@ -2049,7 +2070,7 @@ comma <- [,] sp &caprule
 <p>
 comma2 <- [,]? sp &caprule
 <p>
-<h2>Part II: Lexicography</H2>
+<H2>Part II: Lexicography</H2>
 <LI>In this section I develop the grammar of words in Loglan.  I'll work by editing the original provisional PEG grammar.
 
 <p>
@@ -2058,7 +2079,7 @@ comma2 <- [,]? sp &caprule
 <LI>punctuation, because these items of punctuation look forward not only to lexicography
 <LI>but to the full grammar!
 
-<h3>Period and end of utterance</H3>
+<H3>Period and end of utterance</H3>
 
 <p>
 
@@ -2088,7 +2109,7 @@ period <- (([!.:;?] (&end/(sp &caprule))) (invvoc period?)?)
 
 <p>
 
-<h3>The cmapua word classes</H3>
+<H3>The cmapua word classes</H3>
 
 <LI>the classes in this section after this point are the cmapua word classes of Loglan (if they begin with sp? or a word class).
 <LI>I suppose the alien text classes are not really word classes, but they are lexicographic items, as it were.
@@ -2110,7 +2131,7 @@ period <- (([!.:;?] (&end/(sp &caprule))) (invvoc period?)?)
 
 <p>
 
-<h4>Letterals (first approximation) </H4>
+<H4>Letterals (first approximation) </H4>
 
 <LI>the names [yfi], [ziy] for Y are supported.  The Ceo names are left as they are.  I decided that a second short series
 <LI>of letteral pronouns is actually a reasonable use of short words, and the Ceio words are there for other uses.
@@ -2121,7 +2142,7 @@ TAI0 <- (V1 juncture? M a/V1 juncture? F i/V1 juncture? Z i/!predstart C1 AI/!pr
 
 <p>
 
-<h4>Logical and causal connectives</H4>
+<H4>Logical and causal connectives</H4>
 
 <LI>a negative suffix used in various contexts.  Always a suffix:  its use as a prefix in tenses was a mistake in NB3 and I 
 <LI>think still supported in LIP.  Ambiguities demonstrably followed from this usage (an example of how the demonstration
@@ -2212,7 +2233,7 @@ KI <- (sp? (K i) NOI?)
 
 KOU2 <- (KOU1 !KI)
 <p>
-<h4>Quantity words</H4>
+<H4>Quantity words</H4>
 <p>
 <LI>a test used to at least partially enforce the penultimate stress rule on quantifier predicates
 <p>
@@ -2228,9 +2249,9 @@ SA <- (!BadNIStress ((S a)/(S i)/(S u)/(IE (comma2? !IE SA)?)) NOI?)
 <p>
 <LI>the family of quantifiers which double as suffixes for the quantifier predicates
 <LI>this class perhaps should also include some other quantifier words. [re] for example ought to be handled in the same way as [ra,ri,ro].
-<LI>No action here, just a remark.
+<LI>No action here, just a remark.  Added [bao], which forms lambda abstractions (relations) not statements, to be used in lepu clauses.
 <p>
-RA <- (!BadNIStress ((R a)/(R i)/(R o)/R e/R u))
+RA <- (!BadNIStress ((R a)/(R i)/(R o)/R e/R u/B AO))
 <p>
 <LI>re and ru added to class RA 5/11/18
 <p>
@@ -2262,14 +2283,14 @@ mex <- (sp? NI)
 
 <p>
 
-<h4> The overused CI</H4>
+<H4> The overused CI</H4>
 
 <LI>a word used for various tightly binding constructions:  a sort of verbal hyphen.
 <LI>also a name marker, which means phonetic care is needed (pause after constructions with [ci]).
 <p>
 CI <- (sp? (C i))
 
-<h4>Acronyms</H4>
+<H4>Acronyms</H4>
 
 <LI>Acronyms, which are names (not predicates as in 1989 Loglan) or dimensions (in NI above).
 <LI>units in acronym are TAI0 letterals, zV short forms for vowels, the dummy unit [mue], and NI1
@@ -2289,7 +2310,7 @@ Acronym <- (sp? &caprule ((M UE)/TAI0/(Z V2 !V2)) ((comma &Acronym M UE)/NI1/TAI
 
 <p>
 
-<h4>Letterals and other pronouns</H4>
+<H4>Letterals and other pronouns</H4>
 
 <LI>the full class of letterals, including the [gao] construction whose details I should look at.
 
@@ -2313,7 +2334,7 @@ DA1 <- ((TAI0/DA0) (C i ![ ] NI0)?)
 DA <- (sp? DA1)
 <p>
 
-<h4>Tenses, locatives and modals</H4>
+<H4>Tenses, locatives and modals</H4>
 
 <LI>roots for PA words:  tense and location words, prepositions building relative modifiers.  All can optionally be negated with -noi.  They may also be quantified.  They may also be closed with ZI class affixes.  PA cores.
 <p>
@@ -2354,7 +2375,7 @@ PA1 <- ((PA2/GA))
 ZI <- ((Z i)/(Z a)/(Z u))
 
 <p>
-<h4> Articles and other descriptors</H4>
+<H4> Articles and other descriptors</H4>
 <LI>the primitive description building "articles".  These include [la] which requires special
 <LI>care in its use because it is a name marker.
 <p>
@@ -2391,7 +2412,7 @@ LI1 <- (L i)
 LU1 <- (L u)
 <p>
 
-<h4>Quotations and other alien text constructions</H4>
+<H4>Quotations and other alien text constructions</H4>
 <LI>quoting Loglan utterances, with or without explicit double quotes (if they appear, they must
 <LI>appear on both sides).  The previous version allowed quotation of names;  likely this should
 <LI>be restored.
@@ -2444,7 +2465,7 @@ LIU1 <- (sp? LNIU juncture? !V1 comma2? (PreName/Word) &(comma/terminal/end) /sp
 SUE <- (sp? &([Ss] [Uu] juncture? [Ee] juncture?/[Ss] [Aa] [Oo] juncture?) AlienWord)
 <p>
 
-<h4>Assorted left and right closers</H4>
+<H4>Assorted left and right closers</H4>
 <LI>left marker in a predicate metaphor construction
 <p>
 CUI <- (sp? (C UI) )
@@ -2543,7 +2564,7 @@ GUE <- (sp? (G UE) )
 GUEA <- (sp? (G UEb a) )
 <p>
 
-<h4>Miscellaneous clause constructors</H4>
+<H4>Miscellaneous clause constructors</H4>
 
 <LI>used to build tightly linked term lists.
 <p>
@@ -2572,7 +2593,7 @@ NUJI <- sp? N u !sp JI
 JIO <- (!JIOZA !JIOZI !JIOZU (sp? ((J IO)/(J AO)) ))
 <p>
 
-<h4>Case tags, semantic and positional</H4>
+<H4>Case tags, semantic and positional</H4>
 <LI>case tags, both numerical position tags and the optional semantic case tags.
 <p>
 DIO <- (sp? ((B EU)/(C AU)/(D IO)/(F OA)/(K AO)/(J UI)/(N EU)/(P OU)/(G OA)/(S AU)/(V EU)/(Z UA)/(Z UE)/(Z UI)/(Z UO)/(Z UU)) ) (C i ![ ] NI0/ZI)?
@@ -2583,14 +2604,14 @@ DIO <- (sp? ((B EU)/(C AU)/(D IO)/(F OA)/(K AO)/(J UI)/(N EU)/(P OU)/(G OA)/(S A
 LAE <- (sp? ((L AE)/(L UE)) )
 <p>
 
-<h4> The predicate constructor me</H4>
+<H4> The predicate constructor me</H4>
 <LI>[me] turns arguments into predicates, [meu] closes this construction.
 <p>
 ME <- (sp? ((M EA)/(M e)) )
 <p>
 MEU <- (sp? M EU )
 <p>
-<h4> Reflexive and conversion operators</H4>
+<H4> Reflexive and conversion operators</H4>
 <p>
 <LI>reflexive and conversion operators:  first the root forms, then those with
 <LI>optional numerical suffixes.
@@ -2600,7 +2621,7 @@ NU0 <- ((N UO)/(F UO)/(J UO)/(N u)/(F u)/(J u)/K UE)
 NU <- sp? (((N u/N UO/K UE) !(sp (NI0/RA)) (NI0/RA)?)/NU0)+ freemod?
 <p>
 
-<h4>Abstract predicate constructors</H4>
+<H4>Abstract predicate constructors</H4>
 
 <LI>I do *not* think
 <LI>that [poia] will really be confused with [po ia], particularly
@@ -2644,11 +2665,11 @@ POSHORT <- (sp? POSHORT1 )
 <p>
 
 
-<h4> register markers </H4>
+<H4> register markers </H4>
 <p>
 DIE <- (sp? ((D IE)/(F IE)/(K AE)/(N UE)/(R IE)) )
 <p>
-<h4> freemods and freemod builders </H4>
+<H4> freemods and freemod builders </H4>
 <p>
 <LI>vocative forms:  I still have the words of social lubrication as 
 <LI>vocative markers.
@@ -2694,14 +2715,14 @@ UI1 <- (sp? (UI0+/(NI F i)) )
 <p>
 HUE <- (sp? (H UE))
 <p>
-<h4>Negation</H4>
+<H4>Negation</H4>
 
 <LI>occurrences of [no] as a word rather than an affix.
 <p>
 NO1 <- (sp? !KOU1 !NOUI (N o) !(comma2? Z AO comma2? Predicate) !(sp? KOU) !(sp? (JIO/JI/JIZA/JIOZA/JIZI/JIOZI/JIZU/JIOZU)) )
 <p>
 
-<h3> The large word classes (names and predicates)</H3>
+<H3> The large word classes (names and predicates)</H3>
 <LI>Names, acronyms and PreNames from above.
 <p>
 AcronymicName <- Acronym &(comma/period/end)
@@ -2731,9 +2752,9 @@ Predicate <- (CmapuaUnit comma2?  Z AO comma2?)* Complex (comma2? Z AO comma2? P
 <p>
 PREDA <- (sp? &caprule (Predicate/LWPREDA/(![ ] NI RA)) )
 <p>
-<h2>Part 3:  The Grammar Proper</H2>
+<H2>Part 3:  The Grammar Proper</H2>
 
-<h3>Right markers turned into classes</H3>
+<H3>Right markers turned into classes</H3>
 
 guoa <- (PAUSE? (GUOA/GU) freemod?)
 <p>
@@ -2774,7 +2795,7 @@ geu <- GEU
 gap <- (PAUSE? GU freemod?)
 <p>
 
-<h3>The vocative and inverse vocative</H3>
+<H3>The vocative and inverse vocative</H3>
 <LI>this is the vocative construction.  It can appear early because all of its components are marked.
 <p>
 <LI>the intention is to indicate who is being addressed.  This can be handled via a name, a descriptive argument, a predicate or an
@@ -2804,7 +2825,7 @@ HUE0 <- sp? &caprule [Hh] [Uu] juncture? [Ee] juncture? !V1
 <p>
 invvoc <- (HUE0 comma2? name/HUE freemod? descpred guea? namesuffix?/(HUE freemod? statement giuo?)/(HUE freemod? argument1 guu?)/sp? &([Hh] [Uu] juncture? [Ee] juncture?) AlienWord)
 <p>
-<h3>Free modifiers</H3>
+<H3>Free modifiers</H3>
 <LI>this is the class of free modifiers.  Most of its components are head marked (those that aren't appear just above),
 <LI>and it is useful for it to appear early because these things appear everywhere in subsequent constructions.  A free modifier,
 <LI>of whatever sort, is a freely insertable gadget which modifies the immediately preceding construction, or the entire utterance
@@ -2836,7 +2857,7 @@ kiamod <- comma2? !(!PreName !predstart K IA) ((PreName/LIU1/AlienWord/Cmapua (s
 <p>
 freemod <- ((kiamod/NOUI/(SOI freemod? descpred guea?)/DIE/(NO1 DIE)/(KIE comma? utterance0 comma? KIU)/(KIE2 comma? utterance0 comma? KIU2)/invvoc/voc/(comma !(!FalseMarked PreName))/JO/UI1/(sp? '...' (sp? &letter)?)/(sp? '--' (sp? &letter)?)) freemod?)
 <p>
-<h3>Tightly bound arguments and lists thereof</H3>
+<H3>Tightly bound arguments and lists thereof</H3>
 
 <LI>the classes juelink to linkargs describe very tightly bound arguments which can be firmly attached to predicates in 
 <LI>the context of metaphorical modifications and the use of predicates in descriptive arguments.
@@ -2857,7 +2878,7 @@ linkargs1 <- (jelink freemod? (links/gue)?)
 linkargs <- ((linkargs1/(KA freemod? linkargs freemod? KI freemod? linkargs1)) (freemod? A1 freemod? linkargs1)*)
 <p>
 
-<h3>Abstract argument constructions</H3>
+<H3>Abstract argument constructions</H3>
 <LI>class abstractpred supports the construction of event, property, and quantity predicates from sentences.  These are
 <LI>closable with [guo] if introduced with [po,pu,zo] and closable with suffixed variants of [guo] if introduced with suffixed
 <LI>variants of [po,pu,zo] (a NEW idea but it is clear that closure of these predicates (and of the more commonly
@@ -2870,7 +2891,7 @@ linkargs <- ((linkargs1/(KA freemod? linkargs freemod? KI freemod? linkargs1)) (
 <p>
 
 abstractpred <- ((POA freemod? uttAxclone guoa?)/(POA freemod? sentenceclone guoa?)/(POE freemod? uttAxclone guoe?)/(POE freemod? sentenceclone guoe?)/(POI freemod? uttAxclone guoi?)/(POI freemod? sentenceclone guoi?)/(POO freemod? uttAxclone guoo?)/(POO freemod? sentenceclone guoo?)/(POU freemod? uttAxclone guou?)/(POU freemod? sentenceclone guou?)/(PO freemod? uttAxclone guo?)/(PO freemod? sentenceclone  guo?))
-<h3>Atomic predicates (predunit)</H3>
+<H3>Atomic predicates (predunit)</H3>
 <LI>predunit1 describes the truly atomic forms of predicate.
 <p>
 <LI>PREDA is the class of predicate words (the phonetic predicate words along with the special phonetic cmapua which are predicates, listed
@@ -2920,7 +2941,7 @@ predunit <- ((POSHORT freemod?)? predunit3)
 kekpredunit <- ((NO1 freemod?)* KA freemod? predicate freemod? KI freemod? predicate guu?)
 <p>
 
-<h4>The construction of metaphors</H4>
+<H4>The construction of metaphors</H4>
 <LI>there follows the construction of metaphorically modified predicates, 
 <LI>along with tightly logically linked predicates.
 
@@ -2998,7 +3019,7 @@ sentpred <- ((despredE freemod? GO freemod? barepred)/despredE)
 
 <p>
 
-<h3>Construction of sentence modifiers</H3>
+<H3>Construction of sentence modifiers</H3>
 
 <LI>the construction of predicate modifiers (prepositional phrases usable as terms along with arguments).
 
@@ -3039,7 +3060,7 @@ modifier <- (mod (A1 freemod? mod)*)
 
 <p>
 
-<h3>Serial names (a flash point)</H3>
+<H3>Serial names (a flash point)</H3>
 
 <LI>the serial name is a horrid heterogenous construction!  It can involve
 <LI>components of all three of the major phonetic classes essentially!
@@ -3061,7 +3082,7 @@ LANAME <- (LA0 comma2? name)
 
 <p>
 
-<h3>General construction of descriptive arguments</H3>
+<H3>General construction of descriptive arguments</H3>
 
 <LI>general constructions of arguments with "articles".
 
@@ -3115,7 +3136,7 @@ arg1a <- ((DA/TAI/arg1/(GE freemod? arg1a)) freemod?)
 
 <p>
 
-<h4>Argument modifiers (subordinate clauses)</H4>
+<H4>Argument modifiers (subordinate clauses)</H4>
 
 argmod1 <- (((sp? (N o) sp?)? ((JI freemod? predicate)/(JIO freemod? sentence)/(JIO freemod? uttAx)/(JI freemod? modifier)/((JI/NUJI) freemod? argument1)))/((sp? (N o) sp?)? (((JIZA freemod? predicate) guiza?)/((JIOZA freemod? sentence) guiza?)/((JIOZA freemod? uttAx) guiza?)/((JIZA freemod? modifier) guiza?)/(JIZA freemod? argument1 guiza?)))/((sp? (N o) sp?)? ((JIZI freemod? predicate guizi?)/(JIOZI freemod? sentence guizi?)/(JIOZI freemod? uttAx guizi?)/(JIZI freemod? modifier guizi?)/(JIZI freemod? argument1 guizi?)))/((sp? (N o) sp?)? ((JIZU freemod? predicate guizu?)/(JIOZU freemod? sentence guizu?)/(JIOZU freemod? uttAx guizu?)/(JIZU freemod? modifier guizu?)/(JIZU freemod? argument1 guizu?))))
 <p>
@@ -3130,7 +3151,7 @@ argmod <- (argmod1 (A1 freemod? argmod1)* gui?)
 
 <p>
 
-<h4>Arguments resume</H4>
+<H4>Arguments resume</H4>
 
 <LI>affix argument modifiers to a definite argument
 
@@ -3233,7 +3254,7 @@ argxx <- (&((NO1 freemod?)* DIO) argument)
 
 <p>
 
-<h3>Term lists</H3>
+<H3>Term lists</H3>
 
 <LI>arguments and predicate modifiers actually associated with predicates.
 
@@ -3380,7 +3401,7 @@ termset <- ((terms freemod? GO freemod? barepred)/termset2)
 
 <p>
 
-<h3>The general verb phrase construction</H3>
+<H3>The general verb phrase construction</H3>
 
 <LI>this is the untensed predicate with arguments attached.  Here is the principal locus
 <LI>of closure with [guu], but it is deceptive to say that [guu] merely closes barepred,
@@ -3433,7 +3454,7 @@ identpred <- ((NO1 freemod?)* (BI freemod? argument1 guu?))
 predicate <- (predicate1/identpred)
 <p>
 
-<h3>The sentence</H3>
+<H3>The sentence</H3>
 
 <LI>The gasent is a basic form of the Loglan sentence in which the predicate leads.
 <LI>The basic structure is [PA word (usually a tense) or [ga]) followed optionally by terms followed optionally by
@@ -3568,7 +3589,7 @@ uttAx <- (headterms freemod? sentence giuo?)
 
 uttAxclone <- (headterms freemod? sentenceclone giuo?)
 
-<h3>Utterances</H3>
+<H3>Utterances</H3>
 <LI>weird answer fragments
 <p>
 uttA <- ((A1/mex) freemod?)
@@ -3614,4 +3635,4 @@ utterance0 <- (!GE ((ICA freemod? uttF)/(!PAUSE freemod period? utterance0)/(!PA
 <p>
 utterance <- &(phoneticutterance end) (!GE ((ICA freemod? uttF (&I utterance)? end)/(!PAUSE freemod period? utterance)/(!PAUSE freemod period? (&I utterance)? end)/(uttF IGE utterance)/(I freemod? period? (&I utterance)? end)/(uttF (&I utterance)? end)/(I freemod? uttF (&I utterance)? end)))
 
-</tt>
+</TT>

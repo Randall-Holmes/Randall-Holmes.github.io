@@ -880,7 +880,7 @@ def saverules(s):
     openrules(s)
     therules.write('from loglanpreamble import *\n\n')
     for r in loglan:
-        therules.write('L("'+r+' <- '+showrule(loglan[r])+'")\n\n')
+        if not(r[0]=='#' or r[0]== '<'): therules.write('L("'+r+' <- '+showrule(loglan[r])+'")\n\n')
     therules.write("if __name__ == '__main__':interface();")
     therules.close()
 

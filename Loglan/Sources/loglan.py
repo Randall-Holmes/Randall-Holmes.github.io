@@ -504,7 +504,7 @@ L("NI0 <- (!BadNIStress ((K UA)/(G IE)/(G IU)/(H IE)/(H IU)/(N EA)/(N IO)/(P EA)
 
 L("SA <- (!BadNIStress ((S a)/(S i)/(S u)/(IE (comma2? !IE SA)?)) NOI?)")
 
-L("RA <- (!BadNIStress ((R a)/(R i)/(R o)/(R e)/(R u)))")
+L("RA <- (!BadNIStress ((R a)/(R i)/(R o)/(R e)/(R u)/(B AO)))")
 
 L("NI1 <- ((NI0 (!BadNIStress M a)? (!BadNIStress M OA NI0*)?) (comma2 !(NI RA) &NI)?)")
 

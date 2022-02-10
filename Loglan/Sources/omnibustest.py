@@ -1,4 +1,8 @@
-#  version of 1/20/2022 7 am
+#  version of 2/7/2022 2 pm
+
+# 2/7/2022 declutter no longer removes spaces.  This is preparatory
+# to making sure comments are included in grammar and developing a tool
+# for changing rule names.  The effect on parses is if anything good.
 
 # 1/20/22 declutter was a bit too energetic and removed some
 # occurrences of important classes
@@ -269,6 +273,62 @@ def parse(thegrammar,expression,string):
    print ('badly formed expression encountered '+str(expression[0]))
    return 'fail'
 
+def subs(s,t,expression):
+
+     if expression[0]=='sequence':
+        if expression[1]==[]:  return ['sequence',[]]
+        L=expression[1]
+        return ['sequence',[subs(s,t,L[0])]+subs(s,t,['sequence',L[1:]])[1]]
+     if expression[0]=='alternatives':
+        if expression[1]==[]:  return ['alternatives',[]]
+        L=expression[1]
+        return ['alternatives',[subs(s,t,L[0])]+subs(s,t,['alternatives',L[1:]])[1]]
+     if expression[0] in ['not','and','optional','zeroormore','oneormore']:
+        return [expression[0],subs(s,t,expression[1])]
+     if expression[0] == 'identifier':
+          if expression[1]==s:  return ['identifier',t]
+          if expression[1]==t:  print('variable name collision')
+          return expression
+     return expression
+
+def subslist(s,expression):
+
+     if expression[0]=='sequence':
+        if expression[1]==[]:  return ['sequence',[]]
+        L=expression[1]
+        return ['sequence',[subslist(s,L[0])]+subslist(s,['sequence',L[1:]])[1]]
+     if expression[0]=='alternatives':
+        if expression[1]==[]:  return ['alternatives',[]]
+        L=expression[1]
+        return ['alternatives',[subslist(s,L[0])]+subslist(s,['alternatives',L[1:]])[1]]
+     if expression[0] in ['not','and','optional','zeroormore','oneormore']:
+        return [expression[0],subslist(s,expression[1])]
+     if expression[0] == 'identifier':
+          if len(s)<2:  return expression
+          if expression[1]==s[0]:  return ['identifier',s[1]]
+          if expression[1]==s[1]:  print('variable name collision')
+          return subslist(s[2:],expression)
+     return expression
+
+
+substarget = {}
+
+def stringsub(s,t):
+    if len(s)<2:  return t
+    if s[0]==t: return s[1]
+    return stringsub(s[2:],t)
+
+def sub(s,t,grammar1):
+    global substarget
+    for r in grammar1:
+        if r==s:substarget[t] = subs(s,t,grammar1[r])
+        if not(r==s):  substarget[r]= subs(s,t,grammar1[r])
+
+def sublist(s,grammar1):
+    global substarget
+    for r in grammar1:
+        substarget[stringsub(s,r)]=subslist(s,grammar1[r])  
+
 def guardform(c):
 
    if c=='"':  return '\\\"'
@@ -471,13 +531,17 @@ def parsetopeg(P):
 def classtest(s):
     return parsetopeg(parse(peggrammar,['identifier','Expression'],s)[0])
 
-
+commentcounter=0
 
 def rundef(thegrammar,s):
     global TheString
     global thecache
+    global commentcounter
     thecache.clear();
-    if s[0] =='#' or s[0] == '<':return 'comments'
+    if s[0] =='#' or s[0] == '<':
+        commentcounter=commentcounter+1
+        additem2(thegrammar,s[0]+str(commentcounter),['literal',s[1:]])
+        return 'comment'
     TheString=s
     T=parse(peggrammar,['identifier','Definition'],0)
     if T[0]=='fail' or not T[1]==len(TheString):
@@ -530,25 +594,28 @@ def Shallow():
 
 def declutter(P):
     if len(P)==0:  return []
-    if P==' ': return []
+    #if P==' ': return []
     if P==str(P):  return P
     if len(P)==1:
         R=declutter(P[0])
-        if R==' ' or R==[' ']:  return []
+        #if R==' ' or R==[' ']:  return []
         if R==str(R):  return [R]
         return declutter(R)
     if P[0]==label:
-        if len(P[2])==0 or P[2]==' ' or P[2]==[' ']:  return []
+        #if len(P[2])==0 or P[2]==' ' or P[2]==[' ']:  return []
+        if len(P[2])==0: return []
         if P[1] in compactclasses:  return P
         if P[2]==str(P[2]):  return P
         W= declutter(P[2])
         if len(W)==1: W=W[0]
-        if len(W)==0 or W== ' ' or W==[' ']:  return []
+        #if len(W)==0 or W== ' ' or W==[' ']:  return []
+        if len(W)==0:return[]
         if W==str(W): return [P[0],P[1],W]
         if W[0]==label:
             if W[1] in compactclasses:  return [P[0],P[1],W]
             Q= (W[2])
-            if len(Q)==0 or Q==' ' or Q==[' ']:  return []
+            #if len(Q)==0 or Q==' ' or Q==[' ']:  return []
+            if len(Q)==0: return[]
             if Q==str(Q):  return [P[0],P[1],W]
             if Q[0]==label and Q[1] in compactclasses:  return [P[0],P[1],W]
             if Q[0]==label and W[1] in importantclasses and not Q[1] in importantclasses:  return ([P[0],P[1],[W[0],W[1],Q[2]]])
@@ -556,7 +623,8 @@ def declutter(P):
             if Q[0]==label and not W[1] in importantclasses : return ([P[0],P[1],Q])
         return ([P[0],P[1],W])
     Q=declutter(P[0])
-    if Q==[] or Q==' ' or Q==[' ']:  return declutter(P[1:])
+    #if Q==[] or Q==' ' or Q==[' ']:  return declutter(P[1:])
+    if Q == []: return declutter(P[1:])
     X=declutter(P[1:])
     if X==[] and not Q==str(Q): return Q
     return [Q]+X
@@ -629,6 +697,7 @@ def printparse(P):
 # though it seems that this version will be slaved to the ML version for now, since I can now export files thence to here.
 
 # more feedback from commands will be useful.
+
 # recent updates
 
 #try out the new interface.   It does basically everything that
@@ -655,6 +724,13 @@ def printparse(P):
 # quote is the apostrophe, which can appear as a stress marker in a
 # word.  One of the uses of this is to test possible syllable break
 # and stress patterns.
+
+# 2/7/2022 comments wildly out of date.  There has been adjustment
+# of compacted and important classes.  I am in the process of arranging
+# for comments to be included in grammars preparatory to installing
+# a rule name change function.  This is no longer the place
+# to look for comments on the grammar:  see the head of the commented
+# PEG files.
 
 # 5/16 main parser loglan.py and test parser loglantest.py
 # the main parser has a different treatment of guu,
@@ -1205,6 +1281,8 @@ def niceprecs():
     Compact('Borrowing')
     Compact('Complex')
     Compact('Cmapua')
+    Compact('sp')
+    Compact('AlienText')
 
 
     MakeImportant('juelink')
@@ -1502,7 +1580,7 @@ def saverules(s):
     openrules(s)
     therules.write('from loglanpreamble import *\n\n')
     for r in loglan:
-        therules.write('L("'+r+' <- '+showrule(loglan[r])+'")\n\n')
+        if not(r[0]=='#' or r[0]== '<'): therules.write('L("'+r+' <- '+showrule(loglan[r])+'")\n\n')
     therules.write("if __name__ == '__main__':interface();")
     therules.close()
 
@@ -1511,8 +1589,10 @@ def saverules2(s):
     openrules2(s)
     #therules.write('from loglanpreamble import *\n\n')
     for r in loglan:
-        therules.write(r+' <- '+showrule(loglan[r])+'\n\n')
-    #therules.write("if __name__ == '__main__':interface();")
+        if (r[0]=='#' or r[0] == "<"):
+            therules.write(r[0]+loglan[r][1]+'\n\n')
+        if not(r[0]=='#' or r[0] == "<"):
+            therules.write(r+' <- '+showrule(loglan[r])+'\n\n')
     therules.close()
 
 def commentize(s):
@@ -1589,9 +1669,10 @@ def grammarbatch(gfile):
         line1=line
         while not line1=='' and (line1[len(line1)-1]==' ' or line1[len(line1)-1]=='\n' or line1[len(line1)-1]=='\r'):line1=line1[0:len(line1)-1]
         while not line1=='' and line1[0]==' ':line1=line1[1:]
-        if not(line1=='' or line1[0]=='#'):  rundef(loglan,line1)
+        #if not(line1=='' or line1[0]=='#'):  rundef(loglan,line1)
+        if not (line1==''): rundef(loglan,line1)
     
-#from loglanpreamble import *
+# from loglanpreamble import *
 
 L("sp <- [ ]+")
 
@@ -1735,7 +1816,7 @@ L("MarkedName <- (&caprule ((LAname2 juncture?)/(HOIname2 juncture?)/(HUEname2 j
 
 L("FalseMarked <- (&PreName (!MarkedName character)* MarkedName)")
 
-L("NameWord <- (((&caprule MarkedName)/([,] sp !FalseMarked &caprule PreName)/(&V1 !FalseMarked &caprule PreName)/(&caprule (((LAname juncture?)/(HOIname juncture?)/(HUEname juncture?)/(CIname juncture?)/(LIUname juncture?)/(MUEname juncture?)/(GAOname juncture?)) !V1 [,]? sp? &caprule PreName))) (([,]? sp !FalseMarked &caprule PreName)/([,]? sp &([Cc] [Ii]) NameWord))* &((sp? [Cc] [Ii] predunit)/(&(([,] sp)/terminal/[\")]/!.) .)/!.))")
+L("NameWord <- (((&caprule MarkedName)/([,] sp !FalseMarked &caprule PreName)/(&V1 !FalseMarked &caprule PreName)/(&caprule (((LAname juncture?)/(HOIname juncture?)/(HUEname juncture?)/(CIname juncture? &([,]? sp))/(LIUname juncture?)/(MUEname juncture?)/(GAOname juncture?)) !V1 [,]? sp? &caprule PreName))) (([,]? sp !FalseMarked &caprule PreName)/([,]? sp &([Cc] [Ii]) NameWord))* &((sp? [Cc] [Ii] predunit)/(&(([,] sp)/terminal/[\")]/!.) .)/!.))")
 
 L("namemarker <- ((([Ll] [Aa] juncture?)/([Hh] [Oo] [Ii] juncture?)/([Hh] [Uu] juncture? [Ee] juncture?)/([Cc] &(pause/([Ii] juncture? sp PreName)) [Ii] juncture?)/([Ll] [Ii] juncture? [Uu] juncture?)/([Gg] [Aa] [Oo] juncture?)/([Mm] [Uu] juncture? [Ee] juncture?)) !V1)")
 
@@ -2093,11 +2174,11 @@ L("KOU2 <- (KOU1 !KI)")
 
 L("BadNIStress <- ((C1 V2 V2? stress (M a)? (M OA)? NI RA)/(C1 V2 stress V2 (M a)? (M OA)? NI RA))")
 
-L("NI0 <- (!BadNIStress ((K UA)/(G IE)/(G IU)/(H IE)/(H IU)/(K UE)/(N EA)/(N IO)/(P EA)/(P IO)/(S UU)/(S UA)/(T IA)/(Z OA)/(Z OO)/(H o)/(N i)/(N e)/(T o)/(T e)/(F o)/(F e)/(V o)/(V e)/(P i)/(R e)/(R u)/(S e)/(S o)/(H i)))")
+L("NI0 <- (!BadNIStress ((K UA)/(G IE)/(G IU)/(H IE)/(H IU)/(N EA)/(N IO)/(P EA)/(P IO)/(S UU)/(S UA)/(T IA)/(Z OA)/(Z OO)/(H o)/(N i)/(N e)/(T o)/(T e)/(F o)/(F e)/(V o)/(V e)/(P i)/(R e)/(R u)/(S e)/(S o)/(H i)))")
 
 L("SA <- (!BadNIStress ((S a)/(S i)/(S u)/(IE (comma2? !IE SA)?)) NOI?)")
 
-L("RA <- (!BadNIStress ((R a)/(R i)/(R o)/(R e)/(R u)))")
+L("RA <- (!BadNIStress ((R a)/(R i)/(R o)/(R e)/(R u)/(B AO)))")
 
 L("NI1 <- ((NI0 (!BadNIStress M a)? (!BadNIStress M OA NI0*)?) (comma2 !(NI RA) &NI)?)")
 
@@ -2105,7 +2186,7 @@ L("RA1 <- ((RA (!BadNIStress M a)? (!BadNIStress M OA NI0*)?) (comma2 !(NI RA) &
 
 L("NI2 <- (((SA? (NI1+/RA1))/SA) NOI? (CA0 ((SA? (NI1+/RA1))/SA) NOI?)*)")
 
-L("NI <- (sp? NI2 ((&(M UE) Acronym (comma/&end/&period) !(C u))/(comma2? M UE comma2? PreName !(C u)))? (C u)?)")
+L("NI <- (sp? (P i)? NI2 ((&(M UE) Acronym (comma/&end/&period) !(C u))/(comma2? M UE comma2? PreName !(C u)))? (C u)?)")
 
 L("mex <- (sp? NI)")
 
@@ -2255,9 +2336,9 @@ L("ME <- (sp? ((M EA)/(M e)))")
 
 L("MEU <- (sp? M EU)")
 
-L("NU0 <- ((N UO)/(F UO)/(J UO)/(N u)/(F u)/(J u))")
+L("NU0 <- ((N UO)/(F UO)/(J UO)/(N u)/(F u)/(J u)/(K UE))")
 
-L("NU <- (sp? ((((N u)/(N UO)) !(sp (NI0/RA)) (NI0/RA)?)/NU0)+ freemod?)")
+L("NU <- (sp? ((((N u)/(N UO)/(K UE)) !(sp (NI0/RA)) (NI0/RA)?)/NU0)+ freemod?)")
 
 L("PO1 <- (sp? ((P o)/(P u)/(Z o)))")
 

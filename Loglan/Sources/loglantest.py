@@ -142,7 +142,7 @@ L("MarkedName <- (&caprule ((LAname2 juncture?)/(HOIname2 juncture?)/(HUEname2 j
 
 L("FalseMarked <- (&PreName (!MarkedName character)* MarkedName)")
 
-L("NameWord <- (((&caprule MarkedName)/([,] sp !FalseMarked &caprule PreName)/(&V1 !FalseMarked &caprule PreName)/(&caprule (((LAname juncture?)/(HOIname juncture?)/(HUEname juncture?)/(CIname juncture?)/(LIUname juncture?)/(MUEname juncture?)/(GAOname juncture?)) !V1 [,]? sp? &caprule PreName))) (([,]? sp !FalseMarked &caprule PreName)/([,]? sp &([Cc] [Ii]) NameWord))* &((sp? [Cc] [Ii] predunit)/(&(([,] sp)/terminal/[\")]/!.) .)/!.))")
+L("NameWord <- (((&caprule MarkedName)/([,] sp !FalseMarked &caprule PreName)/(&V1 !FalseMarked &caprule PreName)/(&caprule (((LAname juncture?)/(HOIname juncture?)/(HUEname juncture?)/(CIname juncture? &([,]? sp))/(LIUname juncture?)/(MUEname juncture?)/(GAOname juncture?)) !V1 [,]? sp? &caprule PreName))) (([,]? sp !FalseMarked &caprule PreName)/([,]? sp &([Cc] [Ii]) NameWord))* &((sp? [Cc] [Ii] predunit)/(&(([,] sp)/terminal/[\")]/!.) .)/!.))")
 
 L("namemarker <- ((([Ll] [Aa] juncture?)/([Hh] [Oo] [Ii] juncture?)/([Hh] [Uu] juncture? [Ee] juncture?)/([Cc] &(pause/([Ii] juncture? sp PreName)) [Ii] juncture?)/([Ll] [Ii] juncture? [Uu] juncture?)/([Gg] [Aa] [Oo] juncture?)/([Mm] [Uu] juncture? [Ee] juncture?)) !V1)")
 
@@ -500,11 +500,11 @@ L("KOU2 <- (KOU1 !KI)")
 
 L("BadNIStress <- ((C1 V2 V2? stress (M a)? (M OA)? NI RA)/(C1 V2 stress V2 (M a)? (M OA)? NI RA))")
 
-L("NI0 <- (!BadNIStress ((K UA)/(G IE)/(G IU)/(H IE)/(H IU)/(K UE)/(N EA)/(N IO)/(P EA)/(P IO)/(S UU)/(S UA)/(T IA)/(Z OA)/(Z OO)/(H o)/(N i)/(N e)/(T o)/(T e)/(F o)/(F e)/(V o)/(V e)/(P i)/(R e)/(R u)/(S e)/(S o)/(H i)))")
+L("NI0 <- (!BadNIStress ((K UA)/(G IE)/(G IU)/(H IE)/(H IU)/(N EA)/(N IO)/(P EA)/(P IO)/(S UU)/(S UA)/(T IA)/(Z OA)/(Z OO)/(H o)/(N i)/(N e)/(T o)/(T e)/(F o)/(F e)/(V o)/(V e)/(P i)/(R e)/(R u)/(S e)/(S o)/(H i)))")
 
 L("SA <- (!BadNIStress ((S a)/(S i)/(S u)/(IE (comma2? !IE SA)?)) NOI?)")
 
-L("RA <- (!BadNIStress ((R a)/(R i)/(R o)/(R e)/(R u)))")
+L("RA <- (!BadNIStress ((R a)/(R i)/(R o)/(R e)/(R u)/(B AO)))")
 
 L("NI1 <- ((NI0 (!BadNIStress M a)? (!BadNIStress M OA NI0*)?) (comma2 !(NI RA) &NI)?)")
 
@@ -512,7 +512,7 @@ L("RA1 <- ((RA (!BadNIStress M a)? (!BadNIStress M OA NI0*)?) (comma2 !(NI RA) &
 
 L("NI2 <- (((SA? (NI1+/RA1))/SA) NOI? (CA0 ((SA? (NI1+/RA1))/SA) NOI?)*)")
 
-L("NI <- (sp? NI2 ((&(M UE) Acronym (comma/&end/&period) !(C u))/(comma2? M UE comma2? PreName !(C u)))? (C u)?)")
+L("NI <- (sp? (P i)? NI2 ((&(M UE) Acronym (comma/&end/&period) !(C u))/(comma2? M UE comma2? PreName !(C u)))? (C u)?)")
 
 L("mex <- (sp? NI)")
 
@@ -662,9 +662,9 @@ L("ME <- (sp? ((M EA)/(M e)))")
 
 L("MEU <- (sp? M EU)")
 
-L("NU0 <- ((N UO)/(F UO)/(J UO)/(N u)/(F u)/(J u))")
+L("NU0 <- ((N UO)/(F UO)/(J UO)/(N u)/(F u)/(J u)/(K UE))")
 
-L("NU <- (sp? ((((N u)/(N UO)) !(sp (NI0/RA)) (NI0/RA)?)/NU0)+ freemod?)")
+L("NU <- (sp? ((((N u)/(N UO)/(K UE)) !(sp (NI0/RA)) (NI0/RA)?)/NU0)+ freemod?)")
 
 L("PO1 <- (sp? ((P o)/(P u)/(Z o)))")
 
