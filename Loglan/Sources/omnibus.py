@@ -1296,7 +1296,9 @@ def niceprecs():
     Compact('LNIU')
     Compact('NOWORD')
     Compact('LAWORD')
-
+    Compact('PREDA')
+    Compact('PRENAME')
+    Compact('ACRONYMICNAME')
 
     MakeImportant('juelink')
     MakeImportant('jelink')
@@ -1324,9 +1326,7 @@ def niceprecs():
     MakeImportant('termsA')
     MakeImportant('DefaultStressedSyllable')
     MakeImportant('imperative')
-    MakeImportant('PREDA')
-    MakeImportant('PRENAME')
-    MakeImportant('ACRONYMICNAME')
+
 
 
 Indent()

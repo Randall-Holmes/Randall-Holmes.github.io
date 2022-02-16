@@ -1296,6 +1296,9 @@ def niceprecs():
     Compact('LNIU')
     Compact('NOWORD')
     Compact('LAWORD')
+    Compact('PREDA')
+    Compact('PRENAME')
+    Compact('ACRONYMICNAME')
 
 
     MakeImportant('juelink')
