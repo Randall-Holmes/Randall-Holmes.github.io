@@ -946,9 +946,9 @@ L("gasent <- (gasent2/gasent1)")
 
 L("statement <- (gasent/(modifiers freemod? gasent)/(subject freemod? freemod? (GIO freemod? terms1)? predicate))")
 
-L("keksent <- (modifiers? freemod? (NOWORD freemod?)* (KA freemod? headterms? freemod? sentence freemod? KI freemod? uttA0))")
+L("keksent <- (terms? freemod? (NOWORD freemod?)* (KA freemod? headterms? freemod? sentence freemod? KI freemod? sen1))")
 
-L("keksentclone <- (modifiers? freemod? (NOWORD freemod?)* (KA freemod? headterms? freemod? sentenceclone freemod? KI freemod? uttA0clone))")
+L("keksentclone <- (terms? freemod? (NOWORD freemod?)* (KA freemod? headterms? freemod? sentenceclone freemod? KI freemod? sen1clone))")
 
 L("neghead <- ((NOWORD freemod? gap)/(neg2 OptPause))")
 
@@ -956,27 +956,23 @@ L("imperative <- ((modifiers freemod?)? !gasent predicate)")
 
 L("nosubject <- ((modifiers freemod?)? !gasent predicate)")
 
-L("sen1 <- ((neghead freemod?)* (imperative/statement/keksent))")
-
-L("sen1clone <- ((neghead freemod?)* (nosubject/statement/keksent))")
-
-L("sentence <- (sen1 ([!.:;?]? ICA freemod? sen1)*)")
-
-L("sentenceclone <- (sen1clone ([!.:;?]? ICA freemod? sen1clone)*)")
-
 L("headterms <- (terms GI freemod?)+")
 
 L("uttAx <- (headterms freemod? sentence giuo?)")
 
 L("uttAxclone <- (headterms freemod? sentenceclone giuo?)")
 
+L("sen1 <- ((neghead freemod?)* (imperative/statement/keksent/uttAx))")
+
+L("sen1clone <- ((neghead freemod?)* (nosubject/statement/keksentclone/uttAxclone))")
+
+L("sentence <- (sen1 ([!.:;?]? ICA freemod? sen1)*)")
+
+L("sentenceclone <- (sen1clone ([!.:;?]? ICA freemod? sen1clone)*)")
+
 L("uttA <- ((AONE/mex) freemod?)")
 
-L("uttA0 <- (sen1/uttAx)")
-
-L("uttA0clone <- (sen1clone/uttAxclone)")
-
-L("uttA1 <- ((sen1/uttAx/links/linkargs/argmod/(modifiers freemod? keksent)/terms/uttA/NOWORD) freemod? Period?)")
+L("uttA1 <- ((sen1/links/linkargs/argmod/terms/uttA/NOWORD) freemod? Period?)")
 
 L("uttC <- ((neghead freemod? uttC)/uttA1)")
 
