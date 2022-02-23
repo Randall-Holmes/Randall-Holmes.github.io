@@ -52,6 +52,8 @@
 
 <p>
 
+<LI> 2/20/2022 In addition, pulled the tightly binding ICI connectives into sentence instead of utterance structure.  I doubt there is any practice in using them in their former role, so they will be experienced as a new feature.
+
 <LI> 2/19/2022 Major restructuring of sentences.  Sentences with head terms with gi and goi (uttAx) are moved into class sen1, so they can be afterthought logically
 <LI>connected like any other sentences.  Note that the fact this couldnt be done means that Loglan never really had OSV sentences in any practical sense.  The real reason I need this <LI>is convenient isomorphism between Loglan and standard logical notation.  This means that class uttA0 is no longer needed (removed in its one application in favor of sen1).
 <LI> experimentally allowing terms before keksents, which are in effect headterms with [gio].
@@ -5035,21 +5037,32 @@ sen1clone <- ((neghead freemod?)* (nosubject/statement/keksentclone/uttAxclone))
 
 <LI> The logical structure of a [sentence] may not be transparent.  The effect of appending another {ICA sen1) to a [sentence] is to connect the previous part of the sentence to the new [sen1] with the ICA connective.  In other words, this groups to the left, logically.
 <LI> Classes [sentence] and [uttAx] play an important role in my proposed definition of scope:  the scope of a quantifier is the smallest item of one of these classes
-which includes all instances of the variable it binds and all scopes of quantifiers which appear after it in its scope (in the peculiar SOV order we use).  Notice
-that an initial segment of a [sentence] is not a [sentence]:  scopes are to be closed under ICA connectives.
+<LI>which includes all instances of the variable it binds and all scopes of quantifiers which appear after it in its scope (in the peculiar SOV order we use).  Notice
+<LI>that an initial segment of a [sentence] is not a [sentence]:  scopes are to be closed under ICA connectives.
 
 <p>
 
-sentence <- (sen1 ([!.:;?]? ICA freemod? sen1)*)
+<LI> adding another layer to sentences, afterthought connected with ICI connectives, more tightly binding (and removing class uttD below)
+
+sentence1 <- (sen1 (ICI freemod? sen1)*)
 
 <p>
 
-sentenceclone <- (sen1clone ([!.:;?]? ICA freemod? sen1clone)*)
+sentence1clone <- (sen1clone (ICI freemod? sen1clone)*)
 
 <p>
 
+<LI> a sentence will continue through terminal punctuation;  this averts ambiguity with the higher level utterance construction with ICA.
 
+<p>
 
+sentence <- (sentence1 ([!.:;?]? ICA freemod? sentence1)*)
+
+<p>
+
+sentenceclone <- (sentence1clone ([!.:;?]? ICA freemod? sentence1clone)*)
+
+<p>
 
 
 <H3>Utterances</H3>
@@ -5068,9 +5081,7 @@ uttA <- ((AONE/mex) freemod?)
 
 <p>
 
-<LI> the (modifiers freemod? keksent) here is probably unreachable.<p>
-
-uttA1 <- ((sen1/links/linkargs/argmod/terms/uttA/NOWORD) freemod? Period?)
+uttA1 <- ((links/linkargs/argmod/terms/uttA/NOWORD) freemod? Period?)
 
 <p>
 
@@ -5078,31 +5089,15 @@ uttA1 <- ((sen1/links/linkargs/argmod/terms/uttA/NOWORD) freemod? Period?)
 
 <p>
 
-uttC <- ((neghead freemod? uttC)/uttA1)
+uttC <- (sentence Period?/(neghead freemod? uttC)/uttA1)
 
 <p>
 
-<LI>utterances linked with more tightly binding ICI sentence connectives.  Single sentences are of this class
-
-<LI>if not linked with ICI or ICA.
+<LI> This higher level construction with the ICA connectives is to our mind unfortunate.  It is used often enough for listing arguments.
 
 <p>
 
-uttD <- ((sentence Period? !ICI !ICA)/(uttC (ICI freemod? uttD)*))
-
-<p>
-
-<LI>utterances of the previous class linked with ICA.  I went to some trouble to ensure that a freestanding
-
-<LI>[sentence] is actually parsed as a sentence, not a composite uttD, which was a deficiency, if not an ambiguity of
-
-<LI>LIP and of the trial.85 grammar.
-
-<LI> This higher level construction with the ICA connectives is to our mind unfortunate.  We do not know how much it is used.
-
-<p>
-
-uttE <- (uttD (ICA freemod? uttD)*)
+uttE <- (uttC (ICA freemod? uttC)*)
 
 <p>
 

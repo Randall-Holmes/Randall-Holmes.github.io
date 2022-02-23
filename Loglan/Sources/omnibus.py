@@ -1689,7 +1689,7 @@ def grammarbatch(gfile):
         #if not(line1=='' or line1[0]=='#'):  rundef(loglan,line1)
         if not (line1==''): rundef(loglan,line1)
     
-#from loglanpreamble import *
+# from loglanpreamble import *
 
 L("sp <- [ ]+")
 
@@ -2657,19 +2657,21 @@ L("sen1 <- ((neghead freemod?)* (imperative/statement/keksent/uttAx))")
 
 L("sen1clone <- ((neghead freemod?)* (nosubject/statement/keksentclone/uttAxclone))")
 
-L("sentence <- (sen1 ([!.:;?]? ICA freemod? sen1)*)")
+L("sentence1 <- (sen1 (ICI freemod? sen1)*)")
 
-L("sentenceclone <- (sen1clone ([!.:;?]? ICA freemod? sen1clone)*)")
+L("sentence1clone <- (sen1clone (ICI freemod? sen1clone)*)")
+
+L("sentence <- (sentence1 ([!.:;?]? ICA freemod? sentence1)*)")
+
+L("sentenceclone <- (sentence1clone ([!.:;?]? ICA freemod? sentence1clone)*)")
 
 L("uttA <- ((AONE/mex) freemod?)")
 
-L("uttA1 <- ((sen1/links/linkargs/argmod/terms/uttA/NOWORD) freemod? Period?)")
+L("uttA1 <- ((links/linkargs/argmod/terms/uttA/NOWORD) freemod? Period?)")
 
-L("uttC <- ((neghead freemod? uttC)/uttA1)")
+L("uttC <- ((sentence Period?)/(neghead freemod? uttC)/uttA1)")
 
-L("uttD <- ((sentence Period? !ICI !ICA)/(uttC (ICI freemod? uttD)*))")
-
-L("uttE <- (uttD (ICA freemod? uttD)*)")
+L("uttE <- (uttC (ICA freemod? uttC)*)")
 
 L("uttF <- (uttE (I freemod? uttE)*)")
 
