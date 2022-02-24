@@ -1689,7 +1689,7 @@ def grammarbatch(gfile):
         #if not(line1=='' or line1[0]=='#'):  rundef(loglan,line1)
         if not (line1==''): rundef(loglan,line1)
     
-# from loglanpreamble import *
+#from loglanpreamble import *
 
 L("sp <- [ ]+")
 
@@ -2671,12 +2671,12 @@ L("uttA1 <- ((links/linkargs/argmod/terms/uttA/NOWORD) freemod? Period?)")
 
 L("uttC <- ((sentence Period?)/(neghead freemod? uttC)/uttA1)")
 
-L("uttE <- (uttC (ICA freemod? uttC)*)")
+L("ICAUTT <- ICA")
 
-L("uttF <- (uttE (I freemod? uttE)*)")
+L("uttF <- (uttC (I freemod? uttC)*)")
 
-L("utterance0 <- (!GE ((ICA freemod? uttF)/(!OptPause freemod Period? utterance0)/(!OptPause freemod Period?)/(uttF IGE utterance0)/uttF/(I freemod? uttF?)/(I freemod? Period?)) (&I utterance0)?)")
+L("utterance0 <- (!GE ((ICAUTT freemod? uttF)/(!OptPause freemod Period? utterance0)/(!OptPause freemod Period?)/(uttF IGE utterance0)/uttF/(I freemod? uttF?)/(I freemod? Period?)) (&I utterance0)?)")
 
-L("utterance <- (&(PhoneticUtterance End) (!GE ((ICA freemod? uttF (&I utterance)? End)/(!OptPause freemod Period? utterance)/(!OptPause freemod Period? (&I utterance)? End)/(uttF IGE utterance)/(I freemod? Period? (&I utterance)? End)/(uttF (&I utterance)? End)/(I freemod? uttF (&I utterance)? End))))")
+L("utterance <- (&(PhoneticUtterance End) (!GE ((ICAUTT freemod? uttF (&I utterance)? End)/(!OptPause freemod Period? utterance)/(!OptPause freemod Period? (&I utterance)? End)/(uttF IGE utterance)/(I freemod? Period? (&I utterance)? End)/(uttF (&I utterance)? End)/(I freemod? uttF (&I utterance)? End))))")
 
 if __name__ == '__main__':interface();
