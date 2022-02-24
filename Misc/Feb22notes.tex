@@ -1,0 +1,260 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb}
+
+\title{Class notes for February 22, 2022 -- Math 287}
+
+\author{Dr Holmes}
+
+\begin{document}
+
+\maketitle
+
+I don't usually put up class notes, but there is a student out of class who requested them, and the second part of today's lecture addresses things which are not in the book.  I still owe you an extension to the previous set of notes on logic, and working with sets may induce me to get on it and produce them.
+
+The lecture had two parts, one extending the lecture before the test about strong induction and the kind of extension to recursion which gives the Fibonacci numbers, and one an introduction to basic concepts about sets.
+
+\section{Stuff about Strong Induction, Recursion, and Fibonacci-Like sequences}
+
+I'm just going to present the examples and theorems I did rather than try to say more about general principles.
+
+\begin{description}
+
+\item[Definition:]  Define a sequence $A$ by $A_1=2$, $A_2=5$, $A_{k+2} = 5A_{k+1}-6A_k$.
+
+\item[Calculations:]  $A_3 = 5A_2-6A_1 = (5)(5) - (6)(2) = 13$
+
+$A_4 = 5A_3-6A_2 = (5)(13) - (6)(5) = 35$
+
+and so forth
+
+\item[Theorem:]  For each natural number $n$, $A_n = 2^n+3^n$ (as is typical with induction proofs, we aren't told where this statements comes from)
+
+\item[Proof:]  We prove this by strong induction.  
+
+$A_1=2=1+1=2^0+3^0$, true for $n=1$ .
+
+$A_2=5=1+1=2^1+3^1$, true for $n=2$.   (we use two pieces of information at the basis).
+
+Let $k\geq 2$ be chosen arbitarily and assume for all $m$ with $1 \leq m \leq k$ that $A_m = 2^m+3^m$.  We already know this for $k=2$, the basis of our induction.
+
+Our goal is to show that $A_{k+1}=2^{k+1}+3^{k+1}$.
+
+We know by definition of the sequence $A$ that $A_{k+1} = 5A_{k}-6A_{k-1}$.  Notice that this uses our assumption
+that $k \geq 2$.
+
+Now by inductive hypothesis $5A_{k}-6A_{k-1}$ = $5(2^k+3^k)-6(2^{k-1}+3^{k-1})$.
+
+$5(2^k+3^k)-6(2^{k-1}+3^{k-1})$ = $(10)2^{k-1}+(15)3^{k-1}-6(2^{k-1})-6(3^{k-1})$ = $4(2^{k-1})+9(3^{k-1}) = 2^{k+1} + 3^{k+1}$
+
+And this completes the proof.
+
+\item[Observation:]  You might ask...where does this come from?  We give a hint...suppose we had a sequence $B$ with
+$B_{k+2} = 5B_{k+1}-6B_k$...and make a further guess, $B_k = r^k$ for some $r$.
+
+$r^{k+2} = 5r^{k+1}-6r^k$ is true (if $r \neq 0$) if and only if $r^2 = 5r-6$, that is $r^2-5r+6$, which has roots 2 and 3 which you can find by standard techniques.  So the sequence of powers of 2 and the sequence of powers of 3 satisfy this recurrence relation, and it is straightforward to show that adding two sequences which have this property will give a sequence with this property.
+
+\item[Definition:]  Define $G_k=\sum_{i=1}^k F_k$.
+
+\item[Experiment:]  Compute the first eight terms of this sequence and look for patterns.  Two were noticed by students:
+$G_{k+2}= G_k+G_{k+1}+1$, and $G_k = F_{k+2}-1$.  I admit freely that I was expecting you all to notice the second one;  the first one was a bonus.
+
+It is surprising, perhaps that neither of these proofs needs strong induction.  In the coming homework problems involving proofs about Fibonacci numbers, be ready to use strong induction, but also be ready to find that you need nothing more than ordinary induction.
+
+\item[Theorem:]  For all  natural numbers $n$, $G_{n+2} = G_n+G_{n+1}+1$
+
+\item[Proof:]  For $n=1$, observe that $G_1=1, G_2=1+1=2, G_3=1+1+2=4$, and $G_3 = 4 = 1+2+1 = G_1+G_2+1$.
+
+Now fix a natural number $k$ and assume $G_{k+2} = G_k+G_{k+1}+1$ (ind hyp).  The induction goal is
+to show that $G_{k+3} = G_{k+1}+G_{k+2}+1$.
+
+$G_{k+3} = \sum_{i=1}^{k+3}F_i = \sum_{i=1}^{k+2}F_i + F_{k+3}$ by the definition of summation
+$=G_{k+2} + F_{k+3}$ by definition of $G$
+
+$= G_k+G_{k+1}+1+F_{k+3}$ by ind hyp
+
+$= G_k + G_{k+1}+ 1+F_{k+1}+F_{k+2}$ by definition of $F$
+
+$= G_k+F_{k+1}  + G_{k+1}+F_{k+2}+1$ regrouping
+
+$= \sum_{i=1}^kF_i+F_{k+1}  +\sum_{i=1}^{k+1}F_i +F_{k+2}+1$ definition of G
+
+$= \sum_{i=1}^{k+1}F_i  +\sum_{i=1}^{k+2}F_i +1$ definition of summation
+
+$= G_{k+1}+G_{k+2}+1$ definition of G; which is what we needed.
+
+\item[Theorem:]  For all natural numbers $n$, $G_n=F_{n+2}-1$
+
+\item[Proof:]  By induction.  $G_1 = 2-1 = F_3-1$, so the statement is true for $n=1$.
+
+Fix an arbitrary natural number $k$.  Assume that $G_k = F_{k+2}-1$.   Our goal is to show $G_{k+1}=F_{k+3}-1$.
+
+$G_{k+1} = \sum_{i=1}^{k+1}F_i$  definition of G
+
+$= \sum_{i=1}^{k}F_i + F_{k+1}$  definition of summation
+
+$= G_k + F_{k+1}$  definition of $G$
+
+$= F_{k+2}-1 + F_{k+1}$  ind hyp
+
+$ = F_{k+3}-1$ regrouping and definition of F.
+
+\end{description}
+
+\newpage
+
+\section{Introducing Sets}
+
+The book introduces basic concepts of sets at a level needed for success in more advanced mathematics.  You may notice that they have already been using these concepts earlier.
+
+I will take an approach which is a bit more explicit.   Without too much logic (I hope) I am going to emulate the book's treatment of natural numbers by giving some primitive notions and axioms governing the notion of set.
+
+Some objects in the mathematical world are sets.  This is a primitive notion.
+
+Sets have objects as elements.  We write $a \in S$ for $a$ is an element of $S$.  The membership relation is a primitive notion.
+
+\begin{description}
+
+\item[Axiom of Members:]  If a membership relation $a \in S$ holds, we can deduce that $S$ is a set.  (It is equivalent to say that any object which is not a set has no elements).
+
+\end{description}
+
+It is common in foundations of mathematics to assume that everything is a set.  We will not make this assumption, but neither will we explicitly assume that there are non-sets.
+
+We introduce a familiar piece of notation $\{x,y\}$:  this is the set whose only elements are $x$ and $y$, an unordered pair (if $x$ and $y$ are distinct).  We call a set $\{x,x\}$ a singleton and feel free to write $\{x\} = \{x,x\}$.
+
+\begin{description}
+
+\item[Axiom of Pairs:]  For any objects $x,y$ (not necessarily distinct) there is a set $\{x,y\}$.  For any $z$, $z \in \{x,y\}$ if and only if $z=x \vee z=y$.
+
+\end{description}
+
+This notation (which should be familiar to you) can be used to make an important point.  Whatever elements are, they are not parts of the sets they belong to.  Let $a,b$ be distinct objects and consider the set $\{\{a,b\}\}$.  This set has only one element $\{a,b\}$, so at least one of $a,b$ does not belong to it:  suppose wlog that $a \not\in \{\{a,b\}\}$.  So we have $a \in \{a,b\}$ and $\{a,b\} \in \{\{a,b\}\}$ but $a \not\in \{\{a,b\}\}$:  the membership relation is not transitive.  So members of sets are not in general parts of sets:  the relationship of part to whole is transitive.
+
+There is another important relation between sets which is a much better candidate for the relation of part to whole between sets.
+
+\begin{description}
+
+\item[Definition:]  The relation $A \subseteq B$ is defined as holding if and only if $(\forall x \in A: x \in B)$:  that is, if every element of $A$ is an element of $B$.
+
+\item[Theorem:]   For any set $A$, $A \subseteq A$.  
+
+\item[Theorem:]   If $A \subseteq B$ and $B \subseteq C$ then $A \subseteq C$.
+
+\item[Proof:]  Suppose that $A \subseteq B$ and $B \subseteq C$
+
+Let $x$ be chosen arbitrarily.  Suppose $x \in A$.  Our goal is to show $x \in C$.
+
+(can you see that this is a plan to prove the Theorem?)
+
+Since $x \in A$ and $A \subseteq B$, it follows that $x \in B$.
+
+Since $x \in B$ and $B \subseteq C$, it follows that $x \in C$.
+
+So we have shown that any element of $A$ must belong to $C$, which is what it means for $A \subseteq C$ to be true.
+
+\end{description}
+
+The subset relation, being transitive, is a much more reasonable implementation of the idea of a {\em part\/} of a set.
+
+This relation can be used to state the criterion for identity of sets.
+
+\begin{description}
+
+\item[Axiom of Extensionality:]  If $A$ and $B$ are sets, $A = B$ if and only if $A \subseteq B$ and $B\subseteq A$.  Equivalently, sets $A$ and $B$ are equal exactly if they have the same elements (every element of $A$ is an element of $B$ and every element of $B$ is an element of $A$).
+
+\item[Example:]  We can now prove that $\{a,b\} = \{b,a\}$.
+
+\end{description}
+
+We introduce another interesting object.
+
+\begin{description}
+
+\item[Axiom of the Empty Set:]  There is a set $\emptyset$ such that $x \in \emptyset$ is false for any object $x$.
+
+\item[Theorem:]  For any set $X$ with no elements and any set $A$, $X \subseteq A$ holds.  In particular, $\emptyset \subseteq A$.
+
+\item[Proof:]  Suppose that $X$ is a set with no elements.  Then if $x \in X$, $x \in A$, because a false statement implies anything.  So all elements of $X$ (none of them) are in $A$, so $X \subseteq A$.
+
+\item[Theorem:]  Suppose that $X$ is a set with no elements.  Then $X = \emptyset$.  There is only one empty set.
+
+\item[Proof:]  By the previous Theorem, $X \subseteq \emptyset$ and $\emptyset \subseteq X$, so $X = \emptyset$ by the Axiom of Extensionality.
+
+\end{description}
+
+We have used sets already in this book, usually correlated with properties.  The principle we are using can be expressed formally:
+
+\begin{description}
+
+\item[Axiom of Separation:]  Let $S$ be a set and let $P(x)$ be a sentence expressing a property of $x$.  There is a set $\{x \in S:P(x)\}$ such that for every $a$, $a \in \{x \in S:P(x)\}$ if and only if $a \in S$ and $P(a)$.
+
+\end{description}
+
+When we use the well-ordering principle to show that all numbers have some property, we are usually applying the axiom of separation.   Suppose we are trying to prove that all numbers $x$ have some property $P(x)$.  Suppose not.  Then there is some natural number $n$ such that $\neg P(n)$, so the set $\{x \in {\mathbb N}:\neg P(x)\}$ is nonempty, so it has a smallest element (the least counterexample)...and then we reason to a contradiction.
+
+Notice that the axiom of separation lets us define sets only if we are already given sets to carve them out of.  We give some additional axioms which provide us with grist for our mill.
+
+\begin{description}
+
+\item[Axiom of Power Set:]  For any set $A$, there is a set ${\cal P}(A)$, called the power set of $A$, such that $B \in {\cal P}(A)$ exactly if $B \subseteq A$, for any $B$.
+
+\end{description}
+
+We look at familiar Venn diagram operations.  $A \cap B$ can be defined as $\{x \in A:x \in B\}$, which exists by the axiom of separation.  $A - B$ can be defined as $\{x \in A: x \not\in B\}$, again provided by the axiom of separation.  For unions, we need the
+
+\begin{description}
+
+\item[Axiom of Binary Union:]  For any sets $A,B$ there is a set $A \cup B$ such that for any $x$, $x \in A \cup B$ if and only if either $x \in A$ or $x \in B$.
+
+\end{description}
+
+Using the axioms of pairing and binary union, we can construct all finite sets.
+
+\begin{description}
+
+\item[Definition:]  We are given the notaiton $\{x_1,x_2\}$ for a finite set with two elements.  If we have defined
+the notation $\{x_1,\ldots,x_n\}$, we define $\{x_1,\ldots,x_n,x_{n+1}\}$  as $\{x_1,\ldots,x_n\} \cup \{x_{n+1}\}$.
+
+\end{description}
+
+We are given some infinite sets, such as $\mathbb N$.  We can simply postulate this set and its axioms as earlier in the book.
+
+We could also present an implementation.  We give the original approach of Zermelo.  Define 0 as $\emptyset$.
+Define $n+1$ as $\{n+1\}$.
+
+\begin{description}
+
+\item[Axiom of Infinity:]  There is a set $\cal Z$ such that $0 \in {\cal Z}$ and for every $x$, if $x \in {\cal Z}$ then $x+1 = \{x\} \in {\cal Z}$.
+
+\item[Definition:]  We say that a set $I$ is {\em inductive\/} iff $0 \in I$ and for every $x$, if $x \in I$ then $x+1 = \{x\} \in I$.  Notice that the axiom of infinity simply says that there is an inductive set.
+
+\item[Definition:]  Let $\cal Z$ be an inductive set.  Define ${\cal Z}_0$  as the collection of all $n$ such that for every inductive element $I$ of ${\cal P}({\cal Z})$, $n \in I$.
+
+\item[Theorem:]  Any element of ${\cal Z}_0$ belongs to {\em every\/} inductive set.  And any object which belongs to all inductive sets belongs to ${\cal Z}_0$. 
+
+\item[Proof:]  Let $n \in {\cal Z}_0$.  Let $J$ be an inductive set.  Then $J \cap {\cal Z}$ is an inductive set and an element of ${\cal P}({\cal Z})$.  So $n \in J \cap {\cal Z}$.   So $n \in J$.
+
+If $x$ belongs to every inductive set, of course it belongs to every inductive set in the power set of ${\cal Z}$, and so belings to ${\cal Z}_0$.
+ 
+
+\end{description}
+
+The previous theorem shows that the set ${\cal Z}_0$ is the same set no matter what inductive set $\cal Z$ we start with, and so should have a name of its own.  We might suggest $\mathbb N$ as its name, if we were comfortable with the construction $0 =\emptyset; 1 = \{0\}; 2 = \{1\}; 3 = \{2\},$ and so forth (and if we included 0 in the natural numbers).
+
+We note that nowadays there is a standard definition of the non-negative integers as sets, a somewhat different one, which works equally well and has one nice property that Zermelo's definition does not have.  Define 0 as $\emptyset$ and $n+1$ as
+$n \cup \{n\}$, and state the axiom of infinity using this operation instead of the singleton operation.  This leads to
+the construction $0 = \emptyset;  1 = \{0\}; 2 = \{0,1\}; 3 = \{0,1,2\},$ and so forth.  This has the nice property that the set we identify with $n$ has $n$ elements.
+
+
+
+I'm not going to say that either of these is our official definition.  I think it is much more interesting to notice that many implementations are possible.
+
+I could specifically assert the existence of further sets such as the set of rational numbers or the set of real numbers, but it turns out that just asserting the existence of an infinite set is enough to construct sets implementing these familiar number systems and basically all mathematical structures that you will study.
+
+The set of axioms we have given here is hardly a complete set of axioms, but it ought to support most of the work that is described in this book.  And I am again rather more interested in you being aware that axioms for the set concept can be presented than in the details.
+
+
+
+
+\end{document}
