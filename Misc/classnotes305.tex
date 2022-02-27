@@ -1191,6 +1191,175 @@ Homework 5 (officially due on the 17th as usual, but likely to be accepted late 
 
 \section{Week 7 notes:  a coming attraction, I hope to have them up by the 27th}
 
+\subsection{More about modular arithmetic, theorems of Legendre, Wilson, and Fermat}
+
+Before the test, we proved that in any prime modulus, a polynomial of degree $d$ has no more than $d$ roots (Legendre's theorem).
+
+A polynomial of degree $d$ is a function $P(x) = \Sigma_{i=0}^da_ix^i$ (where we stipulate that $x^0=1$ for all $x$, including 0, and we provide that $a_d \not\equiv_p  0$).
+
+At the basis, we have already shown that $ax \equiv_p b$ has exactly one solution if $a \not\equiv_p 0$, the solution being $x = a^{-1}_p b$  (we adopt the abbreviation $a^{-1}_p$ for $a^{-1}{\tt mod} p$).  This shows the result for degree 1 polynomials.
+
+Suppose we have shown the result for all polynomials of degree $\leq d$.  Let $P(x)$ be a polynomial of degree $d+1$.   If $P(x)$ has no roots at all, we have that
+$P(x)$ has $\leq d+1$ roots, and we are done.  So suppose that $P(r)\equiv_p 0$ for some root r.  For any root $x$ of $P$ we would have $P(x)= P(r)$ so
+$\prod_{i=1}^{d+1} a_i(x^i-r^i) = 0$.  Now for any $i>0$, $x^i - r^i = (x-r)\prod_{j=0}^{i-1}x^jr^{(i-1)-j}$.  For $i=0$ the term $a_i(x^i-r^i) = 0$.  So, we can express
+$P(x)-P(r)$ as $(x-r)Q(x)$, where the degree of $x$ is less than or equal to $d$, by factoring $x-r$ out of each term as indicated.   Any root of $P(x)=0$ is also a root
+of $P(x)-P(r) = (x-r)Q(x) = 0$, and so by the Zero Factor Theorem (which does hold in prime moduli) must either be equal to $r$ or a solution of $Q(x)=0$, and by ind hyp
+$Q(x)=0$ has no more than $d$ solutions, so $P(x)=0$ has no more than $d+1$ solutions.
+
+After the test, I discussed Wilson's theorem and Fermat's little theorem in modular arithmetic, then switched gears to abstract algebra.
+
+\begin{description}
+
+\item[Wilson's Theorem:]  If $p$ is prime, $(p-1)! \equiv_p -1$.
+
+\item[Proof:]  Suppose that $p$ is prime.  
+
+$(p-1)! = 1\cdot \Pi_{i=2}^{p-2} i\cdot(p-1)$
+
+$p-1 \equiv_p -1$ of course.
+
+The idea of the proof is that $\Pi_{i=2}^{p-2}i$ can be reorganized in a way which makes it clear that it is congruent to 1.  Each $a$ between $2$ and $p-1$ has $a^{-1}{\tt mod}p$ defined and also between 2 and $p-2$ inclusive.  Moreover, for each such $a$, $a \neq a^{-1}{\tt mod} p$, because if $a=a^{-1}{\tt mod} p$, it follows that $a^2 \equiv_p 1$, and when $p$ is prime the only solutions to this equation are congruent to 1 or $p-1$.  So $\Pi_{i=2}^{p-2}i$ can be reorganized into a product of pairs of numbers which multiply to values congruent to 1 mod $p$, and so the entire product is $\Pi_{i=2}^{p-2}$ congruent to 1 mod $p$.  
+
+$\Pi_{i=2}^{p-2}i = \Pi_{2 \leq i \leq p-1, (i^{-1}{\tt mod}p) >i}i\cdot (i^{-1}{\tt mod}p) \equiv_p \Pi_{2 \leq i \leq p-1, (i^{-1}{\tt mod}p) >i}1 =1$
+
+Just for laughs, I provide actual summation notation for this argument.  It is tricky.
+
+So $(p-1)! = 1\cdot \Pi_{i=2}^{p-2} i\cdot(p-1) \equiv_p 1\cdot 1\cdot -1 = -1$
+
+
+
+\item[Inverse of Wilson's Theorem:]  If $m=4, (m-1)! \equiv_m 2$;  for composite $m>4$, $(m-1)! \equiv_m 0$.
+
+\item[Proof:]  That $(4-1)! = 6 \equiv_4 2$ is immediate.
+
+If $m>4$ is composite, then $m = ab$ for some $2 \leq a,b \leq m-1$.  If $a \neq b$, then both $a$ and $b$ appear as factors in $(m-1)! = \Pi_{i=1}^{m-1} i$, and so $ab=m | (m-1)!$ so this is congruent to 0 mod $m$.
+If $a$ and $b$ cannot be chosen to be distinct, then $m = p^2$ for some prime $p$ greater than 2, and so both $p$ and $2p$ appear as factors in $(m-1)! = \Pi_{i=1}^{m-1} i$,
+so $2p^2 = 2m | (m-1)!$ which is again congruent to 0 mod $m$.
+
+\end{description}
+
+This seems to give us a fine test for primality:  unfortunately, there is no easy way to compute $(m-1)! {\tt mod} m$ for very large $m$ that we know of.
+
+\begin{description}
+
+\item[Fermat's little theorem:]  If $p$ is prime and $p \not| a$, $a^{p-1}\equiv_p 1$.
+
+\item[Proof:]  The product of all nonzero residues mod $p$ is $(p-1)!$.  
+
+The product of all numbers $ai$ where $i$ is a nonzero residue mod $p$ is
+$a^{p-1}(p-1)!$.  
+
+The second product is congruent mod $p$ to the product of all numbers $ai {\tt mod} p$, where $i$ is a nonzero residue mod $p$.  
+
+But the product of all numbers $ai {\tt mod} p$ for $i$ a nonzero residue mod $p$ is also $(p-1)!$, because each nonzero residue $i$ mod $p$ is of the form $aj {\tt mod}p$ where $j$ is the nonzero residue $(a^{-1}_pi ){\tt mod} p$:  the third product is the product of exactly the same numbers as in the first product, in a different order.  So $a^{p-1}(p-1)! \equiv_p (p-1)!$, from which it follows that
+$a^{p-1}\equiv_p 1$ (because $(p-1)!$ is certainly not congruent to 0 mod $p$, so it has a multiplicative inverse;  not to mention that we know from the previous theorem that it is in fact congruent to $-1$;  so it can be cancelled)
+
+\item[Corollary:]  For any prime $p$ and any nonnegative integers $a,b$, $$a^b \equiv_p (a {\tt mod} p)^{(b{\tt mod}(p-1))}.$$
+
+\end{description}
+
+This gives a much simpler method of computing large powers in arithmetic mod $p$ where $p$ is prime than repeated squaring.
+
+\subsection{Initial steps in abstract algebra}
+
+I may do infill in these notes as we go forward (add more detail to text I have already written).
+
+\begin{description}
+
+\item[Definition:]  A {\em group} is a set $G$ equipped with an operation $\circ:(G \times G) \rightarrow G$ with the following properties:
+
+\begin{description}
+
+\item[associativity:]  For any $a,b,c \in G$, $(a \circ b) \circ c = a \circ (b \circ c)$
+
+\item[identity:]  There is an element $e$ of $G$ such that for any $a \in G$, $e \circ a = a \circ e = a$.  Such an element $e$ is called an identity for the group.
+
+\item[inverse:]  For any identity $e$ of the group and for any element $a$ of $G$, there is an element $b$ of the group such that $a \circ b = b \circ a = e$.
+
+\end{description}
+
+
+\item[Theorem:]  The identity element in a group is unique.
+
+\item[Proof:]  Suppose that for all $a \in G$, $e \circ a = a \circ e = a$, and also for all $a \in G$, $e' \circ a = a \circ e' = a$.  It follows that $e \circ e'$ is equal both to $e$ and to $e'$, and so $e=e'$.
+
+\item[Theorem:]  For each $a \in G$ there is exactly one $b \in G$ such that $a \circ b = b \circ a = e$.
+
+\item[Proof:]  Suppose $a \circ b = b \circ a = e$ and $a \circ c = c \circ a = e$.  It follows that
+
+$b = b \circ e$  identity
+
+$= b \circ (a \circ c)$ hypothesis
+
+$= (b \circ a) \circ c$  associativity
+
+$= e \circ c$ hypothesis
+
+$=c$  identity
+
+So there is only one inverse of $a$.
+
+\item[Definition:]  For each $a \in G$ we define $a ^{-1}$ as the unique inverse of $a$.
+
+\item[Abelian groups:]  Notice that the group operation is not assumed to be commutative.  If a group $G$ in addition satisifies the property ``for all $a,b \in G$, $a \circ b = b \circ a$, we say that the group is {\em abelian\/}.
+
+\item[Examples:]  The integers or the rationals or the reals with addition as the operation make up a group.  Why do the natural numbers not make up a group?
+
+The nonzero rationals or reals with multiplication as the operation make up a group.
+
+The residues mod $n$ (or the congruence classes mod $n$) make up a group, usually called ${\mathbb Z}_n$, with addition (mod $n$) as the operation.
+
+The residues mod $n$ {\em which are relatively prime to $n$\/} make up a group, which we call $U_n$, with multiplication (mod $n$) as the operation.
+
+These are all abelian groups.
+
+The symmetries of a triangle, discussed at length in the book, make up a group, which is our first example of a nonabelian group.
+
+The permutations of an $n$ element set (with composition as the operation) make up a group called $S_n$ which has $n!$ elements and is nonabelian.
+
+Matrices with nonzero determinants make up a nonabelian group (under matrix multiplication).
+
+
+
+\item[Notational conventions:]  We may use the usual notation for multiplication for a group, writing $ab$ instead of $a \circ b$, and possibly writing 1 instead of $e$ for the identity.
+
+We may use additive notation, usually for an abelian group, writing $a+b$ for $a \circ b$, writing 0 for the identity and $-a$ for the inverse.
+
+\item[Solving equations:]  For any $a,b \in G$, the equations $ax=b$ and $xa=b$ have unique solutions.
+
+\item[Proof:]  We prove only the first statement.  Notice that $a(a^{-1}b) = (aa^{-1})b = eb = b$, so $x = a^{-1}b$ is a solution.  Now suppose that $ax=b$.  It follows that $a^{-1}(ax) = a^{-1}b$ and $a^{-1}(ax) = (a^{-1}a)x = ex = x$, so i$x = a^{-1}b$, which we see is the only solution.
+
+\item[Cancellation:]  for any $a,b,c \in G$, if $ac=bc$ then $a=b$, and if $ca = cb$, then $a=b$.
+
+\item[Proof:]  In short, multiply both sides by the inverse.
+
+\item[Definition (powers or multiples);]  Define $g^n$ (or $ng$ if using additive notation) so that $g^0 = e$, $g^{n+1} = g^ng, g^{n-1}=g^ng^{-1}$.
+
+\item[Theorems:]  Certain familiar properties of exponents hold.  We can prove $g^{m+n} = g^mg^n$ and $(g^m)^n = g^{mn}$ for $g$ any group element and $m,n$ any integers.
+
+One thing we absolutely cannot count on is $g^nh^n = (gh)^n$:  this only works if the group is abelian.
+
+We suggest as an exercise if you haven't been assigned it already to show that if this identity holds for all $g,h,n$ that the group is actually abelian. Hint:  it is enough for $(ab)^2 = a^2b^2$ to hold for all $a,b$:  use cancellations to show that this implies $ab=ba$.
+
+A theorem which we proved in class is that $(ab)^{-1} = b^{-1}a^{-1}$ ({\em not\/} $a^{-1}b^{-1}$)
+
+\item[Definition (subgroup):]  If $G$ is a group and $H$ is a subset of $G$, we say that $H$ is a subgroup of $G$ if $H$ with the restriction of the same operation used on $G$ is a group.
+
+\item[Theorem:]  Let $G$ be a group with operation $\circ$.  $H$ with the restriction of the operation $\circ \cap (H \times H)$ is a group iff for each $a,b \in h$, $a\circ b \in h$, and the identity $e \in H$,
+and for each $a \in H$, $a^{-1} \in H$.
+
+\item[Theorem:]  Let $G$ be a group with operation $\circ$.  $H$ with the restriction of the operation $\circ \cap (H \times H)$ is a group iff $H$ is nonempty and for any $a,b \in H$, we have $ab^{-1} \in H$.
+
+\item[Definition and Theorem:]  Let $G$ be a group.  Define the cyclic subgroup generated by $a$ as $\{a^n:n \in {\mathbb Z}\}$.  The cyclic subgroup is a subgrup of $G$ (this is the theorem part).  The size of the cyclic subgroup generated by $a$ we call the {\em order\/} of $a$ (this is either a positive integer or infinite).
+
+\item[Theorem:]  Cyclic subgroups are abelian groups.
+
+\item[Definition:]  If $G$ is a group and $a \in G$ and the cyclic subgroup generated by $a$ is all of $G$, we say that $G$ is a cyclic group and that $a$ is a generator of $G$.
+
+\end{description}
+
+\newpage
+
 \section{Homework 6}
 
 Homework 6:  Crisman, 7,7 exercises starting p. 89, 7, 9;  Judson, 3.5 exercises starting p. 40, problems 5, 6 (remember, this is residues mod 12 that are relatively prime to 12 under multiplication), 7, 28, 31 (think about uniqueness of inverses), 32 (prove the contrapositive), 4.5 exercises starting p. 55, problem 1abc, 3 bg, 5.
