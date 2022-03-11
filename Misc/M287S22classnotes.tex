@@ -1241,7 +1241,7 @@ Prove that $SD$ is an equivalence relation.  What is the same about $(x,y)$ and 
 
 \newpage
 
-\section{3/9/2022:  the Division Algorithm and the Euclidean Algorithm}
+\section{3/8/2022:  the Division Algorithm and the Euclidean Algorithm}
 
 I talked about computational things to do with the integers (mostly with the positive natural numbers).
 
@@ -1360,5 +1360,160 @@ that $ax_{n-1}+by_{n-1}={\tt gcd}(a,b)$.
 This computational procedure is called the extended Euclidean algorithm.  It is an exact description of the tables I draw:  the first three columns have at row $i$ the numbers $r_i, x_i, y_i$ (and I write $r_{i-2}{\tt div}r_{i-1}$ in the third column at and after row 3).
 
 This in turn allows us to justify the assertion that ${\tt gcd}(a,b)$ is the smallest positive number of the form $ax+by$ with $x,y$ integers.  We have just shown that ${\tt gcd}(a,b)$ is a positive number of this form.  Now, since it goes intq $a$ and goes into $b$, it must go into every number $ax+by$.  No positive number less than ${\tt gcd}(a,b)$ can have ${\tt gcd}(a,b)$ as a divisor, so in fact no positive number less than ${\tt gcd}(a,b)$ can be of the form $ax+by$.
+
+\section{3/10/2022:  Modular arithmetic, elementary definitions and results}
+
+We developed basic definitions and theorems of modular arithmetic, which provide applications of both the abstract machinery of equivalence relations and the division algorithm (and will give applications of the extended Euclidean algorithm, as we will soon see).
+
+\begin{description}
+
+\item[Definition:]  Fix an integer $n>1$.  For integers $x,y$, we define $x \equiv_n y$ (also written $x \equiv y ({\tt mod}\,n)$) as
+holding iff $n|(x-y)$.  We say in English, $x$ is congruent to $y$ mod $n$.
+
+\item[Theorem:]  $\equiv_n$ is an equivalence relation.
+
+\item[Proof:]  We first prove that $\equiv_n$ is reflexive.  $x \equiv_n x$ is true iff $n|(x-x)$, which is true because $n|0$ is true.
+
+Then we prove that $\equiv_n$ is symmetric.  Suppose that $x \equiv_n y$.  Our goal is to prove $y \equiv_n x$.
+Since $x \equiv_n y$, so $n|(x-y)$, there is an integer $k$ such that $x-y = kn$,  Now this implies that $y-x = (-k)n$ and so is divisible by $n$, and so $y \equiv_n x$.
+
+Then we prove that $\equiv_n$ is transitive.  Suppose that $x \equiv_n y$ and $y \equiv_n z$.  Our goal is to show
+$x \equiv_n z$.  Since $x \equiv_n y$ there is an integer $k$ such that $x-y=kn$. Since $y \equiv_n z$ there is an integer $l$ such that $y-z=ln$.   It follows that $x-z = (x-y)+(y-z)$ [this is the clever bit] $= kn + ln = (k+l)n$ is divisible by $n$, so $y \equiv_n z$.
+
+\end{description}
+
+An equivalence relation is to be thought of as saying that objects in its domain standing in this relation are the same in some way.  We show what is the same about $x,y$ if $x \equiv_n y$:
+
+\begin{description}
+
+\item[Theorem:]  $x \equiv_n y$ if and only if $x \,{\tt mod}\,n = y\,{\tt mod}\,n$.
+
+\item[Proof:]
+
+The proof has two parts, like the proof of any if and only if statement.
+
+First, suppose that $x \equiv_n y$.  Our goal is to show that $x \,{\tt mod}\,n = y\,{\tt mod}\,n$.
+
+By the division algorithm, $x = (x{\tt div}n)n + x{\tt mod}n$ and $y = (y{\tt div}n)n + y{\tt mod}n$.  So $x-y = 
+(x{\tt div}n-y{\tt div}n)(n) + (x{\tt mod}n-y{\tt mod}n)$.  This is divisible by $n$ (and so $x \equiv_n y$) exactly if 
+$(x{\tt mod}n-y{\tt mod}n)$ is divisible by $n$.  The difference of two nonnegative integers less than $n$ can only be divisible by $n$ if they are equal (try proving this!) and so if $x \equiv_n y$ we must have $(x{\tt mod}n-y{\tt mod}n)=0$ and so $x \,{\tt mod}\,n = y\,{\tt mod}\,n$.
+
+Second, suppose that $x \,{\tt mod}\,n = y\,{\tt mod}\,n$.  Our goal is to show that $x \equiv_n y$.
+
+We have $x = (x{\tt div}n)n + x{\tt mod}n$ and $y = (y{\tt div}n)n + y{\tt mod}n$  Thus, as above, $$x-y = 
+(x{\tt div}n-y{\tt div}n)(n) + (x{\tt mod}n-y{\tt mod}n)$$  $= (x{\tt div}n-y{\tt div}n)(n)$ (because $x \,{\tt mod}\,n = y\,{\tt mod}\,n$) and this is divisible by $n$, so $x \equiv_n y$.
+\end{description}
+
+Equivalence relations determine a partition of their domain into equivalence classes.  In the case of $\equiv_n$, we partition the integers into $n$ equivalence classes, one for each remainder mod $n$ (classes $[0],[1],\ldots,[n-2],[n-1]$).  We could write these classes $[k]_{\equiv_5}$, but we can tell what the intended equivalence relation is from context.
+
+For $n=5$ for example we have
+
+$[0] = \{\ldots,-10,-5,0,5,10\ldots\}$
+
+$[1] = \{\ldots,-9,-4,1,6,11\ldots\}$
+
+$[2] = \{\ldots,-8,-3,2,7,12\ldots\}$
+
+$[3] = \{\ldots,-7,-2,3,8,13\ldots\}$
+
+$[4] = \{\ldots,-6,-1,4,9,14\ldots\}$
+
+The class $[k]$ exists for any integer $k$, but it will be the same as $[k{\tt mod}5]$, one of these four classes.
+For example, [19] is another name for [4].
+
+The objects of the mathematical system called mod $n$ arithmetic, or ${\mathbb Z}_n$, are the equivalence classes
+under $\equiv_n$.  What makes this an interesting mathematical system is that addition and multiplication have natural definitions on this system, which is the content of the following
+
+\begin{description}
+
+\item[Theorem:]  Suppose $x \equiv_n x'$ and $y \equiv_n y'$.  Then $x+y \equiv_n x'+y'$ and $xy \equiv_n x'y'$.
+
+\item[Proof:]  Because $x \equiv_n x'$ and $y \equiv_n y'$ we have $x'-x$ and $y'-y$ divisible by $n$, so for some integers $k,l$ we have $x'=x+kn$ and $y'=y+ln$.
+
+Now $(x'+y') - (x+y) = (x+kn+y+ln)-(x+y) = kn+ln$ which is divisible by $n$.  so $x+y \equiv_n x'+y'$.
+
+Also, $x'y' - xy = (x+kn)(y+ln) - xy = xln + ykn+kln^2$, which is divisible by $n$, so $xy\equiv_n x'y'$.
+
+The careful reader might notice that we are freely using the fact that the equivalence relation is symmetric.
+
+\item[Definition:]  For sets of integers $A,B$, we define  $A+B = \{a +b:a \in A \wedge b \in B\}$ and $AB = \{ab:a \in A \wedge b \in B\}$.  We only use this definition in the special case where the sets are equivalence classes mod a fixed $n$ (at least, that is the only way we use it here:  it is not an unusual definition).
+
+\item[Theorem:]  Fix $n>1$ and let $[x], [y]$ be equivalence classes mod $n$.  Then $[x]+[y] = [x+y] = [(x+y){\tt mod}n]$ and   $[x][y] \subseteq [xy] = [(xy){\tt mod}n]$.
+
+\item[Proof:]  Any element of $[x]+[y]$ is of the form $x'+y'$ where $x' \in [x]$ and $y' \in [y]$ so $x' \equiv_n x$ and $y'\equiv_n y$, and by the theorem above this means that every element of $[x]+[y]$ is congruent mod $n$ to $x+y$ and belongs to $[x+y]$.  Any element of $[x+y]$ is congruent mod $n$ to $x+y$, so is of the form $(x+y)+kn$,
+so is of the form $x+(y+kn)$, the sum of a number congruent mod $n$ to $x$ and a number congruent mod $n$ to $y$, and so an element of $[x]+[y]$, so we have shown that $[x+y]=[x]+[y]$.
+
+Any element of $[x][y]$ is of the form $x'y'$ where $x' \in [x]$ and $y' \in [y]$ so $x' \equiv_n x$ and $y'\equiv_n y$, and by the theorem above this means that every element of $[x][y]$ is congruent mod $n$ to $xy$ and belongs to $[xy]$.  But we can't show in general that any element of $[xy]$ can be expressed as the product of an element of $[x]$ and an element of $y$:  $[xy]$ will have prime numbers in it for example which cannot typically be expressed as such a product.  (I said this wrong in class:  this is a correction).
+
+\item[Definition:]  We define $[x]+[y]$ as $[x+y]$ and (re!)define $[x][y]$ as $[xy]$.  In the case of each operation,
+if I take $x'$ from $[x]$ and $y'$ from $[y]$, all results of applying the operation to $x'$ and $y'$ will end up in the same equivalence class, so this definition works.
+
+Notice that subtraction $[x]-[y]$ can also be defined as $[x-y]$.  We will have an notion of division in modular arithmetic, but it will be defined quite differently.
+
+\end{description}
+
+We give an example of the computation of addition and multiplication tables for a modulus, namely, $n=5$.
+
+$$\begin{array}{c|ccccc}
+
++ & 0  & 1 & 2 & 3 & 4 \\ \hline
+0 & 0  & 1 & 2 & 3 & 4\\
+1 & 1 & 2 & 3 & 4 & 0\\
+2  & 2 & 3 & 4& 0  & 1\\
+3  & 3 & 4& 0  & 1 & 2\\
+4  &4& 0  & 1 & 2 & 3 \\
+\end{array}$$
+
+$$\begin{array}{c|ccccc}
+
+* & 0  & 1 & 2 & 3 & 4 \\ \hline
+0 & 0  & 0 & 0 & 0 & 0\\
+1 & 0 &1 & 2 & 3 & 4 \\
+2  & 0 & 2 & 4& 1  & 3\\
+3  & 0 & 3& 1  & 4 & 2\\
+4  &0& 4  & 3 & 2 & 1 \\
+\end{array}$$
+
+Notice that each number mod 5 has an additive inverse:  the additive inverse of 0 is 0, the additive inverse of 1 is 4, the additive inverse of 2 is 3, the additive inverse of 3 is 2, the additive inverse of 4 is 1.  In a general modulus, the additive inverse of $x$ a nonzero remainder on division by $n$ will be $n-x$:  obviously $n-x \equiv_n -x$ and for $x$ a nonzero  remainder, $n-x$ is also a nonzero remainder.  This is not surprising:  the integers mod $n$ are derived from the integers and inherit the additive inverse property from the system of integers.
+
+More surprisingly, each nonzero remainder has a {\em multiplicative\/} inverse.  We merely note this here for mod 5:  this will turn out to be true in general for moduli which are prime.  1 has multiplicative inverse 1, 2 has multiplicative inverse 2 ($2\cdot 3 = 1$), 3 has multiplicative inverse 2, 4 has itself as its multiplicative inverse.
+
+It is easy-ish to see that systems of modular arithmetic have the properties of commutativity and associativity of each operation, distributivity, identities for both operations and the additive inverse property.
+
+We show an example of the failure of the multiplicative cancellation property of the integers:
+
+In mod 6 arithmetic, $(3)(2) \equiv_6 0$ and $(0)(2) \equiv_6 0$, with $2 \not\equiv_6 0$, but $3 \not\equiv_6 0$.
+
+In the integers, if $ac= bc$ and $c \neq 0$ then we must have $a=b$.  This does not work in mod 6 arithmetic.
+
+Even more striking is the fact that $(3)(2) \equiv_6 0$ illustrates that the zero factorization property of the integers fails in mod 6 arithmetic.
+
+We will have more to say about this in the next lecture.
+
+\section{Homework 8}
+
+\begin{enumerate}
+
+\item  Evaluate each of the following expressions if it is possible to do so, and explain why it is not possible if it is not.
+
+$200{\tt div}3, 200 {\tt mod}3,  (-200){\tt div}3,  (-200) {\tt mod}3,  200{\tt div}(-3),  200 {\tt mod}(-3)$
+
+\item  Find $x$ and $y$ such that $137x + 111y = {\tt gcd}(108,123)$, using the extended Euclidean algorithm.  Your paper should show work following my table format.  I strongly suggest that you do this by hand, and only after that check using the spreadsheet.  You will need to be able to carry out this procedure efficiently on the next exam, several times, using a nongraphing calculator, so you should practice.
+
+\item Do the same thing as in the previous problem but for larger numbers:  Find $x$ and $y$ such that $54321x + 12345y = {\tt gcd}(54321,12345)$
+
+\item  Construct the addition and multiplication tables for mod 11 arithmetic, and make a table of multiplicative inverses of the nonzero remainders in mod 11 arithmetic, using your multiplication table.
+
+\item  Find the square roots of 1 in mod 11 arithmetic.  These should be exactly what you expect, if you think carefully.  Now find the square roots of 1 in mod 8 arithmetic.  List them all.  Do you find something disturbing about this?
+
+\item  This question is about square roots of $-1$.  Notice that $n-1 \equiv_n -1$:  in mod $n$ arithmetic, when we talk about $-1$, the additive inverse of 1,  we are actually talking about the remainder $n-1$.
+
+This question is an exploration.  In each system of modular arithmetic for $n=2$ to 20, see if there is a square root of -1.  Just to help you see what is meant, there is one in mod 5 arithmetic, since $2^2 = 4 \equiv_5 -1$.
+
+If you can see a pattern to which moduli have square roots of -1, I will be impressed.
+
+\end{enumerate}
+
+
 
 \end{document}
