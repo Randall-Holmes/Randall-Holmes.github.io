@@ -1690,4 +1690,230 @@ problems starting on p. 121:  12 (hint:  think of orders of elements of $S_4$ an
 
 Verify that the special subgroups $G \times \{e_H\}$ and $\{e_G\} \times H$ satisfy the conditions on subgroups $H$ and $K$ expressed in the statement of the internal direct product theorem.
 
+\section{Computation of the Euler $\phi$ function}
+
+This is a section taken from my advanced number theory notes, with some minor revisions.  It was lectured straight from this text.
+
+In any of the notes I am adding from the advanced number theory notes (or any notes I write!) feel very free to ask for clarification or point out possible errors.
+
+The formal definition of the Euler $\phi$ function is
+
+\begin{description}
+
+\item[Definition:]  For any natural number $m$, $$\phi(m)=|\{a : 0<a<m \wedge {\tt gcd}(a,m)=1\}|,$$ the size of the set of remainders mod $m$ which are relatively prime to $m$.
+
+\end{description}
+
+It is possible to compute the value of $\phi(m)$ given the prime factorization of $\phi$.   The reason for this is that it is easy to compute $\phi(p^k)$ and $\phi$ has a number-theoretic property which is important enough to have a name:
+
+\begin{description}
+
+\item[Definition:]   A function $f$ with domain the natural numbers is {\em multiplicative\/} iff $f(mn)=f(m)f(n)$ whenever ${\tt gcd}(m,n)=1$.
+
+\item[Lemma 1:]   $\phi(p^k)= p^k-p^{k-1}$ for any prime $p$ and natural number $k$.
+
+\item[Proof:]   The remainders mod $p^k$ which are not relatively prime to $p^k$ are the ones which are divisible by $p$, and there are $p^{k-1}$ of these, so there
+are $p^k-p^{k-1}$ remainders mod $p^k$ which are relatively prime to $p^k$.
+
+\item[Lemma 2:]  $\phi$ is multiplicative.
+
+\item[Proof]:   Let ${\tt gcd}(m,n)=1$.   We show the result by exhibiting a set of size $\phi(m,n)$ and a set of size $\phi(m)\phi(n)$ and a bijection between them.
+
+The set of size $\phi(mn)$ is the obvious one, the set of remainders mod $mn$ which are relatively prime to $mn$.
+
+The set of size $\phi(m)\phi(n)$ is also the obvious one:  it is the set of all pairs $(b,c)$ where $b$ is a remainder mod $m$ which is relatively prime to $m$ (there are $\phi(m)$ of these) and $c$ is a remainder mod $n$ which is relatively prime to $n$ (there are $\phi(n)$ of these).  This set is of size  $\phi(m)\phi(n)$ because it is the cartesian product of a set of size $\phi(m)$ and a set of size $\phi(n)$.
+
+The function which we claim is a bijection is the map which sends a remainder $a$ in the first set to the pair $(a{\tt mod}m,a{\tt mod}n)$.   Notice that if $a{\tt mod}m$ had a common factor with $m$, $a$ would have a common factor with $m$, and so $a$ would have a common factor with $mn$, which is impossible, and similarly $a{\tt mod}n$ cannot have a common factor with $n$:  if $a$ is in the first set, $F(a)$ is in the second set.
+
+Now we argue that $F$ is one-to-one:   suppose $F(a)=F(a')$:  we need to show that $a=a'$ follows.   Since $F(a)=F(a')$ we have $a{\tt mod}m=a'{\tt mod}m$ and $a{\tt mod}n=a'{\tt mod}n$, so $a-a'$ is divisible by both $m$ and $n$.
+But since $m$ and $n$ are relatively prime, this implies that $a-a'$ is divisible by $mn$, and since it is less than $mn$ in absolute value it must be 0, so $a=a'$.
+
+Now we argue that $F$ is onto:   Given $(b,c)$ in the second set, we want to find $a$ in the first set such that $F(a)=(b,c)$, that is, $a{\tt mod}m=b$ and $a{\tt mod}n=c$.   We show that this pair of simultaneous equations has a solution.
+Because $a{\tt mod}m=b$, we can write $b+mk=a$.   We then need to solve $b+mk{\tt mod}n=c$, for which it is sufficient to solve $mk\equiv c-b\,{\tt mod}\,n$.   Let $m^{-1}{\tt mod}n$ denote the multiplicative inverse of $m$ in mod $n$ arithmetic (which exists because $m$ and $n$ are relatively prime).  We can then solve for $k$ as $(m^{-1}{\tt mod}n)(c-b)$ and for $x$ as $b+m(m^{-1}{\tt mod}n)(c-b)$, which is clearly congruent to $b$ mod $m$ and to $b+1(c-b)=c$ mod $n$.
+
+The result that $F$ is a bijection is usually called the Chinese Remainder Theorem, and we state it it separately (we have already proved it earlier):
+
+\newpage
+
+\item[Chinese Remainder Theorem:]   If ${\tt gcd}(m,n)=1$, then any system of equations
+
+$$x\equiv a\,{\tt mod}\,m$$
+
+$$x \equiv b\,{\tt mod}\,n$$
+
+has a unique solution up to congruence mod $mn$.
+
+\end{description}
+
+It should now be clear that we can compute $\phi(m)$ for any $m$ directly from the prime factorization of $m$.   Note the method for computing $\phi(m)$ which you are supposed to verify in problem 11.3:
+if $p_1,\ldots,p_n$ are the primes going into $m$, $\phi(m)=m(1-\frac1{p_1})(1-\frac1{p_2})\ldots(1-\frac1{p_n})$.
+
+\section{The Primitive Roots Theorem (groups $U(p)$ have generators).}
+
+Again, this is a section from my advanced number theory notes, with some editing to connect it with our work in abstract algebra.
+
+We interest ourselves in solutions to equations $a^n \equiv 1 {\tt mod} p$.
+
+\begin{description}
+
+\item[Definition:]  For any $a$, $m$ with ${\tt gcd}(a,p)=1$, we define the order of $a$ in mod $p$ arithmetic (which we will write $o(a)$, leaving
+$p$ understood) as the smallest positive $k$ such that $a^k\equiv 1{\tt mod}p$.
+
+Notice that this is the same thing as the order of $a$ in the group $U(p)$.
+
+\item[Observation:]  There is such an $k$:  it is clear that for some two numbers $m>n$ we have $a^m\equiv a^n{\tt mod}p$ because there are only finitely many
+possible remainders mod $p$, and then we have $a^m\equiv a^n(a^{m-n})\equiv a^n$, from which we have $a^{m-n}\equiv 1$ by multiplying both sides by the mod $p$ reciprocal of $a^n$.
+
+\item[Lemma:]  If $a^n=1$ then $o(a)|n$.
+
+\item[Proof of Lemma:]  By the division algorithm, $n=o(a)q+r$ for some $q$ and some $r<o(a)$.  Thus $a^n=a^{o(a)q+r}\equiv (a^{o(a)})^qa^r\equiv a^r$.
+Since $a^r\equiv 1$, we must have $r=0$, because if $0<r<o(a)$ $a^r$ cannot be 1 by definition of $o(a)$.
+
+\item[Corollary:]  By Fermat's Little Theorem, $o(a)|p-1$.
+
+\item[Definition:]   For each $d$, define $\psi(d)$ as the number of remainders $a$ mod $p$ which are of order $d$.  We know that $\psi(d)=0$ if $d$ is not a divisor of
+$p-1$.
+
+\item[Observation:]   For any $n$, the number of roots of $x^n-1 \equiv 0{\tt mod}p$ among the remainders mod $p$ is the sum of $\psi(d)$ over all divisors of $n$.
+This is true because any root of $x^n-1 \equiv 0$ has $x^n\equiv 1{\tt mod}p$ whence its degree goes into $n$.
+
+\item[Lemma:]  For any $n|p-1$, $x^n-1 \equiv 0{\tt mod}p$  has exactly $n$ roots.
+
+\item[Proof of Lemma:] $x^{p-1}-1 \equiv 0$ has exactly $p-1$ roots by Fermat's Little Theorem.   If $p-1=mn$ then $x^{p-1}-1=x^{mn}-1=(x^n-1)(x^{n(m-1)}+x^{n(m-2)}+\ldots+x^{n2}+x^n)$.   Since we are in arithmetic in a prime modulus,
+we have the Zero Property, and any root of $x^{p-1}-1$ in mod $p$ arithmetic is a root of one of the two factors.  The first factor has no more than $n$ roots by our Polynomial Roots theorem for prime moduli; the second has no more
+than $n(m-1)=nm-n=(p-1)-n$ roots.  But the total number of roots of the two factors must be exactly $p-1$, which is only possible of the first term has $n$ roots, the second has $(p-1)-n$, and they share no roots.
+
+\item[Corollary of the Lemma:]  The sum for all $d|n$ of $\psi(d)$ is $n$, for any $n|(p-1)$.
+
+\item[Observation:]   The assertion $\sum_{d|n}f(d)=n$ is actually a recursive definition of the function $f$ (if we assume it true for all $n$).   To see this, rewrite it as
+$f(n)=n-\sum_{d|n \wedge d \neq n}f(d)$.  Notice that this allows us to evaluate $f(1)$ as $1-\sum_{d \in \emptyset}f(d)=1-0=1$:  this is the hardest case.   In every other case,
+we can clearly compute $f(n)$ once we know all smaller values of $f$.   The condition above shows us that $\psi$ coincides with this function $f$ on all divisors of $p-1$.
+So what is the function $f$?
+
+\item[Theorem:]  $\sum_{d|n}\phi(d)=n$, where $\phi$ is the Euler $\phi$ function ($\phi(n)$ is the size of the collection of natural numbers in the interval $[1,n]$ which are relatively prime to $n$).
+
+$\phi(1)=1$ and the sum over all the divisors $d$ of 1 if $\phi(d)$ is just $\phi(1)=1$.
+
+For any prime $p$, the sum over all divisors $d$ of $p^k$ of $\phi(d)$ is $\phi(1) + \phi(p) + \phi(p^2)+\phi(p^3)+\ldots+\phi(p^k)=1+(p-1)+(p^2-p)+(p^3-p^2)+\ldots+(p^k-p^{k-1})$, which is a telescoping sum:  everything cancels but the final $p^k$ so the result holds for $p^k$.
+
+If ${\tt gcd}(m,n)=1$, the  product of the sum over all divisors $d$ of $m$ of $\phi(d)$ and the sum over all divisors $d$ of $n$ of $\phi(d)$ is the sum over all divisors $d$ of $mn$ of $\phi(d)$:
+
+$$\sum_{d|mn}\phi(d) =(1)  \sum_{d_1|m,d_2|n}\phi(d_1d_2) $$ $$=(2) \sum_{d_1|m,d_2|n}\phi(d_1)\phi(d_2) =(3) (\sum_{d_1|m}\phi(d_1))\cdot(\sum_{d_2|n}\phi(d_2))$$
+
+Thus if we have $\sum_{d_1|m}\phi(d_1))=m$ and $\sum_{d_2|n}\phi(d_2)=n$ we have $\sum_{d|mn}\phi(d) =mn$.
+
+Equation 1 holds because each $d|mn$ can be expressed as a product of $d_1|m$ and $d_2|n$ in exactly one way (I suggest writing out a proof of this).   Equation 2 holds because the Euler function itself
+is multiplicative.   Equation 3 holds by many applications of the distributive law.
+
+Anything which is true for 1, for powers of primes, and is true for the product of a pair of relatively prime numbers if it is true for the two numbers is true for all numbers (by the prime factorization theorem).
+
+\item[Theorem:]   For each $d|p-1$, $\psi(d)=\phi(d)$.
+
+\item[Proof of Theorem:]   This follows from the previous theorem and the preceding Observation directly.
+
+\item[Definition:]  $a$ is a {\em primitive root\/} for $p$ iff the order of $a$ in mod $p$ arithmetic is $p-1$.   Notice that this implies that all nonzero remainders mod $p$ are powers of $a$ in mod $p$ arithmetic.
+
+\item[Corollary (Primitive Root Theorem):]  There is a primitive root for every prime $p$.  In fact, there are $\phi(p-1)$ primitive roots for $p$.
+
+\end{description}
+\section{The RSA and El Gamal Cryptsystems}
+
+This is a selection of material from my advanced number theory notes, again, the actual source material for my lectures.  If anything is obscure because I wrote it for a somewhat different audience, ask me!
+
+We have seen above how we can very efficiently compute $a^k\,{\tt mod}\,m$ for any reasonable $a,k,m$ using repeated squaring.
+
+We now look into finding $k$th roots, that is, solving equations $x^k=a\,{\tt mod}\,m$.   We will be able to do this in many interesting cases, but we will find that conditions are not ideal.
+
+Suppose that ${\tt gcd}(a,m)=1$ and ${\tt gcd}(k,\phi(m))=1$.   We can find $s$ such that $sk {\tt mod} \phi(m)=1$ (multiplicative inverses exist in any modular arithmetic for numbers relatively prime to the modulus).
+We claim that $a^s$ is a solution to our equation, a $k$th root of $a$ mod $m$.   For $(a^s)^k \,{\tt mod}\,m=a^{sk} \, {\tt mod} m = a^1 \,{\tt mod}\, m = a \,{\tt mod}\, m$.   The fact that ${\gcd}(a,m)=1$
+ is used to ensure that $sk\equiv 1\,{\tt mod}\,\phi(m)$ implies $a^{sk} \equiv a^1\,{\tt mod}\, m$ by Euler's Theorem.
+
+Efficient computation of these roots is blocked by the fact that $\phi(m)$ is not easy to find for large numbers, as prime factorizations are not easy to find.
+
+
+We now describe the RSA algorithm.
+
+The public information which you distribute for RSA encryption is a large number $N$ and an exponent $r$.   Individual blocks of a message to you are to be encrypted thus $M'=M^r\,{\tt mod}\,N$.   This can be computed by repeated squaring.
+
+The secret information you have is this.   You know that $N=pq$, where $p,q$ are two large primes known only to you.   Thus $\phi(N)=(p-1)(q-1)$ is again known only to you.  You know that ${\tt gcd}(r,\phi(N))=1$.
+You compute $s$ such that $rs=1$ mod $(p-1)(q-1)$ (multiplicative inverse property in modular arithmetic) and you can then decrypt messages because $M'^s\,{\tt mod}\,N = (M^r)^s \,{\tt mod}\,N=M^{rs}\,{\tt mod}\,N= M\,{\tt mod}\,N$ by Euler's theorem as above.
+
+As long as it is fairly easy to find huge primes and very hard to factor a large number which is a product of two primes, this gives a secure method of communication.
+
+I showed you computer tools to use to generate examples.
+
+The El Gamal cryptosystem is an application of the primitive roots theorem.
+
+Although for any odd prime $p$ there are $\phi(p-1)$ generators (a lot of them) it is actually rather hard to identify a generator for a general prime $p$.
+
+The characteristic a generator needs to have is that $g^d \not\equiv_p 1$ for each proper divisor $d$ of $p-1$.  This is straightforward to check...if you know the factorization of $p-1$, and finding that is in general quite a hard problem.
+
+However, it is easy to find a generator for an odd prime $p$ of the form $2q+1$ where $q$ is prime.  Such primes $p$ are called {\em safe primes\/}, and they are fairly easy to find computationally (in the vicinity of a large number $N$, about in in every $\ln(N)^2$ numbers will be a safe prime, or so we guess on the assumption that primes are distributed fairly randomly).
+
+If $p$ is a safe prime, then $p-1=2q$.  A number $g$  between 2 and $p-2$ (inclusive) will be a generator iff $g^q \not\equiv_p 1$ (it will be $-1$, can you see why?).  $p-1$ is ruled out because it is the only residue mod $p$ which is of order 2.
+
+An application of safe primes and the ability to compute generators for them is the El Gamal public key cryptosystem, which we now describe.
+
+Let $p$ be a large safe prime (my son tells me that 700 digits is the current state of the art:  I think my Python functions might take a while to find one).
+
+Let $g$ be a generator for $p$ (identified using the procedure above:  choose a random $g$ in $[2,p-2]$ and compute $g^q$ mod $p$ (recalling that $q=\frac{p-1}2$ is also prime):  you have a 50 percent chance of getting 1 ($g$ is not a generator) or -1 ($g$ is a generator!).
+
+Choose a random exponent $x$ less than $p-1$.  $x$ is your private key.  Compute $y=g^x {\tt mod} p$ and supply $p, g$, and $y$ to the world as your public key.
+
+
+
+If someone wishes to send you a message $M$, they compute a random number $r<p-1$ (which they use only once!) and send you the pair $(My^r {\tt mod} p,g^r{\tt mod}p)$.  Notice that all the ingredients used are things you have made known to the world.
+
+The insertion of random trash into the encryption process (in the form of the exponent $r$) is something you don't see in the RSA scheme (though in fact it is often simply added by force);  it has the nice feature that if you encrypt the same text more than once, the ciphertext will look completely different.  One needs to never use the same exponent $r$ more than once:  from two ciphertexts known to have the same $r$ value, it is possible to extract some information about the ciphertexts.
+
+When you receive a message $(M_1,M_2)$, you compute $(M_1)((M_2)^{x})^{-1}{\tt mod}p$, and lo and behold, this is $M$.
+
+We verify this.  $(My^r)((g^r)^{x})^{-1}{\tt mod}p$ = $(M((g^x)^r)((g^r)^x)^{-1}{\tt mod}p$ = $M{\tt mod} p$ (presumably $M <p$ so this is simply $M$).  It is worth noting
+that we can compute $(M_2^x)^{-1}$ by computing $M_2^{p-1-x}$:  it can all be done with modular exponentiation without a separate step of computing a modular inverse.  You should be able to verify this with some reasoning using Fermat's Little Theorem.
+
+The reason that we believe this to be secure is that we believe that the {\em discrete logarithm problem\/} (finding $x$ given $g^x {\tt mod} p$) is hard for large $p$.  This is not a theorem:  it is what is currently believed.
+
+It is known that if there is a fast method for decrypting RSA, there is also a fast method for decrypting El Gamal, and vice versa;  though the two systems seem quite different, their level of difficulty is closely related.
+
+Sometimes this weekend (writing on 4/15/2022) I will post some examples.
+
+\section{Homework 10, posted 4/15/2022 and due 4/21/2022}
+
+This homework is due Thursday as usual.
+
+\begin{enumerate}
+
+\item  Compute $\phi(n)$ for each $n$ in the interval from 30 to 40 inclusive.  Of course, do not do this by listing all the numbers relatively prime to $n$!
+
+Compute the billionth power of 43 in each of these moduli.  You should not be using repeated squaring to do this!
+
+\item  Find a generator for $U(29)$ and list all its powers.
+
+Use this list of powers to list {\em all\/} the generators.
+
+On request I will do this for a different prime.
+
+\item My RSA public key has $N=55, r=3$.
+
+Encrypt the message 42 to me.
+
+My secret, which you can't possibly guess, is that $N=(5)(11)$.
+
+Determine my decryption exponent $s$.
+
+Carry out the calculation I will do to decrypt your message.
+
+(The numbers here are wonderfully small;  of course the cryptographic security is zip!)
+
+\item  I supply full information for a tiny El Gamal key, $p=47, g=31, y = 9, x=44$.
+
+Encrypt the universal message 42 to me, and decrypt it.  Show all work by hand (with calculator support).
+
+Contrive your own method to choose the random exponent $r$ (dice?  The Python random function?).  Do highlight for me what your value of $r$ is.
+
+\item Prepare your own RSA and El Gamal full keys (and of course keep the information so you can decrypt messages I send you).
+Send me your public keys in email, I will send you a message using each key in email, and you decrypt it and tell me what I said, again in email.  These should use large numbers:  use the Python functions.  Sometime this weekend I will definitely add more comments to the Python file to make it easier to identify the right functions;  I may (not promising this) upgrade the text coding so that you can use messages not made entirely of lower case letters.  I have historically been lax about marking this kind of exercise:  this time it is a numbered exercise in this homework, and it will be marked.
+
+\end{enumerate}
+
 \end{document}
