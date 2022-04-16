@@ -1363,14 +1363,17 @@ def Utteras(c,x):
     print('------')
 
 def borrow(s):
-    print('parse as borrowing:\n\n')
-    Utteras('Borrowing',s)
-    print('\nparse as complex:\n\n')
-    Utteras('Complex',s)
-    print('\nparse as name:\n\n')
-    Utteras('PreName',s)
-    print('\nparse as cmapua:\n\n')
-    Utteras('LW',s)
+     Decompact()
+     Utteras('LIU', 'liu '+s)
+     niceprecs()
+    #print('parse as borrowing:\n\n')
+    #Utteras('Borrowing',s)
+    #print('\nparse as complex:\n\n')
+    #Utteras('Complex',s)
+    #print('\nparse as name:\n\n')
+    #Utteras('PRENAME',s)
+    #print('\nparse as cmapua:\n\n')
+    #Utteras('Cmapua',s)
 
 thelog=open('dummylog','a')
 
@@ -1478,16 +1481,19 @@ def Utteras2(c,x):
     print(' ')
     print(commentize(utteras(c,x)))
     print('------')
-
+    
 def borrow2(s):
-    print('parse as borrowing:\n\n')
-    Utteras2('Borrowing',s)
-    print('\nparse as complex:\n\n')
-    Utteras2('Complex',s)
-    print('\nparse as name:\n\n')
-    Utteras2('Name',s)
-    print('\nparse as cmapua:\n\n')
-    Utteras2('LW',s)
+     Decompact()
+     Utteras2('LIU', 'liu '+s)
+     niceprecs()
+    #print('parse as borrowing:\n\n')
+    #Utteras('Borrowing',s)
+    #print('\nparse as complex:\n\n')
+    #Utteras('Complex',s)
+    #print('\nparse as name:\n\n')
+    #Utteras('PRENAME',s)
+    #print('\nparse as cmapua:\n\n')
+    #Utteras('Cmapua',s)
 
 def interface2():
  global mainclass
