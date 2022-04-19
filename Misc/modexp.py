@@ -1,12 +1,16 @@
 import random
 
+# does the modexp function show all its calculation?
+
 noisy=True
+
+# modular exponentiation:  compute b^e mod m.
 
 def modexp(b,e,m):
 
     global noisy
 
-# make table of exponents
+    # make table of exponents
     
     table=[]
     while (e>0):
@@ -14,7 +18,7 @@ def modexp(b,e,m):
         e=e//2
     table2=[]
 
-# make table of powers
+    # make table of powers
     
     result=1
     while (len(table)>0):
@@ -26,6 +30,10 @@ def modexp(b,e,m):
         if noisy ==True: print(table2[0])
     return result
 
+# excute the Rabin-Miller test
+
+# is b a witness to m being composite?
+
 def rabinmiller(b,m):
 
     global noisy
@@ -35,7 +43,7 @@ def rabinmiller(b,m):
 
     e=m-1
 
-# make table of exponents
+    # make table of exponents
     
     table=[]
     while (e>0):
@@ -43,7 +51,7 @@ def rabinmiller(b,m):
         e=e//2
     table2=[]
 
-# make table of powers
+    # make table of powers
     
     result=1
     while (len(table)>0):
@@ -54,15 +62,15 @@ def rabinmiller(b,m):
         table=table[1:]
         if noisy == True: print(table2[0])
 
-# if m fails the Fermat test it is composite
+    # if m fails the Fermat test it is composite
 
     if noisy == True:print('\n')
     if noisy == True: print(table2[0])
 
     if not table2[0][1] == 1:  return 'composite'
 
-#if top exponent is even, strip it off.  If the
-# power found is -1, the number might be prime.
+    #if top exponent is even, strip it off.  If the
+    # power found is -1, the number might be prime.
     
     while table2[0][0]%2 == 0:
         table2=table2[1:]
@@ -70,8 +78,8 @@ def rabinmiller(b,m):
         if noisy == True:  print(table2[0])
         if table2[0][1]==m-1:  return 'might be prime'
 
-# if the first power found with odd exponent is 1,
-# m might be prime.  Otherwise it is composite.
+    # if the first power found with odd exponent is 1,
+    # m might be prime.  Otherwise it is composite.
 
     if not table2[0][1] == 1:  return 'composite'
     return 'might be prime'
@@ -142,7 +150,7 @@ def EEAtable(a,b):
 def gcd(a,b):
     return EEAtable(a,b)[0][0]
 
-# modular inverse function
+# Compute a^{-1} mod m, modular multiplicative inverse
 
 def modinv(a,m):
     if m<2:  return 'bad modulus'
@@ -154,6 +162,13 @@ def modinv(a,m):
 
 # RSA setup
 
+# this function builds an RSA key, N = P*Q where
+# P is the first prime after p, Q is the first prime after q,
+# and exponent R the first number after the argument r
+# which is relatively prime to N
+
+# the third component is the decryption exponent
+
 def makekey(p,q,r):
     P = findprime(p)
     Q = findprime(q)
@@ -164,8 +179,36 @@ def makekey(p,q,r):
     S=modinv(R,phi)
     return [P*Q,R,S]
 
+# this function returns the RSA key in public form, just N and R
+
 def makepublickey(p,q,r):
     return makekey(p,q,r)[0:2]
+
+# make a sample key
+
+#change the values P,Q,R to get a different key --
+# the keys will be found as values of theRSAkey, theRSApubkey
+
+P = 2793792749
+
+Q = 3853485385
+
+R = 438568436
+
+theRSAkey = makekey(P,Q,R)
+
+theRSApubkey = makepublickey(P,Q,R)
+
+print('the RSA key is '+str(theRSAkey))
+
+
+
+
+
+# encrypt and decrypt numbers using an RSA key
+
+# the encrypt will work with either a public or a private
+# version of the key
 
 def encrypt(m,key):
     global noisy
@@ -181,13 +224,31 @@ def decrypt(m,key):
     noisy=True
     return output
 
+# this shows the example of encrypting and decrypting 42
+# using the example keys generated above
+
+encrypt42 = encrypt(42,theRSAkey)
+
+print('encrypting 42 gives '+str(encrypt(42,theRSAkey)))
+
+print('decryption of '+ str(encrypt42) + ' gives '+ str(decrypt(encrypt42,theRSAkey)))
+
+
+
+# convert a numeral to a string of lower case letters
+
 def numeralize(s):
     if s=='': return 0
     return ord(s[-1])-ord('a')+11+100*numeralize(s[0:-1])
 
+# convert a string of lower case letters to a number
+
 def alphabetize(n):
     if n==0:  return ''
     return alphabetize(n//100)+chr(n%100-11+ord('a'))
+
+# encryption and decryption of text (lower case letters, no spaces)/
+# be careful that the message is shorter than N, as it were/
 
 def textencrypt(s,key):
     global noisy
@@ -198,6 +259,8 @@ def textdecrypt(n,key):
     return alphabetize(decrypt(n,key))
 
 # look for three factor Carmichael numbers
+
+# this one is strange, use the 6-12-18 one below.
 
 def threefactor(p,q,n):
     P = findprime(p)
@@ -233,6 +296,9 @@ while(i<2000):
 
 # huge Carmichael numbers
 
+# this finds the first n after the number you enter such
+# that (6n+1)(12n+1)(18n+1) is a product of three primes and so a Carmichael number.
+
 def carjunk(n):
     
     while(1+1==2):
@@ -252,18 +318,21 @@ def order(a,m):
 
 # El Gamal setup
 
+# this function does a full key setup using the first
+# safe prime after n as its p
+
 def EGkeysetup(n):
 
     global noisy
     noisy=False
 
-#find a large safe prime
+    #find a large safe prime
     
     p = findsafeprime(n)
 
     q = (p-1)//2
 
-#find a generator for p
+    #find a generator for p
     stop=False
     while(stop==False):
         g=random.randrange(p-4)+2
@@ -275,9 +344,16 @@ def EGkeysetup(n):
 
     return [p,g,y,x]
 
+# Here is an example of setting up a key.  Change this
+# number and run the file to get a key.
+
 N = 2862738647
 
 fullkey = EGkeysetup(N)
+
+# the key it generates will be announced in output
+
+print('the key is '+str(fullkey))
 
 publickey = fullkey[0:3]
 
