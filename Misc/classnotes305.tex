@@ -1918,4 +1918,185 @@ Send me your public keys in email, I will send you a message using each key in e
 
 \end{enumerate}
 
+\section{Carmichael numbers and the Rabin-Miller test}
+
+The Fermat test for compositeness is this:  Let $n$ be a composite number.  Let $2 \leq a \leq p-2$.  If $a^{n-1} \not\equiv_n 1$, then $n$ is composite.
+
+Notice that this tells us nothing about what the factors of $n$ are!
+
+To check whether $n$ is prime, the strategy would be to choose a lot of values of $a$ to test (at random) since the test for each $a$ is fairly cheap.
+
+Unfortunately, there are Carmichael numbers, which can give a decent impression of being prime using this test.
+
+A Carmichael number is an odd composite $n$ such that for every $a$ with ${\tt gcd}(a,n)=1$, $a^{n-1}=1$.
+
+If a Carmichael number has a small prime factor, the Fermat test as described above will find it.  But if it has only very large factors, so that almost all natural numbers less than it are relatively prime to it, the Fermat test won't be likely to catch it.
+
+The smallest example of a Carmichael number is $561 = (3)(11)(17)$.  Notice that 560 is divisible by (3-1), (11-1), and (17-1).
+This is what makes it a Carmichael number.
+
+For any $a$ relatively prime to 561
+
+$a^2 \equiv_3 1$
+
+$a^{10} \equiv_{11} 1$
+
+and $a^{16}\equiv_{17} 1$,
+
+because $a$ will be relatively prime to each of 3,11,17, and these things follow by Fermat's little theorem.
+
+But then 
+
+$a^{560} \equiv_3 1$
+
+$a^{560} \equiv_{11} 1$
+
+and $a^{560} \equiv_{17} 1$,
+
+because 560 is a multiple of 2,10, and 16.
+
+Now by the Chinese Remainder Theorem there is only one solution to 
+
+$x \equiv_3 1$
+
+$x \equiv_{11} 1$
+
+and $x \equiv_{17} 1$,
+
+mod (3)(11)(17) = 561, which is obviously 1, so $a^{560} \equiv_{561} 1$.
+
+Exactly the same argument shows that any $n = p_1p_2\ldots p_m$, a product of distinct primes, with
+$(p_i-1)|(n-1)$ for each $n$, is a Carmichael number.  You should be able to write out this proof on your own,
+using the proof for 561 as a model.
+
+This is called Korselt's Criterion, and it is an exact description of all Carmichael numbers;  the additional piece of information for which I do not suggest a proof here (it is in the advanced number theory notes!) is that for any $n$ and prime $p$, if $p^2 |n$, $n$ is not a Carmichael number.
+
+I proved in class, and I am assigning as a homework exercise, that if $6n+1$, $12n+1$, and $18n+1$ are all primes, then
+$(6n+1)(12n+1)(18n+1)$ is a Carmichael number by Korselt's Criterion.
+
+I have expressed doubt that it is necessary to do this in practice (because Carmichael numbers are quite rare) but it is usual to use a somewhat stronger test for compositeness, the Rabin Miller test.
+
+\begin{description}
+
+\item[Rabin-Miller Primality Test:]  If $n$ is an odd number, $n-1$ can be expressed as $2^kq$, where $q$ is odd, in only one way.
+
+Let $a$ be a residue mod $n$.  If $a^q \not\equiv 1$ and $a^{2^iq} \not\equiv_n -1$ for $0 \leq i <k$, then $n$ is composite.  We say in this case that $a$ fails the Rabin-Miller test for $n$.
+
+\item[Proof:]  Suppose that the conditions of the test hold and $n$ is prime.
+
+If $n$ is prime, then $a^{2^kq} = a^{n-1} \equiv_n 1$ by Fermat's little theorem.
+
+$a^q \not\equiv 1$ so there must be a last $i<k$ such that $a^{2^iq} \not\equiv_n 1$.  This means that
+$a^{2^{i+1}q} = (a^{2^iq})^2 \equiv_n 1$.  But this implies that $a^{2^iq}\equiv_n -1$, because if $n$ is prime
+the equation $x^2 \equiv_n 1$ has only two solutions, which is a contradiction to the stated conditions.
+
+\end{description}
+
+If $n$ is composite, it is provable that at least three-quarters of the residues mod $n$ will fail the Rabin-Miller test and show that $n$ is composite.  So if we choose 50 random $a$ and they do not fail the test, the chance that $n$ is actually prime is at most 1 in $4^{50}$, not a kind of random event we will encounter in practice.
+
+If $n$ is composite and $a$ does not fail the test, we call $a$ a Rabin-Miller misleader.
+
+\section{Quadratic residues;  there are infinitely many primes of the form $4n+1$;  finding square roots in prime moduli}
+
+Let $p$ be an odd prime number, used as modulus throughout this section.
+
+The integers in $[1,p-1]$ fall into two classes of the same size, the set $QR = \{x^2 {\tt mod} p:p \not\in x\}$, called the set of quadratic residues, and the set $NR = \{x {\tt mod} p:p \not| x  \wedge x \not\in QR\}$.
+
+QR contains $x^2$ for each $x \in [1,p-1]$.  $x^2 \equiv_p y^2$ iff $(x-y)(x+y)\equiv_p 0$, and we know by Euclid's lemma that this implies either $p|x-y$, so $x \equiv_p y$, or $p|x+y$, so $x \equiv_p -y$.  There is no $x$ in $[1,p-1]$ so that
+$x=-x$, so there are exactly two elements of $\{(x,x^2{\tt mod}p):x \in [1,p-1]\}$ with each second component, so the set of second components (the set of quadratic residues) has exactly $\frac{p-1}2$ elements.
+
+NR contains all the elements of $[1,p-1]$ which are integers and not in QR, so it also has $\frac{p-1}2$ elements.
+
+We give a simple criterion for membership in QR.
+
+$x^\frac{p-1}2 \equiv 1$ iff $x \in QR$
+
+Proof:  if $x \in QR$ then $x=y^2$ for some $y$ and $x^\frac{p-1}2 = y^{p-1} \equiv_p 1$ by Fermat's Little Theorem.
+
+This means that we have identified $\frac{p-1}2$ distinct roots of $x^\frac{p-1}2 -1\equiv_p 0$.  It cannot have any more roots than that, so all $x \in NR$ have $x^\frac{p-1}2 \not\equiv_p 1$.  The only other possible value for $x^\frac{p-1}2$ is
+$-1$, since it has to be a square root of 1.
+
+Lemma:  $p-1 \in QR$ iff $p \equiv_4 1$
+
+Proof:  if $p=4n+1$ then $\frac{p-1}2 = 2n$ is even.  Thus $(p-1)^\frac{p-1}2 \equiv (-1)^{2n} = 1$.  Thus $p-1 \in QR$.
+
+If $p=4n+3$ then $\frac{p-1}2 = 2n+1$ is odd.  Thus $(p-1)^\frac{p-1}2 \equiv (-1)^{2n+1} = -1$.  Thus $p-1 \in NR$.
+
+Theorem:  There are infinitely many primes of the form 4n+1.
+
+Suppose there are only finitely many such primes, $p_1,\ldots,p_n$.
+
+Let $P= \prod_{1 \leq i \leq n}p_i$.
+
+Now consider $(2P)^2 +1$.  Let $q$ be any prime factor of this.  Observe that $(2P)^2 \equiv_q -1$, so $-1$ is a QR mod $q$, so $q$ is a prime of the form $4n+1$.  $q|p$ because $q$ has to be one of the $p_i$'s so $q|(2P)^2+1$ and $q|(2P)^2$, so $q|1$ which is absurd.
+
+Solving quadratic equations in modular arithmetic is a goal of the course.  Solving them in general moduli is a hard problem.
+But there is an algorithm for computing square roots mod $p$, which relies on what we have done so far in this lecture.
+
+First, there is a fairly easy way to find square roots if $p = 4n+3$.  In this case we look at $x^\frac{p+1}4$.  Note that
+because $p=4n+3$, $p+1$ is divisible by 4.  If in fact $x=y^2$, then $x^\frac{p-1}2=1$ and $(x^\frac{p+1}4)^2= x^\frac{p+1}2 = x^\frac{p-1}2x =x$, so $x^\frac{p+1}4$ is either $y$ or $-y$.  If $(x^\frac{p+1}4)^2 \neq x$ then $x \in NR$.
+
+There is a general algorithm.  It looks like a cousin of the Rabin-Miller algorithm, though it is solving a different problem!
+
+let $p-1=2^kq$ with $q$ odd.
+
+Try $R=x^\frac{q+1}2$.
+
+$R^2 = x^{q}x$ so if $x^q=1$, we have found a square root $R$ of $x$.
+
+
+Let $t=x^q$.  Notice that $t^{2^{k-1}}= x^{q2^{k-1}} = x^\frac{p-1}2$ if $x$ is a QR.
+
+and we have $R^2=xt$ and $t$ is a $2^{k-1}$ root of 1.
+
+Now we show that if we have $R^2 = xt$ where $t$ is a $2^i$ root of 1, we can get
+$R'^2 = xt'$ where $t'$ is a $2^{i-1}$ root.  By repeating this, we can get to $i=0, t=1$, and then our new $R$ will be a square root of $x$.
+
+
+we can check whether $t$ is already a $2^{i-1}$ root.  If it is not, it is a $2^{i-1}$ root of $-1$.
+
+If it is not, we multiply $R$ by a factor $b$ to be determined.  Our aim for $b$ is that $b^2$ is a $2^{i-1}$ root of -1,
+so that  $(Rb)^2 = xtb^2$ will give us what we need.  So we need $b$ to be a $2^{i-2}$ root of $-1$.  How do we find
+such a thing?  Any element $z$ of NR (about 50 percent of residues, find one by random choice enough times) will
+satisfy $z^{2^{k-1}q} = -1$, so $z^q$ is a $2^{k-1}$ root of -1, and $z^{q2^{(k-1)-(i-2)}}$ is a $2^{i-2}$ root of $-1$.
+
+This describes an actual algorithm for computing square roots in prime moduli.
+
+Computing square roots in composite moduli seems to depend on knowing their prime factorizations (and using the Chinese Remainder Theorem).  There are cryptosystems based on the difficulty of finding square roots in composite moduli.
+
+As for solving quadratic equations in general, notice that the quadratic formula makes perfect sense in an odd prime modulus, as long as the leading coefficient has a multiplicative inverse.
+
+I'm going to write a computer program implementing this and fill in the details here of the example I failed to complete in class (find the square root of 28 in mod 137 arithmetic).
+
+
+\section{Homework 11}
+
+I'll be happy to answer questions in this set in full on Thursday.
+
+\begin{description}
+
+\item  Write out the proof that if $n=p_1p_2\ldots p_n$, a product of distinct primes, and $(p_i-1)|(n-1)$ for each $i$, then
+$n$ is a Carmichael number.  All the details are in the proof that 561 is a Carmichael number;  write it out in full abstraction.
+
+\item  Prove that if $6n+1$, $12n+1$, and $18n+1$ are all primes, that $(6n+1)(12n+1)(18n+1)$ is a Carmichael number (using the result stated in problem 1).  Find two Carmichael numbers of this kind.
+
+\item  Find two Rabin Miller misleaders for 49.  Show the calculations (of course, you may use my spreadsheet or my Python package to find them).  Find at least one misleader for 121:  there seem to be several.
+
+\item  Determine whether 3 is a square in mod 137 arithmetic, and whether 103 is a square in mod 137 arithmetic, by carrying out a single modular exponentiation (not by looking for a square root).
+
+\item  Find the square roots of 103 in mod 211 arithmetic using the method described in the notes (noting that 211 is of the form $4n+3$).  Show calculations to indicate that you understand the method.
+
+Solve the quadratic equation $x^2-3x+8=0$ in mod 211 arithmetic, using the quadratic formula as usual.  You will need to use the same method as in the first part of this problem to find the square root.  Find both solutions.
+
+\item  Find the four square roots of 15 in mod 187 = (11)(17) arithmetic.  Do this by  finding the two square roots of 15 (really 4) in mod 11 arithmetic (easy), then find the two square roots of 15 mod 17 (you can do this by trial and error), then applying the Chinese Remainder Theorem.
+
+
+
+\item  I might add a question when I have completed the computer implementation of the general algorithm for finding square roots in prime moduli.  Watch this space.
+
+
+
+\end{description}
+
+
 \end{document}
