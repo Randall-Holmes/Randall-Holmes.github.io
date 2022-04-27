@@ -379,3 +379,106 @@ def EGtextdecrypt(full,Mprime):
     return(alphabetize(EGdecrypt(full,Mprime)))
 
 
+
+
+# square root algorithm
+
+def modsqrt(n,p):
+    if not(p%2==1 and isprime(p)):  return 'not odd prime'
+
+    if (modexp(n,(p-1)//2,p)== p-1): return 'not a QR'
+
+    S=0
+    Q=p-1
+    while(Q%2==0):
+        S=S+1
+        Q=Q//2
+
+    print('S is '+str(S))
+    print('Q is '+str(Q))
+
+    z=2
+    while(modexp(z,(p-1)//2,p)==1):
+       z=z+1
+
+    print('z is ',str(z))
+
+    M=S
+    c=modexp(z,Q,p)
+    t=modexp(n,Q,p)
+    R=modexp(n,(Q+1)//2,p)
+
+    while(1==1):
+        if (t==0): return 0
+        if (t==1): return R
+        i=0
+        T=t
+        while(not(T==1)):
+            T=(T*T)%p
+            i=i+1
+        b=modexp(c,2**(M-i-1),p)
+        M=i
+        c=(b*b)%p
+        t=(t*b*b)%p
+        R=(R*b)%p
+
+# from my lecture
+    
+def Modsqrt(x,p):
+
+    if (not(isprime(p) and p%2 == 1)): return 'Not an odd prime modulus'
+
+    if (not(modexp(x,(p-1)//2,p)==1)):  return 'Not a quadratic residue'
+
+    q=p-1
+    k=0
+
+    while(q%2==0):
+        k=k+1
+        q=q//2
+
+    z=2
+
+    while(modexp(z,(p-1)//2,p)==1):
+        z=z+1
+
+    R= modexp(x,(q+1)//2,p)
+
+    t= modexp(x,q,p)
+
+    i=k-1
+    y=0
+
+    print('invariant check: '+str((R*R)%p)+' =? '+str((x*t)%p))
+    print('invariant check (should be 1): '+str(modexp(t,2**i,p)))
+
+    while(not(t==1)):
+
+        print('invariant check (should be 1): '+str(modexp(t,2**i,p)))
+
+        i=i-1
+
+        
+        input(y)
+
+        if(modexp(t,2**i,p)==p-1):
+            print('t = '+str(t)+' is a 2^'+str(i)+' root of -1, so b^2 should be too')
+            b=modexp(z,q*(2**((k-1)-(i+1))),p)
+            print('b is '+str(b))
+            print('b test '+str(modexp(b*b,2**(i),p)))
+            R=(R*b)%p
+            print('R is '+str(R))
+            t=(t*b*b)%p
+            print('t is '+str(t))
+
+            print('invariant check: '+str((R*R)%p)+' =? '+str((x*t)%p))
+            
+
+    return R
+            
+
+    
+        
+
+
+           
