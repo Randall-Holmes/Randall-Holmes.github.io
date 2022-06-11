@@ -30,6 +30,8 @@ This document is probably my best overall version so far.  The immediate occasio
 
 \item[6/11/2022:]  Correction and improvement of section 4.3.  There is now only one induction argument on strong supports in the section, and the repair was needed because the one originally given first could not be proved without the second.
 
+Later:  major rewriting of section 4.3, which I think brings it much closer to the standard needed for the verification project.
+
 \item[6/10/2022:]  Replaced $\iota$ as used to represent ordinal position in a type with $\iota_*$, to avoid confusion with the use of $\iota$ for the singleton operator which occurs elsewhere in the paper.
 
 Added a proof that $A_\delta$'s commute with allowable permutations, supporting the fact that the unpacked coherence condition is the same as the original one.
@@ -322,7 +324,7 @@ types of size $\tau(H_1)$ have the same truth values for sentences in $\Sigma$, 
 
 Our initial approach to proving our theorem was to attempt a Frankel-Mostowski construction of a model of Mac Lane set theory with a tangled web of cardinals.  We do know how to do this, but we believe from experience that constructing a model of tangled type theory directly is easier, though tangled type theory is a nastier theory to describe.
 
-We think there is merit in giving a brief description of a situation in a more familiar set theory equivalent to (a strengthening of) the very strange situation in a model of tangled type theory.
+We think there is merit in giving a brief description of a situation in a more familiar set theory equivalent to (a strengthening of) the very strange situation in a model of tangled type theory.  This section is also useful here because it supports the discussion of one of the unsolved problems which is settled by this paper.
 
 \newpage
 
@@ -658,28 +660,57 @@ that the construction actually succeeds at every type.
 the action of allowable permutations.  We call such functions {\em coding functions\/}.  Note that if $\pi[S]=\pi'[S]$ then $(\pi^{-1}\circ \pi')[S]= S$, so 
 $(\pi^{-1}\circ \pi')(x)= x$, so $\pi(x)=\pi'(x)$, ensuring that the map $\chi_{x,S}$ for which we gave an implicit definition is well defined.
 
+\item[Definition (the specification of a support):]  A support which is an image of a strong support under an allowable permutation we may call a nice support.  For each nice support $S$ we define a combinatorial object $S^*$ which we call its {\em specification\/}.  We will show below that what it specifies is the orbit in the action of allowable permutations on supports to which it belongs.
+
+For $S$ a support, we define $S_a$ as the element $x$ of its domain such that the restriction of $S$ to $\{y:y <_S x\}$ is of order type $a$.
+
+The specification $S^*$ is a well-ordering of the same length as $S$.  We describe its elements.
+
+\begin{enumerate}
+
+\item  If $S_{a}$ is $((\beta,-1,\{x\}),A)$, then $S^a$ is $((\beta,-1,\delta),A)$ such that $S_\delta$ is $((\beta,-1,N),A)$, for $N$ a near-litter with $x$ belonging to $N$.  There is exactly one such $\delta$ by the definitions of support and strong support.
+
+\item  If $S_a$ is $((\beta,-1,N),A)$ and $N$ is a near-litter, and either $|A|=1$ or $[N]$ is not in the range of any $f_{\gamma,\beta}$ for $\gamma<{\tt min}(A_1)$, then $S^*_a$ is $((\beta,-1,\emptyset),A)$.
+
+\item  If $S_a$ is $((\beta,-1,N),A)$ and $N$ is a near-litter, and $[N]=f_{\gamma,\beta}(x)$ for $\gamma<{\tt min}(A_1)$, then 
+$S^*_a$ is $((\beta,-1,\chi_{x,S_{\gamma}\cap \{y:y <_S x\}},A)$:  the component replacing $N$ is the coding function with largest possible domain taken from $S$ which yields $x$.
+
+\end{enumerate}
+
+\item[Observation:]  On the inductive hypothesis that there are $<\mu$ $\gamma$-coding functions with domain containing a strong support for each $\gamma<\alpha$, we observe that there are $<\mu$ specifications of $\beta$-supports for $\beta\leq \alpha$.
+
+\item[Lemma:]  The specification of a nice $\beta$-support exactly determines the orbit in the action of $\beta$-allowable permutations on supports to which it belongs.
+
+\item[Proof of Lemma:]
+
+It is straightforward to see that if $S$ is a nice $\beta$-support and if $\pi$ is a $\beta$-allowable permutation, that $(\pi[S])^* = S^*$.  The relationships between items in the support recorded in the specification are invariant under application of allowable permutations.
+
+It remains to show that if $S$ and $T$ are nice supports, and $S^*=T^*$, there is an allowable permutation $\phi$ such that $\pi[S]=T$.
+
+We construct $\pi$ using the Freedom of Action Theorem.
+
+If we have $S_a = ((\beta,-1,\{x\}),A)$, we will have $T_a = ((\beta,-1,\{y\}),A)$ for some $y$, and we will set $\pi^0_A(x) = y$ as part of the construction of the local bijection to be used.
+
+If we have $S_a = ((\beta,-1,M),A)$ for $M$ a near litter and either $|A|=1$ or $[M]$ is not in the range of any $f_{\gamma,\beta}$ for $\gamma<{\tt min}(A_1)$, then $T_a = ((\beta,-1,N),A)$ for $N$ a near litter, with analogous properties, and we set $\chi_A([M])=[N]$ as part of the data for application of the Freedom of Action Theorem.
+
+If we have $S_a= ((\beta,-1,M),A)$ for $M$ a near litter with $[M] = f_{\gamma,\beta}(x)$, where $\gamma<{\tt min}(A_1)$,
+then $S^*_a$ is $((\beta,-1,\chi_{x,S_{\gamma}\cap \{y:y <_S x\}},A)$ and $T^*_a$ is $((\beta,-1,\chi_{x,T_{\gamma}\cap \{y:y <_T x\}},A).$
+
+If all earlier items in $S$ are mapped by a fixed allowable permutation $\pi_0$ to the corresponding items in $T$, then
+$$\pi_0(x) = \pi_0(\chi_{x,S_{\gamma}\cap \{y:y <_S x\}}(S_{\gamma}\cap \{y:y <_S x\}) $$ $$ = \chi_{x,S_{\gamma}\cap \{y:y <_S x\}}(\pi_0[S_{\gamma}\cap \{y:y <_S x\}])$$ $$ = \chi_{x,S_{\gamma}\cap \{y:y <_S x\}}(T_{\gamma}\cap \{y:y <_T x\}) $$ $$= \chi_{x,T_{\gamma}\cap \{y:y <_T x\}}(T_{\gamma}\cap \{y:y <_T x\})=y$$
+
+and this implies that $\pi(M) \Delta N$ is small:  we need to augment the local bijection to prevent anomalies, and there is a way to do this.
+
+We want to ensure that elements of $M \setminus M^{\circ}$ and elements of $M^{\circ} \setminus M$ are in the domain of $\pi^0_A$ and sent to elements of $N$, and similarly elements of $M$ are chosen to be mapped by $\pi^0_A$ to elements of $N\setminus N^\circ$ and $N^\circ \setminus N$.
+ Some additional work must be done.  For each new element introduced to the domain of $\pi^0_A$, we have the obligation to fill in its complete orbit in $\pi^0_A$.   The restriction we must obey as we do this is that any element of a near-litter in $S$ must be mapped by $\pi^0_A$ to an element of the corresponding near-litter in $T$ and any element of a near-litter in $T$  must be mapped by $(\pi^0_A)^{-1}$ to an element of the corresponding near-litter in $S$.  Since only countably many new values are needed to fill in each orbit and $\kappa$ is uncountable, there is no obstruction to doing this.  Note that atoms already in the domain of $\pi^0_A$ are already constrained to behave in this way.  The map eventually constructed by Freedom of Action will send
+$M$ to $N$ because it maps elements of $M \Delta M^\circ$ to and elements of $N \Delta N^{\circ}$ to appropriate values individually, and all other values in $M$ must be mapped to values in $N$ (and elements of $N$ mapped from elements of $M$) because the map constructed by Freedom of Action has no exceptions not in the domain of the local bijection.
+
+So we have completed the description of what we need to do to construct the needed permutation.
+
 \end{description}
 
-We argue that there are $<\mu$ orbits in the $\alpha$-allowable permutations which contain strong supports.  The idea is that the orbit in which a support lies
-is completely determined by a certain amount of combinatorial information, similarly to what happened in type 0 but a bit more complex.  The orbit is specified if we know the second and third components of each item (taken from $\lambda$ items in each case, the first and second components of the first item, and whether the third component is a singleton or a litter.  If this is a singleton, we want to know the position in the support of a litter containing it (which will be present).  If this is a litter and its local cardinal is an image under an $f$ map, we can extract from information about the preceding part of the support order a subsupport which is an index-raised version of a strong support for the inverse image of the local cardinal under the $f$ map:  as part of our specification, we take the coding function which generates that inverse image from that subsupport.
-
-We give exact details.  If $S$ is a strong support (or an image of a strong support under an allowable permutation), we define
-its specification $S^*$ as a well-ordering of the same length in which an item $((\beta,-1,x),A)$ will be replaced by an item 
-$((\beta,-1,X),A)$ in a way that we describe.  If $x=\{y\}$, we replace $x$ with $\{\delta\}$, where $\delta$ is the position of a typed near-litter containing $y$ in the obvious sense.  If $x$ is a near litter which does not belong to any $f_{\gamma,\beta}(y)$ with $\gamma<{\tt min}(A_1)$, then 
-$X= \emptyset$.  If $x \in f_{\gamma,\beta}(y)$ with $\gamma<{\tt min}(A_1)$, then we extract the maximal strong support $T$ of $y$ such that
-$T^{\{\alpha\}} \subseteq S$, and set $X = \chi_{y,T}$, a coding function.
-
-There is a straightforward argument by induction on the structure of strong supports that if we have two items with strong supports which have the same specification in the sense we have just described, there is an allowable permutation (by freedom of action) whose action sends the one support to the other, and so the one item to the other.
-
-It should also be clear that the image under an allowable permutation of a support has the same specification as the input support.
-
-Suppose $S^* = T^*$:  we discuss the construction of an allowable permutation $\pi$ such that $\pi[S^*]=T^*$.  It should not be a surprise
-that we construct the desired $\pi$ as an extension (as in the freedom of action theorem) of a local bijection defined by consulting the parallel structures of $S$ and $T$.  If $((\beta,-1,\{x\}),A)$ and $((\beta,-1,\{y\}),A)$ appear at corresponding positions in $S$ and $T$, we have $\pi^0$ send
-$(A,x)$ to $y$.  If $((\beta,-1,M),A)$ and $((\beta,-1,N),A)$ appear at corresponding positions in $S$ and $T$ and $((\beta,-1,\emptyset),A)$ appears at the corresponding position in $S^*=T^*$, we can provide that the map $\chi_A$ used in the freedom of action construction
-maps $[M]$ to $[N]$. .  If $((\beta,-1,M),A)$ and $((\beta,-1,N),A)$ appear at corresponding positions in $S$ and $T$ and $((\beta,-1,\chi_{y,T}),A)$ appears at the corresponding position in $S^*=T^*$,  then we know by the inductive hypothesis that everything works before this item in the support (and so on a support of the item in the support) that the action of the permutation $\pi_A$ constructed so far will send $[M]$ to $[N]$, because $[M]$ and $[N]$ are images under the same coding function $\chi_{y,T}$ of subsupports which correspond correctly.  In both near-litter cases, we need to do a little more work to ensure that $M$ is mapped exactly to $N$ without exceptions.  The idea is to extend $\pi^0_A$ so as to map each element of
-$M$ which is not in $M^\circ$ to something in $N^\circ \cap N$, and each element of $M^\circ$ which is not in $M$ to something not in $N$, and do the analogous things for $(\pi^0_A)^{-1}$, and then fill in orbits, which only requires countably many atoms for each orbit [this is why we take $\kappa$ to be uncountable], with the rule that images and preimages chosen in the filling out process are chosen so as not to conflict with intended actions of the permutation being constructed on near-litters in the supports (their images and preimages will agree with expected actions on near-litters in the supports, which is really action on their local cardinals, because all elements of the symmetric differences of near-litters with their corresponding litters are treated individually).  The extension of this local bijection will have exactly the desired effect.
-
-There are clearly $<\mu$ specifications since these are small structures built with components taken from sets of size $<\mu$.  Notice the recursive dependency on the coding functions for items of lower types being taken from sets of size $<\mu$.
+Since the specifications precisely determine the orbits in nice supports under allowable permutations, and there are $<\mu$ specifications
+(on stated hypotheses) there are $<\mu$ such orbits.
 
 The strategy of our argument for the size of the types is to show that that there are $<\mu$ coding functions for each type whose domain includes a strong support, which implies that there are no more than $\mu$ (and so exactly $\mu$) elements of each type, since every element of a type is obtainable by applying a coding function (of which there are $<\mu$) to a support (of which there are $\mu$), and every element of a type has a strong support.
 
@@ -715,7 +746,7 @@ This completes the proof:  any element of a type is determined by a support (of 
 
 
 % \begin{comment}
-{\bf Note for the formal verification project:}  I think everything is here, but filling in details to the satisfaction of a theorem prover will be work.
+{\bf Note for the formal verification project:}  I think the latest revisions are closer to the standard needed for the Lean verification project.
 % \end{comment}
 \newpage
 \subsection{The structure is a model of predicative TTT}
