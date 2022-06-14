@@ -449,6 +449,17 @@ $$(\forall Z \in \tau_\gamma: Z \in_{TTT} X \leftrightarrow Z \in_{TTT} Y) \righ
 
 This all serves to enforce extensionality, but something much more radical needs to be done to make all this work, as we are assuming the existence of the maps $f_{\beta,\gamma}$ which witness that all the types are of cardinality no greater than $\mu$.  There must be a very strong restriction on what sets can appear as third components of codes in the model.
 
+%\begin{comment}
+
+{\bf Note for the Lean workers:}  The recursive definition of $\alpha$-codes does need to take $\tau_\beta$ for $\beta<\alpha$ into account
+(the restriction of the third component of a code to subsets of $\tau_\beta$ is essential, but all one needs to know about $\tau_\beta$ is that it is
+of size $\mu$ and contains all typed near-litters).  A treatment of the first section could be free-standing, with a parameter in the definition of codes
+a function sending each $\beta$ to a subset of size $\mu$ of the $\beta$-codes containing all type $\beta$ near-litters, to serve as $\tau_\beta$.
+
+Then the function taking $\alpha$ to the set of $\alpha$-symmetric representative codes might be fed in as that parameter.  I don't know if this is helpful...
+
+%\end{comment}
+
 \subsection{Permutations, symmetry and the model definition}
 
 We try to improve intelligibility of the notion of ``allowable permutation" that we now define by providing a preliminary notion.
@@ -610,7 +621,7 @@ We give an exact statement of what is meant, then we prove it.
 \item[Definition (exception of a permutation):]  We say that $x$ is an exception of a $-1$-allowable permutation $\pi$ iff ($L$ being the litter containing $x$) either $\pi(x) \not\in (\pi``L)^\circ$ or $\pi^{-1}(x) \not\in (\pi^{-1}``L)^\circ$.  For a proper type index $\alpha$ and $\pi$ an $\alpha$-allowable permutation and $A$ an extended type index with maximum $\alpha$, we say that $(A,x)$ is an exception of $\pi$ iff
 $x$ is an exception of $\pi_{A \cup \{-1\}}$.
 
-\item[Definition:]  For each litter $L$ we define a well-ordering $\leq_L$ of order type $\kappa$ with coordinated strict well-ordering $<_L$, by providing that $$(-1,\nu,\alpha)\leq_{L_\nu} (-1,\nu,\beta)$$ if and only if $\alpha\leq \beta$.
+\item[Definition:]  For each litter $L$ we define a well-ordering $\leq_L$ of order type $\kappa$ with coordinated strict well-ordering $<_L$, by providing that $$(-1,\nu,\beta)\leq_{L_\nu} (-1,\nu,\gamma)$$ if and only if $\beta\leq \gamma$.
 
 \item[Definition:]  An $A$-flexible local cardinal is a local cardinal
 which is not in the range of $f_{\gamma,{\tt min}(A)}$ for any $\gamma<{\tt min}(A_1)$.  If $A$ has one element, all local cardinals are $A$-flexible.
@@ -691,16 +702,21 @@ $(\pi^{-1}\circ \pi')(x)= x$, so $\pi(x)=\pi'(x)$, ensuring that the map $\chi_{
 For $S$ a support, we define $S_\epsilon$ as the element $x$ of its domain such that the restriction of $S$ to $\{y:y <_S x\}$ is of order type $\epsilon$.  We define
 $S_{<\epsilon}$ as $\{y:y <_S S_\epsilon\}$.
 
-The specification $S^*$ is a well-ordering of the same length as $S$.  We describe its elements.
+The specification $S^*$ is a well-ordering of the same length as $S$.  We describe the elements of its domain.
 
 \begin{enumerate}
 
 \item  If $S_{\epsilon}$ is $((\beta,-1,\{x\}),A)$, then $S^*_\epsilon$ is $(0,\beta,\delta,A)$ such that $S_\delta$ is $((\beta,-1,N),A)$, for $N$ a near-litter with $x$ belonging to $N$.  There is exactly one such $\delta$ by the definitions of support and strong support.
 
+One can state an internal condition on specifications that if $S^*_\epsilon$ is $(0,\beta,\delta,A)$, then $S^*_\delta$ must have first component 2 or 3.
+
 \item  If $S_\epsilon$ is $((\beta,-1,N),A)$ and $N$ is a near-litter, and either $|A|=1$ or $[N]$ is not in the range of any $f_{\gamma,\beta}$ for $\gamma<{\tt min}(A_1)$, then $S^*_\epsilon$ is $(1,\beta,\emptyset,A)$.
 
 \item  If $S_\epsilon$ is $((\beta,-1,N),A)$ and $N$ is a near-litter, and $[N]=f_{\gamma,\beta}(x)$ for $\gamma<{\tt min}(A_1)$, and $x\in \tau_\gamma$ then 
 $S^*_\epsilon$ is $(2,\beta,\chi_{x,(S_{<\epsilon})_{(\gamma)}},A)$:  the third component is the coding function with largest possible domain taken from $S$ which yields $x$.
+
+One can state an internal condition on specifications that if $S^*_\epsilon$ is $(2,\beta,\chi,A)$, where $\chi$ is a coding function with outputs of type
+$\gamma$, then domain elements of $\chi$ have specification $(S^*_{<\epsilon})_{(\gamma)}$ (restrict to earlier elements of the specification, then remove the top element from each extended type index and retain only those which then have top element $\gamma$).
 
 \end{enumerate}
 
