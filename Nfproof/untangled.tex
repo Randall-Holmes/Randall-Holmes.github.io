@@ -28,6 +28,8 @@ This document is probably my best overall version so far.  The immediate occasio
 
 \begin{description}
 
+\item[6/29/2022:]  I wrote a section which is not part of the official development (at least not yet) exploring Peter's preferred representation of model elements.  I also fixed a typo in the subscripting in the definition of $f$ maps (an extra subscript had survived from an earlier version).
+
 \item[6/27/2022:]  Explicit formal definition of $\equiv_\beta$ inserted due to questions about boundary cases.
 
 \item[6/14/2022:]  Corrected an automated replacement disaster in the tangled web sections left over from yesterday, and minor edits.
@@ -408,7 +410,7 @@ We remark that $\tau_\beta$ for $-1<\beta<\alpha$  is a (proper) subset of the c
 
    We define $\iota_*(x)$ for $x \in \tau_\beta$ as the order type of $\leq_\beta$ restricted to $\{y \in \tau_\beta:y <_\beta x\}$ (note that $\iota_*$ is defined for elements of any type).
 
-   Where $\gamma$ is a type index less than $\alpha$ and $\delta$ is a proper type index distinct from $\gamma$ and also less than $\alpha$, and $x \in \tau_\gamma$, we define $f_{\gamma,\delta}(x)$ as the local cardinal $[N]$ of the third component of the first $(\delta,-1,N)$ in $<_\delta$ such that $N$ is a near-litter and $[N] \in {\bf X}_{(\beta,\gamma,\delta)}$ and $\iota_*(\delta,-1,M)>\iota_*(x)$  for each $M \in [N]$ and $[N] \neq f_{\beta,\gamma,\delta}(y)$ for any $y <_\gamma x$.  
+   Where $\gamma$ is a type index less than $\alpha$ and $\delta$ is a proper type index distinct from $\gamma$ and also less than $\alpha$, and $x \in \tau_\gamma$, we define $f_{\gamma,\delta}(x)$ as the local cardinal $[N]$ of the third component of the first $(\delta,-1,N)$ in $<_\delta$ such that $N$ is a near-litter and $[N] \in {\bf X}_{\gamma,\delta)}$ and $\iota_*(\delta,-1,M)>\iota_*(x)$  for each $M \in [N]$ and $[N] \neq f_{\gamma,\delta}(y)$ for any $y <_\gamma x$.  
 
 Note that this definition does not really depend on $\alpha$:  it will give the same result at any stage of the construction beyond $\gamma$ and $\delta$.
 
@@ -567,6 +569,94 @@ There is lots to be proven, but that is the entire description.
 {\bf Note for the formal verification project:}  I believe that the description of the model is complete and ready to be formalized.   Supports are now introduced as well-orderings from the outset.
 
 % \end{comment}
+
+\subsection{Outline of an alternative approach to defining the model elements [under construction, not part of the main development as yet]}
+
+{\bf note to Lean project:}  This is (informally) an implementation of the approach Peter has in mind, but it may differ in details.
+
+This section proposes an alternative presentation to the last two sections.  The section on atoms, litters, and local cardinals precedes this section immediately if it is used.
+
+We define an $\alpha$-pretangle as a function $t$ defined at each $\beta<\alpha$ and possibly at $-1$ (always defined at $-1$ if $\alpha=0$), with $t(\beta)$ in each case
+a set of $\beta$-pretangles, and $t(-1)$ (if it exists) a subset of $\tau_{-1}$.   The set of $\alpha$-pretangles will be denoted by $\tau^0_\alpha$.
+
+We will eventually see that $\tau_\alpha \subseteq \tau^0_\alpha$, so model elements at type $\alpha$ will be (selected) $\alpha$-pretangles.
+
+The membership relation has an easy definition:  for $\beta<\alpha$, $x \in \tau^0_\beta$ and $y \in \tau^0_\alpha$ we define $x \in_{TTT} y$ as
+$x \in y(\beta)$.  The price of the ease of definition is that of course for pretangles this relation is not extensional.
+
+We can define structural permutations easily on $\alpha$-pretangles:  an $\alpha$-structural permutation is a permutation $\pi$ of
+$\tau^0_\alpha$ with the property that for each $-1\leq \beta<\alpha$ there is a $\beta$-structural permutation $\tau_\beta$
+such that $\pi(x)(\beta) = \tau_\beta``x(\beta)$ (this only holds for $\beta=-1$ if $x(-1)$ is defined, of course).  A $-1$-permutation
+is a permutation $\pi$ of $\tau_{-1}$ such that for any litter $L$, $\pi``L$ is a near-litter.
+
+We then define $\pi_A$ for $\pi$ a $\alpha$-structural permutation and $A$ a subset of $\lambda \cup \{-1\}$ with $\alpha$ as maximum element
+as $\pi$ if $A = \{\alpha\}$ and as $(\pi_{A \setminus \{{\tt min}(A)\}})_{{\tt min}(A)}$ otherwise, just as above but with more generality.
+
+It then seems to be necessary to introduce the inductive hypothesis that $\tau_\beta$ has already been defined for each $\beta<\alpha$, is the domain of a well-ordering $\leq_\beta$ of type $\mu$ (this holds for $\beta=-1$ as well; technical conditions on these well-orderings are stated at the end of this section [above in the present incomplete state of things])
+and is extensional (for any subset $G$ of $\tau_\gamma$ for $-1 \leq \gamma<\beta$ there is at most one element $x$ of $\tau_\beta$ such
+that $x(\gamma)=G$) and there is for any near-litter $N$ and $\beta<\alpha$ an $N_\beta \in \tau_\beta$ such that $N_\beta(-1) = N$  [actually the stronger condition is required that maps $A'_\delta$ defined below are total on the extensions that are present].   We refer to objects $N_\beta$ as typed near-litters.
+
+\begin{description}
+
+\item[Definition ($f$ maps):]  
+
+   We define $\iota_*(x)$ for $x \in \tau_\beta$ as the order type of $\leq_\beta$ restricted to $\{y \in \tau_\beta:y <_\beta x\}$ (note that $\iota_*$ is defined for elements of any type).
+
+   Where $\gamma$ is a type index less than $\alpha$ and $\delta$ is a proper type index distinct from $\gamma$ and also less than $\alpha$, and $x \in \tau_\gamma$, we define $f_{\gamma,\delta}(x)$ as the local cardinal $[N'(-1)]$ of the value at $-1$ of the first $N'$ in $<_\delta$ such that $N'(-1)$ is a near-litter and $[N'(-1)] \in {\bf X}_{(\gamma,\delta)}$ and $\iota_*(M_\delta)>\iota_*(x)$  for each $M \in [N'(-1)]$ and $[N'(-1)] \neq f_{\gamma,\delta}(y)$ for any $y <_\gamma x$.  
+
+Note that this definition does not really depend on $\alpha$:  it will give the same result at any stage of the construction beyond $\gamma$ and $\delta$.
+
+\item[Definition (alternative extension map):]  For any $\beta$-pretangle $x$ with $x(\gamma)=G \neq \emptyset$ with $\beta \leq \alpha$ a proper type index and $\delta$ a proper type index distinct from $\gamma$ and less than $\beta$, and $G$ nonempty, we define
+$A_\delta(x)$ as the element $y$ of $\tau_\beta$ such that $$y(\delta)= \{N_\delta:N \in \bigcup (f_{\gamma,\delta}``G)\}),$$ and we presume that there is such an object $y$ (this will follow from the eventually stated inductive hypotheses about symmetry of $\tau_\beta$).
+
+We make what we presume more explicit:  let $\delta$ be a proper type index;  we define $A'_\delta(G)$ as $\{N_\delta:N \in \bigcup (f_{\gamma,\delta}``G)\}$ for any nonempty subset $G$ of $\tau_\gamma$ with $\gamma \neq \delta$, and stipulate that this map is total on extensions in the sense
+that if $G$ is in the range of some element of $\tau_\beta$ ($\beta$ dominating both $\gamma$ and $\delta$) and in the domain of $A'_\delta$ then $A'_\delta(G)$ is in the range of some element of $\tau_\beta$.
+
+\item[Definition (extensional pretangle):]  We say that $x$ is an extensional $\beta$-pretangle iff $x$ is a $\beta$-pretangle and there is 
+$\gamma<\beta$, which is equal to $-1$ if $-1$ is in the domain of $x$, such that $x = A_\delta(x)$ for each $\delta \neq \gamma$ in the domain of $x$,
+or $\gamma=-1$ and every $x(\delta)$ is empty.
+
+We refer to $x(\gamma)$ as a distinguished extension of $x$.
+
+\item[Observation:]  We claim that the distinguished extension of an extensional $\beta$-pretangle is unique.
+
+Suppose $x(\gamma)$ is a distinguished extension (and nonempty; uniqueness is obvious in the empty case).  Then the minimal value of $\iota_*$ on $x(\gamma)$ is dominated by the minimal
+value of $\iota_*$ on each other extension $x(\delta)$ of $x$ because of the order constraints on the $f$ maps:  in defining $x(\delta)$,
+each element $u$ of $x(\gamma)$ is replaced by typed near-litters in type $\delta$ whose values under $\iota_*$ must dominate $\iota_*(u)$,
+and so dominate the minimal value of $\iota_*$ on $x(\gamma)$.
+
+This is enough to be able to determine $\gamma$ uniquely given $x$.
+
+\item[Stipulation:]  We stipulate that every element of $\tau_\beta$ for $\beta<\alpha$ is a $\beta$-extensional pretangle.
+
+\item[Discussion and more precise stipulation:]  Observe that if $G \subseteq \tau_\gamma$ is the distinguished extension of an element of $\tau_\beta$, 
+and $\delta$ is not $\gamma$ or $-1$, $\{N_\delta:N \in \bigcup (f_{\gamma,\delta}``G)\}$ cannot be the distinguished extension
+of an element of $\tau_\beta$, because it is forced to be another extension of the same element.
+
+We sharpen this condition, defining distinguishable extensions:  an extension $H$ is distinguishable if it is not of the form $A'_\delta(G)= \{N_\delta:N \in \bigcup (f_{\gamma,\delta}``G)\}$ for any $G$, and further it is distinguishable if it is of the form $A'_{\delta}(A'_{\epsilon}(G))$ for some distinguishable extension (probably in a different type), and all distinguishable extensions are determined in this way.
+
+It is useful to note that the functions $A'_\gamma$ (supposed restricted to nonempty extensions) are injective, have disjoint ranges, and they send a set $G$ with a given minimum of its elementwise image under $\iota_*$ to a set with a larger such minimum.  So the union of the inverses of $A'_\gamma$'s, which we might call $A^{-1}$, is a defined partial function and the distinguishable extensions are exactly those with an even number of iterated images under $A^{-1}$ (including zero as an important special case);  nothing has an infinite number of iterated images under $A^{-1}$, so this definition works.
+
+We further stipulate that the distinguished extension of each element of $\tau_\beta$ is distinguishable if it is nonempty.
+
+\item[Observation:]  Extensionality has been enforced for the interpreted membership of the structure by our stipulations so far.
+
+\item[Preliminary discussion of permutations:]  We now need to develop the notion of $\beta$-allowable permutation for $\beta<\alpha$.
+The basic idea is that an $\beta$-allowable permutation is a $\beta$-structural permutation which sends extensional $\beta$-pretangles to extensional $\beta$-pretangles.  Consider the extensional $\beta$-pretangle with $x(\gamma) = \{y\}$ (this will be its distinguished extension, obviously).
+$x(\delta) = \{N_\delta:N \in f_{\gamma,\delta}(y)\}$ defines the non-distinguished extensions.  We must have $\pi(x)(\gamma) = \{\pi_\gamma(y)\}$,
+and we must have $\pi(x)(\delta) = \{N_\delta:N \in f_{\gamma,\delta}(\pi_\gamma(y))\}$ for one reason, and $\pi(x)(\delta) = \pi_\delta``\{N_\delta:N \in f_{\gamma,\delta}(y)\} = \{((\pi_\delta)_{-1}``N)_\delta:N \in f_{\gamma,\delta}(y)\}$ for another reason, so we must have
+$f_{\gamma,\delta}(\pi_\gamma(y)) = \{(\pi_\delta)_{-1}``N:N \in f_{\gamma,\delta}(y)\} = [(\pi_\delta)_{-1}``(f_{\gamma,\delta}(y)^\circ)]$.
+
+It should be reasonably clear that this forces any extensional $\beta$-pretangle to be sent to an extensional $\beta$-pretangle.
+
+\item[Definition (allowable permutation):]  A $\beta$-structural permutation $\pi$ is $\beta$-allowable if it is a $\beta$-structural permutation,
+each $\pi_\gamma$ is $\gamma$-allowable, and $f_{\gamma,\delta}(\pi_\gamma(y)) = \{(\pi_\delta)_{-1}``N:N \in f_{\gamma,\delta}(y)\} = [(\pi_\delta)_{-1}``(f_{\gamma,\delta}(y)^\circ)]$ holds for all appropriate $\gamma, \delta$.
+
+\item[Remarks:]  It should be reasonably clear that the elementwise action of an allowable permutation commutes with the maps $A'_\gamma$, whence it follows that extensional $\beta$-pretangles with distinguishable distinguished extensions are sent to extensional $\beta$-pretangles with distinguishable distinguished extensions.
+
+\end{description}
+
+{\bf Further note to Lean group:}  The rest of the development based on this approach should be clear enough.  Some notational reconciliation would be needed.  Comments encouraged from Peter or the students.
 
 \newpage
 
