@@ -24,9 +24,16 @@
 
 This document is probably my best overall version so far.  The immediate occasion for its preparation is to serve students attempting to verify the proof in Lean.  As we have discussed, the formal verification should at least initially avoid metamathematics, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.
 
+Versions after 8/11/2022 use a different set theoretical coding of structures for models of TTT, but the argument remains about the same.  The last version with the older coding remains up on my web site for comparison.
+
 \subsection{Version updates}
 
 \begin{description}
+
+\item[8/14/2022:]  Cleaning this up for posting on Arxiv to replace a version of the previous family.  We note for readers on Arxiv that this version does two things:  it corrects an actual omission of an important case in the proofs in the last version of the previous family, and at the same time makes a systematic change in the set theoretic implementation
+of structures for the language of TST that we use.  The corrections needed for the error of omission in the previous version of the proof are relatively minor;  the changes required for the use of different data structures to represent structures for the language of TST are considerable but do not really affect the way the argument works.  I hope that they will improve intelligibility.
+
+This version still contains extensive notes for the Lean project workers pointing out where the corrections for the error of omission appear;  these, and most or all comments addressed to the Lean project workers, will probably be taken out in the next update.
 
 \item[8/11/2022:]  Fixed the last section on the axiom of union:  the $\gamma= -1$ issue requires a somewhat more careful (though basically similar) approach.
 
@@ -355,7 +362,7 @@ for $\tau^*_\alpha$ for $\alpha\in \lambda$.
 
 \item[type shorthand:]  Notice that if $\alpha,\beta$ are types, $\alpha\in \beta$ is a convenient short way to say $-1 <_\tau \alpha <_\tau \beta$.   We will usually write $<$ instead of $<_\tau$.  Notice that if $\alpha<_\tau \beta$ are types, and $x \in \tau_\alpha$, $x \cap \tau_\beta$ is the extension of $x$ over supertype $\beta$:  we presume here that $\tau_\gamma \subseteq \tau^*_\gamma$ for each type $\gamma$.
 
-A nonempty finite subset of $\lambda \cup \{-1\}$ may be termed an extended type index.  If $A$ is an extended type index with at least two elements, $A_1$ is defined as $A \setminus \{{\tt min}(A)\}$.
+A nonempty finite subset of $\lambda \cup \{-1\}$ may be termed an {\em extended type index}.  If $A$ is an extended type index with at least two elements, $A_1$ is defined as $A \setminus \{{\tt min}(A)\}$.
 
 \item[atoms, litters and near-litters:]  
 
@@ -364,7 +371,7 @@ We may refer to elements of $\tau_{-1}$ (or closely related objects) as ``atoms"
 A {\em litter\/} is a subset of $\tau_{-1}$ of the form $L_{\nu,\beta,\gamma} = \{(\nu,\beta,\gamma,\alpha):\alpha<\kappa\}$.  The litters make up a partition of type $-1$
 (which is of size $\mu$) into size $\kappa$ sets.
 
-A {\em near-litter\/} is a subset of $\tau_{-1}$ with small symmetric difference from a litter.  Note that the relation of having small symmetric difference, which we call nearness, is an equivalence relation on near-litters.   We define $M \sim N$ as $|M \Delta N|<\kappa$, for $M,N$ near-litters.
+A {\em near-litter\/} is a subset of $\tau_{-1}$ with small symmetric difference from a litter.  Note that the relation of having small symmetric difference, which we call nearness, is an equivalence relation on near-litters.   We define $M \sim N$ as $|M \Delta N|<\kappa$, for $M,N$ near-litters.  Note that there are $\mu$ near-litters, because the cofinality of $\mu$ is at least $\kappa$.
 
 We define $N^\circ$, for $N$ a near-litter, as the litter $L$ such that $L \sim N$.  {\bf NOTE:  A notion which had a prominent role in recent versions but which  we do not make use of in the new approach is the notion of {\em local cardinal\/}:  $[N] = \{N:N \sim L\}$ for any near-litter $N$, $[N]$ being called the local cardinal of $N$.  In general, references to local cardinals are replaced with references to their unique litter elements in this treatment.  We preserve a reference to it here in case some reference to it survives when text is transferred from one format to the other.}
 
@@ -407,7 +414,7 @@ $x \cap \tau_{-1}$ is nonempty or if any $x \cap \tau_\delta$ ($\delta <_\tau \b
 
 Note that we now know how to compute all other extensions of typed near-litters $N_\beta$, because the $-1$-extension of $N_\beta$ is distinguished and this indicates how to compute all the other extensions.
 
-{\bf note for readers of earlier versions:  The code $(\alpha,\beta,B)$ in the previous version correlates with the pre-extensional element $x$ of
+{\bf note for readers of earlier versions:  The code $(\alpha,\beta,B)$ in the previous family of versions correlates with the pre-extensional element $x$ of
 $\tau_\alpha$ with $B=x\cap \tau_\beta$ its $\beta$-extension and moreover a distinguished extension (so that we know how to compute all other extensions).  The notation $B_\alpha$ has been defined above for this object;  the ordinal $\beta$ is implicit because $B$ is a nonempty subset of type $\beta$.}
 
 We note that the order conditions in the definition of $f_{\beta,\gamma}$ ensure that for any $x \in \tau_\beta$ there is only one $\gamma <_\tau \beta$ such that $x \cap \tau_\gamma$ is a distinguished extension of $x$.  If any $x \cap \tau_\gamma$ is empty or if $x \cap \tau_{-1}$ is not empty, $\gamma= -1$ is the unique possibility.  So, what remains is the case of $x$ with $x \cap \tau_{-1}$ empty and each $x \cap \tau_\gamma$ nonempty for $\gamma<\beta$.
@@ -483,6 +490,8 @@ $x \cap \tau^*_{\beta} \subseteq \tau_\beta$ for each $\beta<\alpha$, $x$ is ext
 
 \item[images under allowable permutations preserve symmetry:]  Note the important result that if $x$ has support $S$ and $\pi$ is allowable with appropriate index, $\pi(x)$ has support $\pi[S]$.  This verifies that for any $\alpha$-allowable permutation $\pi$, $\pi``\tau_\alpha = \tau_\alpha$.
 
+\item[Observation ($\kappa$-completeness of the structure):]  For any subset $X$ with cardinality $<\kappa$ of a type $\gamma$ and $\beta>\gamma$, it should be clear that $X_\beta$ has a support, namely, the union of the supports of its elements, and therefore belongs to the model.  $X_\beta$ is obviously extensional (the extension $X$ is clearly the distinguished extension and has no image under $A^{-1}$.
+
 \item[conditions on choice of the distinguished well-orderings of types:]  We choose the well-ordering $<_\alpha$ of $\tau_\alpha$, which must be of order type $\mu$, with some constraints (noting that the same conditions were imposed at each earlier type when it was constructed).
 
 \begin{enumerate}
@@ -512,7 +521,7 @@ At this point we should have a complete description of the structure (which shou
 
 \section{Verification that the structure defined is a model}
 
-\subsection{Freedom of action alternative proof incorporated from untangled}
+\subsection{Strong supports and the freedom of action theorem}
 
 Some of the initial discussion of supports is repeated.
 
