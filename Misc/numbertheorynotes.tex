@@ -25,7 +25,7 @@ I'm going to state a definition of the set of integers as a subset of the real n
 
 There are lots of integer-closed subsets of $\mathbb R$:  $\mathbb R$ itself is integer-closed;  the set of rationals is integer-closed; the set of all fractions with denominator 2 is integer closed (it contains all integers $n$ and also contains $n + \frac 12$ for each integer $n$).
 
-\item[Definition of $\mathbb Z$:]  $\mathbb Z$ is defined as $\{x \in \mathbb R:$ for every set $A$, if $A$ is integer closed then $x \in A\}$.  It really works...think about it.
+\item[Definition of $\mathbb Z$:]  $\mathbb Z$ is defined as $\{x \in \mathbb R:$ for every set $A\in {\cal P}(\mathbb R)$, if $A$ is integer closed then $x \in A\}$.  It really works...think about it.
 
 There is something odd about this definition, because it presupposes that we know what the reals are.  But if you get to an advanced course where a formal definition of the natural numbers, integers, and reals is actually given, you might get an idea of what I'm up to.  Really, I just want to be able to say something more accurate than $\mathbb Z = \{\ldots,-3,-2,-1,0,1,2\ldots\}$.
 
@@ -295,7 +295,7 @@ Another way to see that the greatest common divisor exists is to note that an in
 we define ${\tt gcd}(a,b)$, the greatest common divisor of $a$ and $b$, as the largest element of the set of common divisors of $a$ and $b$, which we have shown above exists.
 
 \item[This concept is familiar:]  The greatest common divisor is again a concept familiar from elementary school.
-When you simplify a fraction $\frac ab$, the common factor by which you divide the numerator and denominator is the gcd of $a$ and $b$,
+When you simplify a fraction $\frac ab$, the common factor by which you divide the numerator and denominator is the gcd of $a$ and $b$.
 
 You learned a method for finding these common factors using prime factorizations.  We will teach a much better method (at least, better for large numbers) which is ancient:  it was known to Euclid).
 
@@ -342,7 +342,7 @@ Let $a,b$ be integers with $b >0$.
 
 Define a sequence $D$ by $D_0=a$, $D_1=b$ and $D_{n+2}= D_n \,{\tt mod} \, D_{n+1}$.  Notice that $D_{n+2}$ is only defined if $D_{n+1} \neq 0$.
 
-We argue that for every $a,b$ there is an $n$ such that $D_{n+1}=0$ and $D_n = {\tt gcd}(a,b)$.
+We argue that for every $a,b$ there is an $n$ such that $D_{n+1}=0$, $D_{n+2}$ is undefined, and $D_n = {\tt gcd}(a,b)$.
 
 
 First we prove by induction that for every integer $n$, ${\tt gcd}(D_n,D_{n+1}) = {\tt gcd}(a,b)$ if $D_{n+1}$ is defined (and so in particular if $D_{n+1}=0$ then $D_n = {\tt gcd}(a,b)$).
@@ -358,17 +358,169 @@ For $b=1$, the result is clearly true:  $D_0 =a, D_1 = 1, D_2=0$, and $D_3$ is u
 
 Suppose that for every $a$ and for every $b$ greater than one and less than $k$ a $D$ sequence must terminate.
 
-The sequence which starts $D_0=a, D_1 = k+1, D_2 = a \,{\tt mod} \, (k+1)\ldots$ can then be seen to terminate because the sequence beginning $D_1 = k+1, D_2 = a \,{\tt mod} \, (k+1)\ldots$ must terminate by ind hyp, because
-$a \,{\tt mod} \, (k+1) \leq k$ (if $a \,{\tt mod} \, (k+1)$ is zero, the original sequence terminates and the tail sequence isn't even a $D$ sequence).
+The sequence which starts $D_0=a, D_1 = k+1, D_2 = a \,{\tt mod} \, (k+1)\ldots$ terminates if $a \,{\tt mod} \, (k+1)$ is zero.  Otherwise, it can be seen to terminate because the sequence beginning $D_1 = k+1, D_2 = a \,{\tt mod} \, (k+1)\ldots$ must terminate by ind hyp, because
+$a \,{\tt mod} \, (k+1) \leq k$.
 
 \end{description}
 
 And this completes the argument.  I'll expand these notes with sample calculations after Friday's lecture, when I will have more computational techiques for you to try out.  The next homework assignment will appear as a section in these notes after the lecture on Friday.
 
-If you don't recognize the fancy account of the Euclidean algorithm using a recursively defined sequence as the same procedure we followed at the end of Monday's lecture in an example...first, I assure you that it is.  If you have notes, try computing terms of the $D$ sequence with the numbers I used on Monday and you will hopefully see what happens.
+We comment that not only does this method of computation of gcd's always terminate, but it actually terminates fairly fast:  the number of steps until the $D$ sequence terminates is proportional to the logarithm of $a$.
 
-If you don't, still fear not.  The first thing I'm doing on Friday is re-lecturing the statement of the Euclidean algorithm
-in this format.
+We give a computational example.
+
+\begin{description}
+
+\item[Example:]  Compute the greatest common denominator of 925 and 851.
+
+${\tt gcd}(925,851) $ 
+
+$= {\tt gcd}(851,925 \,{\tt mod}\, 851) $
+
+$= {\tt gcd}(851,925 - (1)851)$
+
+$ = {\tt gcd}(851,74) $
+
+$= {\tt gcd}(74,851\,{\tt mod}\,74)$
+
+$= {\tt gcd}(74,851-(11)(74))$
+
+$= {\tt gcd}(74,37) = 37$ (37 goes evenly into 74).
+
+\end{description}
+
+Now we present a more impressive result, probably entirely unexpected to you.
+
+\begin{description}
+
+\item[Definition:]  An integer $c$ is said to be a linear combination of integers $a$ and $b$ iff there are integers
+$x$ and $y$ such that $c=ax+by$.
+
+\item[Theorem (extended Euclidean algorithm):]   For any integers $a,b$ which are not both zero, 
+${\tt gcd}(a,b)$ is a linear combination of $a$ and $b$, that is, there are integers $x$ and $y$ such that
+$ax+by = {\tt gcd}(a,b)$.
+
+\item[Proof:]  We prove this by a method similar to our verification of the Euclidean algorithm, by defining additional sequences which will give us our $x$ and $y$.
+
+We assume that $a,b$ are integers, not both zero, with $b>0$ (notice that the result for negative $b$ follows
+very easily from the result for positive $b$).
+
+Define $D_n$ as above.
+
+Define additional sequences $X$ and $Y$:  $X_0 = 1; X_1 = 0; Y_0 = 0; Y_1 = 1; X_{n+2} = X_{n} - (D_n{\tt div}D_{n+1})(X_{n+1}); Y_{n+2} = Y_{n} - (D_n{\tt div}D_{n+1})(Y_{n+1})$.
+
+The recurrence relations for the $X$ and $Y$ sequences are closely related to those for $D$:
+
+$D_{n+2} = D_n{\tt mod}D_{n+1} = D_n - (D_n{\tt div}D_{n+1})(D_{n+1})$, which is precisely parallel in form to the definitions for $X$ and $Y$.
+
+This is actually a description of the table format I used in class, of which I'll give an example below.
+
+We prove by strong induction on $n$ that $D_n = aX_n + bY_n$ for every $n$.
+
+The basis is direct:  $D_0 = a = a1 +b0 = aX_0 + bY_0;  D_0 = b = a0 +b1 = aX_1 + bY_1$.
+
+Assume that $D_m = aX_m + bY_m$ for every $m \leq k$ and show that $D_{k+1} = aX_{k+1} + bY_{k+1}$:
+
+If $k=0$ we have already shown this, so assume $k \geq 1$.
+
+$D_{k+1} = D_k - (D_k {\tt div}D_{k-1})D_{k-1}$ which by ind hyp
+
+$= (aX_k + bY_k) - (D_k {\tt div}D_{k-1})(aX_{k-1}+bY_{k-1})$ which by algebra
+
+$= a(X_k - (D_k {\tt div}D_{k-1})X_{k-1}) + b(Y_k - (D_k {\tt div}D_{k-1})Y_{k-1})$ which by the recurrence relation for $X$ and $Y$
+
+$=aX_{k+1}+bY_{k+1}$
+
+so we have shown that every $D_n$ is a linear combination of $a$ and $b$, and we know that the second to last $D_n$ is ${\tt gcd}(a,b)$, so ${\tt gcd}(a,b)$ is a linear combination of $a$ and $b$.
+
+
+\end{description}
+
+I present an example of this calculation.  The proof is not just an abstract argument:  it directly describes how to do the calculation.
+
+$$\begin{array}{cccc}
+
+ & x & y & q \\ \hline
+
+925 & 1 & 0 & \\
+
+851 & 0 & 1 & \\
+
+ 74 & 1 & -1 & 1 \\
+
+ 37 & -11 & 12 & 11\\
+
+0 & & & \\
+
+\end{array}$$
+
+This calculation shows that ${\tt gcd}(925,851) = 37 = (-11)\cdot 925 + 12\cdot 851$.
+
+The first column is the $D$ sequence, the second is the $X$ sequence, the third is the $Y$ sequence,
+and the fourth contains the integer quotient of the two entries in the first column just above that row, used in computation of the row the quotient appears in.
+
+I will provide a spreadsheet to download on the class web page which carries out these calculations automatically.  I would use this to {\bf check} calculations, not do them in the first place, because you will not have the spreadsheet on the exam and you will need to use this computational procedure several times, not just do one demonstration.
+
+We will demonstrate practical uses for this computation method throughout the later parts of this unit:  we will use it constantly and you need to master it.
+
+First, we present an abstract use for it in a proof:
+
+\begin{description}
+
+\item[Theorem (Euclid's lemma):]  Let $p$ be a prime and let $a,b$ be integers.  If $p|ab$ then either $p|a$ or $p|b$.
+
+
+
+\item[Proof:]  Suppose $p$ is a prime $a,b$ are integers and $p|ab$.
+
+If $p|a$ we are done.
+
+Suppose $p$ does not go into $a$.  Then ${\tt gcd}(p,a) =1$ (because the only divisors of $p$ are $p$ and 1).
+Thus there are integers $x$ and $y$ such that $px+ay = 1$, by the extended Euclidean algorithm theorem.
+
+Now $b = b1 = bpx + bay$.  $bpx$ is obviously divisible by $p$.  $bay$ is divisible by $p$ because $p|ab$.
+The sum of two numbers divisible by $p$ is divisible by $p$, so $p|b$, and we have shown that in either  case we either have $p|a$ or $p|b$.
+
+\end{description}
+
+This theorem will be used to prove the uniqueness of prime factorizations.
+
+Please note that this proof or something similar might appear as a test question.  Be familiar with it.
+
+\section{Homework assigned 10/8/2022}
+
+\begin{enumerate}
+
+\item  Compute the {\tt gcd} of each pair  of numbers and present the gcd as a linear combination of the original pair of numbers.
+
+You can get answers (with care) using the spreadsheet, but I strongly recommend doing these (and more examples) by hand.  You will need the skill of constructing these tables and reading them correctly for later activities in this unit.
+
+\begin{enumerate}
+
+\item  55,34
+
+\item 337,216
+
+\item 12076, -8976.  You need to think about how to handle the fact that $b$ is negative.  The spreadsheet does {\bf not} work correctly with negative $b$.  Hint:  I would do a calculation with positive values then fix it.
+
+\end{enumerate}
+
+\item  Write out a proof that if $d|a$ and $d|b$, then $d|(a-b)$.  This is very similar to something I did in class.
+
+\item  Suppose that each of us have a large supply of 115 pound notes and a large supply of 389 pound notes.
+How can I pay you one pound?
+
+\item  Suppose that in my mad scientist lab, recently devastated by a monster I unwittingly created, I have a balance, but can only find a large supply of 651 gram weights and a large supply of 133 gram weights.
+
+Can I verify the weight of an object that is supposed to weigh 28 grams?
+
+What is the smallest weight I can check with these weights (remember that I can put my known weights in either pan of the balance).
+
+\end{enumerate}
+
+
+
+
 
 
 
