@@ -10,6 +10,8 @@
 
 \maketitle
 
+On 10/13/22 updating with notes on the Wednesday 10/12 lecture and including the new homework.
+
 10/12  On page 6 you will find promised theorems about divisibility.  I am inserting a section on modular arithmetic (the 10/10 lecture topic) as well.
 
 Updated 10/8.  7 pm fixed a ``typo" in the extended Euclidean algorithm theorem:  wrote all the quotients backward!
@@ -713,5 +715,259 @@ $x = 1x \equiv_{137} (6)(23)x \equiv_{137} (6)(31)$ for any $x$ for which the or
 so we must have $x \equiv_{137} 186 \equiv_{137} 49$ and indeed you can check that 49 is a solution.
 
 \end{description}
+
+\section{Lecture of 10/12:  Chinese Remainder Theorem, introduction to exponentiation}
+
+\subsection{a remark about computing modular reciprocals}
+
+I started the lecture with a reminder about computation of modular reciprocals.  To find $a^{-1}{\tt mod}m$ when $m$ is prime (or more generally when $a$ is relatively prime to $m$:  some numbers have reciprocals in mod $m$ arithmetic when $m$ is composite) we use the extended Euclidean algorithm to find $x$ and $y$ such that $mx + ay = 1$, 
+so $ay \equiv_m 1$, so $y$ is the desired reciprocal of $a$:  notice that $y$ might turn out to be negative:  in that case we add $m$ to it to get an actual remainder (if $y = -3$, the reciprocal we report is $m-3$).
+
+I did an example of this in class, and Ill point this out when it happens in an example in this text.
+
+\subsection{The Chinese Remainder Theorem}
+
+Next I lectured the Chinese Remainder Theorem.
+
+\begin{description}
+
+\item[Theorem:]  If $m,n >1$ and ${\tt gcd}(m,n)=1$, each system of equations of the form
+
+$x\equiv_m a$
+
+$x \equiv_n b$
+
+has a unique solution mod $mn$.
+
+\item[Proof (and method of computation!):]  Because $x \equiv_m a$, there is an integer $k$ such that
+$x = a+mk$.
+
+So to find $x$ solve for $k$ the equation 
+
+ $a+mk \equiv_n b$  [it is convenient here to let $m$ be the larger of the two moduli, but the procedure works either way]
+
+which is equivalent to
+
+$mk \equiv_n (b-a)$  [notice that $m$ and $b-a$ can be replaced with their remainders mod $n$ since this is a calculation in mod $n$ arithmetic]
+
+Because ${\tt gcd}(m,n)=1$, there is a reciprocal $m^{-1} {\tt mod} n$ (which we know how to compute using the extended Euclidean algorithm)
+
+Thus we get
+
+$k \equiv_n (m^{-1} {\tt mod} n)(b-a)$
+
+so for some integer $l$ we have $k=(m^{-1} {\tt mod} n)(b-a) + ln$
+
+and we have $x = a + m(m^{-1} {\tt mod} n)(b-a) + lmn$, that is
+
+$x \equiv_{mn} a + m(m^{-1} {\tt mod} n)(b-a)$.
+
+Strictly speaking our reasoning shows that a solution $x$ must be of this form.  You can check directly that
+
+$a + m(m^{-1} {\tt mod} n)(b-a) + lmn \equiv_m a$ [this is obvious, everything but the $a$ is a multiple of $m$]
+
+and
+
+$a +m(m^{-1}{\tt mod} n)(b-a) + lmn \equiv_n a + 1(b-a) + 0 = b$,
+
+so in fact every number of this form is a solution and we have an exact description of the solutions.
+
+I do observe that the formula here does provide a compact way to compute solutions to these problems, which I have seen students use successfully.  I will carry out the described computation step by step in examples, that being my particular practice.
+
+
+\end{description}
+
+I reproduce the example I did in class, which also illustrates that more than two equations of the form $x \equiv_m a$ for different moduli $m$ can be solved at the same time, as long as the moduli are pairwise relatively prime.
+
+\begin{description}
+
+\item[Example:]  23 pirates are dividing a stack of pieces of eight.
+
+The pieces of eight are divided evenly under jealous eyes into 23 stacks...but there are four too few to make the piles even.
+
+A scuffle ensues, cutlasses are drawn, and four pirates are interred in unmarked graves.
+
+But now the pile of pieces of eight has to be divided again among the 19 remaining pirates.
+
+There are two too few for an even division, and in the ensuing fracas two more pirates are despatched.
+
+Now the 17 remaining pirates divide the loot and it comes out even!  They sail off in various directions in search of more mischief...
+
+How many pieces of eight are there?
+
+[Disclaimer:  no pirates were actually harmed in the creation of this word problem]
+
+\item[Solution:]
+
+We have the following equations ($x$ being the unknown number of pieces of eight):
+
+$x \equiv_{23} -4 \equiv_{23} 19$
+
+$x \equiv_{19} -2 \equiv_{19} 17$
+
+$x \equiv_{17} 0$
+
+We solve the first pair of equations.
+
+$x \equiv_{23} \equiv_{23} 19$
+
+$x \equiv_{19} \equiv_{19} 17$
+
+We begin by setting $x=19+23k$ using the first equation.
+
+We then want to solve for $k$ in
+
+$19+23k\equiv_{19} 17$
+
+which is equivalent to 
+
+$23k \equiv_{19}-2$
+
+which is equivalent to 
+
+$4k \equiv_{19} 17$ [replace 23 and $-2$ with their remainders mod 19]
+
+so we need to compute $4^{-1}{\tt mod} 19$ (which is not hard to guess but we will compute it)
+
+$\begin{array}{cccc}
+
+19 & 1 & 0 & \\
+4 & 0 & 1 &\\
+3 & 1 & -4 & 4\\
+1 & -1 & 5 & 1 \\
+\end{array}$
+
+\end{description}
+
+so $4^{-1}{\tt mod}19 = 5$
+
+so $k \equiv_{19} (17)(5)\equiv_{19} 9$
+
+and $x \equiv_{437} 19+(23)(9) = 226$ [437 = $mn$ = (23)(19)]
+
+
+and now we have two equations
+
+$x \equiv_{437} 19+(23)(9) = 226$ 
+
+$x \equiv_{17} = 0$
+
+We set $x=226+437k$
+
+to get a new equation
+
+$226+437k\equiv_{17}0$
+
+The remainder of 226 on division by 17 is 5
+
+The remainder of 437 on division by 17 is 12
+
+so we have
+
+$5+12k \equiv_{17}0$
+
+$12k \equiv_{17} -5 \equiv_{17} 17-5 = 12$
+
+so we don't have to do anything elaborate to find $k=1$.
+
+Thus
+
+$x \equiv_{(437)(17)} 226+437 = 663$
+
+437 times 17 is 7429
+
+so our solution is
+
+$x \equiv_{7429} 663$.
+
+If I want to force an exact answer, I could ask what the smallest possible number of coins was.  Or I could give extra information such as...we know they didnt have more than eight thousand coins.
+
+\subsection{Modular exponentation}
+
+The topic introduced at the end of the lecture was exponentiation in modular arithmetic.  
+
+If $a$ and $n$ are integers and $a \equiv_m A$, we will have $a^n \equiv_m A^n$.  We can simplify the base in a modular exponentiation calcuation.  The reason for this is just that exponentiation is repeated multiplication.
+
+It is NOT TRUE that $n \equiv_m N$ implies $a^n \equiv_m a^N$.  I gave a counterexample in lecture, and I invite you to construct one in a homework problem.
+
+Nonetheless, we can compute quantities like $a^n {\tt mod} m$ very efficiently, with far fewer than $n$ multiplications,
+and without computing any numbers larger than about $m^3$.
+
+We describe the technique by narrating the example we gave in class:  compute $27^{100} {\tt mod} 211$.
+
+We begin by making a table of exponents 100,50,25,12,6,3,1, where each exponent is half the previous one, possibly rounding down to get an integer.  These are the only powers of 27 mod 211 that we need to compute.
+
+I usually build this table upward, but writing it out in a LaTeX document rather suggests working from smaller exponents to larger, so Ill turn the table over :-)
+
+$\begin{array}{c|c}
+
+27^1 & 27\\
+
+27^3 & 19683-(93)(211) = 60\\
+
+27^6 &  (27^3)^2 = 60^2 = 3600-(17)(211) = 13\\
+
+27^{12} & (27^6)^2 = 13^2 = 169 (<211!) \\
+
+27^{25} & 27^{24}(27) = (27^{12})^2(27) = 169^2(27) = 771147-(3654)(211) = 153 \\
+
+27^{50} & (27^{25})^2 = 153^2 = 23409 - (110)(211) = 199 \\
+
+27^{100} & (27^{50})^2 = 199^2 = 39601 - (187)(211) = 144
+
+
+\end{array}$
+
+So the result is 144.
+
+Note that we absolutely did not have to carry out 100 multiplications by 27.
+
+This is called the method of repeated squaring.  Even powers are computed simply by squaring (and reduction to remainders);  for odd powers you have to multiply in an extra copy of the base of your exponential calculation (27 in this case:  see what I did with the 25th power).
+
+The number of powers of the base you need to compute is roughly the logarithm to the base two of the exponent.
+You never need to compute a number larger than $m^3$ (where $m$ is the modulus):  the worst case is where you have to square a value and multiply in an extra copy of the base, for an odd power.
+
+This computation is manageable in size for a computer even if base, exponent, and modulus have hundreds of digits.
+This is noteworthy because computation of an exponentiation with an exponent with hundreds of digits is clearly simply impossible in a direct way.
+
+We will see that the ability to compute exponentials in modular arithmetic in this way has practical uses.
+
+\section{Homework assigned 10/13/2022 due Wed 10/19/2022}
+
+\begin{enumerate}
+
+\item  Solve the system of equations
+
+$x \equiv_{111} 85$
+
+$x \equiv{137} 60$
+
+State the general solution and the smallest positive solution.
+
+Show all work.
+
+\item  Pirates, again.
+
+137 pirates have a large stack of doubloons to dole out.
+
+Captain Hook doles them out evenly only to find that when he had made 137 even piles as large as possible there were 6 doubloons left over.
+So he casually sent two of his colleagues to walk the plank and tried again.  When he made 135 equal piles as large as possible, there were 57 doubloons left over.   He called for a round of rum and poisoned two glasses, and tried again.  When he made 133 equal piles as large as possible, there were 62 left over.  At this point, the pirates mutinied and divided the loot with less mathematical precision (we won't discuss what happened to Captain Hook: it is hard for pirate captains to get life insurance).  I can tell you that it was a scant year for pirates and they did not have millions of doubloons.  How many doubloons did they have?
+
+Show all work.
+
+\item  Find an example illustrating that it does not follow from $b \equiv_m B$ that $a^b \equiv_m a^B$ (examples are very easy to find if you understand what is being asked.  Choose almost any smallish $m$ and try some numbers).
+
+\item  Compute the last three digits of $3^{75}$, using the method of repeated squaring and showing all work  (hint:  this is asking you to compute $3^{75} {\tt mod} 1000$:  an advantage here is that the remainder mod 1000 of a number is visually obvious).
+
+An advantage here for checking is that you actually can compute $3^{75}$ on a computer, and maybe on your calculator if it is very nice.  But your calculation should show work with no numbers nearly as large as $3^{75}$, and nothing like 75 multiplications.
+
+\item Compute the last three digits of $27^{1024}$ (why is this really enormous exponent actually rather easy to work with?)
+
+
+\end{enumerate}
+
+
+
+
 
 \end{document}
