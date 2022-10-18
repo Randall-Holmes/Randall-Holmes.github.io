@@ -524,7 +524,7 @@ This theorem will be used to prove the uniqueness of prime factorizations.
 
 Please note that this proof or something similar might appear as a test question.  Be familiar with it.
 
-\section{Homework assigned 10/8/2022}
+\section{Homework 9, assigned 10/8/2022}
 
 \begin{enumerate}
 
@@ -932,7 +932,7 @@ This is noteworthy because computation of an exponentiation with an exponent wit
 
 We will see that the ability to compute exponentials in modular arithmetic in this way has practical uses.
 
-\section{Homework assigned 10/13/2022 due Mon 10/17/2022}
+\section{Homework 10 assigned 10/13/2022 due Mon 10/17/2022}
 
 \begin{enumerate}
 
@@ -970,8 +970,169 @@ An advantage here for checking is that you actually can compute $3^{75}$ on a co
 
 \end{enumerate}
 
+\section{Notes from Friday 10/14/2022}
+
+In my first version, I am going to state theorems proved, and fill in the details of the description of the RSA algorithm to support the homework.  I'll come back and fill in all the proofs today (Tuesday) but I want to release the homework as soon as I can.
+
+\subsection{The well-ordering principle}
+
+\begin{description}
+
+\item[Definition:]  Let $A$ be a set of integers.  We say that $b \in \mathbb Z$ is a lower bound for $A$ if and only if
+for every $a \in A$ we have $b \leq A$.  Notice that a smallest element of a set is a lower bound of it, and so is every integer smaller than the smallest element of the set.
+
+\item[Theorem (well-ordering principle):]  Any nonempty set of integers which is bounded below has a smallest element.
+
+\end{description}
+
+\subsection{The fundamental theorem of arithmetic (unique prime factorization)}
+\begin{description}
+\item[Theorem:]  Each integer greater than or equal to two can be factored into primes (we already proved this) but in addition can be factored into primes in only one way (to put this exactly, each $n \geq 2$ can be expressed as the product of a sequence of primes $\prod_{i=0}^n p_i$ where the sequence $p_i$ of primes is nondecreasing ($p_i>p_j \rightarrow i > j$) in exactly one way.
+\end{description}
+
+\subsection{Fermat's little theorem; a theorem for RSA}
+
+\begin{description}
+
+\item[Fermat's little theorem:] If $p$ is prime and $p$ does not go into $a$, then $a^{p-1}\equiv_p 1$.
+
+\item[Theorem (a special case of Euler's theorem, useful for RSA):]  If $p \neq q$ are distinct primes,
+and ${\tt gcd}(a,pq)=1$, then $a^{(p-1)(q-1)} \equiv_{pq} 1$.
+
+
+\end{description}
+
+\subsection{The RSA Algorithm}
+
+The RSA algorithm is a public key cryptosystem:  this means that the method of encrypting a message to send to a user is public.  For this to work, it has to be a hard mathematical problem to deduce the method of decryption from the method of encryption.  In the case of RSA, the belief that this problem is hard hinges on the fact that it is apparently very hard to factor products of two large primes (large being about 350 digits currently, so 700 digit RSA keys).
+
+What is supplied as my public key is two integers, $N$ and $r$.
+
+You send a message $M$ (a remainder mod $N$) to be by computing $M' = M^r {\tt mod} N$ and sending $M'$ to me on open channels.  Presumably only I can read it.
+
+In the secrecy of my lab, I know that $N=pq$, where $p$ and $q$ are distinct primes, and further I know that
+${\tt gcd}(r,(p-1)(q-1)) = 1$.
+
+I compute $s = r^{-1} {\tt mod} (p-1)(q-1)$ [it is very important to use the modulus $(p-1)(q-1)$ here, and this is the only stage in the process where it is used].   This can be done (in spite of the fact that $(p-1)(q-1)$ is composite) because $r$ is relatively prime to $(p-1)(q-1)$, so there are integers $s$ and $t$ such that $rs + t(p-1)(q-1) = 1$,
+which we can find using the extended Euclidean algorithm,  and this $s$ is the one we are looking for [with the usual remark that we need to adjust the output of the EEA if it is negative].
+
+Now I can decrypt $M' = M^r {\tt mod} N$ because $(M')^s {\tt mod} N = M$:  we prove this.
+
+$(M')^s {\tt mod} N =$  by def of $M'$
+
+$(M^r)^s {\tt mod} N =$ by rules of exponents and reduction of bases of an exponentiation by a modulus
+
+$M^{rs} {\tt mod} N =$ by the fact that $s=r^{-1}{\tt mod}(p-1)(q-1)$
+
+$M^{1+k(p-1)(q-1)} {\tt mod}N= $  by rules of exponents 
+
+$M \cdot (M^{(p-1)(q-1)})^k =$ by the special case of Euler's theorem
+
+$M\cdot 1^k {\tt mod}N = M$ (last step using the fact that $M$ is a remainder mod $N$).
+
+An Example.
+
+Choose $p=19, q=23$.
+
+we then have $N=(19)(23) = 437$.
+
+We want to choose $r$ relatively prime to $(18)(22) = 396$.  It is conventional but certainly not mandatory
+to choose the smallest prime which does not go into $(p-1)(q-1)$:  this convention gives $r=5$.
+
+I publish my key, $N=437; r=5$.
+
+I privately compute $5^{-1}{\tt mod}396 = 317$.
+
+You send me the message $M=42$.
+
+$M' = 42^5 {\tt mod} 437$.
+
+$$\begin{array}{cccc}
+
+5 &  264 & 256 = 16^2 {\tt mod}437& 264 = (256)(42){\tt mod}437\\
+2 & 16 & 16 = 42^2 {\tt mod}437& 16 \\
+1 & 42 &  & 42 \\
+\end{array}$$
+
+The computation of $M'$ is exhibited as the spreadsheet displays it, with comments indicating how the numbers are computed.  The first column is the exponent and the second is the corresponding power of 42 mod 437.  Notice that the fourth column repeats the third unless the exponent in that row is odd.  In the third column what is computed is just the square of the previous entry.  The idea of this format is that the bound on the numbers with compute with is the square of the modulus instead of the cube of the modulus.
+
+I receive the message and decrypt it by computing $264^{317}{\tt mod}437$.
+
+$$\begin{array}{cccc}
+
+317 &  42 & 169= 82^2 {\tt mod}437& 42 = (169)(264){\tt mod}437\\
+
+158 &  82 & 82 = 385^2 {\tt mod}437& 82\\
+
+79 &  385 & 311 = 106^2 {\tt mod}437& 358 = (311)(264){\tt mod}437\\
+
+39 &  106& 156 = 245^2 {\tt mod}437& 106= (156)(264){\tt mod}437\\
+
+19 &  245 & 39 = 134^2 {\tt mod}437& 245 = (39)(264){\tt mod}437\\
+
+9 &  134 & 123 = 358^2 {\tt mod}437& 134 = (123)(264){\tt mod}437\\
+
+4 &  358 & 358 = 213^2 {\tt mod}437& 358\\
+2 & 213 & 213 = 264^2 {\tt mod}437& 213\\
+1 & 264 &  & 264 \\
+\end{array}$$
+
+You might want to go through this table and check for typos.
+
+\section{Homework 11, assigned Tuesday 10/18/2022 and due Monday 10/24/2022}
+
+\begin{enumerate}
+
+\item  In this problem you should do all calculations by hand and show all details, only using the spreadsheets to check.
+
+Work through the entire process of setting up your RSA key using $p=11, q = 17, r = 7$.
+
+You need to state what $N$ is, verify that $r$ has the correct property.
+
+If I send you the message $M=42$, what is the $M'$ you will receive?
+
+If you receive from me the message $M' =76$, what was the message I sent?
+
+\item Longer messages
+
+Messages expressed in the usual alphabet can be coded as numbers in various ways.  One method
+is to replace each letter by two digits, A = 01, B = 02 up to Z = 26 and then space = 27.
+
+Then the numbers may be larger than $M$.  So break the numbers into chunks, all of the same length
+and all less than $M$, and encrypt them one by one.
+
+The key $N=28907 = (137)(211), r=11$ which I used in class could be used to encrypt 4 digit (2 letter) blocks.
+Encrypt the message ``RUN FOR YOUR LIFE" as a series of numbers.  Show all work, but you
+may copy from the spreadsheet (or include snapshots of your spreadsheet calculations).
+
+Cryptographically of course this is very weak:  a cipher encoding two digit blocks is easy to solve using statistical analysis.  But a larger $N$ will allow encryption of much longer blocks of text which will not be likely to be repeated.
+
+\item Message exchange
+
+I supply you with the key $N=10403; r=7$.  Send me a coded message, a brief text sentence as in the previous problem,
+coding four digits at a time.
+
+You prepare an RSA key of your own with $N$ at least 10000.  Make sure that it is not too large to work 
+with my spreadsheet (do some practice encryption and decryption).  Send me your RSA key at the same time you send me your encrypted message for the first par and I will send you a reply to your message.
+
+\item  Verify that 49 is not a prime by finding $a$ such that $a^{48}{\tt mod}49 \neq 1$.
+
+Find an $a<49$ which lies and claims in effect that 49 is a prime.  This indicates why you have to repeat the test
+with many random values of $a$ to be certain (in practical terms) that you have a prime.  But it doesn't happen often.
+
+Verify that 3293 is not a prime in the same way.
+
+\item  Compute $3^{1000}{\tt mod}23$ by repeated squaring.
+
+You can use the spreadsheet to check, but this might be a good drill for reliably doing these calculations on an exam.
+
+Then do this calculation using Fermat's little theorem.  Depending on how good your calculator is, you might have to do a wee amount of repeated squaring, but not very much.
+
+Try determining by experiment a similarly efficient method of computing powers mod 49.  49 is of course not a prime,
+so the exact approach of Fermat's theorem doesn't work.  But there is a modulus you can apply to reduce the exponent in any calculation of an $a^n {\tt mod} 49$.  Find out what it is.  You can use the spreadsheet to quickly compute powers mod 49 for your experimental investigation.
 
 
 
+\end{enumerate}
 
 \end{document}
