@@ -10,6 +10,8 @@
 
 \maketitle
 
+10/20/2022 finishing up this unit, adding proofs to the last section.
+
 On 10/13/22 updating with notes on the Wednesday 10/12 lecture and including the new homework.
 
 10/12  On page 6 you will find promised theorems about divisibility.  I am inserting a section on modular arithmetic (the 10/10 lecture topic) as well.
@@ -983,6 +985,29 @@ for every $a \in A$ we have $b \leq A$.  Notice that a smallest element of a set
 
 \item[Theorem (well-ordering principle):]  Any nonempty set of integers which is bounded below has a smallest element.
 
+Suppose that $S$ is a nonempty set of integers and $b$ is a lower bound for $S$.
+
+Suppose further that $S$ has no smallest element:  we then prove by strong induction that $S$ is empty;  this demonstrates that if $S$ is nonempty and bounded below, it must be nonempty.
+
+The induction proof:  we prove by strong induction that if $S$ is bounded below by $b$ and has no smallest element,
+then for every $n \geq b$, $n \not\in S$ (which shows that $S$ is empty, because certainly nothing less than $b$ is in $S$).
+
+Basis:  If $b \in S$, then $b$ would be the smallest element of $S$, so $b \not\in S$.
+
+Induction:  Let $k$ be chosen arbitrarily.  Suppose that for all $m$ with $b \leq m \leq k$, we have $b \not\in S$.
+It then follows that if $k+1 \in S$, $k+1$ is the smallest element of $S$, and there isn't supposed to be one.  So under the assumptions, $k+1 \not\in S$, completing the proof.
+
+Alternative argument:  I've never seen it done this way, but I thought of another way to prove this which doesn't involve counterfactuals.
+Suppose $S$ is bounded below by $b$.  Show by strong induction that every element of $S$ is either a smallest element of $S$ or larger than a smallest element of $S$.
+
+Basis:  If $b$ is not in $S$ there is nothing to check.  If $b \in S$, it is the smallest element of $S$, and we have this case.
+
+Induction:  Let $k$ be chosen arbitrarily, and suppose that each $m$ with $b \leq m \leq k$, if it is an element of $S$, is either a smallest element of $S$ or larger than a smallest element of $S$.  If any such $m \in S$, we have by inductive hypothesis a smallest element of $S$ which is $\leq m$.  If no $m$ with $b \leq m \leq k$ is in $S$ and
+$k+1 \not\in S$, then there is nothing to check.  f no $m$ with $b \leq m \leq k$ is in $S$ and
+$k+1 \in S$, then $k+1$ is the smallest element of $S$. 
+
+Now use this to prove the well-ordering principle:  if $S$ is nonempty and bounded below by $b$, then there is $a \in S$, and by the proof just given, $a$ is either the smallest element of $S$ or there is a smallest element of $S$ less than $a$, and in either case $S$ has a smallest element, which is what was to be shown.
+
 \end{description}
 
 \subsection{The fundamental theorem of arithmetic (unique prime factorization)}
@@ -995,9 +1020,49 @@ for every $a \in A$ we have $b \leq A$.  Notice that a smallest element of a set
 \begin{description}
 
 \item[Fermat's little theorem:] If $p$ is prime and $p$ does not go into $a$, then $a^{p-1}\equiv_p 1$.
+\item[Proof:]  Suppose $p$ is prime and $p$ does not go into $a$.  $(p-1)!$ is not divisible by $p$, so $(p-1)! \not\equiv_p0$
+
+$(p-1)!$ is the product of one copy of each $b$ with $1 \leq b \leq p-1$.
+
+Now consider the product of one copy of $ab$ with $1 \leq b \leq p-1$.  Clearly this is
+$a^{p-1}(p-1)!$ because we are just including $p-1$ additional factors of $a$ in the previous product.
+
+The product of all the $ab$'s with $1 \leq b \leq p-1$ is congruent mod $p$ to the product of all
+$ab{\tt mod}p$ with $1 \leq b \leq p-1$.
+
+Now each $c$ with $1 \leq c \leq p-1$ is equal to $a(a^{-1}{\tt mod}p) {\tt mod} p$, and so appears in the previous product, and so in fact the product of all the $ab$'s with $1 \leq b \leq p-1$ is $(p-1)!$ written in a different order.
+
+So $a^{p-1}(p-1)! \equiv_p (p-1)!$, and we can multiply both sides by the mod $p$ reciprocal of $(p-1)!$ to
+get $a^{p-1} \equiv_p 1$.
+
+
+
 
 \item[Theorem (a special case of Euler's theorem, useful for RSA):]  If $p \neq q$ are distinct primes,
 and ${\tt gcd}(a,pq)=1$, then $a^{(p-1)(q-1)} \equiv_{pq} 1$.
+
+Suppose that $p$ and $q$ are distinct primes and ${\tt gcd}(a,pq)=1$.  
+
+This means that neither $p$ nor $q$ goes into $a$ so $a^{p-1} \equiv_p 1$ and $a^{q-1} \equiv_q 1$.
+
+Since any power of 1 is 1, this means that $a^{(p-1)(q-1)} \equiv_{p} 1$ and $a^{(p-1)(q-1)} \equiv_{q} 1$.
+
+This means that $a^{(p-1)(q-1)}$ is a solution of $x \equiv_p 1;x \equiv_q 1$.  By the Chinese Remainder Theorem,
+any two solutions of this system of equations are congruent mod $pq$.  But $x=1$ is also a solution so
+$a^{(p-1)(q-1)} \equiv_{pq} 1$.
+
+\item[A bonus theorem, introduced in discussion of the Rabin Miller test for primes:]  If $a^2 \equiv_m 1$
+and $m$ is prime, then $a \equiv_m 1$ or $a \equiv_m -1$.
+
+This is totally unsurprising, it looks like a familiar fact of algebra.
+
+Suppose $a^2 \equiv_m 1$.  Then $a^2-1 \equiv_m 0$, so $m|a^2-1 = (a-1)(a+1)$.  Then if $m$ is prime it follows
+that either $m|a-1$ (so $a \equiv_m 1$) or $m|a+1$ (so $a \equiv_m -1$)
+
+The negative form of this is what we use in the Rabin Miller test.  When we are doing repeated squaring to compute $a^{m-1}$, we do a 
+check whenever we compute a $b^2 \equiv_m 1$ at any stage of the repeated squaring:  if $b$ is not either 1 or $m-1$, we can stop the computation and report that $m$ is composite.  At the end, if we haven't encountered bad square roots of 1,
+if $a^{m-1}\not\equiv_m 1$, we find that $m$ is composite by Fermat's little theorem (turned on its head).  If neither
+of these things happen, $m$ might be prime.
 
 
 \end{description}
