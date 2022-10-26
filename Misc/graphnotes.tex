@@ -1,0 +1,121 @@
+\documentclass[12pt]{article}
+
+\title{Graph theory notes for Math 189, Fall 2022}
+
+\author{Dr Holmes}
+
+\begin{document}
+
+\maketitle
+
+Much of this is actually in Levin, but I want to write things out in more or less the way I presented them, and there are some thing I did which he does not do.
+
+\begin{description}
+
+\item[Definition:]   A {\em graph\/} is an ordered pair $(V,E)$, where $V$ is a set and $E$ is a collection of two element subsets of $V$.
+
+If $G=(V,E)$ is a graph, we say that elements of $V$ are {\em vertices\/} of (or in) $G$ and elements of $E$ are {\em edges\/} of (or in) $G$.
+
+If $a$ is a vertex and $e$ is an edge in $G$, we say that $a$ is incident on $e$ and that $e$ is incident on $a$ (in $G$) just in case $a \in e$.
+
+If $a$ and $b$ are vertices in $G$, we say that $a$ and $b$ are {\em adjacent\/} in $G$ just in case $\{a,b\}$ is an edge in $G$.
+
+If $e$ and $f$ are edges in $G$, we say that $e$ and $f$ are adjacent just in case they are distinct and share an element.
+
+\item[Observation:]  We work with pictures of graphs, in which vertices are represented by dots and edges are represented by curves drawn between the dots.
+
+We say that a graph is {\em planar\/} just in case it has a picture (drawn on an ordinary plane surface) in which the curves representing edges do not cross each other.  A planar graph is likely to have pictures in which the edges do cross each other:  we would be likely to call these non-planar pictures of a planar graph.  A graph is non-planar if {\em all\/} pictures of that graph are non-planar.  We will show later in the course that certain graphs are non-planar.
+
+\item[Related ideas we won't usually talk about:]  $G=(V,E)$ is a directed graph if each element of $E$ is an ordered pair of elements of $V$ (edges can be pictured as arrows from one vertex to another).
+
+$G=(V,E)$ is a multigraph if each element of $E$ is a three-element set two elements of which belong to $V$ (the third element serves as a label, making it possible to draw many edges between the same two vertices).
+
+Either graphs or multigraphs can have the definition modified to allow loops (edges from a vertex to itself):  edges are sets of no more than two vertices, or no more than two vertices plus a non-vertex for multigraphs.  Directed graphs naturally allow loops.
+
+\item[Identity of graphs:]  Two graphs are {\em equal\/} if they are literally the same ordered pair of sets.
+
+Note that one can draw multiple different looking pictures of the same graph:  a kind of question I might ask is, are these two pictures of graphs pictures of equal graphs (or of the same graph, same question).
+
+Graphs $G_1 = (V_1,E_1)$ and $G_2=(V_2,E_2)$ are {\em isomorphic\/} iff there is a bijection $f:V_1 \rightarrow V_2$ (a one-to-one function from $V_1$ onto $V_2$) such that for every $a,b \in V_1$, $\{a,b\} \in E_1$ if and only if $\{f(a),f(b)\} \in E_2$.
+
+If two graphs are isomorphic, they have the same structure.  A picture of one can be turned into a picture of the other simply by relabelling the vertices (the process of relabelling is recorded in the function $f$).
+
+$G_1$ and $G_2$ might be the same and there might be an isomorphism from $G_1$ to $G_2$ other than the identity map on the vertices of the graph (the graph might have some kind of symmetry).
+
+You may be asked to find isomorphisms from one graph to another or argue that there cannot be one.
+
+Notice that isomorphic graphs must have the same number of vertices.
+
+\item[Degree of a vertex in a graph;  degree sequence:]  The degree of a vertex $a$ in $G$ is the number of edges incident in $a$ (or the number of vertices adjacent to $a$).
+
+The degree sequence of a graph is the list of degrees of its vertices in nonincreasing order.
+
+Notice that isomorphic graphs clearly must have the same degree sequence.
+
+The converse is not true:  try to draw a pair of graphs which are not isomorphic and have the same degree sequence.
+
+\item[Walks:]  Let $G=(V,E)$ be a graph and let $a$ and $b$ be vertices in $G$.  A walk from $a$ to $b$ of length $n-1$ is a function $w$ from $\{1,\ldots,n\}$ to $V$, a finite sequence of vertices, in which $w(1)$, which we usually write $w_1$, is $a$ and $w(n)$, which we usually write $w_n$, is $b$, and each pair $\{w_i,w_{i+1}\}$ ($1 \leq i <n$)belongs to $E$.  
+
+We say that a walk $w$ from $a$ to $b$ is a path if and only if for all $i,j$, if $w_i = w_j$ then $\{i,j\}=\{1,n\}$:  the only way vertices can be repeated in the graph is if the walk starts and ends at the same vertex.
+
+A walk visits $c \in V$ just in case there is $i$ such that $w_i = c$, and it traverses edge $\{c,d\}$ just in case there is $i$ such that $w_i = c$ and $w_{i+1}=d$.
+
+A path which has its beginning and end the same we call a {\em cycle\/}.  We also call a graph a cycle if there is a cycle in it which visits all of its vertices and traverses all of its edges.
+
+Notice that for
+any vertex $a$ there is a walk of length 0 from $a$ to $a$, namely the function from $\{1\}$ to $V$ sending 1 to $a$.
+
+\item[Theorem:]  If there is a walk from $a$ to $b$ in $G$, then there is a path from $a$ to $b$ in $G$.
+
+\item[Proof:]  If there is a walk from $a$ to $b$ in $G$, there must be a walk $w$ of shortest length $n$ from $a$ to $b$.
+
+Now suppose that $i < j$ and $w_i = w_j$.  We define $w'_k$  for $k \in \{1,n-(j-i)\}$ as  $w_k$ if $k \leq i$ and as $w_{k+(j-i)}$ otherwise.  It is easy to verify that $w'$ is a walk from $a$ to $b$ shorter than $w$, which is impossible.  The definition just formalizes the idea of skipping everything in $w$ between the identical $w_i$ and $w_j$.
+
+\item[Definition (connected graph, 1):]  A graph $G$ is {\em connected\/} just in case for each pair of vertices $a,b$
+there is a walk from $a$ to $b$ in $G$ (equivalently, by previous theorem, just in case for each pair of vertices $a,b$ there is a path from $a$ to $b$ in $G$).
+
+\item[Definition (connected graph, 2)]:  A graph $G=(V,E)$ is {\em disconnected\/} just in case there
+are disjoint nonempty sets $A,B$ such that $A \cup B = V$ and for every $e \in E$, either $e \subseteq A$ or $e \subseteq B$ (i.e, there is no edge from a vertex in $A$ to a vertex in $B$).  A graph $G$ is connected just in case it is not disconnected.
+
+\item[Temporary rule:]  We cannot define the same concept in two different ways without proving that the definitions are equivalent!  For the moment, we call the concept defined by the first definition connected$_1$ and the concept defined by the second definition connected$_2$.
+
+This state of suspense will not last long.
+
+\item[Theorem:]  For any graph $G$, $G$ is connected$_1$ if and only if it is connected$_2$ (so we can say just ``connected").
+
+\item[Proof:]  The proof falls into two parts, as is natural for the proof of an if and only if statement.
+
+First we show that if $G$ is connected$_1$, it cannot be disconnected, and so must be connected$_2$.
+
+We do this by introducing a graph $G$ arbitrarily, assuming that $G$ is connected$_1$, and further assuming that it is disconnected, and showing that a contradiction follows (remember that this is not an immediate contradiction, because disconnected means ``not connected$_2$").
+
+Because we assume that $G=(V,E)$ is disconnected, we can choose disjoint nonempty sets $A,B$ such that
+$A \cup B = V$ and there is no path from an element of $A$ to an element of $B$.  Choose $a \in A$ and $b \in B$ (we can do this because $A,B$ are not empty).  
+
+Since $G$ is connected$_1$, we can choose a walk $w$ from $a$ to $b$.  Notice that $w_1 \in A$ and $w_n$ is in $B$.
+
+We use the well-ordering principle for a snappy proof here.  Let $S$ be the set of all $j$ such that
+$w_j \in B$.  $S$ is nonempty since it contains $n$ and bounded below (by 1) so it has a smallest element $s$.
+$s>1$ since $w_1 \not\in B$, so $w_{s-1}$ is defined.  Now there is an edge from $w_{s-1}$ to $w_s$.
+$w_s \in B$ because $s \in S$,  $s-1 <s $ is not in $S$ because $s$ is the smallest element of $S$.  So $w_{s-1} \not\in B$.  But this means $w_{s-1} \in A$.  But this is a contradiction:  we cannot have an edge from an element $w_{s-1}$ of $A$ to an element $w_s$ of $B$.
+
+Now we get to the second part of the proof:  we need to show that if a graph $G$ is connected$_2$ it must be connected$_1$.
+
+We introduce a graph $G$ arbitrarily and suppose that $G$ is connected$_2$.  We suppose for the sake of argument that it is not connected$_1$ and show that a contradiction follows.
+
+Since $G=(V,E)$ is not connected$_1$, we can choose vertices $a,b \in G$ such that there is no walk from $a$ to $b$.
+
+Now we define $A$ as the set of all vertices $c$ in $G$ such that there is a walk from $a$ to $c$.  We define $B$ as
+$V-A$.  Note that $A$ is nonempty because $a \in A$, $B$ is nonempty because $b \in B$ and $A \cup B$ is clearly $V$.
+
+We claim that there cannot be a path from any $c \in A$ to any $d \in B$, which shows that $G$ is disconnected, which is a contradiction.  Let $c \in A$, $d \in B$, and $w$ be a walk from $c$ to $d$.  There is a smallest $i$ such
+that $w_i \in B$ by the well-ordering principle, and $i>1$ because $w_1 = c \not\in B$.  Thus $w_{i-1}$ exists,
+and $w_{i-1} \in A$ because $i-1$ is less than the smallest index $i$ of a vertex visited by the walk which is in $B$.
+Thus there is a walk $w'$ from $a$ to $w_{i-1} = w'_j$.  But then $w' \cup \{(j+1,w_i)\}$ is a walk from $a$ to $w_i$
+(just tack $w_i$ onto the walk $w'$) so $w_i \in A$, and this contradicts the choice of $w_i$ as the first vertex visited by the walk which is in $B$ and so not in $A$.
+
+\end{description}
+
+
+
+\end{document}
