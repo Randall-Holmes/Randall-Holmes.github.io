@@ -22,13 +22,20 @@
 
 \section{Remarks on this version}
 
-This document is probably my best overall version so far.  The immediate occasion for its preparation is to serve students attempting to verify the proof in Lean.  As we have discussed, the formal verification should at least initially avoid metamathematics, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.
+This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should avoid metamathematics, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.
 
 Versions after 8/11/2022 use a different set theoretical coding of structures for models of TTT, but the argument remains about the same.  The last version with the older coding remains up on my web site for comparison.
+
 
 \subsection{Version updates}
 
 \begin{description}
+
+\item[1/13/2022:]  Continuing work on the Lean project.  Identified some typos to be fixed.
+
+\item[10/30/2022:]  Minor edits, intending to post to arxiv
+
+\item[5/18/2022 (continuing 5/19):]  Proofreading and intending to strip out comments addressed to the Lean group (so it looks more like a proper paper draft again).
 
 \item[9/13/2022:]  Proofreading, in some cases quite important (the definition of $\beta$-approximation was missing an important condition assumed in the proof).   A second update with rephrasing of the definition of approximation using the notion of condition.
 
@@ -90,7 +97,7 @@ TST is not the type theory of the {\em Principia Mathematica\/} of Russell and W
 
 Russell described something like TST informally in his 1904 {\em Principles of Mathematics\/} (\cite{pm1}).  The obstruction to giving such an account in {\em Principia Mathematica\/} was that
 Russell and Whitehead did not know how to describe ordered pairs as sets.  As a result, the system of {\em Principia Mathematica\/} has an elaborate system of  complex
-types inhabited by $n$-ary relations with arguments of specified previously defined types, further complicated by predicativity restrictions (which are cancelled by an axiom of reducibility).
+types inhabited by $n$-ary relations with arguments of specified previously defined types, further complicated by predicativity restrictions (which are in effect cancelled by an axiom of reducibility).
 The simple theory of types of Ramsey eliminates the predicativity restrictions and the axiom of reducibility, but is still a theory with complex types inhabited by $n$-ary relations.
 
 Russell noticed a phenomenon like the typical ambiguity of TST in the more complex system of {\em Principia Mathematica\/}, which he refers to as ``systematic ambiguity".
@@ -119,7 +126,7 @@ The collection of all finite sets can be defined as $\bigcup \mathbb N$.  The ax
 Ordered pairs can be defined following Kuratowski and a quite standard theory of functions and relations can be developed.  Cardinal and ordinal numbers can be defined as Frege or Russell would have defined them, as isomorphism classes of sets under equinumerousness and isomorphism classes of well-orderings under similarity.  
 
 The Kuratowski pair $(x,y) = \{\{x\},\{x,y\}\}$ is of course two types higher than its projections, which must be of the same type.  There is an alternative definition (due to Quine in \cite{quinepair}) of an ordered pair
-$\left< x,y\right>$ in TST + Infinity which is of the same type as its projections $x,y$.  This is a considerable technical convenience but we will not need to define it here.  Note for example that if we use the Kuratowski pair the cartesian product $A \times B$ is two types higher than $A,B$, so we cannot define $|A| \cdot |B|$ as $|A \times B|$ if we want multiplication of cardinals to be a sensible operation.  Let $\iota$ be the singleton operation and define $T(|A|)$ as $|\iota``A|$ (this is a very useful operation sending cardinals of a given type to cardinals in the next higher type which seem intuitively to be the same).  The definition of cardinal multiplication if we use the Kuratowski pair is then $|A| \cdot |B| =T^{-2}(|A\times B|)$.  If we use the Quine pair this becomes the usual definition $|A| \cdot |B| =|A\times B|$.  Use of the Quine pair simplifies matters in this case, but it should be noted that the T operation remains quite important (for example it provides the internally representable isomorphism between the systems of natural numbers in each sufficiently high type).
+$\left< x,y\right>$ in TST + Infinity which is of the same type as its projections $x,y$.  This is a considerable technical convenience but we will not need to define it here.  Note for example that if we use the Kuratowski pair the cartesian product $A \times B$ is two types higher than $A,B$, so we cannot define $|A| \cdot |B|$ as $|A \times B|$ if we want multiplication of cardinals to be a sensible operation.  Let $\iota$ be the singleton operation and define $T(|A|)$ as $|\iota``A|$ (this is a very useful operation sending cardinals of a given type to cardinals in the next higher type which seem intuitively to be the same; also, it is clearly injective, so has a (partial) inverse operation $T^{-1}$).  The definition of cardinal multiplication if we use the Kuratowski pair is then $|A| \cdot |B| =T^{-2}(|A\times B|)$.  If we use the Quine pair this becomes the usual definition $|A| \cdot |B| =|A\times B|$.  Use of the Quine pair simplifies matters in this case, but it should be noted that the T operation remains quite important (for example it provides the internally representable isomorphism between the systems of natural numbers in each sufficiently high type).
 
 Note that the form of Cantor's Theorem in TST is not $|A| < |{\cal P}(A)|$, which would be ill-typed, but $|\iota``A|<|{\cal P}(A)|$:  a set has fewer unit subsets than subsets.  The exponential map $\exp(|A|) = 2^{|A|}$ is not defined as $|{\cal P}(A)|$, which would be one type too high, but as $T^{-1}(|{\cal P}(A))$, the cardinality of a set $X$ such that $|\iota``X| = |{\cal P}(A)|$;   notice that this is partial.  For example
 $2^{|V|}$ is not defined (where $V=\{x:x=x\}$, an entire type), because there is no $X$ with $|\iota``X|=|{\cal P}(V)|$, because $|\iota``V|<|{\cal P}(V)| \leq |V|$, and of course there is no set larger than $V$ in its type.
@@ -132,7 +139,7 @@ $\iota^{(n-1)-i}``{\cal P}^i(X)$.  If $X$ is in type $j$, each of the types of t
 $R^{\iota}$ as $\{(\{x\},\{y\}):x R y\}$.  The membership relation of type $i-1$ in type $i$ in the interpretation described is the restriction of $\subseteq^{\iota^{(n-1)-i}}$ to
 the product of the sets implementing type $i-1$ and type $i$.
 
-Notice then that we can define truth for formulas in these natural models of TST$_n$ for each $n$ in TST, though not in a uniform way which would allow us to define truth for formulas
+Notice then that, for each concrete natural number $n$, we can define truth for formulas in these natural models of TST$_n$  in TST, though not in a uniform way which would allow us to define truth for formulas
 in TST in TST.
 
 Further, both in ordinary set theory and in TST, observe that truth of sentences in natural models of TST$_n$ is completely determined by the cardinality of the set used as type 0.
@@ -145,7 +152,7 @@ since two natural models of TST or TST$_n$ with base types implemented by sets o
 In \cite{nf}, 1937, Willard van Orman Quine proposed a set theory motivated by the typical ambiguity of TST described above.  The paper in which he did this was titled ``New foundations for mathematical logic", and the set theory it introduces is called ``New Foundations" or NF, after the title of the paper.
 
 Quine's observation is that since any theorem $\phi$ of TST is accompanied by theorems $\phi^+, \phi^{++}, \phi^{+++}, \ldots$ and every defined object $\{x:\phi\}$ is accompanied by
-$\{x^+:\phi^+\},\{x^{++}:\phi^{++}\},\{x^{+++}:\phi^{+++}\}$, so the picture of what we can prove and construct in TST looks rather like a hall of mirrors, we might reasonably suppose that the types are all the same.
+$\{x^+:\phi^+\},\{x^{++}:\phi^{++}\},\{x^{+++}:\phi^{+++}\}$, so the picture of what we can prove and construct in TST looks rather like a hall of mirrors, we might reasonably (?) suppose that the types are all the same.
 
 The concrete implementation follows.  NF is the first order unsorted theory with equality and membership as primitive with an axiom of extensionality $(\forall xy:x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z\in y))$ and an axiom of comprehension $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$ for each formula $\phi$ in which $A$ is not free which can be obtained from a formula of TST by dropping all distinctions of type.  We give a precise formalization of this idea:  provide a bijective map $(x \mapsto x^*)$ from the countable supply of variables (of all types) of TST onto the countable supply of variables of the language of NF.  Where $\phi$ is a formula of the language of TST, let $\phi^*$ be the formula obtained by replacing every veriable $x$, free and bound,
 in $\phi$ with $x^*$. For each formula $\phi$ of the language of TST in which $A$ is not free in $\phi^*$ and each variable $x^*$, an axiom of comprehension of NF asserts $(\exists A:(\forall x^*:x^* \in A \leftrightarrow \phi^*))$.
@@ -170,7 +177,7 @@ In \cite{notac}, 1954, Specker had shown that NF disproves Choice, and so proves
 Note that NF or NFU supports the implementation of mathematics in the same style as TST, but with the representations of mathematical concepts losing their ambiguous character.  The number 3 really is realized as the unique set of all sets with three elements, for example.  The universe is a set and sets make up a Boolean algebra.   Cardinal and ordinal numbers can be defined
 in the manner of Russell and Whitehead.
 
-The apparent vulnerability to the paradox of Cantor is an illusion.  Applying Cantor's theorem to the cardinality of the universe in NFU gives $|\iota``V| < |{\cal }(V)| \leq |V|$ (the last inequality would be an equation in NF), from which we conclude that there are fewer singletons of objects than objects in the universe.  The operation $(x \mapsto \{x\})$ is not a set function, and there is every reason to expect it not to be, as its definition is unstratified.  The resolution of the Burali-Forti paradox is also weird and wonderful in NF(U), but would take us too far afield.
+The apparent vulnerability to the paradox of Cantor is an illusion.  Applying Cantor's theorem to the cardinality of the universe in NFU gives $|\iota``V| < |{\cal P}(V)| \leq |V|$ (the last inequality would be an equation in NF), from which we conclude that there are fewer singletons of objects than objects in the universe.  The operation $(x \mapsto \{x\})$ is not a set function, and there is every reason to expect it not to be, as its definition is unstratified.  The resolution of the Burali-Forti paradox is also weird and wonderful in NF(U), but would take us too far afield.
 
 \newpage
 
@@ -291,7 +298,7 @@ types of size $\tau(H_1)$ have the same truth values for sentences in $\Sigma$, 
 
 \end{description}
 
-Our initial approach to proving our theorem was to attempt a Frankel-Mostowski construction of a model of Mac Lane set theory with a tangled web of cardinals.  We do know how to do this, but we believe from experience that constructing a model of tangled type theory directly is easier, though tangled type theory is a nastier theory to describe.
+Our initial approach to proving our theorem was to attempt a Frankel-Mostowski construction of a model of Mac Lane set theory with a tangled web of cardinals.  We do know how to do this, but we believe from recent experience that constructing a model of tangled type theory directly is easier, though tangled type theory is a nastier theory to describe.
 
 We think there is merit in giving a brief description of a situation in a more familiar set theory equivalent to (a strengthening of) the very strange situation in a model of tangled type theory.  This section is also useful here because it supports the discussion in the conclusion of one of the unsolved problems which is settled by this paper.
 
@@ -323,22 +330,21 @@ defined $\tau^*_u$.
 
 We define $\tau^*_t$ as $$\{X \cup \{\{\tau^*_u:u <_\tau t\}\}:X \subseteq \bigcup_{u <_\tau t}\tau^*_u\}.$$
 
-An element of supertype $t$ is a subset of the union of all lower types, with $t^+ = \{\tau^*_u:u <_\tau t\}$ added as an element.
+An element of supertype $t>_\tau m$ is a subset of the union of all lower types, with $t^+ = \{\tau^*_u:u <_\tau t\}$ added as an element.
 
-Notice that the axiom of foundation in the metatheory ensures that an element of supertype $t$ cannot be an element of any lower type,
-so the types are disjoint (elements of each type being labelled by having the set of all lower types as an element).
+Foundation in the metatheory ensures a clean construction here.  An element $x$ of supertype $t$ is always nonempty with $t^+$ as an element.  The set $t^+$ has supertype $u$ as an element for each $u <_\tau t$, so $t^+$ and so $x$  cannot belong to any supertype $u$ with $u <_\tau t$, by foundation:  each other element of $x$ belongs to such a supertype.  We have shown that all the types are disjoint.  The labelling element $t^+$ cannot belong to type $t$ by foundation, because an element of supertype $t$ must be nonempty and have $t^+$ as an element.  Further, $t^+$ cannot belong to any supertype $v$ with $t <_\tau v$, because any element of $v$ contains $v^+$ as an element which contains supertype $t$ as an element and any element of supertype $t$ contains $t^+$ as an element, so $t^+ \in v$ would violate foundation in the metatheory.
 
 The membership relations of this structure are transparent:  $x \in_{t,u} y$ ($t <_\tau u$) is defined as
-$x \in \tau^*_t \wedge y \in \tau^*_u \wedge x \in y$.
+$x \in \tau^*_t \wedge y \in \tau^*_u \wedge x \in y$.   Considerations above show that there are no unintended memberships caused by the labelling elements $t^+$, because the labelling elements cannot themselves belong to any supertype.  Note the presence of $\emptyset_t = \{t^+\}$ in supertype $t$, which has no elements of any type $u <_\tau t$ (and is distinct from $\emptyset_v$ for $v \neq t$).
 
 The system of supertypes is certainly not a model of TTT, because it does not satisfy extensionality.  It is easy to construct
 many sets in a higher type with the same extension over a given lower type, by modifying the other extensions of the object of higher type.
 
-The system of supertypes does satisfy the comprehension scheme of TTT.  One can use Jensen's method to construct a model of stratified comprehension with no extensionality axiom using the system of supertypes, which interprets NFU in a manner described by Marcel Crabb\'e.
+The system of supertypes does satisfy the comprehension scheme of TTT.  One can use Jensen's method to construct a model of stratified comprehension with no extensionality axiom from the system of supertypes, and stratified comprehension with no extensionality axiom interprets NFU in a manner described by Marcel Crabb\'e in \cite{marcelsf}.
 
-\item[the generality of the system of supertypes:]  We show that any model of TTT (assuming there are any) will be isomorphic to a substructure of a system of supertypes.
+\item[the generality of the system of supertypes:]  We show that any model of TTT (assuming there are any) will be in effect isomorphic to a substructure of a system of supertypes.
 
-Let $M$ be a model of TTT (more generally, any structure for the language of TTT in which each object is determined given all of its extensions).  Let $\leq_M$ be the well-ordering on the types of $M$ and let $m$ be the minimal type of $M$.  We will assume as above that $\leq_\tau$ is a well-ordering of type labels $t$ with corresponding actual types $\tau_t$ of $M$:  of course, we could use the actual types of $M$ as type indices, but we preserve generality this way.    We also assume that the types of $M$ are disjoint (it is straightforward to transform a model in which the sets implementing the types are not disjoint to one in which they are, without disturbing its theory, by replacing eacb $x \in \tau_t$ with $(x,t)$).
+Let $M$ be a model of TTT (more generally, any structure for the language of TTT in which each object is determined given all of its extensions).  Let $\leq_M$ be the well-ordering on the types of $M$ and let $m$ be the minimal type of $M$.  We will assume as above that $\leq_\tau$ is a well-ordering of type labels $t$ with corresponding actual types $\tau_t$ of $M$:  of course, we could use the actual types of $M$ as type indices, but we preserve generality this way.    We also assume that the sets implementing the types of $M$ are disjoint (it is straightforward to transform a model in which the sets implementing the types are not disjoint to one in which they are, without disturbing its theory, by replacing each $x \in \tau_t$ with $(x,t)$).
 
 We consider the supertype structure generated by $\leq_\tau:=\leq_M$ and $\tau^*_m := \tau_m$.  We indicate how to define an embedding from $M$ into this supertype structure.
 
@@ -347,9 +353,9 @@ Define $I(x) = x$ for $x \in \tau_m = \tau^*_m$.
 If we have defined $I$ on each type $u <_\tau t$, we define $I(x)$, for $x \in \tau_t$, as
 $\bigcup_{u <_\tau t} \{I(y):y \in^M_{u,t} x\} \cup \{\{\tau^*_u:u <_\tau t\}\}$.
 
-It should be clear that as long as $M$ satisfies the condition that an element of any type is uniquely determined given all of its extensions in lower types, $I$ is an isomorphism from $M$ to a substructure of the stated system of supertypes.  A model of TTT, in which any one extension of an element of any higher type in a lower type exactly determines the object of higher type, certainly satisfies this condition.  So we can suppose without loss of generality that any model of TTT is a substructure of a supertype system.
+It should be clear that as long as $M$ satisfies the condition that an element of any type other than the base type is uniquely determined given all of its extensions in lower types, $I$ is an isomorphism from $M$ to a substructure of the stated system of supertypes.  A model of TTT, in which any one extension of an element of any higher type in a lower type exactly determines the object of higher type, certainly satisfies this condition.  So we can suppose without loss of generality that any model of TTT is a substructure of a supertype system.
 
-The advantages of this framework are that the membership relations in TTT are interpreted as subrelations of the membership relation of the metatheory, while the types are sensibly disjoint.
+Some advantages of this framework are that the membership relations in TTT are interpreted as subrelations of the membership relation of the metatheory, while the types are sensibly disjoint.
 
 \item[preliminaries of our construction;  cardinal parameters and type $-1$:]Now we introduce the notions of our particular construction in this framework.
 
@@ -373,9 +379,9 @@ We may refer to elements of $\tau_{-1}$ (or closely related objects) as ``atoms"
 A {\em litter\/} is a subset of $\tau_{-1}$ of the form $L_{\nu,\beta,\gamma} = \{(\nu,\beta,\gamma,\alpha):\alpha<\kappa\}$.  The litters make up a partition of type $-1$
 (which is of size $\mu$) into size $\kappa$ sets.
 
-A {\em near-litter\/} is a subset of $\tau_{-1}$ with small symmetric difference from a litter.  Note that the relation of having small symmetric difference, which we call nearness, is an equivalence relation on near-litters.   We define $M \sim N$ as $|M \Delta N|<\kappa$, for $M,N$ near-litters.  Note that there are $\mu$ near-litters, because the cofinality of $\mu$ is at least $\kappa$.
+A {\em near-litter\/} is a subset of $\tau_{-1}$ with small symmetric difference from a litter.  We define $M \sim N$ as $|M \Delta N|<\kappa$, for $M,N$ near-litters:  in English, we say ``$M$ is near $N$" iff $M \sim N$.  Note that nearness is an equivalence relation on near-litters.  Note that there are $\mu$ near-litters, because the cofinality of $\mu$ is at least $\kappa$.
 
-We define $N^\circ$, for $N$ a near-litter, as the litter $L$ such that $L \sim N$.  {\bf NOTE:  A notion which had a prominent role in recent versions but which  we do not make use of in the new approach is the notion of {\em local cardinal\/}:  $[N] = \{N:N \sim L\}$ for any near-litter $N$, $[N]$ being called the local cardinal of $N$.  In general, references to local cardinals are replaced with references to their unique litter elements in this treatment.  We preserve a reference to it here in case some reference to it survives when text is transferred from one format to the other.}
+We define $N^\circ$, for $N$ a near-litter, as the litter $L$ such that $L \sim N$.  
 
 Define ${\bf X}_{\beta,\gamma}$ as $\{L_{\nu,\beta,\gamma}:\nu < \mu\}$.  This gives us a set of litters of size $\mu$ for each pair of
 types $\beta\in \lambda \cup \{-1\}$ and $\gamma \in \lambda \setminus \{\beta\}$:  the collection of sets ${\bf X}_{\beta,\gamma}$ is pairwise disjoint.  
@@ -391,9 +397,9 @@ We suppose that each $\tau_\beta$ already constructed is of cardinality $\mu$.  
 $\tau_{-1}$ is of cardinality $\mu$.
 
 We postulate a well-ordering $\leq_\beta$ of $\tau_\beta$, of order type $\mu$, with associated strict well-ordering $<_\beta$, for each $\beta<\alpha$.   Note that these well-orderings do not depend on $\alpha$:  once constructed, they remain the same at later stages.  Some conditions on these well-orderings will be stated later.  We define $\iota_*(x)$ for $x \in \bigcup_{\beta \in \lambda \cup \{-1\}}\tau_\beta$, where $x \in \tau_\gamma$, as the order type of the restriction of $\leq_\gamma$ to
-$\{y:y <_\gamma x\}$.
+$\{y:y <_\gamma x\}$.  Note that this gives us the ability to compare the ordinal position of elements of different types.
 
-We provide that for every near litter $N$ and every $\beta<\alpha$, there is a unique element $N_\beta$ of $\tau_\beta$ such that $N_\beta \cap \tau_{-1}=N$.
+We provide that for every near litter $N$ and every $\beta<\alpha$, there is a unique element $N_\beta$ of $\tau_\beta$ such that $N_\beta \cap \tau_{-1}=N$ (we will quite shortly give a precise description of all extensions of this object).
 
 \begin{description}
 
@@ -403,21 +409,24 @@ that the notation $N_\beta$ is a case of this.
 
 \end{description}
 
-We further stipulate that extensionality holds for each $\beta\in \alpha$ (any $x \in \tau_\beta$ is uniquely determined by $x \cap \tau_\gamma$ for every $\gamma \in \alpha$;  this is true for $\gamma= -1$ only on the additional assumption that $x \cap \tau_{-1}$ is nonempty), and that for any $\beta \in \alpha$ and $x \in \tau_{-1}$, $\iota_*(\{x\}_\beta) = \iota_*(\{x\}_0)$ {\bf ($\gamma = -1$ fix)}
+We further stipulate that extensionality holds for each $\beta\in \alpha$ (for each $\beta\in \gamma$ and $\gamma \in \beta$, any $x \in \tau_\beta$ is uniquely determined by $x \cap \tau_\gamma$;  $x$ is uniquely determined by $x \cap \tau_{-1}$ only on the additional assumption that $x \cap \tau_{-1}$ is nonempty), and that for any $\beta \in \alpha$ and $x \in \tau_{-1}$, $\iota_*(\{x\}_\beta) = \iota_*(\{x\}_0)$.
 
 We define for each $\beta,\gamma <\alpha$ a function $f_{\beta,\gamma}$ (whose definition does not actually depend on $\alpha$:  it will be the same at every stage).  $f_{\beta,\gamma}$ is an injection from $\tau_\beta$ into $X_{\beta,\gamma}$.
 When we define $f_{\beta,\gamma}(x)$, we presume that we have already defined it for $y <_\beta x$.
 We define $f_{\beta,\gamma}(x)$ as $L\cap \tau_{-1}$, where $L$ is $<_\gamma$-first such that for every $N \sim L \cap \tau_{-1}$, $\iota_*(N_\gamma)>\iota_*(x)$ [and if $\beta=-1$, $\iota_*(N_\gamma)>\iota_*(\{x\}_0)$], and for any $y<_\beta x$, $f_{\beta,\gamma}(y) \neq L\cap \tau_{-1}$.
 
-{\bf Note for Lean project readers:  I never (or seldom) mention local cardinals in this version.  Values of $f$ maps are litters;  local cardinals are of course equivalence classes of litters under nearness, and this is how they come in.  They could of course be reinstated.}
 
-We define the notion of pre-extensional element of $\tau^*_\beta$ ($\beta \leq \alpha$).  We presume that all elements of $\tau_\beta$, $\beta<\alpha$, are pre-extensional.  An element $x$ of $\tau^*_\beta$ is pre-extensional iff there is a $\gamma<\beta$, for which we call $x \cap \tau_\gamma$ a distinguished extension of $x$, where $\gamma=-1$ if
-$x \cap \tau_{-1}$ is nonempty or if any $x \cap \tau_\delta$ ($\delta <_\tau \beta$) is empty, and for each $\delta \in \beta \setminus \{\gamma\}$, $$x \cap \tau_\delta= \{N_\delta:(\exists a \in x \cap \tau_\gamma:N \sim f_{\gamma,\delta}(a))\}.$$
+
+We define the notion of {\em pre-extensional\/} element of $\tau^*_\beta$ ($\beta \leq \alpha$).   An element $x$ of $\tau^*_\beta$ is pre-extensional iff there is a $\gamma<\beta$ such that (1) $x \cap \tau^*_\gamma \subseteq \tau_\gamma$, and (2) $\gamma=-1$ if
+$x \cap \tau_{-1}$ is nonempty or if any $x \cap \tau_\delta$ ($\delta <_\tau \beta$) is empty,  and (3) for each $\delta \in \beta \setminus \{\gamma\}$, $$x \cap \tau_\delta= \{N_\delta:(\exists a \in x \cap \tau_\gamma:N \sim f_{\gamma,\delta}(a))\}.$$  We say for any $x \in \tau^*_\beta$ and $\gamma$ with this property that $x \cap \tau_\gamma$ is a distinguished extension of $x$.
+
+We presume that all elements of $\tau_\beta$, $\beta<\alpha$, are pre-extensional. 
 
 Note that we now know how to compute all other extensions of typed near-litters $N_\beta$, because the $-1$-extension of $N_\beta$ is distinguished and this indicates how to compute all the other extensions.
 
-{\bf note for readers of earlier versions:  The code $(\alpha,\beta,B)$ in the previous family of versions correlates with the pre-extensional element $x$ of
-$\tau_\alpha$ with $B=x\cap \tau_\beta$ its $\beta$-extension and moreover a distinguished extension (so that we know how to compute all other extensions).  The notation $B_\alpha$ has been defined above for this object;  the ordinal $\beta$ is implicit because $B$ is a nonempty subset of type $\beta$.}
+
+
+
 
 We note that the order conditions in the definition of $f_{\beta,\gamma}$ ensure that for any $x \in \tau_\beta$ there is only one $\gamma <_\tau \beta$ such that $x \cap \tau_\gamma$ is a distinguished extension of $x$.  If any $x \cap \tau_\gamma$ is empty or if $x \cap \tau_{-1}$ is not empty, $\gamma= -1$ is the unique possibility.  So, what remains is the case of $x$ with $x \cap \tau_{-1}$ empty and each $x \cap \tau_\gamma$ nonempty for $\gamma<\beta$.
 Now the order conditions on $f_{\beta,\gamma}$ ensure that if $x \cap \tau_\gamma$ is a distinguished extension,
@@ -428,29 +437,34 @@ $\iota_*$ on an extension.
 For any $\delta \in \alpha$ and nonempty subset $a$ of type $\gamma \neq \delta$, we define $A_\delta(a)$ as $$\{N_\delta:(\exists x \in a:N \sim f_{\gamma,\delta}(x))\}.$$  For any nonempty subset of type $\delta$ there is at most one subset $y$ of any type such that $A_\delta(y)=x$.  There cannot be more than one such $y$ in any given type because the $f$ maps are injective.  There cannot be more than one such $y$ in different types because the ranges of $f$ maps with distinct index pairs are disjoint.   We use the notation $A^{-1}(y)$ for this set if it exists, defining a very partial function $A^{-1}$ on subsets of types.
 
 Note that the distinguished extension of any type element $x$ is the image under $A^{-1}$ of the other extensions.
-The exact argument above shows that for any subset $a$ of a type, the minimal value of $\iota_*$ on $a$ is larger
-than the minimal value of $\iota_*$ on $A^{-1}(a)$ if $A^{-1}(a)$ exists.  It follows that no subset of a type has
+
+Let $a$ be a subset of type $\delta$ for which $A^{-1}(a)$ exists and is a subset of type $\gamma$.  We argue that the minimum of $\iota_*$ on
+$A^{-1}(a)$ is less than the minimum of $\iota_*$ on $a$ (this is basically the same as an argument given above but we give it for completeness).    Let $b \in a$ have $\iota_*(b)$ minimal.  Let $c \in A^{-1}(a)$ have $\iota_*(c)$ minimal.   We will have $b = N_\delta$ for $N \sim f_{\gamma,\delta}(d)$ for some $d \in A^{-1}(a)$.  We then
+have $\iota_*(c) \leq \iota_*(d) < \iota_*(b)$ by the order requirements in the definition of the $f$ maps.
+
+
+  It follows that no subset of a type has
 infinitely many iterated images under $A^{-1}$.
 
-{\bf Lean project readers note that the $A_\delta$ and $A^{-1}$ functions are acting on subsets of types (extensions).  They are doing the same things as in earlier versions!}
 
-We then restrict the pre-extensional elements to extensional elements.  An element of a type is extensional if
+
+We say that an element of a type is {\em extensional\/} iff
 it is pre-extensional and its distinguished extension has an even number of iterated images under $A^{-1}$.
-This implies that each of its other extensions has an odd number of iterated images under $A^{-1}$.  This is enough to ensure that two extensional model elements with any common extension will be equal:  if two extensional model elements have an empty extension in common, they both have all extensions empty and are equal.  If two extensional model elements have a nonempty extension in common, it will be the distinguished extension of both, or a non-distinguished extension of both, since distinguished and non-distinguished extensions are taken from disjoint classes of sets of types (when nonempty).
+This implies that each of its other extensions has an odd number of iterated images under $A^{-1}$.  This is enough to ensure that two extensional model elements with any common extension will be equal:  if two extensional model elements have an empty extension in common, they both have all extensions empty and are equal.  If two extensional model elements have a nonempty extension in common, it will be the distinguished extension of both, or a non-distinguished extension of both, since distinguished and non-distinguished extensions are taken from disjoint classes of subsets of types (when nonempty).
 In either case we deduce that both have the same distinguished extension and thus have all extensions the same and are equal.  Note that this gives weak extensionality over $\tau_{-1}$ (many objects have empty extension over type $-1$) but it gives full extensionality over any other type.
 
 We assume that all elements of $\tau_\beta$'s already constructed are extensional.
 
-\item[brief note on our further needs:]  The crucial aspect of this is that we will need to define $\tau_\alpha$ so that it has cardinality $\mu$ for the process to continue.  It is certainly not a sufficient restriction to require elements of $\tau_\alpha$ to be extensional:  we will require a further symmetry condition.
+\item[brief note on our further needs:]  A crucial aspect of this is that we will need to define $\tau_\alpha$ so that it has cardinality $\mu$ for the process to continue.  It is certainly not a sufficient restriction to require elements of $\tau_\alpha$ to be extensional:  we will require a further symmetry condition.
 
 \item[structural permutations defined:]  We define classes of permutations of our structures.
 
 A $-1$-structural permutation is a permutation of $\tau_{-1}$.
 
-An $\alpha$-structural permutation is a permutation $\pi$ of $\tau_\alpha$ such that for each element $\beta<\alpha$ there is a $\beta$-structural permutation
+An $\alpha$-structural permutation is a permutation $\pi$ of $\tau_\alpha$ such that for each type $\beta<\alpha$ there is a $\beta$-structural permutation
 $\pi_\beta$ such that $\pi(x) \cap \tau_\beta = \pi_\beta``(x \cap \tau_\beta)$.
 
-\item[derivatives of structural permutations:]  The maps $\pi_\beta$ are referred to as derivatives of $\pi$.  More generally, for any finite subset $A$ of $\lambda \cup \{-1\}$ with maximum $A$,
+\item[derivatives of structural permutations:]  The maps $\pi_\beta$ are referred to as derivatives of $\pi$.  More generally, for any finite subset $A$ of $\lambda \cup \{-1\}$ with maximum $\alpha$,
 define $\pi_A$ as $(\pi_{A \setminus \{{\tt min}(A)\}})_{{\tt min}(A)}$.  It should be clear that a structural permutation is exactly determined by its iterated derivatives which are $-1$-structural.
 
 \item[allowable permutations defined:]  Structural permutations are defined on the supertype structure generally.  We need a subclass of structural permutations which respects our extensionality requirements.
@@ -479,7 +493,7 @@ Notice that this shows that the coherence condition implies that the image under
 
 Now this implies that if $a \subseteq \tau_\gamma$, then $A^{-1}(a)$ exists and is in $\tau_\delta$ exactly if $A^{-1}(\pi_\gamma``a)$ exists and is in $\tau_\delta$, and moreover $A^{-1}(\pi_\gamma``a)$ is equal to $\pi_\delta``A^{-1}(a)$ if it exists under these conditions.  This verifies that the coherence condition implies that allowable permutations preserve full extensionality, not just pre-extensionality:  the number of iterated images under $A^{-1}$ of an extension that exist is not affected by application of an allowable permutation in a suitable sense.
 
-\item[supports defined:]  Where $\beta \leq \alpha$, a $\beta$-support is a small set of pairs $(x,A)$, where $A$ is a finite subset of $\lambda$ with minimum $\gamma$ and maximum $\beta$ and $x \in \tau_\gamma$ has $x \cap \tau_{-1}$ either a singleton or a near-litter.
+\item[supports defined:]  Where $\beta \leq \alpha$, a {\em $\beta$-support\/} is defined as a small set of pairs $(x,A)$, where $A$ is a finite subset of $\lambda$ with minimum $\gamma$ and maximum $\beta$ and $x \in \tau_\gamma$ has $x \cap \tau_{-1}$ either a singleton or a near-litter.
 
 We define the action of a $\beta$-allowable permutation $\pi$ on a $\beta$-support $S$:  $\pi[S]= \{(\pi_A(x),A):(x,A) \in S\}$.
 
@@ -488,9 +502,9 @@ An element of $\tau^*_\beta$ has $\beta$-support $S$ iff for every $\beta$-allow
 \item[the definition of $\tau_\alpha$:]  We stipulate that all elements of $\tau_\beta$ have $\beta$-supports, and define $\tau_\alpha$ as the set of elements $x$ of $\tau^*_\alpha$ such that
 $x \cap \tau^*_{\beta} \subseteq \tau_\beta$ for each $\beta<\alpha$, $x$ is extensional, and $x$ has an $\alpha$-support.
 
-\item[designated supports:]  We choose an $\alpha$-support for each element $x$ of $\tau_\alpha$ which is not a typed atom or near-litter (which does not have $x \cap \tau_{-1}$ a singleton or near-litter), which we call the designed support of $x$.  We note that we have a notion of designated support for each lower type constructed in the same way at earlier stages.
+\item[designated supports:]  We choose an $\alpha$-support for each element $x$ of $\tau_\alpha$ which is not a typed atom or near-litter (which does not have $x \cap \tau_{-1}$ a singleton or near-litter), which we call the {\em designated support of $x$\/}.  We note that we have a notion of designated support for each lower type constructed in the same way at earlier stages.
 
-\item[images under allowable permutations preserve symmetry:]  Note the important result that if $x$ has support $S$ and $\pi$ is allowable with appropriate index, $\pi(x)$ has support $\pi[S]$.  This verifies that for any $\alpha$-allowable permutation $\pi$, $\pi``\tau_\alpha = \tau_\alpha$.
+\item[images under allowable permutations preserve symmetry:]  Note the important fact that if $x$ has support $S$ and $\pi$ is allowable with appropriate index, $\pi(x)$ has support $\pi[S]$.  This verifies that for any $\alpha$-allowable permutation $\pi$, $\pi``\tau_\alpha = \tau_\alpha$.
 
 \item[Observation ($\kappa$-completeness of the structure):]  For any subset $X$ with cardinality $<\kappa$ of a type $\gamma$ and $\beta>\gamma$, it should be clear that $X_\beta$ has a support, computable from the union of the supports of the elements of $X$  by replacing each element $(u,B)$ of the union with $(u,B \cup \{\beta\})$, and therefore belongs to the model.  $X_\beta$ is obviously extensional (the extension $X$ is clearly the distinguished extension and has no image under $A^{-1}$).
 
@@ -505,18 +519,21 @@ and by $\{y\}_\alpha$, the unique element of $\tau_\alpha$ such that $\{y\}_\alp
 
 \item Each $x$ which is not an atom or near-litter satisfies $\iota_*(x) > \iota_*(y)$ for $(y,A)$ in the designated support of $x$.
 
-\item ({\bf for the $\gamma = -1$ fix})  The position of each typed atom and near-litter in each order with index other than $-1$ will be the same as the position of the corresponding atom or near-litter in the order on type 0, and each other object with a nonempty extension over type $-1$ occupies the same position or a later position in each positive type than the position occupied by an object with the same extension over type $-1$ in type 0.
+\item  If $x \in \tau_{-1}$ and $N$ is a near-litter, and $\alpha>0$, we have $\iota_*(\{x\}_\alpha) = \iota_*(\{x\}_0)$
+and $\iota_*(N_\alpha) = \iota_*(N_0)$.  For each other nonempty $X \subseteq \tau_{-1}$ for which $X_0$ exists,
+we have $\iota_*(X_\alpha) \geq \iota_*(X_0)$.
+
+That is, the position of each typed atom and near-litter in each order with index other than $-1$ will be the same as the position of the corresponding atom or near-litter in the order on type 0, and each other object with a nonempty extension over type $-1$ occupies the same position or a later position in each positive type than the position occupied by an object with the same extension over type $-1$ in type 0.
 
 \end{enumerate}
 
-The condition added for the $\gamma=-1$ fix appears enforceable, since it leaves $\mu$ positions free, and nothing is bounded above by the position of a litter,
-and nothing is bounded above by the position of a typed atom except the position of the corresponding litter.   It should be noted that type 0 has a very simple description:  the $-1$-extensions of type 0 objects are exactly the sets with small symmetric difference from small or co-small unions of litters, and that these are the same extensions over type $-1$ which appear in any positive type.
+   It should be noted that type 0 has a very simple description:  the $-1$-extensions of type 0 objects are exactly the sets with small symmetric difference from small or co-small unions of litters, and that these are the same extensions over type $-1$ which appear in any positive type.
 
 A back and forth argument will establish the existence of an order satisfying the conditions.  Construction of the order at type 0 is straightforward.  Suppose $\alpha>0$.
 The idea is to alternate between placing an item from type $\alpha$ and making sure that the first unfilled position is filled.  [In the construction of the order on type 0, the stage where one fills the first unfilled position is readily handled with a litter.] The stage where one places an item from type $\alpha$ always succeeds because one has only a small collection of items one must place the item above, so the cofinality of $\mu$ ensures that there will be a place to put the item.  Note that there are $\mu$ places which are not occupied by typed atoms or near-litters in type 0.  Now, the filling of the first unoccupied place is an issue:
 we can fill it with the analogue (with the same extension over type $-1$) of whatever occupied that place in the order on type 0, which by assumption we have not placed yet.  
 
-At this point we should have a complete description of the structure (which should be translatable into terms of the web paper or the Lean project, mod the changes in the conditions on the order.
+At this point we have a complete description of the structure which we claim is a model of TTT.
 
 
 \end{description}
@@ -553,7 +570,7 @@ iff for any allowable permutation $\pi$, $\pi$ will fix $X$ if it is the case th
 
 \item $x \cap \tau_{-1}= f_{-1,{\tt min}(A)}(u)$, $B= A_1$, and $y \cap \tau_{-1}= \{u\}$.  [``A typed litter $f_{-1,{\tt min}(A)}(u)$ depends on an appropriately typed atom with $-1$-extension $\{u\}$".]
 
-{\bf NOTE:  this is $\gamma = -1$ fix.}  This case is strange because the dependency is on something of higher type.
+This case is strange because the dependency is on something of higher type.
 
 \end{enumerate}
 
@@ -593,7 +610,7 @@ Notice that every element of $T^{A \setminus (\delta+1)}$ stands in the relation
 \item For any $(f_{-1,\delta}(x),A) \in S$, $(\{x\}_{{\tt min}(A_1)},A_1)$ belongs to $S$
 if $A_1$ is nonempty,  $A_1$ being shorthand for $A \setminus \{{\tt min}(A)\}$.
 
-Note again that $(\{x\}_{{\tt min}(A_1)},A_1) <_S (f_{-1,\delta}(x),A)$ {\bf NOTE:  This is $\gamma = -1$ fix}
+Note again that $(\{x\}_{{\tt min}(A_1)},A_1) <_S (f_{-1,\delta}(x),A)$
 
 \end{enumerate}
 
@@ -954,7 +971,7 @@ I am not sure that all references given here will be used in this version.
 \begin{thebibliography}{99}
 
 
-
+\bibitem{marcelsf}  Crabb\'e, Marcel, reference for SF interpreting NFU.
 
 
 \bibitem{forster}  Forster, T.E. [1995] 
