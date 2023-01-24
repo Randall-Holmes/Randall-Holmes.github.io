@@ -161,7 +161,9 @@ def makeamove(M):
         theboard=[B[0]+M[1],B[1],0,3-B[3],0]
         thehand=H
         thehand[M[1]-1] = thehand[M[1]-1]-1
-        if B[2]>0:thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
+        if B[2]>0:
+            print ("Parries the attack")
+            thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
         if isboard(theboard) and ishand(thehand):
             TheBoard=theboard
             B=theboard
@@ -188,7 +190,9 @@ def makeamove(M):
         theboard=[B[0],B[1]-M[1],0,3-B[3],0]
         thehand=H
         thehand[M[1]-1] = thehand[M[1]-1]-1
-        if B[2]>0:thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
+        if B[2]>0:
+            print ("Parries the attack")
+            thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
         if isboard(theboard) and ishand(thehand):
             TheBoard=theboard
             B=theboard
@@ -215,7 +219,9 @@ def makeamove(M):
         theboard=[B[0]-M[1],B[1],0,3-B[3],0]
         thehand=H
         thehand[M[1]-1] = thehand[M[1]-1]-1
-        if B[2]>0:thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
+        if B[2]>0:
+            print ("Parries the attack")
+            thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
         if isboard(theboard) and ishand(thehand):
             TheBoard=theboard
             B=theboard
@@ -244,7 +250,9 @@ def makeamove(M):
         theboard=[B[0],B[1]+M[1],0,3-B[3],0]
         thehand=H
         thehand[M[1]-1] = thehand[M[1]-1]-1
-        if B[2]>0:thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
+        if B[2]>0:
+            print ("Parries the attack")
+            thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
         if isboard(theboard) and ishand(thehand):
             TheBoard=theboard
             B=theboard
@@ -332,7 +340,9 @@ def makeamove(M):
             return 'bad move'
         theboard=[B[0],B[1],M[1],3-B[3],0]
         thehand=H
-        if B[2]>0:thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
+        if B[2]>0:
+            print ("Parries the attack")
+            thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
         thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1] - M[1]
         if isboard(theboard) and ishand(thehand):
             TheBoard=theboard
@@ -369,7 +379,9 @@ def makeamove(M):
         moved = (B[1]-B[0])-M[1]
         theboard=[B[0]+moved,B[1],M[2],3-B[3],1]
         thehand=H
-        if B[2]>0:thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
+        if B[2]>0:
+            print ("Parries the attack")
+            thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
         thehand[moved-1]=thehand[moved-1]-1
         thehand[M[1]-1]=thehand[M[1]-1]-M[2]
         if isboard(theboard) and ishand(thehand):
@@ -396,7 +408,9 @@ def makeamove(M):
         moved = (B[1]-B[0])-M[1]
         theboard=[B[0],B[1]-moved,M[2],3-B[3],1]
         thehand=H
-        if B[2]>0:thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
+        if B[2]>0:
+            print ("Parries the attack")
+            thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
         thehand[moved-1]=thehand[moved-1]-1
         thehand[M[1]-1]=thehand[M[1]-1]-M[2]
         if isboard(theboard) and ishand(thehand):
@@ -425,6 +439,7 @@ def makeamove(M):
             return('bad move')
         theboard = [B[0],B[1],0,3-B[3],0]
         thehand=H
+        print ("Parries the attack")
         thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
         if isboard(theboard) and ishand(thehand):
                B=theboard
