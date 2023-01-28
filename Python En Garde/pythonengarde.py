@@ -171,19 +171,31 @@ def makeamove(M):
 
             if thedeck[4]==0:
                if B[thehands[0][B[1]-B[0]-1]]> B[thehands[1][B[1]-B[0]-1]]:
+                    print("Player 1 wins by LSA")
                     return "Player 1 wins by LSA"
                if B[thehands[1][B[1]-B[0]-1]]> B[thehands[0][B[1]-B[0]-1]]:
+                    print("Player 2 wins by LSA")
                     return "Player 2 wins by LSA"
 
-               if B[0]>24-B[1]: return "Player 1 wins"
-               if B[0]<24-B[1]: return "Player 2 wins"
-               if B[0]==24-B[1]:  return "Its a tie!"
+               if B[0]>24-B[1]:
+                   print("Player 1 wins")
+                   return "Player 1 wins"
+               if B[0]<24-B[1]:
+                   print("Player 2 wins")
+                   return "Player 2 wins"
+               if B[0]==24-B[1]:
+                   print("Its a tie!")
+                   return "Its a tie!"
 
-            if trapped():  return "Player 2 is trapped:  Player 1 wins"
+            if trapped():
+                print("Player 2 is trapped:  Player 1 wins")
+                return "Player 2 is trapped:  Player 1 wins"
             showboard()
+            print("Player 1 advanced")
             return 'Player 1 advanced'
         TheBoard=saveboard
         thehands=savehands
+        print('bad move')
         return('bad move')
 
     if len(M)== 2 and M[0] == "advance" and B[3] == 2  and not(thedeck[4]==0):
@@ -200,19 +212,32 @@ def makeamove(M):
 
             if thedeck[4]==0:
                if B[thehands[0][B[1]-B[0]-1]]> B[thehands[1][B[1]-B[0]-1]]:
+                    print("Player 1 wins by LSA")
                     return "Player 1 wins by LSA"
                if B[thehands[1][B[1]-B[0]-1]]> B[thehands[0][B[1]-B[0]-1]]:
+                    print("Player 2 wins by LSA")
                     return "Player 2 wins by LSA"
 
-               if B[0]>24-B[1]: return "Player 1 wins"
-               if B[0]<24-B[1]: return "Player 2 wins"
-               if B[0]==24-B[1]:  return "Its a tie!"
+
+               if B[0]>24-B[1]:
+                   print("Player 1 wins")
+                   return "Player 1 wins"
+               if B[0]<24-B[1]:
+                   print("Player 2 wins")
+                   return "Player 2 wins"
+               if B[0]==24-B[1]:
+                   print("Its a tie!")
+                   return "Its a tie!"
             
-            if trapped():  return "Player 1 is trapped:  Player 2 wins"
+            if trapped():
+                print("Player 1 is trapped:  Player 2 wins")
+                return "Player 1 is trapped:  Player 2 wins"
             showboard()
+            print('Player 2 advanced')
             return 'Player 2 advanced'
         TheBoard=saveboard
         thehands=savehands
+        print('bad move')
         return('bad move')
 
     if len(M)== 2 and M[0] == "retreat" and B[3] == 1 and not(thedeck[4]==0):
@@ -226,24 +251,36 @@ def makeamove(M):
             TheBoard=theboard
             B=theboard
             thehands=[fillhand(thehand),thehands[1]]
+
             if thedeck[4]==0:
+
                if B[thehands[0][B[1]-B[0]-1]]> B[thehands[1][B[1]-B[0]-1]]:
+                    print("Player 1 wins by LSA")
                     return "Player 1 wins by LSA"
                if B[thehands[1][B[1]-B[0]-1]]> B[thehands[0][B[1]-B[0]-1]]:
+                    print("Player 2 wins by LSA")
                     return "Player 2 wins by LSA"
 
-               if B[0]>24-B[1]: return "Player 1 wins"
-               if B[0]<24-B[1]: return "Player 2 wins"
-               if B[0]==24-B[1]:  return "Its a tie!"
 
-            
-            if trapped():  return "Player 2 is trapped:  Player 1 wins"
+               if B[0]>24-B[1]:
+                   print("Player 1 wins")
+                   return "Player 1 wins"
+               if B[0]<24-B[1]:
+                   print("Player 2 wins")
+                   return "Player 2 wins"
+               if B[0]==24-B[1]:
+                   print("Its a tie!")
+                   return "Its a tie!"
+     
+            if trapped():
+                print("Player 2 is trapped; Player 1 wins")
+                return "Player 2 is trapped:  Player 1 wins"
             showboard()
             return 'Player 1 retreated'
 
         TheBoard=saveboard
         thehands=savehands
-            
+        print('bad move')           
         return('bad move')
 
     if len(M)== 2 and M[0] == "retreat" and B[3] == 2 and not(thedeck[4]==0):
@@ -261,19 +298,30 @@ def makeamove(M):
 
             if thedeck[4]==0:
                if B[thehands[0][B[1]-B[0]-1]]> B[thehands[1][B[1]-B[0]-1]]:
+                    print("Player 1 wins by LSA")
                     return "Player 1 wins by LSA"
                if B[thehands[1][B[1]-B[0]-1]]> B[thehands[0][B[1]-B[0]-1]]:
+                    print("Player 2 wins by LSA")
                     return "Player 2 wins by LSA"
 
-               if B[0]>24-B[1]: return "Player 1 wins"
-               if B[0]<24-B[1]: return "Player 2 wins"
-               if B[0]==24-B[1]:  return "Its a tie!"            
-            if trapped():  return "Player 1 is trapped:  Player 2 wins"
+               if B[0]>24-B[1]:
+                   print("Player 1 wins")
+                   return "Player 1 wins"
+               if B[0]<24-B[1]:
+                   print("Player 2 wins")
+                   return "Player 2 wins"
+               if B[0]==24-B[1]:
+                   print("Its a tie!")
+                   return "Its a tie!"            
+            if trapped():
+                print("Player 1 is trapped:  Player 2 wins")
+                return "Player 1 is trapped:  Player 2 wins"
             showboard()
+            print('Player 2 retreated')
             return 'Player 2 retreated'
         TheBoard=saveboard
         thehands=savehands
-            
+        print('bad move') 
         return('bad move')
 
     if len(M)== 2 and M[0] == "flee" and B[3] == 1 and B[4]==1:
@@ -288,21 +336,33 @@ def makeamove(M):
 
             if thedeck[4]==0:
                 if canlsa==True and B[thehands[0][B[1]-B[0]-1]]> B[thehands[1][B[1]-B[0]-1]]:
+                    print("Player 1 wins by LSA")
                     return "Player 1 wins by LSA"
                 if canlsa==True and B[thehands[1][B[1]-B[0]-1]]> B[thehands[0][B[1]-B[0]-1]]:
+                    print("Player 2 wins by LSA")
                     return "Player 2 wins by LSA"
 
-                if B[0]>24-B[1]: return "Player 1 wins"
-                if B[0]<24-B[1]: return "Player 2 wins"
-                if B[0]==24-B[1]:  return "Its a tie!"
+                if B[0]>24-B[1]:
+                    print("Player 1 wins")
+                    return "Player 1 wins"
+                if B[0]<24-B[1]:
+                    print("Player 2 wins")
+                    return "Player 2 wins"
+                if B[0]==24-B[1]:
+                    print("It's a tie!")
+                    return "Its a tie!"
 
-            if trapped():  return "Player 2 is trapped:  Player 1 wins"
+            if trapped():
+                print("Player 2 is trapped:  Player 1 wins")
+                return "Player 2 is trapped:  Player 1 wins"
             showboard()
+            print('Player 1 fled')
             return 'Player 1 fled'
 
 
         TheBoard=saveboard
         thehands=savehands
+        print('bad move')
         return('bad move')
 
 
@@ -317,12 +377,29 @@ def makeamove(M):
             thehands=[thehands[0],fillhand(thehand)]
 
             if thedeck[4]==0:
-                if B[0]>24-B[1]: return "Player 1 wins"
-                if B[0]<24-B[1]: return "Player 2 wins"
-                if B[0]==24-B[1]:  return "Its a tie!"
-            if trapped():  return "Player 1 is trapped:  Player 2 wins"
+
+                if canlsa==True and B[thehands[0][B[1]-B[0]-1]]> B[thehands[1][B[1]-B[0]-1]]:
+                    print("Player 1 wins by LSA")
+                    return 0
+                if canlsa==True and B[thehands[1][B[1]-B[0]-1]]> B[thehands[0][B[1]-B[0]-1]]:
+                    print( "Player 2 wins by LSA")
+                    return 0
+
+                if B[0]>24-B[1]:
+                    print("Player 1 wins")
+                    return 0
+                if B[0]<24-B[1]:
+                    print( "Player 2 wins")
+                    return 0
+                if B[0]==24-B[1]:
+                    print("Its a tie!")
+                    return 0
+            if trapped():
+                print("Player 1 is trapped:  Player 2 wins")
+                return 0
             showboard()
-            return 'Player 2 fled'
+            print( 'Player 2 fled')
+            return 0
         TheBoard=saveboard
         thehands=savehands            
         return('bad move')
@@ -332,12 +409,14 @@ def makeamove(M):
         if M[1]<1 or M[1]>3:
             TheBoard=saveboard
             thehands=savehands
-            return 'bad move'
+            print( 'bad move')
+            return 0
         if B[1]-B[0]>5:
 
             TheBoard=saveboard
             thehands=savehands
-            return 'bad move'
+            print( 'bad move')
+            return 0
         theboard=[B[0],B[1],M[1],3-B[3],0]
         thehand=H
         if B[2]>0:
@@ -350,32 +429,44 @@ def makeamove(M):
             if B[3]==2:thehands=[fillhand(thehand),thehands[1]]
             if B[3]==1:thehands=[thehands[0],fillhand(thehand)]
             if B[2]>thehands[B[3]-1][B[1]-B[0]-1] and B[3]==1:
-                return "Player 2 wins"
+                print( "Player 2 wins")
+                return 0
             if B[2]>thehands[B[3]-1][B[1]-B[0]-1] and B[3]==2:
-                return "Player 1 wins"
+                print("Player 1 wins")
+                return 0
             
-            if B[3]==1 and trapped():  return "Player 1 is trapped:  Player 2 wins"
-            if B[3]==2 and trapped():  return "Player 2 is trapped:  Player 1 wins"
-            showboard
-            return 'The player attacked'
+            if B[3]==1 and trapped():
+
+                print( "Player 1 is trapped:  Player 2 wins")
+                return 0
+            if B[3]==2 and trapped():
+
+                print( "Player 2 is trapped:  Player 1 wins")
+                return 0
+            showboard()
+            print( 'The player attacked')
+            return 0
 
         TheBoard=saveboard
         thehands=savehands
-            
-        return('bad move')
+        print('bad move')
+    
+        return 0
 
     if len(M) == 3 and M[0] == "lunge" and B[3]==1  and not(thedeck[4]==0):
         if M[1]<1 or M[1]>5:
             TheBoard=saveboard
             thehands=savehands
 
-            return('bad move')
+            print('bad move')
+            return 0
         if M[1]>=B[1]-B[0] or (B[1]-B[0])-M[1] >5:
 
             TheBoard=saveboard
             thehands=savehands
 
-            return('bad move')
+            print('bad move')
+            return 0
         moved = (B[1]-B[0])-M[1]
         theboard=[B[0]+moved,B[1],M[2],3-B[3],1]
         thehand=H
@@ -389,22 +480,30 @@ def makeamove(M):
             B=theboard
             thehands=[fillhand(thehand),thehands[1]]
             if B[2]>thehands[B[3]-1][B[1]-B[0]-1] and B[1]+smallestcard2(thehands[1])>23:
-                return "Player 1 wins"
-            if trapped2():  return "Player 2 is trapped:  Player 1 wins"
+                print( "Player 1 wins")
+                return 0
+            if trapped2():
+                print( "Player 2 is trapped:  Player 1 wins")
+                return 0
             showboard()
-            return 'Player 1 lunged'
+            print( 'Player 1 lunged')
+            return 0
         TheBoard=saveboard
         thehands=savehands
             
-        return('bad move')
+        print('bad move')
+        return 0
        
     if len(M) == 3 and M[0] == "lunge" and B[3]==2  and not(thedeck[4]==0):
         if M[1]<1 or M[1]>5:
             TheBoard=saveboard
             thehands=savehands
 
-            return('bad move')
-        if M[1]>=B[1]-B[0] or (B[1]-B[0])-M[1]>5: return('bad move')
+            print('bad move')
+            return 0
+        if M[1]>=B[1]-B[0] or (B[1]-B[0])-M[1]>5:
+            print('bad move')
+            return 0
         moved = (B[1]-B[0])-M[1]
         theboard=[B[0],B[1]-moved,M[2],3-B[3],1]
         thehand=H
@@ -418,49 +517,69 @@ def makeamove(M):
             B=theboard
             thehands=[thehands[0],fillhand(thehand)]
             if B[2]>thehands[B[3]-1][B[1]-B[0]-1] and B[0]-smallestcard2(thehands[0])<1:
-                return "Player 2 wins"
-            if trapped2():  return "Player 1 is trapped:  Player 2 wins"
+                print( "Player 2 wins")
+                return 0
+            if trapped2():
+                print( "Player 1 is trapped:  Player 2 wins")
+                return 0
             showboard()
-            return 'Player 2 lunged'
+            print( 'Player 2 lunged')
+            return 0
         TheBoard=saveboard
         thehands=savehands            
-        return('bad move')
+        print('bad move')
+        return 0
 
-    if len(M) == 1 and M[0]=="finalparry":
-        if not(thedeck[4]==0):
-            TheBoard=saveboard
-            thehands=savehands
+    if len(M) == 1 and M[0]=="parry":
 
-            return('bad move')
         if not(B[2]>0):
             TheBoard=saveboard
             thehands=savehands
 
-            return('bad move')
-        theboard = [B[0],B[1],0,3-B[3],0]
+            print('bad move')
+            return 0
+        theboard = [B[0],B[1],0,B[3],0]
         thehand=H
         print ("Parries the attack")
         thehand[B[1]-B[0]-1]=thehand[B[1]-B[0]-1]-B[2]
         if isboard(theboard) and ishand(thehand):
-               B=theboard
+            TheBoard=theboard
+            B=theboard
+            if B[3]==1:thehands=[(thehand),thehands[1]]
+            if B[3]==2:thehands=[thehands[0],(thehand)]
+            if thedeck[4]==0:
+               
                if B[thehands[0][B[1]-B[0]-1]]> B[thehands[1][B[1]-B[0]-1]]:
-                    return "Player 1 wins by LSA"
+                    print( "Player 1 wins by LSA")
+                    return 0
                if B[thehands[1][B[1]-B[0]-1]]> B[thehands[0][B[1]-B[0]-1]]:
-                    return "Player 2 wins by LSA"
+                    print( "Player 2 wins by LSA")
+                    return 0
 
-               if B[0]>24-B[1]: return "Player 1 wins"
-               if B[0]<24-B[1]: return "Player 2 wins"
-               if B[0]==24-B[1]:  return "Its a tie!"
+               if B[0]>24-B[1]:
+                   print( "Player 1 wins")
+                   return 0
+               if B[0]<24-B[1]:
+                   print("Player 2 wins")
+                   return 0
+               if B[0]==24-B[1]:
+                   print("Its a tie!")
+                   return 0
+            showboard()
+            print("The player parried")
+            return 0
 
         TheBoard=saveboard
         thehands=savehands
             
-        return('bad move')
+        print('bad move')
+        return 0
     TheBoard=saveboard
     thehands=savehands
     showboard()
             
-    return('bad move')   
+    print('bad move')
+    return 0
 
 
 def showboard():
@@ -486,6 +605,25 @@ def showboard():
     print(str(5-thedeck[2]+thedeck[1]-thehands[0][2]-thehands[1][2]))
     print(str(5-thedeck[3]+thedeck[2]-thehands[0][3]-thehands[1][3]))
     print(str(5-thedeck[4]+thedeck[3]-thehands[0][4]-thehands[1][4]))
+
+def advance(n):
+    makeamove(["advance",n])
+def retreat(n):
+    makeamove(["retreat",n])
+
+def attack(n):
+    makeamove(["attack",n])
+
+def lunge(m,n):
+    makeamove(["lunge",m,n])
+
+def parry():
+    makeamove(["parry"])
+
+def flee(n):
+    makeamove(["flee",n])
+    
+
         
         
 
