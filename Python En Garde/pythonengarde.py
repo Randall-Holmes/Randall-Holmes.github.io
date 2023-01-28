@@ -38,7 +38,26 @@ def ishand(H):
     if sum>5: return False
     return True
         
-
+def printhand(H):
+    if not(ishand(H)):
+        print("cant print non-hand")
+        return "xxxx"
+    i=0
+    s=""
+    H0=[0,0,0,0,0]
+    while(i<5):
+        H0[i]=H[i]
+        i=i+1
+    while len(H0)>0:
+        if H0[0]>0:
+            s=s+str(6-len(H0))
+            H0[0]=H0[0]-1
+        if H0[0]==0:
+            H0=H0[1:]
+        
+    return s
+        
+        
 
 
 # position i in the deck representation is the number of cards
@@ -581,17 +600,33 @@ def makeamove(M):
     print('bad move')
     return 0
 
+def displayboard(L):
+    i=0
+    s=""
+    while i<len(L):
+        if L[i]==0: s= s+"."
+        if L[i]==2: s= s+"\\"
+        if L[i]==1: s= s+"/"
+        i=i+1
+    return s
+
+def printmany(s,n):
+    s2=""
+    while(n>0):
+        s2=s+s2
+        n=n-1
+    return(s2)
 
 def showboard():
     global TheBoard
     B=TheBoard
     if B[3]==1:  print ("Player 1 to play")
     if B[3]==2: print ("Player 2 to play")
-    print (thehands[B[3]-1])
+    print (printhand(thehands[B[3]-1]))
     display=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     display[B[0]-1]=1
     display[B[1]-1]=2
-    print(display)
+    print(displayboard(display))
     print('Distance to other player: '+str(B[1]-B[0]))
     print('Cards remaining: '+str(thedeck[4]))
     if B[2]==1 and B[4]==0: print('under single direct attack')
@@ -600,11 +635,11 @@ def showboard():
     if B[2]==1 and B[4]==1: print('under single indirect attack')
     if B[2]==2 and B[4]==1: print('under double indirect attack')
     if B[2]==3 and B[4]==1: print('under triple indirect attack')    
-    print(str(5-thedeck[0]-thehands[0][0]-thehands[1][0]))
-    print(str(5-thedeck[1]+thedeck[0]-thehands[0][1]-thehands[1][1]))
-    print(str(5-thedeck[2]+thedeck[1]-thehands[0][2]-thehands[1][2]))
-    print(str(5-thedeck[3]+thedeck[2]-thehands[0][3]-thehands[1][3]))
-    print(str(5-thedeck[4]+thedeck[3]-thehands[0][4]-thehands[1][4]))
+    print(printmany("1",(5-thedeck[0]-thehands[0][0]-thehands[1][0])))
+    print(printmany("2",(5-thedeck[1]+thedeck[0]-thehands[0][1]-thehands[1][1])))
+    print(printmany("3",(5-thedeck[2]+thedeck[1]-thehands[0][2]-thehands[1][2])))
+    print(printmany("4",(5-thedeck[3]+thedeck[2]-thehands[0][3]-thehands[1][3])))
+    print(printmany("5",(5-thedeck[4]+thedeck[3]-thehands[0][4]-thehands[1][4])))
 
 def advance(n):
     makeamove(["advance",n])
@@ -622,6 +657,8 @@ def parry():
 
 def flee(n):
     makeamove(["flee",n])
+
+showboard()
     
 
         
