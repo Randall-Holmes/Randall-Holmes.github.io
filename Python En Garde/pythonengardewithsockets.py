@@ -346,6 +346,7 @@ def makeamove(M):
             return 0
         TheBoard=saveboard
         thehands=savehands
+        showboard()
         printq('bad move')
         return('bad move')
 
@@ -370,6 +371,7 @@ def makeamove(M):
             return 0
         TheBoard=saveboard
         thehands=savehands
+        showboard()
         printq('bad move')
         return('bad move')
 
@@ -395,6 +397,7 @@ def makeamove(M):
 
         TheBoard=saveboard
         thehands=savehands
+        showboard()
         printq('bad move')           
         return('bad move')
 
@@ -419,6 +422,7 @@ def makeamove(M):
             return 0
         TheBoard=saveboard
         thehands=savehands
+        showboard()
         printq('bad move') 
         return('bad move')
 
@@ -443,6 +447,7 @@ def makeamove(M):
 
         TheBoard=saveboard
         thehands=savehands
+        showboard()
         printq('bad move')
         return('bad move')
 
@@ -465,6 +470,7 @@ def makeamove(M):
             return 0
         TheBoard=saveboard
         thehands=savehands
+        showboard()
         printq('bad move')
         return('bad move')
             
@@ -473,12 +479,14 @@ def makeamove(M):
         if M[1]<1 or M[1]>3:
             TheBoard=saveboard
             thehands=savehands
+            showboard()
             printq( 'bad move')
             return 0
         if B[1]-B[0]>5:
 
             TheBoard=saveboard
             thehands=savehands
+            showboard()
             printq( 'bad move')
             return 0
         theboard=[B[0],B[1],M[1],3-B[3],0]
@@ -510,6 +518,7 @@ def makeamove(M):
 
         TheBoard=saveboard
         thehands=savehands
+        showboard()
         printq('bad move')
     
         return 0
@@ -518,14 +527,14 @@ def makeamove(M):
         if M[1]<1 or M[1]>5:
             TheBoard=saveboard
             thehands=savehands
-
+            showboard()
             printq('bad move')
             return 0
         if M[1]>=B[1]-B[0] or (B[1]-B[0])-M[1] >5:
 
             TheBoard=saveboard
             thehands=savehands
-
+            showboard()
             printq('bad move')
             return 0
         moved = (B[1]-B[0])-M[1]
@@ -551,7 +560,7 @@ def makeamove(M):
             return 0
         TheBoard=saveboard
         thehands=savehands
-            
+        showboard()
         printq('bad move')
         return 0
        
@@ -559,10 +568,11 @@ def makeamove(M):
         if M[1]<1 or M[1]>5:
             TheBoard=saveboard
             thehands=savehands
-
+            showboard()
             printq('bad move')
             return 0
         if M[1]>=B[1]-B[0] or (B[1]-B[0])-M[1]>5:
+            showboard()
             printq('bad move')
             return 0
         moved = (B[1]-B[0])-M[1]
@@ -587,7 +597,8 @@ def makeamove(M):
             printq( 'Player 2 advanced '+str(moved)+' and lunged from '+str(M[1])+' with strength '+str(M[2]))
             return 0
         TheBoard=saveboard
-        thehands=savehands            
+        thehands=savehands
+        showboard()
         printq('bad move')
         return 0
 
@@ -596,7 +607,7 @@ def makeamove(M):
         if not(B[2]>0):
             TheBoard=saveboard
             thehands=savehands
-
+            showboard()
             printq('bad move')
             return 0
         theboard = [B[0],B[1],0,B[3],0]
@@ -617,7 +628,7 @@ def makeamove(M):
 
         TheBoard=saveboard
         thehands=savehands
-            
+        showboard()    
         printq('bad move')
         return 0
     TheBoard=saveboard
@@ -702,7 +713,7 @@ def numcode(n):
     if n=='3':  return 3
     if n=='4':  return 4
     if n=='5':  return 5
-    return "bogus"
+    return 0
 
 def decodemove(s):
     if len(s)==1: return [actioncode(s[0])]
@@ -763,8 +774,10 @@ def serverinterface():
 
             cline=b""
             dataBytes = b""
+            firstpass=True
             while not(cline.decode()=='bye'):
-               showboard()
+               if firstpass==True: showboard()
+               firstpass=False
                conn1.sendall(b"" + chr(4).encode())
                conn2.sendall(b"" + chr(4).encode())
                if TheBoard[3]==1:
