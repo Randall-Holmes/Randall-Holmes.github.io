@@ -722,7 +722,9 @@ def decodemove(s):
     return ["bogus"]
 
 def play(s):
-    makeamove(decodemove(s))
+    if s[0]=='"':  printq('\nPlayer '+str(TheBoard[3])+ ":  "+s[1:])
+                          
+    if not(s[0]=='"'):  makeamove(decodemove(s))
 
 
 
