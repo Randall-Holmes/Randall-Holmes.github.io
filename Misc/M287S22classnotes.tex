@@ -2,9 +2,12 @@
 
 \usepackage{amssymb}
 
+\usepackage{comment}
 \title{Class notes for Math 287 Spring 2022}
 
 \author{Dr Holmes}
+
+
 
 \begin{document}
 
@@ -1690,9 +1693,226 @@ of any exponent.  The number of multiplications is proportional to the log base 
 
 An example in full generality (we will see some in RSA computations in the next section)  is a bit harder than this because in the general case one has to compute remainders
 on division by numbers less convenient than 100.
+\subsection{The Chinese Remainder Theorem}
+
+Next I lectured the Chinese Remainder Theorem.   (Spring 2023 students note that this subsection was stolen from notes for Math 189)
+
+\begin{description}
+
+\item[Theorem:]  If $m,n >1$ and ${\tt gcd}(m,n)=1$, each system of equations of the form
+
+$x\equiv_m a$
+
+$x \equiv_n b$
+
+has a unique solution mod $mn$.
+
+\item[Proof (and method of computation!):]  Because $x \equiv_m a$, there is an integer $k$ such that
+$x = a+mk$.
+
+So to find $x$ solve for $k$ the equation 
+
+ $a+mk \equiv_n b$  [it is convenient here to let $m$ be the larger of the two moduli, but the procedure works either way]
+
+which is equivalent to
+
+$mk \equiv_n (b-a)$  [notice that $m$ and $b-a$ can be replaced with their remainders mod $n$ since this is a calculation in mod $n$ arithmetic]
+
+Because ${\tt gcd}(m,n)=1$, there is a reciprocal $m^{-1} {\tt mod} n$ (which we know how to compute using the extended Euclidean algorithm)
+
+Thus we get
+
+$k \equiv_n (m^{-1} {\tt mod} n)(b-a)$
+
+so for some integer $l$ we have $k=(m^{-1} {\tt mod} n)(b-a) + ln$
+
+and we have $x = a + m(m^{-1} {\tt mod} n)(b-a) + lmn$, that is
+
+$x \equiv_{mn} a + m(m^{-1} {\tt mod} n)(b-a)$.
+
+Strictly speaking our reasoning shows that a solution $x$ must be of this form.  You can check directly that
+
+$a + m(m^{-1} {\tt mod} n)(b-a) + lmn \equiv_m a$ [this is obvious, everything but the $a$ is a multiple of $m$]
+
+and
+
+$a +m(m^{-1}{\tt mod} n)(b-a) + lmn \equiv_n a + 1(b-a) + 0 = b$,
+
+so in fact every number of this form is a solution and we have an exact description of the solutions.
+
+I do observe that the formula here does provide a compact way to compute solutions to these problems, which I have seen students use successfully.  I will carry out the described computation step by step in examples, that being my particular practice.
 
 
+\end{description}
 
+I reproduce the example I did in class, which also illustrates that more than two equations of the form $x \equiv_m a$ for different moduli $m$ can be solved at the same time, as long as the moduli are pairwise relatively prime.
+
+\begin{description}
+
+\item[Example:]  23 pirates are dividing a stack of pieces of eight.
+
+The pieces of eight are divided evenly under jealous eyes into 23 stacks...but there are four too few to make the piles even.
+
+A scuffle ensues, cutlasses are drawn, and four pirates are interred in unmarked graves.
+
+But now the pile of pieces of eight has to be divided again among the 19 remaining pirates.
+
+There are two too few for an even division, and in the ensuing fracas two more pirates are despatched.
+
+Now the 17 remaining pirates divide the loot and it comes out even!  They sail off in various directions in search of more mischief...
+
+How many pieces of eight are there?
+
+[Disclaimer:  no pirates were actually harmed in the creation of this word problem]
+
+\item[Solution:]
+
+We have the following equations ($x$ being the unknown number of pieces of eight):
+
+$x \equiv_{23} -4 \equiv_{23} 19$
+
+$x \equiv_{19} -2 \equiv_{19} 17$
+
+$x \equiv_{17} 0$
+
+We solve the first pair of equations.
+
+$x \equiv_{23} \equiv_{23} 19$
+
+$x \equiv_{19} \equiv_{19} 17$
+
+We begin by setting $x=19+23k$ using the first equation.
+
+We then want to solve for $k$ in
+
+$19+23k\equiv_{19} 17$
+
+which is equivalent to 
+
+$23k \equiv_{19}-2$
+
+which is equivalent to 
+
+$4k \equiv_{19} 17$ [replace 23 and $-2$ with their remainders mod 19]
+
+so we need to compute $4^{-1}{\tt mod} 19$ (which is not hard to guess but we will compute it)
+
+$\begin{array}{cccc}
+
+19 & 1 & 0 & \\
+4 & 0 & 1 &\\
+3 & 1 & -4 & 4\\
+1 & -1 & 5 & 1 \\
+\end{array}$
+
+\end{description}
+
+so $4^{-1}{\tt mod}19 = 5$
+
+so $k \equiv_{19} (17)(5)\equiv_{19} 9$
+
+and $x \equiv_{437} 19+(23)(9) = 226$ [437 = $mn$ = (23)(19)]
+
+
+and now we have two equations
+
+$x \equiv_{437} 19+(23)(9) = 226$ 
+
+$x \equiv_{17} = 0$
+
+We set $x=226+437k$
+
+to get a new equation
+
+$226+437k\equiv_{17}0$
+
+The remainder of 226 on division by 17 is 5
+
+The remainder of 437 on division by 17 is 12
+
+so we have
+
+$5+12k \equiv_{17}0$
+
+$12k \equiv_{17} -5 \equiv_{17} 17-5 = 12$
+
+so we don't have to do anything elaborate to find $k=1$.
+
+Thus
+
+$x \equiv_{(437)(17)} 226+437 = 663$
+
+437 times 17 is 7429
+
+so our solution is
+
+$x \equiv_{7429} 663$.
+
+If I want to force an exact answer, I could ask what the smallest possible number of coins was.  Or I could give extra information such as...we know they didnt have more than eight thousand coins.
+
+\section{Homework 10 for Spring 2023 class, edited from original homework 9}
+
+A few little exercises:
+
+\begin{enumerate}
+
+\item  Compute $108^{-1} {\tt mod} 211$
+
+\item  Solve $108x \equiv_{211}  37$  (hint:  you can use the previous part!)
+
+\item  Describe all solutions (if there are any) of $10x \equiv_{30} 20$.  Notice that 10 is not relatively prime to 30:  you need to test lots of values.  One solution is obvious:  there are more.
+
+Now describe all solutions of $10x \equiv_{30} 15$.
+
+This question is just a hint that things are more complicated when one solves linear equations in modular arithmetic and a multiplicative inverse is not available.
+
+\item  Compute $13^{211} {\tt mod} 100$
+
+\item  Compute $13^{211} {\tt mod} 137$  (this involves more work with remainders)
+
+\item  (Chinese Remainder Theorem) 
+
+Solve the system of equations
+
+$x \equiv_{125} 111$
+
+$x \equiv_{137} 14$
+
+for $x$.  Give the smallest nonnegative solution and the general form of all solutions.
+
+\item  A fresh pirate word problem (there is a very similar problem in the notes):
+
+35 pirates are dividing a stack of pieces of eight.
+
+The pieces of eight are divided evenly under jealous eyes into 35 stacks...but there are two  too few to make the piles even.
+
+A scuffle ensues, cutlasses are drawn, and two  pirates are interred in unmarked graves.
+
+But now the pile of pieces of eight has to be divided again among the 33  remaining pirates.
+
+There are four too few for an even division, and in the ensuing fracas four more pirates are despatched.
+
+Now the 29 remaining pirates divide the loot and it comes out even!  They sail off in various directions in search of more mischief...
+
+How many pieces of eight are there?  It wasn't that good  a year for pirates...you can be confident that the smallest possible answer is correct.
+
+[Disclaimer:  no pirates were actually harmed in the creation of this word problem]
+
+\begin{comment}
+
+\item  Use Fermat's Little Theorem to compute $5^{21355} {\tt mod} 17$.
+
+Use the lemma about computation of $\phi(pq)$ to compute $7^{1000} {\tt mod} 35$.  This calculation will end up with some easy repeated squaring, not nearly as much as with an exponent of 1000.
+
+\item  Let $N = (13)(17) = 221$.  Leet $r=5$.   Verify that $r$ is an appropriate encryption exponent
+and determine the decryption exponent $s$.
+
+Encrypt the message 100 then decrypt the result.
+
+\end{comment}
+
+
+\end{enumerate}
 
 
 \section{March 18:  Euler's Theorem about exponentiation in modular arithmetic, and the RSA encryption algorithm}
@@ -1808,35 +2028,7 @@ $$\begin{array}{cc}
 
 
 
-\section{Homework 9}
 
-A few little exercises:
-
-\begin{enumerate}
-
-\item  Compute $108^{-1} {\tt mod} 211$
-
-\item  Solve $108x \equiv_{211}  37$  (hint:  you can use the previous part!)
-
-\item  Describe all solutions (if there are any) of $10x \equiv_{30} 20$.  Notice that 10 is not relatively prime to 30:  you need to test lots of values.  One solution is obvious:  there are more.
-
-Now describe all solutions of $10x \equiv_{30} 15$.
-
-This question is just a hint that things are more complicated when one solves linear equations in modular arithmetic and a multiplicative inverse is not available.
-
-\item  Compute $13^{211} {\tt mod} 100$
-
-\item  Use Fermat's Little Theorem to compute $5^{21355} {\tt mod} 17$.
-
-Use the lemma about computation of $\phi(pq)$ to compute $7^{1000} {\tt mod} 35$.  This calculation will end up with some easy repeated squaring, not nearly as much as with an exponent of 1000.
-
-\item  Let $N = (13)(17) = 221$.  Leet $r=5$.   Verify that $r$ is an appropriate encryption exponent
-and determine the decryption exponent $s$.
-
-Encrypt the message 100 then decrypt the result.
-
-
-\end{enumerate}
 
 \newpage
 
