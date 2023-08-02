@@ -7,7 +7,8 @@
 \date{starting, 7/13/2023\\
 typos and mental failures fixed, 7/18/2023\\
 revised during 7/24/2023 Zoom meeting\\definition of substitutions and their action rewritten, 7/25/2023\\
-freedom of action {\em is} needed for type counting}
+freedom of action {\em is} needed for type counting\\
+8/2/2023:  some editing and debugging, progress in setting up last case of the freedom of action proof.}
 
 \usepackage{amssymb}
 
@@ -211,6 +212,9 @@ We define a $\beta$-presubstitution ($\beta\in \lambda$) as a permutation $\sigm
 For each $\beta$-presubstitution $\sigma$ and ordinal $\gamma<\beta$ we define $\sigma_\gamma$ as the $\gamma$-presubstitution such that $\sigma_\gamma((x,A)) = (y,A)$ (for $(x,A)$ in the known domain of a $\gamma$-presubstitution) iff $\sigma((x,A \cup \{\beta\})) = (y,A \cup \{\beta\})$.
 We define $\sigma_{-1}(x) = \pi_1(\sigma((x,\{\beta,-1\}))$.
 
+We extend the notation of the previous paragraph.  We define $\sigma_B((x,C)) = ((y,C))$ iff all elements of $B$ dominate all elements of $C$  and $$\sigma((x,B \cup C)) = \sigma((y,B \cup C)).$$  $\sigma_B$ is a ${\tt min}(B)$-presubstitution, with $\sigma_{\{\beta\}} = \sigma$ and $\sigma_B$ for $B$ with more than one element
+equal to $(\sigma_{B \setminus \{{\tt min}(B)\}})_{{\tt min}(B)}$
+
 \item  We define the action of a presubstitution on elements of our structure and on supports.  For any $x$ in $\tau_\beta$ and $\beta$-presubstitution $\sigma$ ($\beta>-1$), $\sigma[x]$ is the element of $\tau^*_\beta$ whose $\gamma$-extension is $\{\sigma_\gamma[y]:y \in x \cap \tau_\gamma\}$ for each type index $\gamma<\beta$.  In
 the case $\gamma=-1$, $\sigma_{-1}[y] = \sigma_{-1}(y)$.
 
@@ -227,7 +231,7 @@ The $\gamma$-extension of $\sigma[X]$ is $\{\sigma_\gamma[x]\}$ and the $\delta$
 For $\sigma[X]$ to be extensional, we need the $\delta$-extension of $\sigma[X]$ to be $\{N_\delta:N^\circ = f_{\gamma,\delta}(\sigma_\gamma[x])\}$.
 
 This motivates our definition of a $\beta$-substitution $(\beta>-1)$ as a $\beta$-presubstitution such that $$\{\sigma_\delta[N_\delta]:N^\circ = f_{\gamma,\delta}(x)\} = \{N_\delta:N^\circ = f_{\gamma,\delta}(\sigma_\gamma[x])\},$$ for each appropriate $\gamma$, which can readily be seen to be equivalent to the assertion that
-$\sigma_\delta[f_{\gamma,\delta}(x)_\delta] \cap \tau_{-1} \sim  f_{\gamma,\delta}[\sigma_\gamma[x]]$.
+$\sigma_\delta[f_{\gamma,\delta}(x)_\delta] \cap \tau_{-1} \sim  f_{\gamma,\delta}[\sigma_\gamma[x]]$, for any $x \in \tau_\gamma$.
 
 We provide as a hypothesis of the construction that $\tau_\beta$ is closed under $\beta$-substitutions for each $\beta<\alpha$:  we claim that the additional condition which we have shown to be necessary for our purposes will also turn out to be sufficient when all details of the construction are seen.
 
@@ -248,9 +252,10 @@ We define $\sigma^+(x)$ as $\sigma[x]$ for each $\beta$-substitution $\sigma$ an
 we may have some use for this below.
 
 
-\item We describe the selection of designated codes for each element of our structure.
+\item We describe the selection of designated supports for each element of our structure (a support $S$ of an element $x$ of the structure is an $S$ for which there is a $\Sigma$ such that $(S,\Sigma)$ codes $x$).  This supports a recursive construction of designated codes.
+The designated code for an atom is itself.  Otherwise the designated code for $x$ is the pair $(S,\Sigma)$ where $S$ is the designated support of $S$ and $\Sigma$ is the set of designated codes for elements of the distinguished extension of $x$.
 
-We choose a preliminary designated code for each element of the structure (this is necessary because objects other than atoms which have codes clearly have more than one):  we are actually
+We choose a preliminary designated support for each element of the structure (this is necessary because objects other than atoms which have codes clearly have more than one):  we are actually
 choosing designated codes for elements of $\tau_\alpha$ and continuing to use codes already chosen for the earlier constructed types.
 
 We impose the technical condition that for each $\beta \leq \alpha$ and $x \in \tau_\beta$, if $x$ has the same $-1$ extension as an element $x'$  of $\tau_0$, and the designated support of $x'$ is $S$, the designated support of $x$ has as its members exactly the $(u,\{\beta,-1\})$ such that $(u,\{0,-1\}) \in S$ and the $(v_\beta,\{\beta\})$ such
@@ -291,7 +296,8 @@ is induced by the order on typed atoms in $\tau_0$ which is a suborder of $\leq_
 
 
 We describe how to construct all $\leq_\alpha$ for $\alpha\geq 0$.  We collect the extensional type $\alpha$ sets which are codable and designate a code for each one (axiom of choice) and convert the included support to a strong support as described above. We place the typed atoms and near-litters  in $\leq_\alpha$ in the same positions at which the typed atoms and near-litters with the same $-1$-extensions are placed in
-$\leq_0$ (we described this above).  We provide ourselves with an arbitrary well-ordering of the other sets in type $\alpha$ of order type $\mu$.  At each step, we go to the first unfilled position and choose the first set in the arbitrary ordering from $\tau_\alpha$ whose designated strong support does not include any support element whose image under $c$ has been placed in a later position (in its own type) and place it there, ensuring that there will be one by making the additional requirement that no set with nonempty $-1$-extension can be placed earlier than the position of the set with the same $-1$-extension  in $\leq_0$:  this ensures that when we are filling an unfilled position, the object with the same $-1$-extension as the object at the same position in $\leq_0$ is available as a candidate [this is where the technical condition on designated supports for sets with $-1$-extensions shared with elements of $\tau_0$ is used].   Every code is eventually placed, so the entire well ordering is filled (any given item will eventually be placeable because of the cofinality of $\mu$ being at least $\kappa$ and the fact that supports are small).
+$\leq_0$ (we described this above).  We provide ourselves with an arbitrary well-ordering of the other sets in type $\alpha$ of order type $\mu$.  At each step, we go to the first unfilled position $\eta$ and place in it the first item in the arbitrary order on $\tau_\alpha$ which has no support element $s$ such that $\iota_*(c(s))\geq \eta$ and which also has the property that
+if it has the same $-1$-extension as an element $u$ of $\tau_0$ we have $\iota_*(u) \leq \eta$.  This last condition ensures that every position can actually be filled, because the item at the same position in $<_0$ will always be a candidate [this is also supported by the special condition on designated supports of items with nonempty $-1$-extensions].  Every item will eventually be placed because the cofinality of $\mu$ is at least $\kappa$ and supports are small.
 
 \item All that is needed to ensure that this works is the assurance that there are no more than $\mu$ codes, which ensures that there are exactly $\mu$ elements of each type.
 
@@ -330,21 +336,25 @@ since we know the actions on $(N^\circ_\gamma,A)$ and each $(x,A\cup \{-1\})$ wi
 
 It remains to indicate how to compute the action of $\sigma$ on $(L_\gamma,A)$ where $L$ is a litter.
 
-We indicate how to compute $\pi_1(\sigma((x,A \cup \{-1\}))$ for each $x \in L$ if we know how to compute $\sigma[(L_\gamma,A)]^\circ$.  If $x \in D_A \cap L$, we compute  $$\pi_1(\sigma((x,A \cup \{-1\}))= \pi_1(\sigma_0((x,A \cup \{-1\})).$$  We define $S_{A,L}$ as $\{x \in D_A: x \not\in L \wedge \pi_1(\sigma_0((x,A \cup \{-1\})) \in \pi_1(\sigma[(L_\gamma,A)]))\}$.
-For each $x \in L \setminus D_A$, we compute $\pi_1(\sigma((x,A \cup \{-1\}))$ as $$(\sigma_{L \setminus D_A,\pi_1(\sigma[(L,A)]) \setminus S_{A,L}}(x),A \cup \{-1\}).$$
+We indicate how to compute $\pi_1(\sigma((x,A \cup \{-1\}))$ for each $x \in L$ if we know how to compute $\pi_1(\sigma[(L_\gamma,A)])^\circ$.  If $x \in D_A \cap L$, we compute  $$\pi_1(\sigma((x,A \cup \{-1\}))= \pi_1(\sigma_0((x,A \cup \{-1\})).$$  We define $S_{A,L}$ as $\{x \in D_A: x \not\in L \wedge \pi_1(\sigma_0((x,A \cup \{-1\})) \in \pi_1(\sigma[(L_\gamma,A)]))^\circ\}$.
+For each $x \in L \setminus D_A$, we compute $\sigma((x,A \cup \{-1\})$ as $$(\sigma_{L \setminus D_A,\pi_1(\sigma[(L,A)]) \setminus S_{A,L}}(x),A \cup \{-1\}).$$
 
 We have thus indicated how to compute $$\sigma[(L,A)] = (\{\{\pi_1(\sigma((x,A \cup \{-1\})):x \in L\}_\gamma,A).$$
 
-This handles the case where $(L_\gamma,A)$ is flexible immediately, because we can compute $\sigma[(L_\gamma,A)]^\circ$ as $\pi_1(\sigma_0(L_\gamma,A))$.
+This handles the case where $(L_\gamma,A)$ is flexible immediately, because we can compute $\pi_1(\sigma[(L_\gamma,A)])^\circ$ as $\pi_1(\sigma_0(L_\gamma,A))$.
 
 The remaining case is to compute $\sigma[(L_\gamma,A)]$ in the case where $L = f_{\delta,\gamma}(x)$ for some $\delta$ dominated by all members of $A \setminus \gamma$.
 
-If $(L_{\gamma},A)$ is not flexible, we have $L_\gamma = f_{\delta,\gamma}(u)$ for some $\delta<\beta$ and $u \in \tau_\delta$.  For every element $(v,B)$ of the designated strong support $S$ of $u$, we have $\iota_*(v,B)<\iota_*(L_\gamma,\alpha)$, so we have already computed
-the action of $\sigma$ at each $(v,B\cup (A \setminus \{\gamma\}))\in S$ (which has the same image under $\iota_*$).  
+We do some calculations.  
 
-Suppose $\delta=0$.  $u$ is then an atom and we already know how to compute the action of $\sigma$ at $(u,(A \setminus \gamma) \cup \{-1\})$, from which we can compute  $\sigma[(L_\gamma,A)]^\circ$ as $(f_{-1,\gamma}(\pi_1((u,(A \setminus \gamma) \cup \{-1\}))),A)$ and complete the calculation of  $\sigma[(L_\gamma,A)]$ as above.
+$\sigma[( f_{\delta,\gamma}(x),A)] = (\sigma_{A \setminus \gamma}[ f_{\delta,\gamma}(x)],A)$ follows from the definition of set-subscripted substitutions.
 
-Suppose $\delta>0$.  We define a $\delta$-partial substitution sending each $(v,B)\in S$ to $(\pi_1(\sigma[(v,B\cup (A \setminus \{\gamma\})]),B)$ if $v$ is atomic or to $(\pi_1(\sigma[(v,B\cup (A \setminus \{\gamma\})])^\circ,B)$ if $(v,B)$ is $\delta$-flexible.
+That $\sigma_{A \setminus \gamma}[ f_{\delta,\gamma}(x)] \sim f_{\delta,\gamma}(\sigma_{(A \setminus \gamma)\setminus \{\gamma\}\cup \{\delta\}}[x])$ follows from the coherence condition on substitutions.
+
+From this it follows that we can compute the value of $\pi_1(\sigma[L_\gamma,A)])^\circ = \pi_1( \sigma((f_{\delta,\gamma}(x),A))) = \sigma_{A \setminus \gamma}[ f_{\delta,\gamma}(x)]^\circ$ if we can compute $f_{\delta,\gamma}(\sigma_{(A \setminus \gamma)\setminus \{\gamma\}\cup \{\delta\}}[x])$,
+for which it is sufficient to compute $\sigma_{(A \setminus \gamma)\setminus \{\gamma\}\cup \{\delta\}}[x]$.
+
+
 
 
 
