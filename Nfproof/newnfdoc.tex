@@ -12,13 +12,16 @@ freedom of action {\em is} needed for type counting\\
 first pass 8/4/2023, a lot of proofreading.
 8/9/23 more proofreading, more work on Freedom of Action\\
 8/10/2023 first draft of entire proof of Freedom of Action\\
-8/27/2023:  another editing pass, simplified indexing (and possibly removed errors) in FoA proof, other fixes in earlier parts}
+8/27/2023:  another editing pass, simplified indexing (and possibly removed errors) in FoA proof, other fixes in earlier parts\\
+8/29/2023 changed the definition of support element and made induced corrections (I hope).}
 
 \usepackage{amssymb}
 
 \begin{document}
 
 \maketitle
+
+\newpage
 
 In this document, we give a self contained account of a structure which will turn out to be a model of tangled type theory, and therefore a witness to the consistency of Quine's New Foundations.
 We will not discuss these theories until later in the narrative.  All of our business will be conducted in the usual set theory ZFC, and in fact in not very much of it, because New Foundations is not a very strong theory.
@@ -192,9 +195,18 @@ We further state that $\tau_\beta \subseteq \tau^3_\beta$ for $-1 < \beta < \alp
 \item  A typed near-litter is an element $N_\gamma$ of $\tau_\gamma$ where $N$ is a near-litter.  A typed atom is an element $\{x\}_\gamma$ of $\tau_\gamma$ where
 $x \in \tau_{-1}$.
 
-A {\em support element\/} is a pair $(x,A)$ where $A$ is a finite set of type indices with ${\tt max}(A)$ an ordinal and  $x$ either an atom (type $-1$) [in which case we call it an atomic support element and ${\tt min}(A) =-1$] or a typed near-litter (of some type $>-1$ and $x \in \tau_{{\tt min}(A)}$ [in which case we call it a near-litter support element].
+A {\em support element\/} is a pair $(x,A)$ where $A$ is a nonempty finite set of type indices other than $-1$ and $x$ is either a near-litter or
+the singleton of an atom.
 
-A {\em $\beta$-support\/} (for $\beta \in \lambda$) is a small set of support elements $(x,A)$ each of which has ${\tt max}(A)=\beta$, with the technical property that if it contains distinct $(x,A)$ and $(y,A)$ [with the same second component;  not all elements of a support need have the same second component], and $x$ and $y$ are both typed near-litters, they have disjoint $-1$-extensions.
+For any support element $(x,A)$ we define $c((x,A))$ as $x_{{\tt min}(A)}$:  $c$ converts support elements to typed near-litters or typed singletons of atoms.
+
+We refer to support elements $(\{x\},A)$ as atomic support elements and to support elements $(N,A)$ where $N$ is a (near-)litter as (near-)litter support elements.
+
+A {\em $\beta$-support\/} (for $\beta \in \lambda$) is a small set of support elements $(x,A)$ each of which has ${\tt max}(A)=\beta$, with the technical property that if it contains distinct $(x,A)$ and $(y,A)$ [with the same second component;  not all elements of a support need have the same second component], and $x$ and $y$ are both near-litters, they are disjoint.
+
+{\bf NOTE:  I changed the definition of support element 8/29/2023 so that first components of support elements are in every case sets of atoms.
+Under the previous definition, the atomic support element $(\{x\},A)$ would have been $(x,A)$ and the near-litter support element $(N,A)$ would have been $(N_\gamma,A)$, so
+that first components were atoms or typed near-litters.  The new definition seems to lead to less annoying subscripting.  We describe the change here in case some text has not been revised correctly.}
 
 For any $\beta$-support $S$ and $\gamma<\beta$, we define $S_\gamma$ as $$\{(x,A):{\tt max}(A)=\gamma \wedge (x,A\cup \{\beta\}) \in S\}.$$
 
@@ -206,24 +218,25 @@ We define a $\beta$-presubstitution ($\beta\in \lambda$) as a permutation $\sigm
 
 \begin {enumerate}
 
-\item $\pi_1(\sigma((x,A))) = A$ for all $(x,A)$ in the domain of $\sigma$.  This shows that $\sigma$ independently permutes, for each $A$ with minimum $-1$, the set $\{(x,A):x \in \tau_{-1}\}$.
+\item $\pi_1(\sigma((x,A))) = A$ for all $(x,A)$ in the domain of $\sigma$.  This shows that $\sigma$ independently permutes, for each appropriate $A$, the set $\{(\{x\},A):x \in \tau_{-1}\}$.
 
-\item For each $A$ with minimum $-1$, the permutation $\sigma_A$ defined by $\sigma((x,A)) = (\sigma_A(x),A)$ is a $-1$-substitution.
+\item For each appropriate $A$, the permutation $\sigma_{A\cup \{-1\}}$ implicitly defined by $\sigma((\{x\},A)) = (\{\sigma_{A\cup \{-1\}}(x)\},A)$ is a $-1$-substitution.
 
 \end{enumerate}
 
 For each $\beta$-presubstitution $\sigma$ and ordinal $\gamma<\beta$ we define $\sigma_\gamma$ as the $\gamma$-presubstitution such that $\sigma_\gamma((x,A)) = (y,A)$ (for $(x,A)$ in the known domain of a $\gamma$-presubstitution) iff $\sigma((x,A \cup \{\beta\})) = (y,A \cup \{\beta\})$.
-We define $\sigma_{-1}(x) = \pi_1(\sigma((x,\{\beta,-1\}))$.
+We define $\sigma_{-1}(x)$ so that $\sigma((\{x\},\{\beta\})) = (\{\sigma_{-1}(x)\},\{\beta\})$.
 
-We extend the notation of the previous paragraph.  We define $\sigma_B((x,C)) = (y,C)$ [or $\sigma_B(x)=y$ in the case where ${\tt min}(B)=-1$] iff ${\tt min}(B) = {\tt max}(C)$  and $$\sigma((x,B \cup C)) = (y,B \cup C).$$  $\sigma_B$ is a ${\tt min}(B)$-presubstitution, with $\sigma_{\{\beta\}} = \sigma$ and $\sigma_B$ for $B$ with more than one element
-equal to $(\sigma_{B \setminus \{{\tt min}(B)\}})_{{\tt min}(B)}$
+We extend the notation of the previous paragraph.   For $B$ a finite set of type indices with maximum $\beta$, $\sigma_B$ is a ${\tt min}(B)$-presubstitution, with $\sigma_{\{\beta\}} = \sigma$ and $\sigma_B$ for $B$ with more than one element
+equal to $(\sigma_{B \setminus \{{\tt min}(B)\}})_{{\tt min}(B)}$.  Notice that this has different definitions (though closely related) depending on whether ${\tt min}(B)=-1$.
 
 \item  We define the action of a presubstitution on elements of our structure and on supports.  For any $x$ in $\tau_\beta$ and $\beta$-presubstitution $\sigma$ ($\beta>-1$), $\sigma[x]$ is the element of $\tau^*_\beta$ whose $\gamma$-extension is $\{\sigma_\gamma[y]:y \in x \cap \tau_\gamma\}$ for each type index $\gamma<\beta$.  In
 the case $\gamma=-1$, $\sigma_{-1}[y] = \sigma_{-1}(y)$.
 
-We define the action of a $\beta$-presubstitution $\sigma$ on support elements.  If $(x,A)$ is a $\beta$-atomic support element, $\sigma[(x,A)] = \sigma((x,A))$.  If $(N,A)$ is a $\beta$-near-litter support element, $$\sigma[(N,A)] = ((\pi_1``\sigma_{A \cup \{-1\}}``(N\times \{A\}))_{{\tt min}(A)},A).$$
+We define the action of a $\beta$-presubstitution $\sigma$ on support elements:  $\sigma[(x,A)] = (\sigma_{A \cup \{-1\}}``x,A)$.  Note that this agrees with simple application
+of $\sigma$ as a function at elements of  its domain.
 
-We define $\sigma(S)$, where $\sigma$ is a $\beta$-presubstitution and $S$ is a $\beta$-support, as $\{\sigma[s]:s \in S\}$.
+We define $\sigma[S]$, where $\sigma$ is a $\beta$-presubstitution and $S$ is a $\beta$-support, as $\{\sigma[s]:s \in S\}$.
 
 \item  We now motivate and define the notion of $\beta$-substitution.
 
@@ -233,14 +246,15 @@ The $\gamma$-extension of $\sigma[X]$ is $\{\sigma_\gamma[x]\}$ and the $\delta$
 
 For $\sigma[X]$ to be extensional, we need the $\delta$-extension of $\sigma[X]$ to be $\{N_\delta:N^\circ = f_{\gamma,\delta}(\sigma_\gamma[x])\}$.
 
-This motivates our definition of a $\beta$-substitution $(\beta>-1)$ as a $\beta$-presubstitution such that $$\{\sigma_\delta[N_\delta]:N^\circ = f_{\gamma,\delta}(x)\} = \{N_\delta:N^\circ = f_{\gamma,\delta}(\sigma_\gamma[x])\},$$ for each appropriate $\gamma$, which can readily be seen to be equivalent to the assertion that
-$\sigma_\delta[f_{\gamma,\delta}(x)_\delta] \cap \tau_{-1} \sim  f_{\gamma,\delta}[\sigma_\gamma[x]]$, for any $x \in \tau_\gamma$.
+This motivates our definition of a $\beta$-substitution $(\beta>-1)$ as a $\beta$-presubstitution such that $$\{\sigma_\delta[N_\delta]:N^\circ = f_{\gamma,\delta}(x)\} = \{N_\delta:N^\circ = f_{\gamma,\delta}(\sigma_\gamma[x])\},$$ for each appropriate $\gamma, \delta,x$, which can readily be seen to be equivalent to the assertion that
+$\sigma_\delta[f_{\gamma,\delta}(x)_\delta] \cap \tau_{-1} \sim  f_{\gamma,\delta}[\sigma_\gamma[x]]$, for any appropriate $\gamma, \delta$ and $x \in \tau_\gamma$, or equivalently
+$(\sigma_\delta)_{-1}``f_{\gamma,\delta}(x) \sim f_{\gamma,\delta}[\sigma_\gamma[x]]$ for such $\gamma,\delta,x$.
 
 We provide as a hypothesis of the construction that $\tau_\beta$ is closed under $\beta$-substitutions for each $\beta<\alpha$:  we claim that the additional condition which we have shown to be necessary for our purposes will also turn out to be sufficient when all details of the construction are seen.
 
 \item We define the notion of a code for an element of our structure.  We use the notation $\chi$ for the function sending a code to what it codes.
 
-A $-1$-code is simply an atom, and an atom is a code for itself and only for itself:  for $x \in \tau_{-1}$, $\chi(x)=x$.
+A $-1$-code is simply an atom, and an atom is a code for itself and only for itself:  for any $x$, $\chi(x)=x$ if either $x$ or $\chi(x)$ is an atom.
 
 A  $\beta$-code for $\beta$ an ordinal is a pair $(S,\Sigma)$ where $S$ is a $\beta$-support and, for some $\gamma<\beta$, $\Sigma$ is a set of $\gamma$-codes such that $\chi``\Sigma$ has an even number of iterated images (other than itself) under $A_{[\beta]}^{-1}$, and any $\beta$-substitution $\sigma$ such that $(\forall s \in S:\pi[s]=s)$ also
 satisfies $\{\sigma_\gamma[y]:y \in \chi``\Sigma\} = \chi``\Sigma$, and for each code $c$ in $\Sigma$, $\pi_1(c)$ is a superset of $S_\gamma$.  In this case $\chi((S,\Sigma))$ is defined as the unique $x\in \tau_\beta$, if there is one, such that $x \cap \tau_\gamma = \chi``\Sigma$.
@@ -261,34 +275,31 @@ The designated code for an atom is itself.  Otherwise the designated code for $x
 We choose a preliminary designated support for each element of the structure (this is necessary because objects other than atoms which have codes clearly have more than one):  we are actually
 choosing designated codes for elements of $\tau_\alpha$ and continuing to use codes already chosen for the earlier constructed types.
 
-We impose the technical condition that for each $\beta \leq \alpha$ and $x \in \tau_\beta$, if $x$ has the same $-1$-extension as an element $x'$  of $\tau_0$, and the designated support of $x'$ is $S$, the designated support of $x$ has as its members exactly the $(u,\{\beta,-1\})$ such that $(u,\{0,-1\}) \in S$ and the $(v_\beta,\{\beta\})$ such
-that $(v_0,\{0\})\in S$.  It is straightforward to see that elements of $\tau_0$ are exactly the $X_0$ such that $X \subseteq \tau_{-1}$ has small symmetric difference from a small or co-small union of litters, that any element of $\tau_0$ has support elements of exactly the kinds described, and that an $x \in \tau_\beta$ with the same $-1$-extension as
+We impose the technical condition that for each $\beta \leq \alpha$ and $x \in \tau_\beta$, if $x$ has the same $-1$-extension as an element $x'$  of $\tau_0$, and the designated support of $x'$ is $S$, the designated support of $x$ has as its members exactly the $(u,\{\beta\})$ such that $(u,\{0\}) \in S$.  It is straightforward to see that elements of $\tau_0$ are exactly the $X_0$ such that $X \subseteq \tau_{-1}$ has small symmetric difference from a small or co-small union of litters, that any element of $\tau_0$ has support elements of exactly the kinds described, and that an $x \in \tau_\beta$ with the same $-1$-extension as
 an element of $\tau_0$ does have the described set as a support.
 
 A support $S$ is said to be {\em strong\/} iff
 
 \begin{enumerate}
 
-\item for every $(N_\delta,A) \in S$, $N$ is a litter, and
-\item  for every atomic support element $(x,A)$ in $S$ there is $$(N_\delta,A\setminus\{-1\}) \in S$$ with $x \in N$, and 
+\item for every $(N,A) \in S$, $N$ is a litter if it is a near-litter, and
+\item  for every atomic support element $(\{x\},A)$ in $S$ there is $(N,A) \in S$ with $x \in N$ and $N$ a near-litter, and 
 
-\item for every support element of the form $(f_{\delta,\epsilon}(x)_\epsilon,A) \in S$ for which $\delta$ is dominated by every element of $A$ except $\epsilon$ we also have for each $(y,C)$ in the preliminary designated support
+\item for every support element of the form $(f_{\delta,\epsilon}(x),A) \in S$ for which $\delta$ is dominated by every element of $A$ except $\epsilon$ we also have for each $(y,C)$ in the preliminary designated support
 of $x$ that $$(y,(B \setminus \{\epsilon\})\cup C)\in S.$$
 
-\end{enumerate}  It should be evident that any support can be modified to one satisfying the first condition by replacing each element
-$(N_\delta,A)$ with $(N^\circ_\delta,A)$ and the $(x,A\cup \{-1\})$ such that $x \in N \Delta N^\circ$:  modifying the first component of a code
+\end{enumerate}  It should be evident that any support can be modified to one satisfying the first condition by replacing each near-litter support element
+$(N,A)$ with the nearby litter support element $(N^\circ,A)$ and the atomic support elements  $(\{x\},A)$ such that $x \in N \Delta N^\circ$:  modifying the first component of a code
 in this way will preserve acceptability of the code, because any substitution whose action preserves the modified code also preserves the original code.
 
 A code thus modified can be extended to a strong support satisfying the other two conditions simply by enforcing these closure conditions through $\omega$ steps.  The designated support  of each object is obtained as the  smallest strong support including the version of the designated support whose typed near-litter elements are typed litters  as a subset.
 
-We refer to support elements of the form $(f_{\delta,\epsilon}(x)_\epsilon,A)$ for which $\delta$ is dominated by every element of $A$ except $\epsilon$ as {\em inflexible\/} support elements [because the coherence conditions restrict how substitutions can act on them], and refer to all other near-litter support elements as {\em flexible\/} support elements.
+We refer to support elements of the form $(f_{\delta,\epsilon}(x),A)$ for which $\delta$ is dominated by every element of $A$ except $\epsilon$ as {\em inflexible\/} support elements [because the coherence conditions restrict how substitutions can act on them], and refer to all other near-litter support elements as {\em flexible\/} support elements.
 
-\item Specific elements of $\tau_\alpha$'s whose existence was postulated above need to be shown to be codable.  $\emptyset_\gamma$ is coded by $(\emptyset,\emptyset)$.  If $x$ is an atom, $\{x\}_\gamma$ is coded by $(\{(x,\{\gamma,-1\})\},\{x\})$.  If $N$ is a near-litter,
-$N_\gamma$ is coded by $(\{(N_\gamma,\{\gamma\}),N\}$.
+\item Specific elements of $\tau_\alpha$'s whose existence was postulated above need to be shown to be codable.  $\emptyset_\gamma$ is coded by $(\emptyset,\emptyset)$.  If $x$ is an atom, $\{x\}_\gamma$ is coded by $(\{(x,\{\gamma\})\},\{x\})$.  If $N$ is a near-litter,
+$N_\gamma$ is coded by $(\{(N,\{\gamma\}),N\}$.
 
 \item  We describe the construction of the well-orderings $\leq_\iota$ in detail.
-
-We define a conversion function $c$ on support elements:  $c((x,A)) = \{x\}_{{\tt min}(A\setminus \{-1\})}$ or $x_{{\tt min}(A)}$, whichever is defined.
 
 We first construct an order $\leq_0$  on $\tau_0$.  We choose an arbitrary order on elements of $\tau_0$ and proceed in alternating stages indexed by $\mu$:  at an even stage, we place the first so far unplaced litter, then place all atoms in it in an arbitrarily chosen order, then place all near-litters with small symmetric difference from a litter placed earlier and with all elements of the symmetric difference already placed.  At an odd stage, we place the first element of $\tau_0$ which is not a typed atom or near-litter and whose designated support contains no support item whose image under the conversion function has not already been placed, if there is one.  It should be evident that all elements of $\tau_0$ are eventually placed.  Of course this is constructed
 at stage 0, and the same order is used again in each subsequent stage.
@@ -299,7 +310,7 @@ is induced by the order on typed atoms in $\tau_0$ which is a suborder of $\leq_
 
 
 We describe how to construct all $\leq_\beta$ for $0<\beta \leq \alpha$.  We collect the extensional type $\beta$ sets which are codable and designate a code for each one (axiom of choice) and convert the included support to a strong support as described above. We place the typed atoms and near-litters  in $\leq_\beta$ in the same positions at which the typed atoms and near-litters with the same $-1$-extensions are placed in
-$\leq_0$ (we described this above).  We provide ourselves with an arbitrary well-ordering of the other sets in type $\beta$ of order type $\mu$ [the same arbitrary order being used at every stage for a given $\beta$, so we get the same $\leq_\beta$ at each stage with index $\geq\beta$].  At each step, we go to the first unfilled position $\eta$ and place in it the first item in the arbitrary order on $\tau_\beta$ which has no support element $s$ such that $\iota_*(c(s))\geq \eta$ and which also has the property that
+$\leq_0$ (we described this above).  We provide ourselves with an arbitrary well-ordering of the other sets in type $\beta$ of order type $\mu$ [the same arbitrary order being used at every stage for a given $\beta$, so we get the same $\leq_\beta$ at each stage with index $\geq\beta$].  At each step, we go to the first unfilled position $\eta$ and place in it the first item in the arbitrary order on $\tau_\beta$ which has no element $s$ of its designated support such that $\iota_*(c(s))\geq \eta$ and which also has the property that
 if it has the same $-1$-extension as an element $u$ of $\tau_0$ we have $\iota_*(u) \leq \eta$.  This last condition ensures that every position can actually be filled, because the item at the same position in $<_0$ will always be a candidate [this is also supported by the special condition on designated supports of items with $-1$-extensions agreeing with the $-1$-extension of an element of $\tau_0$].  Every item will eventually be placed because the cofinality of $\mu$ is at least $\kappa$ and supports are small.
 
 \item All that is needed to ensure that this works is the assurance that there are no more than $\mu$ codes, which ensures that there are exactly $\mu$ elements of each type.
@@ -312,13 +323,15 @@ We will need to prove a theorem about the freedom of action of substitutions fir
 
 \item Our criterion for acceptability of codes enforces a high degree of symmetry, assuming that substitutions act fairly freely on our structure.  We state a theorem about this.
 
-A {\em $\beta$-partial substitution\/} is an injective map $\sigma$ from $\beta$-support items to $\beta$-support items with domain and range the same, satisfying $\pi_2(\sigma(x,A)) = A$, satisfying for each litter $L$ and each $A$ with minimum $-1$ that the set $\{(x,A): x \in L \wedge (x,A) \in {\tt dom}(\sigma)\}$ is small, and satisfying that each $(N_\delta,A)$
+A {\em $\beta$-partial substitution\/} is an injective map $\sigma$ from $\beta$-support items to $\beta$-support items with domain and range the same, satisfying $\pi_2(\sigma(x,A)) = A$, mapping atomic support elements to atomic support elements, satisfying for each litter $L$ and each appropriate $A$ that the set $$\{x: x \in L \wedge (\{x\},A) \in {\tt dom}(\sigma)\}$$ is small, and satisfying that each near-litter support element $(N,A)$
 in the domain of $\sigma$ has $N$ a litter and is flexible.  Recall that this means that $N=N^\circ$ is not in the range of $f_{\gamma,\delta}$ for any $\gamma$ dominated by all elements of $A \setminus \{\delta\}$.
 
- We say that an atomic support element $(x,A)$ is an {\em exception\/} of a substitution $\sigma$ iff it satisfies the following condition:
-let $L$ be the litter containing $x$; either $$\pi_1(\sigma(x,A)) \not\in \pi_1(\sigma[(L,A \setminus \{-1\})])^\circ$$ or $$\pi_1(\sigma^{-1}(x,A)) \not\in \pi_1(\sigma^{-1}[(L,A \setminus \{-1\})])^\circ.$$
+We define $(N_\delta)^\circ$ as $(N^\circ)_\delta$ for any near-litter $N$ to facilitate the following definition.
 
-The Freedom of Action theorem asserts that for each partial substitution $\sigma_0$  there is a substitution $\sigma$ which extends it in the qualified sense that $\sigma((x,A)) =\sigma_0((x,A))$ where the latter is defined and $x$ is an atom, and $\pi_1(\sigma[(N_\gamma,A)])^\circ = \pi_1(\sigma_0((N_\gamma,A))$ where $N$ is a near-litter and the latter is defined, and further $\sigma$ has no exceptions other than elements of its domain.
+ We say that an atomic support element $(\{x\},A)$ is an {\em exception\/} of a substitution $\sigma$ iff it satisfies the following condition:
+let $L$ be the litter containing $x$; either $\sigma_{A \cup \{-1\}}[x] \not\in \sigma_A[L_{{\tt min}(A)}]^\circ$ or $\sigma^{-1}_{A \cup \{-1\}}[x] \not\in \sigma^{-1}_A[L_{{\tt min}(A)}]^\circ$
+
+The Freedom of Action theorem asserts that for each partial substitution $\sigma_0$  there is a substitution $\sigma$ which extends it in the qualified sense that $\sigma((x,A)) =\sigma_0((x,A))$ where the latter is defined and $x$ is a singleton, and $\pi_1(\sigma[(N,A)])^\circ = \pi_1(\sigma_0((N,A))$ where $N$ is a near-litter and the latter is defined, and further $\sigma$ has no exceptions other than elements of its domain.
 
 \item  Let $\sigma_0$ be a $\beta$-partial substitution.  We describe a method of computing a $\beta$-substitution $\sigma$ whose action extends $\sigma_0$.
 
@@ -326,42 +339,42 @@ We first extend $\sigma_0$ so that its domain includes all $(L,A)$ which are fle
 
 For any co-small subsets of litters $L,M$ we define $\sigma_{L,M}$ as the unique bijection from $L$ to $M$ which is strictly increasing in the order determined by fourth projections of the elements of each set.  The details of definition of $\sigma_{L,M}$ play no role in the proof: all that matters is that it is a bijection from $L$ to $M$.
 
-We define $D_A$ as $\{x:x \in \tau_{-1} \wedge (x,A) \in {\tt dom}(\sigma_0)\}$.
+We define $D_A$ as $\{x:x \in \tau_{-1} \wedge (\{x\},A) \in {\tt dom}(\sigma_0)\}$.
 
-We extend the definition of $\iota_*$ to support elements.  For $(x,A)$ atomic we define $\iota_*((x,A))$ as $\iota_*(\{x\}_{{\tt min}(A\setminus \{-1\}})$.  For $(N,A)$ near-litter, we define $\iota_*((N,A))$ as $\iota_*(N_{{\tt min}(A)})$.
+We extend the definition of $\iota_*$ to support elements by defining $\iota_*((x,A))$ as $\iota_*(c((x,A)))$.
 
 We show how to compute the action of $\sigma$ at each support item, assuming that we have computed its action for all support items with smaller image under $\iota_*$ as just extended.
 
-For any $(x,A)$ atomic with $\gamma={\tt min}(A \setminus \{-1\})$, we know that where $L$ is the litter containing $x$, $\iota_*(L_\gamma)<\iota_*(\{x\}_\gamma)$, so $$\iota_*((x,A))<\iota_*((L_\gamma,A \setminus\{-1\})),$$ so $\sigma[(L_\gamma,A\setminus \{-1\})]$ has already been computed.  We compute $\sigma((x,A))$ as either $\sigma_0((x,A))$ or $(\sigma_{L\setminus D_A,\pi_1(\sigma[(L_\gamma,A\setminus \{-1\})])^\circ\setminus D_A}(x),A)$.
+For any $(\{x\},A)$ atomic with $\gamma={\tt min}(A)$, we know that where $L$ is the litter containing $x$, $\iota_*(L_\gamma)<\iota_*(\{x\}_\gamma)$, so $$\iota_*((x,A))<\iota_*((L,A )),$$ so $\sigma[(L,A)]$ has already been computed.  We compute $\sigma(\{(x\},A))$ as either $\sigma_0((\{x\},A))$ or $(\sigma_{L\setminus D_A,\pi_1(\sigma[(L,A)])^\circ\setminus D_A}(x),A)$.
 
-For any $(N_\gamma,A)$ where $N$ is a near-litter which is not a litter, we have $\iota_*(N^\circ_\gamma,A) = \iota_*(N^\circ_\gamma)<\iota_*(N_\gamma))$ and $\iota_*((x,A\cup \{-1\})) = \iota_*(\{x\}_\gamma)<\iota_*(N_\gamma)$ for each $x \in N \Delta N^\circ$, which obviously gives us enough information to compute the action of $\sigma$ on $(N_\gamma,A)$,
-since we know the actions on $(N^\circ_\gamma,A)$ and each $(x,A\cup \{-1\})$ with $x \in N \Delta N^\circ$.
+For any $(N,A)$ where $N$ is a near-litter which is not a litter, we have $\iota_*(N^\circ,A) = \iota_*(N^\circ_\gamma)<\iota_*(N_\gamma))$ and $\iota_*((\{x\},A)) = \iota_*(\{x\}_\gamma)<\iota_*(N_\gamma)$ for each $x \in N \Delta N^\circ$, which obviously gives us enough information to compute the action of $\sigma$ on $(N,A)$,
+since we know the actions on $(N^\circ,A)$ and each $(\{x\},A)$ with $x \in N \Delta N^\circ$.
 
-It remains to indicate how to compute the action of $\sigma$ on $(L_\gamma,A)$ where $L$ is a litter.
+It remains to indicate how to compute the action of $\sigma$ on $(L,A)$ where $L$ is a litter.
 
-We indicate how to compute $\pi_1(\sigma((x,A \cup \{-1\}))$ for each $x \in L$ if we know how to compute $\pi_1(\sigma[(L_\gamma,A)])^\circ$.  If $x \in D_{A\cup \{-1\}} \cap L$, we compute  $$\pi_1(\sigma((x,A \cup \{-1\}))= \pi_1(\sigma_0((x,A \cup \{-1\})).$$  
+We indicate how to compute $\pi_1(\sigma((\{x\},A))$ for each $x \in L$ if we know how to compute $\pi_1(\sigma[(L,A)])^\circ$.  If $x \in D_{A} \cap L$, we compute  $$\pi_1(\sigma((\{x\},A ))= \pi_1(\sigma_0((\{x\},A)).$$  
 
 
-We define $S_{A,L}$ as $$\{x \in \pi_1(\sigma[(L_\gamma,A)]))^\circ: (\exists y \in D_A \setminus L: \pi_1(\sigma_0((y,A \cup \{-1\})) =x)\}.$$
+We define $S_{A,L}$ as $$\{x \in \pi_1(\sigma[(L,A)]))^\circ: (\exists y \in D_A \setminus L: \pi_1(\sigma_0((\{y\},A)) =\{x\})\}.$$
 
 $S_{A,L}$ is (speaking a bit informally) the set of things in the target litter which are images (according to the partial substitution) of things not in the source litter, relative to the index $A$.
 
 
-For each $x \in L \setminus D_{A \cup \{-1\}}$, we compute $\sigma((x,A \cup \{-1\})$ as $$(\sigma_{L \setminus D_{A \cup \{-1\}},\pi_1(\sigma[(L_\gamma,A)])^\circ \setminus S_{A,L}}(x),A \cup \{-1\}).$$
+For each $x \in L \setminus D_{A}$, we compute $\sigma((\{x\},A)$ as $$(\{\sigma_{L \setminus D_{A},\pi_1(\sigma[(L,A)])^\circ \setminus S_{A,L}}(x)\},A).$$
 
-We have thus indicated how to compute $$\sigma[(L_\gamma,A)] = (\{\{\pi_1(\sigma((x,A \cup \{-1\})):x \in L\}_\gamma,A).$$
+We have thus indicated how to compute $$\sigma[(L,A)] = (\bigcup \{\pi_1(\sigma((\{x\},A)):x \in L\},A).$$
 
-This handles the case where $(L_\gamma,A)$ is flexible immediately, because we can compute $\pi_1(\sigma[(L_\gamma,A)])^\circ$ as $\pi_1(\sigma_0(L_\gamma,A))$.
+This handles the case where $(L,A)$ is flexible immediately, because we can compute $\pi_1(\sigma[(L,A)])^\circ$ as $\pi_1(\sigma_0(L,A))$.
 
-\item The remaining case (which is sufficiently elaborate to get its own paragraph)  is to compute $\sigma[(L_\gamma,A)]$ in the case where $L = f_{\delta,\gamma}(x)$ for some $\delta$ dominated by all members of $A \setminus \{\gamma\}$.
+\item The remaining case (which is sufficiently elaborate to get its own paragraph)  is to compute $\sigma[(L,A)]$ in the case where $L = f_{\delta,\gamma}(x)$ for some $\delta$ dominated by all members of $A \setminus \{\gamma\}$.
 
 We do some calculations.  
 
-$\sigma[( f_{\delta,\gamma}(x),A)] = (\sigma_{A}[ f_{\delta,\gamma}(x)],A)$ follows from the definition of set-subscripted substitutions.
+$\sigma[( f_{\delta,\gamma}(x),A)] = (\sigma_{A\cup \{-1\}}`` f_{\delta,\gamma}(x),A)$ follows from the definition of set-subscripted substitutions.
 
-That $\sigma_{A}[ f_{\delta,\gamma}(x)] \sim f_{\delta,\gamma}(\sigma_{A\setminus \{\gamma\}\cup \{\delta\}}[x])$ follows from the coherence condition on substitutions.
+That $\sigma_{A\cup \{-1\}}`` f_{\delta,\gamma}(x) \sim f_{\delta,\gamma}(\sigma_{A\setminus \{\gamma\}\cup \{\delta\}}[x])$ follows from the coherence condition on substitutions.
 
-From this it follows that we can compute the value of $\pi_1(\sigma[L_\gamma,A)])^\circ = \pi_1( \sigma((f_{\delta,\gamma}(x),A))) = \sigma_{A}[ f_{\delta,\gamma}(x)]^\circ$ if we can compute $f_{\delta,\gamma}(\sigma_{A \setminus \{\gamma\}\cup \{\delta\}}[x])$,
+From this it follows that we can compute the value of $\pi_1(\sigma[L_\gamma,A)])^\circ = \pi_1( \sigma((f_{\delta,\gamma}(x),A)))^\circ = (\sigma_{A\cup \{-1\}}``(f_{\delta,\gamma}(x)))^\circ$ if we can compute $f_{\delta,\gamma}(\sigma_{A \setminus \{\gamma\}\cup \{\delta\}}[x])$,
 for which it is sufficient to compute $\sigma_{A \setminus \{\gamma\}\cup \{\delta\}}[x]$.
 
 Let $T$ be the designated $\delta$-support of $x$.
@@ -371,19 +384,23 @@ For any $\eta$-support $S$ and finite subset $D$ of $\lambda$ whose smallest ele
 Our strategy is to use the Freedom of Action theorem (on the inductive hypothesis that it works for lower type indices than $\beta$) to construct a $\delta$-substitution $\sigma'$ which must send $x$ to $\sigma(x)$ if $\sigma$ exists (completing the proof that $\sigma$ actually does exist).
 
 We do this by specifying the action of $\sigma'$ on $T$, then justifying the existence of $\sigma'$ using the Freedom of Action theorem for $\delta$-partial substitutions.  By inductive hypothesis, we have already computed the action of $\sigma$ on every support item in $T^{A\setminus \{\gamma\}\cup \{\delta\}}$.
-We define a $\delta$-partial substitution $\sigma'_0$ which is to map $(u,B) \in T$ to $(\pi_1(\sigma[(u,B \cup (A \setminus \{\gamma\})]),B)$ for each element of $T$ which is either atomic or flexible.  This does not give a complete definition because we must fill in orbits as the domain
-of $\sigma'_0$ should be the same as its range.  Each atom has its orbit filled in in such a way that the intended action of $\sigma'$ or of the inverse of $\sigma'$ on any atom will not create any exceptions of $\sigma'$:  if $(v,C)$ is added to the domain, and $L$ is the litter to which $v$ belongs,
-if $(L,(C \setminus \{-1\})\cup (A \setminus \{\gamma\})))$ is sent to $(M,(C \setminus \{-1\}) \cup (A \setminus \{\gamma\}))$ by the action of $\sigma$ (resp. $\sigma^{-1}$) defined so far then $(v,C)$ will be sent by $\sigma'_0$ (resp.$ (\sigma'_0)^{-1}$) to some $(w,C)$ with $w \in M^\circ$.  The fact that we have only countably many choices to make
+We define a $\delta$-partial substitution $\sigma'_0$ which is to map $(u,B) \in T$ to $(\pi_1(\sigma[(u,B \cup (A \setminus \{\gamma\})]),B)$ when $(u,B)$ is either atomic or flexible.  This does not give a complete definition because we must fill in orbits as the domain
+of $\sigma'_0$ should be the same as its range.  Each atom has its orbit filled in in such a way that the intended action of $\sigma'$ or of the inverse of $\sigma'$ on any atom will not create any exceptions of $\sigma'$:  if $(\{v\},C)$ is added to the domain, and $L$ is the litter to which $v$ belongs,
+if $(L,C\cup (A \setminus \{\gamma\})))$ is sent to $(M,C \cup (A \setminus \{\gamma\}))$ by the action of $\sigma$ (resp. $\sigma^{-1}$) defined so far then $(\{v\},C)$ will be sent by $\sigma'_0$ (resp.$ (\sigma'_0)^{-1}$) to some $(\{w\},C)$ with $w \in M^\circ$.  The fact that we have only countably many choices to make
 for each of a small collection of atomic support elements in $T$ ensures that we can do this.  Each flexible item has its orbit filled in a way which is compatible with the known action of $\sigma$ on items with smaller image under $\iota_*$ (which clearly presents no difficulties).
 
 By the Freedom of Action theorem for the lower index $\delta$, there is a $\delta$-substitution $\sigma'$ which extends $\sigma'_0$ in the proper sense and has no exceptions not in the domain of $\sigma'_0$.  We claim that $\sigma'[x]$ is the value we should compute for $\sigma_{A \setminus \{\gamma\}\cup \{\delta\}}[x]$.
-The basis for this claim is the further claim that the action of $\sigma'$ on $T$ is the same as the action of $\sigma_{A\setminus \{\gamma\}\cup \{\delta\}}$ on $T$.  We have constructed $\sigma'$ to make the actions agree on all atomic and flexible elements of $T$:  we need to argue that the action of $\sigma'$ on $T$ must agree with the action of $\sigma_{A \setminus \{\gamma\}\cup \{\delta\}}$ at any inflexible near-litter support element in $T$.  If the two actions disagree on any such support element, there must be a first one on which they disagree in our well ordering of support elements.  It must be a near-litter support element, and inflexible, and so a litter support element of the form $(f_{\eta,\chi}(u))_\chi,C)$.
+The basis for this claim is the further claim that the action of $\sigma'$ on $T$ is the same as the action of $\sigma_{A\setminus \{\gamma\}\cup \{\delta\}}$ on $T$.  We have constructed $\sigma'$ to make the actions agree on all atomic and flexible elements of $T$:  we need to argue that the action of $\sigma'$ on $T$ must agree with the action of $\sigma_{A \setminus \{\gamma\}\cup \{\delta\}}$ at any inflexible near-litter support element in $T$.  If the two actions disagree on any such support element, there must be a first one on which they disagree in our well ordering of support elements.  It must be a near-litter support element, and inflexible, and so a litter support element of the form $(f_{\eta,\chi}(u)),C)$.
 
-Let $U$ be the designated $\eta$-support of $u$.  The action of $\sigma'$ on $U^{C \setminus \{\chi\} \cup \{\eta\}}$ is the same as the action of $\sigma_{A \setminus \{\gamma\}\cup \{\delta\}}$ on $U^{C \setminus \{\chi\} \cup \{\eta\}}$ because all elements of this support appear in $T$ before $(f_{\eta,\chi}(u))_\chi,C)$.  It follows
-that $\pi_1(\sigma'[(f_{\eta,\chi}(u))_\chi,C)])$ has small symmetric difference from $$\pi_1(\sigma_{A \setminus \{\gamma\}\cup \{\delta\}}[(f_{\eta,\chi}(u))_\chi,C)]).$$  If $v$ belonged to this symmetric difference, $(v,C \cup\{-1\})$ must be an exception of one of the two maps.   But any exception of either map is an element of the domain
-of the partial substitution from which that map is computed, and the two partial substitutions must agree at such elements at least to the extent that they are mapped to and from elements whose first projections are in the same litter.  So the symmetric difference must in fact be empty, and we are able to exactly determine the value which must be assigned.
+Let $U$ be the designated $\eta$-support of $u$.  The action of $\sigma'$ on $U^{C \setminus \{\chi\} \cup \{\eta\}}$ is the same as the action of $\sigma_{A \setminus \{\gamma\}\cup \{\delta\}}$ on $U^{C \setminus \{\chi\} \cup \{\eta\}}$ because all elements of this support appear in $T$ before $(f_{\eta,\chi}(u)),C)$.  It follows
+that $\pi_1(\sigma'[(f_{\eta,\chi}(u)),C)])$ has small symmetric difference from $$\pi_1(\sigma_{A \setminus \{\gamma\}\cup \{\delta\}}[(f_{\eta,\chi}(u)),C)]).$$  If $v$ belonged to this symmetric difference, $(\{v\},C)$ must be an exception of one of the two maps.   But any exception of either map is an element of the domain
+of the partial substitution from which that map is computed, and the two partial substitutions must agree at such elements at least to the extent that they are mapped to and from elements whose first projections are included in the same litter.  So the symmetric difference must in fact be empty, and we are able to exactly determine the value which must be assigned.
 
 This completes the proof of the Freedom of Action Theorem:  all computations can be carried out, and if they can be carried out, they must terminate with a $\sigma$ with the desired properties.
+
+\item  We now argue that the size of each type is $\mu$, which completes the demonstration that the construction is possible (the construction of the $f$ maps requires this).
+
+\item  There are $\mu$ near-litters (this depends on the fact that the cofinality of $\mu$ is at least $\kappa$).  It follows from this that there are $\mu$ supports.
 
 
 
