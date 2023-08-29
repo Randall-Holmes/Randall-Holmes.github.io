@@ -13,7 +13,7 @@ first pass 8/4/2023, a lot of proofreading.
 8/9/23 more proofreading, more work on Freedom of Action\\
 8/10/2023 first draft of entire proof of Freedom of Action\\
 8/27/2023:  another editing pass, simplified indexing (and possibly removed errors) in FoA proof, other fixes in earlier parts\\
-8/29/2023 changed the definition of support element and made induced corrections (I hope).}
+8/29/2023 changed the definition of support element and made induced corrections (I hope).  Some remarks added after the Zoom meeting.}
 
 \usepackage{amssymb}
 
@@ -205,7 +205,7 @@ We refer to support elements $(\{x\},A)$ as atomic support elements and to suppo
 A {\em $\beta$-support\/} (for $\beta \in \lambda$) is a small set of support elements $(x,A)$ each of which has ${\tt max}(A)=\beta$, with the technical property that if it contains distinct $(x,A)$ and $(y,A)$ [with the same second component;  not all elements of a support need have the same second component], and $x$ and $y$ are both near-litters, they are disjoint.
 
 {\bf NOTE:  I changed the definition of support element 8/29/2023 so that first components of support elements are in every case sets of atoms.
-Under the previous definition, the atomic support element $(\{x\},A)$ would have been $(x,A)$ and the near-litter support element $(N,A)$ would have been $(N_\gamma,A)$, so
+Under the previous definition, the atomic support element $(\{x\},A)$ would have been $(x,A\cup \{-1\})$ and the near-litter support element $(N,A)$ would have been $(N_\gamma,A)$, so
 that first components were atoms or typed near-litters.  The new definition seems to lead to less annoying subscripting.  We describe the change here in case some text has not been revised correctly.}
 
 For any $\beta$-support $S$ and $\gamma<\beta$, we define $S_\gamma$ as $$\{(x,A):{\tt max}(A)=\gamma \wedge (x,A\cup \{\beta\}) \in S\}.$$
@@ -247,8 +247,8 @@ The $\gamma$-extension of $\sigma[X]$ is $\{\sigma_\gamma[x]\}$ and the $\delta$
 For $\sigma[X]$ to be extensional, we need the $\delta$-extension of $\sigma[X]$ to be $\{N_\delta:N^\circ = f_{\gamma,\delta}(\sigma_\gamma[x])\}$.
 
 This motivates our definition of a $\beta$-substitution $(\beta>-1)$ as a $\beta$-presubstitution such that $$\{\sigma_\delta[N_\delta]:N^\circ = f_{\gamma,\delta}(x)\} = \{N_\delta:N^\circ = f_{\gamma,\delta}(\sigma_\gamma[x])\},$$ for each appropriate $\gamma, \delta,x$, which can readily be seen to be equivalent to the assertion that
-$\sigma_\delta[f_{\gamma,\delta}(x)_\delta] \cap \tau_{-1} \sim  f_{\gamma,\delta}[\sigma_\gamma[x]]$, for any appropriate $\gamma, \delta$ and $x \in \tau_\gamma$, or equivalently
-$(\sigma_\delta)_{-1}``f_{\gamma,\delta}(x) \sim f_{\gamma,\delta}[\sigma_\gamma[x]]$ for such $\gamma,\delta,x$.
+$\sigma_\delta[f_{\gamma,\delta}(x)_\delta] \cap \tau_{-1} \sim  f_{\gamma,\delta}(\sigma_\gamma[x])$, for any appropriate $\gamma, \delta$ and $x \in \tau_\gamma$, or equivalently
+$(\sigma_\delta)_{-1}``f_{\gamma,\delta}(x) \sim f_{\gamma,\delta}(\sigma_\gamma[x])$ for such $\gamma,\delta,x$.
 
 We provide as a hypothesis of the construction that $\tau_\beta$ is closed under $\beta$-substitutions for each $\beta<\alpha$:  we claim that the additional condition which we have shown to be necessary for our purposes will also turn out to be sufficient when all details of the construction are seen.
 
@@ -274,6 +274,9 @@ The designated code for an atom is itself.  Otherwise the designated code for $x
 
 We choose a preliminary designated support for each element of the structure (this is necessary because objects other than atoms which have codes clearly have more than one):  we are actually
 choosing designated codes for elements of $\tau_\alpha$ and continuing to use codes already chosen for the earlier constructed types.
+
+A refinement of this construction is to choose a preliminary designated support $S$ initially for just one element $x$ of each orbit in the action of substitutions, and then for each $y$ in the orbit of $x$ to choose a substitution $\sigma_{x,y}$ such that $\sigma_{x,y}[x]=y$ and let the designated support
+for $y$ be $\sigma_{x,y}[S]$.  Something like this is done in the current Lean proof and I am thinking about whether there is a use for it here.  It would ensure a similarity in structure between designated supports of related objects.
 
 We impose the technical condition that for each $\beta \leq \alpha$ and $x \in \tau_\beta$, if $x$ has the same $-1$-extension as an element $x'$  of $\tau_0$, and the designated support of $x'$ is $S$, the designated support of $x$ has as its members exactly the $(u,\{\beta\})$ such that $(u,\{0\}) \in S$.  It is straightforward to see that elements of $\tau_0$ are exactly the $X_0$ such that $X \subseteq \tau_{-1}$ has small symmetric difference from a small or co-small union of litters, that any element of $\tau_0$ has support elements of exactly the kinds described, and that an $x \in \tau_\beta$ with the same $-1$-extension as
 an element of $\tau_0$ does have the described set as a support.
@@ -397,6 +400,10 @@ that $\pi_1(\sigma'[(f_{\eta,\chi}(u)),C)])$ has small symmetric difference from
 of the partial substitution from which that map is computed, and the two partial substitutions must agree at such elements at least to the extent that they are mapped to and from elements whose first projections are included in the same litter.  So the symmetric difference must in fact be empty, and we are able to exactly determine the value which must be assigned.
 
 This completes the proof of the Freedom of Action Theorem:  all computations can be carried out, and if they can be carried out, they must terminate with a $\sigma$ with the desired properties.
+
+The history of the Lean proof suggests that I should be very careful in pointing out why the function $\sigma$ obtained actually is a $\beta$-substitution.  It is important to notice that as soon as a litter support element $(L,A)$ has its image computed up to nearness, any $(\{x\},A)$ with $x \in L$ can be handled, and moreover every such item then has a unique image and preimage computable.  The method by which the calculation of the action at inflexible litters is performed ensures that the coherence condition is satisfied.
+If there were a failure of injectivity (two atomic support conditions mapped to the same atomic support condition) one would have to have two distinct litters mapped to near-litters close to each other (there will clearly not be a failure of injectivity involving atoms in the same litter).  This clearly cannot happen for two flexible litters, or for a flexible litter and an inflexible litter.
+If it happened for two inflexible litters, this would imply a failure of injectivity at a lower type, contrary to induction hypotheses.  If there is a failure of surjectivity for an atom, the entire litter in which it resided would have to be missed.  This cannot happen for a flexible litter, and it can only happen for an inflexible litter if there is a failure of surjectivity at a lower type, contrary to induction hypotheses.
 
 \item  We now argue that the size of each type is $\mu$, which completes the demonstration that the construction is possible (the construction of the $f$ maps requires this).
 
