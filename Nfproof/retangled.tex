@@ -75,6 +75,8 @@ and the old version will be needed for comparison.
 
 \item[10/10/2023:]  Corrected a material error in the argument on counting model elements, thanks to Sky for leaning on us about this.  I think this was an error introduced in the editing of this version from the previous one, and so far uninspected because the Lean proof effort has only recently reached this part of the paper.
 
+{\bf Later on 10/10}:  the first version of the fix did not work.  Notice that this further refinement involves imposing a condition on choice of designated supports which has the effect that if $x$ and $y$ are in the same orbit in a type under allowable permutations, their designated supports will be as well (already proposed by Sky in the Lean development).
+
 \end{description}
 
 % \end{comment}
@@ -545,6 +547,8 @@ $x \cap \tau^*_{\beta} \subseteq \tau_\beta$ for each $\beta<\alpha$, $x$ is ext
 
 \item[designated supports:]  We choose an $\alpha$-support for each element $x$ of $\tau_\alpha$ which is not a typed atom or near-litter (which does not have $x \cap \tau_{-1}$ a singleton or near-litter), which we call the {\em designated support of $x$\/}.  We note that we have a notion of designated support for each lower type constructed in the same way at earlier stages.   We require that near-litters which are first components of elements of designated supports be litters:  we can do this because we can always replace a near-litter $N$ in a support with the litter it is near and the atoms in $N \Delta N^\circ$:  more formally, we can replace an item $(N_\alpha,A)$ in a support where $N$ is a near-litter which is not a litter with  $((N^\circ)_\alpha,A)$ and the items $(\{x\}_\alpha,A)$ for $x \in N \Delta N^\circ$.
 
+We describe a refinement of the choice of designated supports, which we will use.  From each orbit in $\tau_\alpha$ under $\alpha$-allowable permutations choose one element, to form a set $C$.  For each element $x$ of $C$, choose a support $S$.  For each $y$ in the orbit of each $x \in C$, choose an $\alpha$-allowable $\pi$ such that $\pi(x)=y$, and if the designated support of $x$ is $S$, let the designated support of $y$ be $\pi[S]$.
+
 \item[images under allowable permutations preserve symmetry:]  Note the important fact that if $x$ has support $S$ and $\pi$ is allowable with appropriate index, $\pi(x)$ has support $\pi[S]$.  This verifies that for any $\alpha$-allowable permutation $\pi$, $\pi``\tau_\alpha = \tau_\alpha$.
 
 \item[Observation ($\kappa$-completeness of the structure):]  For any subset $X$ with cardinality $<\kappa$ of a type $\gamma$ and $\beta>\gamma$, it should be clear that $X_\beta$ has a support, computable from the union of the supports of the elements of $X$  by replacing each element $(u,B)$ of the union with $(u,B \cup \{\beta\})$, and therefore belongs to the model.  $X_\beta$ is obviously extensional (the extension $X$ is clearly the distinguished extension and has no image under $A^{-1}$).
@@ -896,14 +900,32 @@ for $\{b\}_\alpha$ (where $b$ is an element of $B$) from the strong $\beta$ supp
 about is items $(N,\{\gamma,\alpha\})$ in the support where $N=f_{\delta,\gamma}(d)$, $\delta<\alpha$.  In this case we insert a suitably
 tagged version of $S_d$, or, in the case $\delta= -1$, the atom $\{d\}_\alpha$ and the type $\alpha$ litter containing $d$ in its $-1$-extension (which will cause no further extensions).   The resulting support will be a strong $\alpha$-support for $\{b\}_\alpha$.  This process terminates because in adding a support $S_d$ we are always adding things whose position in the designated order on their type is before the position of $d$ in its type.
 
+It is given that $T_b$ is computed from
+$S_b$, but what we actually need is something like the specification of $T_b$ being computable from the specification of $S_b$.  There are $\mu_0<\mu$ specifications for supports $S_b$ available at the current stage by the inductive hypothesis [more generally there is $\mu_0<\mu$ dominating the number of coding functions in any type below $\alpha$, since there are $<\kappa$ such types].   Any specification built the way we describe uses
+an $S_b$ to start, which has one of $\mu_0$ possible specifications.  Each further refinement involves choosing an $S_d$ (with one of $\mu_0$ possible specifications) to insert 
+at stated positions (or the specification of an atom and a litter in the $\delta=-1$ case).  The exact information needed is for each element of $S_d$ where it is to be inserted in the preceding specification (or where it is already present):  there are no more than $2^\kappa\leq \mu_0<\mu$ ways to make such an insertion, so $\mu_0$ ways to make an insertion of an $S_d$ in a stated way. There will be $<\kappa$ such insertions.
+There are $<\mu$ possible descriptions of such processes of insertion (this involves appealing both to the fact that $\mu$ is strong limit and the fact that its cofinality is at least $\kappa$), including descriptions of actually ill-founded processes (of course, an actual construction of a $T_b$ will be well-founded).  So there are $<\mu$ possible specifications for supports $T_b$ constructed as above. 
+
+For each $b \in B$ there is a strong support $S_b$ chosen as above, from which the support $T_b$ can be computed as described above.  Let $S_b^-$ be the suborder of $S_b$ whose field is the designated support of $b$.  If $b' \in B$ is in the range of the same coding function $\chi_{b,S_b}$ as $b$, the details of our choice of designated supports show that $S_{b'}^-$ is $\pi[S_{b}^-]$ for some $\beta$-allowable $\pi$ with $\pi(b) = b'$.
+If we have the further condition that $T_b$ and $T_{b'}$ have the same specification, it follows that there is a permutation $\pi_2$ such that $\pi_2[T_b] = T_{b'}$.  Note that $(\pi_2)_\beta[S_b^-]=S_{b'}^-$, from which it follows that $\pi^{-1} \circ (\pi_2)_\beta$ fixes $b$, since it fixes all elements of $S_b^-$, so $b'=\pi(b) = (\pi_2)_\beta(b)$, from which it follows
+that $\pi_2(\{b\}_\alpha) = \{b'\}_\alpha$ so $\{b\}_\alpha$ and $\{b'\}_\alpha$ are in the range of the same coding function $\chi_{\{b\}_\alpha,T_b}$.  Now there are $<\mu$ possible specifications of a coding function $\chi_{b,S_b}$ followed by a specification for $T_b$, so by this procedure we describe a family of $<\mu$ coding functions $\chi_{\{b\}_\alpha,T_b}$ whose range covers all type $\alpha$ singletons of elements of $B$.
+
+ 
+
+
+
+\begin{comment}
+
 There are $<\mu$ coding functions $\chi_{b,S_b}$ by inductive hypothesis whose range covers all $b \in B$.  Choose a single $b$ from the range of each such coding function,
 and $\chi_{\{b\}_\alpha,T_b}(T_b)  = \{b\}_\alpha$.  We claim that for any $b'$ in the range of the coding function  $\chi_{b,S_b}$ (for one of the selected $b$'s),  $\{b'\}_\alpha$ is in the range of  $\chi_{\{b\}_\alpha,T_b}$, which implies that we have a family of $<\mu$ coding functions whose ranges cover the type $\alpha$ singletons of elements of $B$.  To verify this, we need to describe a support $T'_b$ such that $\chi_{\{b\}_\alpha,T_b}(T_b')  = \{b'\}_\alpha$.  Take any $\beta$-allowable permutation $\pi_1$ sending $b$ to $b'$.
 Let $\pi_2$ be an $\alpha$-allowable permutation such that the action of $(\pi_2)_\beta$ on $S_b$ agrees with the action of $\pi_1$ on $S_b$ (Freedom of Action technology allows us to construct $\pi_2$).  It follows that $\pi_2(\{b\}_\alpha) = \{b'\}_\alpha$ and so $\chi_{\{b\}_\alpha,T_b}(\pi_2[T_b])  = \{b'\}_\alpha$, completing the proof of the claim.
 
-\begin{comment}
+
 
 So for each $b \in B$, we have $\{b\}_\alpha = \chi_{\{b\}_\alpha,T_b}(T_b)$ for $T_b$ taken from a family of $<\mu$ coding functions.
 We further provide that each $T_b$ end extends $S$ (we can do this by starting with the support $S+S_b^{\{\alpha\}}$ obtained by appending $S_b$ to $S$ then removing duplications: this may not respect the global order but it is strong in the sense appropriate to an ordered support).
+
+
 
 NOTE: incorrect text, though parts of this might be useful.
 
