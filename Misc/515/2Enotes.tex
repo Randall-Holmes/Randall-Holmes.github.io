@@ -48,5 +48,95 @@ $f_n(x)$ within $ \frac\epsilon3$ of $f(x)$, from which it follows by the triang
 We now get the first exciting theorem.  Egoroff's theorem asserts that on any set $X$ supporting a measure which gives all of $X$ a finite measure,
 if we have a pointwise convergent sequence of measurable functions $\{f_k\}$ converging to a function $f$, and choose an $\epsilon>0$, we can find an $E \subseteq X$ such that $X \setminus E$ has measure less than $\epsilon$ and $\{f_k\}$ converges uniformly to $f$ on $E$.
 
+Start by fixing $\epsilon >0$.
+
+Fix a positive integer $n$.  
+
+He says ``The definition of pointwise convergence tells us that $\bigcup_{m=1}^\infty \bigcup_{k=m}^\infty \{x \in X:|f_k(x)-f(x)|<\frac1n\} = X$."
+
+This follows from $(\forall x:(\forall \epsilon>0:(\exists m:(\forall k \geq m:|f_k(x)-f(x)|<\epsilon))))$ quite directly:  lets try to do it step by step.
+
+Fix an $x_1 \in X$.  Instantiate $x$ with $x_1$ and $\epsilon$ with $\frac1n$ where $n$ is an arbitrarily chosen positive integer.  This gives us
+
+$(\exists m:(\forall k \geq m:|f_k(x_1)-f(x_1)|<\frac1n))$
+
+so $(\exists m:x_1 \in \bigcap_{k=m}^\infty \{x \in X:|f_k(x)-f(x)|<\frac1n\})$  (swapping out the universal quantifier for an intersection of sets)
+
+so $x_1 \in \bigcup_{m=1}^\infty\bigcap_{k=m}^\infty \{x \in X:|f_k(x)-f(x)|<\frac1n\}$ (swapping out the existential quantifier for a union of sets)
+
+and $x_1$ was an arbitrarily chosen element of $X$, so we see that this set is all of $X$.
+
+Define the intersection $\infty\bigcap_{k=m}^\infty \{x \in X:|f_k(x)-f(x)|<\frac1n\}$ as $A_{m,n}$ and notice that the union over all values
+of $m$ of the sets $A_{m,n}$ is all of $X$ (that is what the last statement said!):  $\bigcup_{m=1}^\infty A_{m,n} = X$.
+
+From this it follows by results proved earlier that $\lim_{m \rightarrow \infty} |A_{m,n}| = |X|$.
+
+This means that (for each $n$) we can choose an $m_n$ such that $|X| - |A_{m_n,n}| < \frac\epsilon{2^n}$.
+
+Let $E = \bigcup_{n=1}^\infty A_{m_n,n}$.
+
+Now $|X-E| = |X - \bigcup_{n=1}^\infty A_{m_n,n}| = |\bigcap_{n=1}^\infty X \setminus A_{m_n,n}| \leq \Sigma_{n=1}^\infty |X \setminus A_{m_n,n}| <\epsilon$ (the last step by the choice of $m_n$).
+
+Now $E$ has been maliciously defined to match the definition of uniform convergence.  Choose $\epsilon_1>0$.  Choose $n$ such that
+$\frac1n<\epsilon_1$.  $E\subseteq A_{m_n,n}$ so for any $k \geq m_n$ and $x \in E$ we have $|f_k(x)-f(x)|<\frac1n|<\epsilon_1$, and we have shown that the sequence of functions converges uniformly on $E$.
+
+This is mostly the proof as in Axler.  I tend to write $|A|$ instead of $\mu(A)$, and I added discussion of the conversion of statements with existential an universal quantifiers to statements with unions and intersections.
+
+For the result on approximation by simple functions, I refer you to Axler, p. 65.  I don't really have anything to add to what he says.
+
+Since I found Luzin's Theorem difficult, I am obligated to talk through it myself!
+
+The statement of Luzin's Theorem:  suppose $g:\mathbb R \rightarrow \mathbb R$ is a Borel measurable function.  Then for every $\epsilon>0$ there is  a closed set $F \subseteq \mathbb R$ such that $|\mathbb R - F|<\epsilon$ and $g \lceil F$ is a continuous function on $F$.
+
+Notice that a function $f$ being continuous on $F$ does {\bf not} imply that as a function from the reals to the reals it is continuous at each point in $F$.  The second statement means that values of the function {\em at points in $F$\/} close to $x \in F$ are close to $f(x)$;  it says nothing about
+values of $f$ at points of $\mathbb R$ which are not in $f$.
+
+Example:  the characteristic function of the Cantor set is equal to 1 at each point in the Cantor set and to 0 at each point not in the Cantor set.
+It is discontinuous at each point of the Cantor set, because there are points in the complement as close to that point as you like.  But the restriction of this function to the Cantor set is continuous on the Cantor set, and in fact simply constant.
+
+We start the proof of Luzin's Theorem.
+
+We first consider the case where $f$ is a simple Borel measurable function.  Let $\{d_1,\ldots,d_n\}$ be the range of $f$.  We can say for any $x$ that
+$f(x) = \sum_{i=1}^n d_i\chi_{f^{-1}(\{d_i\})}(x)$, just from the definition of characteristic function and inverse image.  Define $D_i$ for convenience as $f^{-1}(\{d_i\}$.
+
+For each $i$ with $1 \leq i \leq n$ there is $F_i \subset D_i$ closed and $G_i \supseteq D_i$ open such that each set $|G_i-D_i$ and $D_i-F_i|$ has measure less than $\frac\epsilon{2n}$.  Thus we have $G_i - F_i$ of measure less than $\frac\epsilon n$ for each $i$.
+
+Define $F$ as $\bigcup_{i=1}^n F_i \cup \bigcap(\mathbb R - G_i)$, the set of things either in one of the $F_i$'s or not in any of the $G_i$'s.
+
+This is a closed set.
+
+The function $f$ is constant on each set $F_i$ (equal to $d_i$) and constantly 0 on $\bigcap(\mathbb R - G_i)$.
+
+$\mathbb R - F$ is a subset of the union of the sets $G_i - F_i$ and so has measure less than $\epsilon$.
+
+A function whose restriction to each of a finite collection of closed sets is continuous on the union of the closed sets;  so the restriction of
+$f$ to $F$ is continuous.
+
+Now we prove the theorem for a general Borel measure function $f$.
+
+We have a sequence $\{f_i\}$ of simple Borel measurable functions which converges pointwise to $f$ (uniformly on any set of finite measure).
+
+Suppose $\epsilon>0$.  By the first part of this proof, we have for each positive integer $k$ a closed set $C_k$ such that $\mathbb R -C_k$ has measure less than $\frac\epsilon{2^{k+1}}$ and $g_k$ is continous on $C_k$.  Let $C=\bigcap_{k=1}^\infty C_k$.
+
+$C$ is a closed set and each $_k$ is continuous on $C$.  $\mathbb R - C|$ is the union of the sets $\mathbb R - C_k$ and so has measure less than $\epsilon2$.
+
+For each integer $m$ the sequence of $f_i$'s converges uniformly on $(m,m+1)$ so there is a set $E_m \subseteq (m,m+1)$ such that
+the sequence of $f_k$'s converges uniformly on $(m,m+1)$ (simple approximation theorem) and  \newline $|(m,m+1) - E_m|<\frac\epsilon{2^{|m|+3}}$.   (Egoroff's theorem)
+
+so $f$ restricted to $C \cap E^m$ is continuous for each $m$ (continuity of pointwise limit of a uniformly convergent sequence of functions)
+
+thus if we define $D$ as the union of all the sets $C\cap E_m$, $f$ is continuous on $D$.
+
+Just like Axler, I wave my had at the fact that the complement of $D$, which is included in the union of the integers, the complements of the $E_m$'s relative to $(m,m+1)$, and $\mathbb R-C$, has measure less than $\epsilon$:  we have stated bounds handling all these cases.
+
+Now, $D$ is not closed and a magic trick follows.  There is a closed subset $F$ of $D$ such that $|D-F| < \epsilon - |\mathbb R-D|$, because $D$ is Borel, using standard results about approximating Borel sets by closed sets.  It is then bookkeeping to see that $|\mathbb R - F|<\epsilon$ is also true.
+It seems rather magical that this process leaves the error at $\epsilon$.  The calculation justifying it appear on p. 67; I'm not copying it.  Continuity of $f$ on $D$ implies continuity of $f$ on $F$, and we are done.
+
+2.93, 2.94, 2.95 I leave to you to read from Axler, at least  for the moment.
+
+
+
+
+
 
 \end{document}
