@@ -77,6 +77,8 @@ and the old version will be needed for comparison.
 
 {\bf Later on 10/10}:  the first version of the fix did not work.  Notice that this further refinement involves imposing a condition on choice of designated supports which has the effect that if $x$ and $y$ are in the same orbit in a type under allowable permutations, their designated supports will be as well (already proposed by Sky in the Lean development).
 
+\item[11/17/2023:]  I am posting this version, which is still rather messy in the area of the gap being fixed, at the same time I post the new version in which the domain of the f maps includes support information.  I believe that as a paper document the new paper will now be more reliable, but this paper is still the original from which the Lean development has been done (though it must be said that the details of the Lean development, a construction in type theory, look quite different in places).
+
 \end{description}
 
 % \end{comment}
@@ -547,7 +549,7 @@ $x \cap \tau^*_{\beta} \subseteq \tau_\beta$ for each $\beta<\alpha$, $x$ is ext
 
 \item[designated supports:]  We choose an $\alpha$-support for each element $x$ of $\tau_\alpha$ which is not a typed atom or near-litter (which does not have $x \cap \tau_{-1}$ a singleton or near-litter), which we call the {\em designated support of $x$\/}.  We note that we have a notion of designated support for each lower type constructed in the same way at earlier stages.   We require that near-litters which are first components of elements of designated supports be litters:  we can do this because we can always replace a near-litter $N$ in a support with the litter it is near and the atoms in $N \Delta N^\circ$:  more formally, we can replace an item $(N_\alpha,A)$ in a support where $N$ is a near-litter which is not a litter with  $((N^\circ)_\alpha,A)$ and the items $(\{x\}_\alpha,A)$ for $x \in N \Delta N^\circ$.
 
-We describe a refinement of the choice of designated supports, which we will use.  From each orbit in $\tau_\alpha$ under $\alpha$-allowable permutations choose one element, to form a set $C$.  For each element $x$ of $C$, choose a support $S$.  For each $y$ in the orbit of each $x \in C$, choose an $\alpha$-allowable $\pi$ such that $\pi(x)=y$, and if the designated support of $x$ is $S$, let the designated support of $y$ be $\pi[S]$.
+We describe a refinement of the choice of designated supports, which we will use.  From each orbit in $\tau_\alpha$ under $\alpha$-allowable permutations choose one element, to form a set $C$.  For each element $x$ of $C$, choose its designated support $S$.  For each $y$ in the orbit of each $x \in C$, choose an $\alpha$-allowable $\pi$ such that $\pi(x)=y$, and if the designated support of $x$ is $S$, let the designated support of $y$ be $\pi[S]$.
 
 \item[images under allowable permutations preserve symmetry:]  Note the important fact that if $x$ has support $S$ and $\pi$ is allowable with appropriate index, $\pi(x)$ has support $\pi[S]$.  This verifies that for any $\alpha$-allowable permutation $\pi$, $\pi``\tau_\alpha = \tau_\alpha$.
 
@@ -793,7 +795,7 @@ that the construction actually succeeds at every type.
 \item[We work with ordered supports:]  In this section, a support is a well-ordering whose domain is a support in the sense of previous sections.  We will write a support $S$ as $\leq_S$ when using it as an order (and write $<_S$ for the corresponding strict well-ordering) and by convention often write
 $S$ instead of ${\tt dom}(\leq_S)$ when confusion is unlikely.  A strong support can be obtained as a strong support $S$ in the sense of previous sections equipped with the order $<_S$ defined in earlier sections, the restriction of our global order on conditions to $S$, but ordered strong supports do not have quite the same definition:
 
-\item[Definition (strong support):]  We say that an ordered $\beta$-support $<_S$ with domain $S$  is strong if whenever $(x,A) \in S$ and $(x,A) D (y,B)$, we have $(y,B)\in S$, and moreover $(y,B) <_S (x,A)$ will hold in this situation.  Note that in this exact situation the native order $<_S$ will coordinate with the global order on support conditions, but in the absence of dependency relations there is no requirement that this be the case.
+\item[Definition (strong support):]  We say that an ordered $\beta$-support $<_S$ with domain $S$  is strong if whenever $(x,A) \in S$ and $(x,A) D (y,B)$, we have $(y,B)\in S$, and moreover $(y,B) <_S (x,A)$ will hold in this situation.  Note that taking an unordered strong support and equipping it with the restriction of the global order on support conditions will give an ordered strong support, but a general ordered strong support might not comply with the global order where dependencies do not exist.  We require in addition that all items in its field with first component a near-litter have first component a litter.
 
 \item[more discussion:]   We define the action of permutations
 on ordered supports in the obvious way:  $(x,A) \leq_S (y,B)$ iff $(\pi_A(x),A)\, \pi[\leq_S]\, (\pi(y),B)$.  We may abuse notation by writing $\pi[\leq_S]$ as $\pi[S]$.
@@ -801,6 +803,19 @@ on ordered supports in the obvious way:  $(x,A) \leq_S (y,B)$ iff $(\pi_A(x),A)\
 For $\leq_S$ a $\beta$-support and $C$ a finite subset of $\lambda$ with ${\tt min}(C) \geq \beta$, we define $\leq_{S^C}$ so that $(x,A) \leq_S (y,B)$ iff $(x,A \cup C) \leq_{S^C} (y,B \cup C)$,
 
 For $\leq_S$ a $\beta$-support and $\gamma<\beta$, we define $\leq_{S_{(\gamma)}}$ as the largest $\gamma$-support $T$ such that $\leq_{T^{\{\beta\}}} \subseteq \leq_S$.
+
+\item[Definition (nice support):]  We define a condition on supports which will hold for images of strong supports under the action of allowable permutations.  We say that an ordered $\beta$-support $S$ with domain $S$ is nice iff whenever $(N,A)$ with $N$ a near-litter belongs to $S$, and $\gamma={\tt min}(A)<\beta$, and $N^\circ$ has a preimage $y$ under an appropriate $f$ map,  there is a $\gamma$-support $T$ of $y$ such that $T^{\{\beta\}} \subseteq \{c \in S:c <_S (N,A)\}$ is a support for $y$.  Further,
+for any $(x,A)$ with $x$ a singleton, there is $(N,A) \in S$ with $N$ a near-litter such that $x \subseteq N$  and $(N,A) <_S (x,A)$.
+
+\item[Observation:]  It is clear that the action of any allowable permutation sends a strong support to a nice support.  We would want to claim that any nice support is the image of a strong support under the action of an allowable permutation.  This would be managed with freedom of action technology.  One needs to enhance the given nice support with 
+the designated supports (expanded to strong supports) associated with each near-litter support condition where the litter near the near-litter has a preimage under an appropriate $f$ map, then note that one needs to map each $(N,A)$ in the nice support to $(N^{\circ},A)$, which creates obligations to move atoms in $N \Delta N^{\circ}$ appropriately under $\pi_{A\cup \{-1\}}$.  The construction of
+the desired map is then relatively easy, because atoms in the added designated supports are to be fixed and reshuffling of atoms in symmetric differences presents no essential difficulties, and we do not care where other atoms in the nice support are mapped. The protocol for adding items in a nice support [needed because supports are ordered in this context]  is to place them just before the place where they are needed,
+then eliminate items which are duplicated (keeping the one which appears earlier): if a litter is inserted and there is already a near-litter near it in the field of the support, eliminate the later of the two items in the order (replacing it with the litter if necessary, without forgetting obligations to move atoms in the symmetric difference appropriately) and insert the atoms in the symmetric difference where appropriate, with their own designated supports as required.  Iteration of insertions
+can proceed through no more than $\omega$ stages because items are inserted before things that depend on them [up to nearness of near-litters to litters], and dependency correlates with the global well-ordering on support conditions.
+
+At the end I need to show that the action of the allowable permutation constructed sends the original nice support to a strong support (discarding the scaffolding added to assist construction of the permutation).
+
+
 
 \item[Definition (coding functions):]  For any support $S$ and object $x$, we can define a function $\chi_{x,S}$ which sends $T=\pi[S]$ to $\pi(x)$ for every $T$ in the orbit of $S$ under
 the action of allowable permutations.  We call such functions {\em coding functions\/}.  Note that if $\pi[S]=\pi'[S]$ then $(\pi^{-1}\circ \pi')[S]= S$, so 
@@ -889,26 +904,33 @@ The strategy of our argument for the size of the types is to show that that ther
 \item
 Our inductive hypothesis is that for each $\beta<\alpha$ we have $<\mu$ $\beta$-coding functions.
 
-For each $g \in \tau_\gamma$, $\gamma<\alpha$, let $S_g$ be the strong support obtained by closing up the designated support for $g$ following the observation above on why supports can be extended to strong supports, with order derived from the global order on support conditions.
+For each $g \in \tau_\gamma$, $\gamma<\alpha$, let $S^0_g$ be the strong support obtained by closing up the designated support for $g$ following the observation above on why supports can be extended to strong supports, with order derived from the global order on support conditions.
 
 We specify an object $X\in \tau_\alpha$ and a strong $\alpha$-support $S$ for $X$, and develop a recipe for the coding function $\chi_{X,S}$ which can be used to see that there are $<\mu$ $\alpha$-coding functions (assuming of course that we know that things worked out correctly for $\beta<\alpha$).
 
 $X = B_\alpha$, where $B$ is a subset of $\tau_\beta$.  
 
-We describe the computation of a strong $\alpha$-support $T_b$
-for $\{b\}_\alpha$ (where $b$ is an element of $B$) from the strong $\beta$ support $S_b$.   We compute this by a process of closing up $S_b^{\{\alpha\}}$:  the only situation we are concerned
-about is items $(N,\{\gamma,\alpha\})$ in the support where $N=f_{\delta,\gamma}(d)$, $\delta<\alpha$.  In this case we insert a suitably
-tagged version of $S_d$, or, in the case $\delta= -1$, the atom $\{d\}_\alpha$ and the type $\alpha$ litter containing $d$ in its $-1$-extension (which will cause no further extensions).   The resulting support will be a strong $\alpha$-support for $\{b\}_\alpha$.  This process terminates because in adding a support $S_d$ we are always adding things whose position in the designated order on their type is before the position of $d$ in its type.
+We define a support $S_b$ for each element of $\tau_\gamma$, $\gamma<\alpha$:  we select one element from each orbit in under $\gamma$-allowable permutations, define $S_b$ as $S^0_b$, then for each other $b'$ in the orbit choose
+a $\gamma$-allowable permutation $\pi$ such that $\pi(b)=b'$ and define $S_{b'}$ as $\pi[S_b]$.  Notice that these are not strong supports, though they are close to being so (near-litters
+in these supports may not be litters).
+
+We describe the computation of an $\alpha$-support $T_b$
+for $\{b\}_\alpha$ (where $b$ is an element of $B$) from the $\beta$ support $S_b$ whose construction is described above.   We compute this by a process of closing up $S_b^{\{\alpha\}}$:  the only situation we are concerned
+about is items $(N,\{\gamma,\alpha\})$ in the support where $N^\circ=f_{\delta,\gamma}(d)$, $\delta<\alpha$.  In this case we insert a suitably
+tagged version of $S_d$, or, in the case $\delta= -1$, the atom $\{d\}_\alpha$ and the type $\alpha$ litter containing $d$ in its $-1$-extension (which will cause no further extensions).   The resulting support will be a nice $\alpha$-support for $\{b\}_\alpha$.  This process terminates because in adding a support $S_d$ we are always adding things whose position in the designated order on their type is before the position of $d$ in its type.  Technical adjustment:  when we make insertions, we have to decide about order.  We put the inserted items in at the exact point where they are needed, omitting ones that are already present (they occur earlier) and in the case [which we must worry about because these supports are not strong]
+where a near-litter occurs with small symmetric difference from a near-litter appearing earlier, replace the earlier near-litter with the union of the two near-litters, delete the later one, and insert the atoms in the symmetric difference appropriately.  Because only finitely many adjustments occur, this will converge sensibly.
 
 It is given that $T_b$ is computed from
 $S_b$, but what we actually need is something like the specification of $T_b$ being computable from the specification of $S_b$:  we cannot in fact compute the specification of $T_b$ from the cardinality of $S_b$, but we argue that there are $<\mu$ possibilities for specifications of supports $T_b$.  There are $\mu_0<\mu$ specifications for supports $S_b$ available at the current stage by the inductive hypothesis [more generally there is $\mu_0<\mu$ dominating the number of coding functions in any type below $\alpha$, since there are $<\kappa$ such types].   Any specification built the way we describe uses
 an $S_b$ to start, which has one of $\mu_0$ possible specifications.  Each further refinement involves choosing an $S_d$ (with one of $\mu_0$ possible specifications) to insert 
-at stated positions (or the specification of an atom and a litter in the $\delta=-1$ case).  The exact information needed is for each element of $S_d$ where it is to be inserted in the preceding specification (or where it is already present):  there are no more than $2^\kappa\leq \mu_0<\mu$ ways to make such an insertion, so $\mu_0$ ways to make an insertion of an $S_d$ in a stated way. There will be $<\kappa$ such insertions.
+at stated positions (or the specification of an atom and a litter in the $\delta=-1$ case).  The exact information needed is for each element of $S_d$ where it is to be inserted in the preceding specification (or where it is already present):  there are no more than $2^\kappa\leq \mu_0<\mu$ ways to make such an insertion, so $\mu_0$ ways to make an insertion of an $S_d$ in a stated way. There will be $<\kappa$ such insertions [note also insertions of atoms from symmetric differences as described above].
 There are $<\mu$ possible descriptions of such processes of insertion (this involves appealing both to the fact that $\mu$ is strong limit and the fact that its cofinality is at least $\kappa$), including descriptions of actually ill-founded processes (of course, an actual construction of a $T_b$ will be well-founded).  So there are $<\mu$ possible specifications for supports $T_b$ constructed as above. 
 
-For each $b \in B$ there is a strong support $S_b$ chosen as above, from which the support $T_b$ can be computed as described above.  Let $S_b^-$ be the suborder of $S_b$ whose field is the designated support of $b$.  If $b' \in B$ is in the range of the same coding function $\chi_{b,S_b}$ as $b$, the details of our choice of designated supports show that $S_{b'}^-$ is $\pi[S_{b}^-]$ for some $\beta$-allowable $\pi$ with $\pi(b) = b'$.
-If we have the further condition that $T_b$ and $T_{b'}$ have the same specification, it follows that there is a permutation $\pi_2$ such that $\pi_2[T_b] = T_{b'}$.  Note that $(\pi_2)_\beta[S_b^-]=S_{b'}^-$, from which it follows that $\pi^{-1} \circ (\pi_2)_\beta$ fixes $b$, since it fixes all elements of $S_b^-$, so $b'=\pi(b) = (\pi_2)_\beta(b)$, from which it follows
-that $\pi_2(\{b\}_\alpha) = \{b'\}_\alpha$ so $\{b\}_\alpha$ and $\{b'\}_\alpha$ are in the range of the same coding function $\chi_{\{b\}_\alpha,T_b}$.  Now there are $<\mu$ possible specifications of a coding function $\chi_{b,S_b}$ followed by a specification for $T_b$, so by this procedure we describe a family of $<\mu$ coding functions $\chi_{\{b\}_\alpha,T_b}$ whose range covers all type $\alpha$ singletons of elements of $B$.
+
+
+For each $b \in B$ there is a strong support $S_b$ chosen as above, from which the support $T_b$ can be computed as described above.  If $b' \in B$ is in the range of the same coding function $\chi_{b,S_b}$ as $b$, $S_{b'}^-$ is $\pi[S_{b}^-]$ for some $\beta$-allowable $\pi$ with $\pi(b) = b'$.
+If we have the further condition that $T_b$ and $T_{b'}$ are constructed from $S_b$ and $S_{b'}$ using the same sequence of insertions, and so have the same specification, it follows that there is a permutation $\pi_2$ such that $\pi_2[T_b] = T_{b'}$.  Note that $(\pi_2)_\beta[S_b]=S_{b'}$, from which it follows that $\pi^{-1} \circ (\pi_2)_\beta$ fixes $b$, since it fixes all elements of $S_b$, so $b'=\pi(b) = (\pi_2)_\beta(b)$, from which it follows
+that $\pi_2(\{b\}_\alpha) = \{b'\}_\alpha$ so $\{b\}_\alpha$ and $\{b'\}_\alpha$ are in the range of the same coding function $\chi_{\{b\}_\alpha,T_b}$.  Now there are $<\mu$ possible specifications of a coding function $\chi_{b,S_b}$ followed by a specification for $T_b$ combined with exact information about the insertions by which it is constructed, so by this procedure we describe a family of $<\mu$ coding functions $\chi_{\{b\}_\alpha,T_b}$ whose range covers all type $\alpha$ singletons of elements of $B$.
 
  
 
