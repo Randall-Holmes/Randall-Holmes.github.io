@@ -1,0 +1,163 @@
+\documentclass{slides}
+
+\usepackage{amssymb}
+
+\title{The calculus of concepts, an introduction}
+
+\author{Randall Holmes}
+
+\date{Edmonton logic meeting, 11/28/2023}
+
+\begin{document}
+
+\begin{slide}
+
+\maketitle
+
+\end{slide}
+
+\begin{slide}
+
+I shall work from Quine's papers ``Toward a calculus of concepts" and ``Concepts of negative degree", and from my own efforts at axiomatizing this calculus, but rather remotely.  Looking back at the Quine papers, I see how different his outlook and mine are.  I shall have modest goals for this presentation:  I will present a semantics for the calculus, a set of primitives that I find congenial, an indication of why this interprets first order logic, and suggestions toward how this could be axiomatized.   I will not hew closely to Quine's papers;  he has an obsession with minimal numbers of axioms and constructions to the point of weirdness, and he has a tendency to speak in entirely formal terms where a bit more of a semantic approach would seem recommended (as we will see, time permitting, in the discussion of negative degrees).
+
+\end{slide}
+
+\begin{slide}
+
+We give an intended semantics for the notion of concept.  A concept is an $n$-ary relation, to be understood as a set of argument lists of length $n$ (with a technical modification)
+An argument list is a sequence of objects from a domain $D$, and the natural operation on argument lists underlying our work is concatenation.  If we have argument lists $x=(x_1,\ldots,x_n)$ and $y=(y_1,\ldots,y_m)$, $x+y$ is the argument list $(x_1,\ldots,x_n,y_1,\ldots y_m)$:  $(x+y)_i$ is either $x_i$ or $y_{i-n}$, whichever is meaningful.  There is a single 0-length argument list $()$ which is right and left identity for concatenation.
+
+A concept may be understood in the background as a set of argument lists, all of the same length $n$, which we call the degree of the concept, paired with the degree $n$.  This last detail is needed to allow empty concepts of different degrees to be distinguished.   Concepts of degree 0
+may be thought of as propositions (there are two of them, whose first projections are $\{()\}$ and $\emptyset$).
+
+\end{slide}
+
+\begin{slide}
+
+All of this machinery is invisible in the calculus of concepts itself, which overtly discusses only concepts and operations on concepts.  There are no argument lists and no concatenations in the primitives of the calculus, though the intended meanings of the primitives of the calculus are stated in these terms.  The calculus does not seem in fact to require the notion of degree to be among its primitives, and it supports interpretations in which the degrees are not simply natural numbers.
+
+\end{slide}
+
+\begin{slide}
+
+Without further ado, we present a set of primitive operations on concepts, with their intended definitions in terms of the stated semantics.  We use the notation $|x|$ for the length of an argument list $x$ and $|A|$ for the degree of $A$.  In all cases, $\pi_2(A) = |A|$, and the definitions of the operations preserve this condition.
+
+\begin{description}
+
+\item[cartesian product:]  $$A \times B = (\{x+y:x \in \pi_1(A) \wedge y \in \pi_1(B)\},|A|+|B|).$$ 
+
+\item[quotient:]  $$A/B = (\{x:(\exists y \in \pi_1(B):x+y \in \pi_1(A)\},$$ $${\tt max}(|A|-|B|,0)).$$
+
+\end{description}
+
+\end{slide}
+
+\begin{slide}
+
+\begin{description}
+
+\item[complement:] $$A^c = (\{x:|x|=|A| \wedge x \not\in \pi_1(A)\},|A|).$$
+
+\item[diagonal:]  $$\Delta A = (\{x+x:x \in \pi_1(A)\},2|A|).$$
+
+\end{description}
+
+\end{slide}
+
+\begin{slide}
+
+Notice that if $A$ is of degree $m$ and $B$ is of degree $n$, $A \times B$ is of degree $m+n$ (notice that this is not exactly 
+a cartesian product in the usual sense), $A /B$ is of degree $m-n$ if this is nonnegative and 0 otherwise, $A^c$ is of degree $m$ and $\Delta A$ is of degree $2m$.
+
+This is not identical with Quine's list of primitives in either paper, but it is adequate for our purposes.  It may be the same as Quine's primitive list in his little pamphlet on the calculus of concepts and predicate functor logic.  In any event, I do not have the same fondness for minimal sets of primitives that he does.
+
+\end{slide}
+
+\begin{slide}
+
+We give a definition immediately.  If $A$ and $B$ are of the same degree, notice that $\Delta A/B$ (unary operations biding more tightly than binary) implements $A \cap B$, in the sense that its first component is $\pi_1(A) \cap \pi_1(B)$.
+
+The question of how to handle the case where the degree of $A$ and the degree of $B$ are different might be concerning.  For any $A$, define $V^A$ as
+$(A \cap A^c)^c$ (this implements the universal concept of the degree of $A$, which is a natural implementation of the degree of a concept internally to the calculus).
+
+We then define $A \cap B$ in general  as $$\Delta(A \times V^{B/A})/(B \times V^{A/B}).$$  What we have done here is padded the concepts $A$ and $B$ to the same degree,
+the maximum of the degrees of $A$ and $B$.  This will give a more sensible notion of intersection of two concepts when they are of different degree.
+
+
+\end{slide}
+
+\begin{slide}
+
+We outline at least an argument that the calculus of concepts supports the operations of first order logic.  A formula $\phi$ of the usual language of first order logic
+equipped with an argument list, so written $\phi(x_1,\ldots,x_n)$ where the $x_i$'s include but are not restricted to the free variables in $\phi$, is to be correlated with a concept $A_\phi = (\{(x_1,\ldots,x_n):\phi\},n)$.
+
+For each primitive relation $R(x_1,\ldots,x_n)$ we are given $A_R$ as a primitive concept.
+
+Let $V$ be the universal concept of degree 1.  Notice that we can implement the universal concept $V^n$ of degree $n$ by iterated cartesian product.
+
+Equality sentences $[x_i=x_j](x_1,\ldots,x_n)$ (for convenience, assume $i < j$) are implemented by $$V_{i-1} \times(\Delta V^{j-i}/V^{j-i-1})\times V^{n-j}.$$
+
+\end{slide}
+
+\begin{slide}
+
+$\neg \phi$ is implemented as $(A_\phi)^c$
+
+If we have implemented $\phi(x_1,\ldots x_m)$ and \newline $\psi(x_1,\ldots,x_n)$, we implement $$\phi(x_1,\ldots,x_m) \wedge \psi(x_{m+1},\ldots,x_{m+n})$$ as
+$A_\phi \cap (V^m \times A_\psi)$.   Then observe that any desired identifications between variables in the argument lists of $\phi$ and $\psi$ can be implemented by intersection with representations of atomic equality sentences.
+
+\end{slide}
+
+\begin{slide}
+
+If we have implemented $\phi(x_1,\ldots,x_n)$, we can implement $(\exists x_n:\phi(x_1,\ldots,x_n))$ as $A_\phi/V$.
+
+We can implement $[(\exists x_i:\phi(x_1,\ldots,x_n)](x_1,\ldots x_n)$ as $(A_\phi \cap A_{x_i=x_{n+1}})/V$:  notice the inconvenience that
+$x_i$ is preserved among the variables of the quantified sentence (we get a concept of the same degree as that of $\phi$ rather than one of degree one less as we might expect).
+
+We can get precisely what we (perhaps) want in the following way:  $$[(\exists x_i:\phi(x_1,\ldots,x_n)](x_1,\ldots,x_{i-1},x_{i+1},\ldots, x_n)$$
+can be implemented by $$(A_{x_1 = x_n \wedge \ldots \wedge x_{i-1} = x_{n+i-2}} $$ $$ \cap A_{x_{i}=x_{n+i}\wedge\ldots\wedge x_{n-1}=x_{2n-1}} $$ $$\cap V_{n-1} \times A_\phi)/V_n$$
+
+\end{slide}
+
+\begin{slide}
+
+So, we have a system in which all the operations of first order logic can be represented without variable binding.  But we are only making sense of these notations via the underlying semantics expressed in terms of set theory.  What this appears to call for is a native system of reasoning using the operations given here, and that is rather a tall order.  The maneuvers we have to go through for the encoding of first order logic operations should suggest what the difficulties might be with developing and presenting such a system.  I have a sketch of such a development which I worked out many years ago which I may flash up at this point.
+
+\end{slide}
+
+\begin{slide}
+
+There are natural extensions of this scheme in which the degrees are not simply natural numbers.  For example in multi-sorted logic one could have independent argument lists of variables of each sort, and the degree of a concept would be constituted by the number of arguments of each sort.  Concatenation of argument
+lists would be defined naturally by concatenating variable lists of each sort independently and one could get multidimensional degrees.  More peculiar interpretations are possible and discussed in my draft documents.
+
+\end{slide}
+
+\begin{slide}
+
+Quine wrote a paper in which he introduced concepts of negative degree to allow what he regarded as fortunate systematization of the definitions.  I wont discuss what he does in detail except to point out that he gives no intended semantics for the concepts of negative degree at all, and it is interesting to observe that to do this is fairly easy and gives precisely the formal results he describes.
+
+For simplicity we remain with a single domain $D$, not exploring the possibilities of the previous slide.  We make the notion of argument list
+a bit more complex.  An item in an argument list is of one of the forms $x^+$ or $x^-$ where $x \in D$.  
+
+In an argument list $(x_1,\ldots,x_i,x_{i+1},\ldots,x_n)$, if $x_i = a^+$ and $x_{i+1} = b^-$, or if $x_i = a^-$ and $x_{i+1} = b^+$, then
+$a=b$ and moreover $$(x_1,\ldots,x_i,x_{i+1},\ldots,x_n)$$ is to be identified with the argument list obtained by deleting $x_i$ and $x_{i+1}$.
+
+In this way, every argument list is identified with a list containing only items $a^+$, whose degree is its length, or a list containing only items
+$a^-$, whose degree is the negation of its length.
+
+With any concept $A$ of positive degree, there is an associated concept $-A$ consisting of all lists $(y_1,\ldots,y_n)$ such that for some
+list $(x_1,\ldots,x_n) \in \pi_1(A)$, given in its shortest form, for each appropriate index $i$, $x_i=a^+$ iff $y_{(n+1)-i} = a^-$ (reverse the order and change the sign).
+
+One can then define $A /B$ as $A \times (-B)$.  It rather beggars the mind...  The primitives of the calculus with negative degree would be obtained for me
+by replacing quotient with the negation operator, leaving cartesian product as the only binary operation.  Some elegance is combined with the madness.
+
+What is really interesting is that Quine appears to come up with the idea of negative degrees entirely formally, without any account of what the inhabitants of a concept of negative degree might be (or without admitting that he knows one).
+
+There is an inconvenience for me in this, and so I chose not to work with negative degrees in my attempted formal treatments.  It is positively advantageous
+in my view that $A \times V^{A/B}$ and $B \times V^{B/A}$ turn out to be of the same degree (that this is a nice way to pad concepts to the same degree):  this is not true in the calculus of concepts with negative degree.
+
+\end{slide}
+
+
+\end{document}
