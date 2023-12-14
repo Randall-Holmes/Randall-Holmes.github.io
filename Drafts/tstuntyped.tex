@@ -1,0 +1,359 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb}
+
+\title{The typed theory of sets as an untyped theory}
+
+\author{Randall Holmes (with deference to Quine and Thomas Forster)}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+We argue here that the simple typed theory of sets can be very neatly presented as an untyped (one-sorted) theory.  This was first brought to my attention by Thomas Forster, but the original idea is due to Quine, who discusses it in under the heading ``Type theory with general variables" in {\em Set theory and its logic\/}.  Our presentation is better than Quine's in ways that we hope to bring out here.  Ours has a natural development in terms of ideas about sets (the first of which is due to Quine!) and hierarchies of typed sets fall out of this development naturally.  Quine's development presupposes the prior understanding of the typed theory of sets, and the way this is done causes certain formal defects.
+
+We claim to have made significant technical improvements over Quine's treatment. We have also changed the extensionality axiom to admit atoms, for reasons.
+
+We will start by presenting our version of the theory, and then discuss the simple typed theory of sets and Quine's original implementation of an untyped theory which is to a certain extent equivalent.
+
+\section{Our axioms}
+
+The theory we present is a one-sorted theory with equality and membership as primitive predicates.
+
+The underlying view of the world here is that objects are of various kinds, and kinds of object are to be understood as sets.  Two objects which are of the same kind
+will belong to that kind, as a set.  This motivates the following definition, which might be felt to be overreach, from which everything unfolds magically.  This definition of being of the same type is found in Quine's original treatment, and it is the core of the view of set theory presented here.
+
+\begin{description}
+
+\item[Definition:]  We say that two objects $x,y$ are of the same type, written $x \sim y$, iff $(\exists z:x \in z \wedge y \in z)$.  We might expect that this would be an equivalence relation, but this requires proof, which will appear below.
+
+\end{description}
+
+Our world includes sets and atoms.  Sets have the obvious identity criterion, having the same elements, and atoms have no elements.  We state the identity criterion for objects with elements.  We present extensionality in this way to allow atoms (a motive Quine does not have) but also to allow distinct empty sets in each type, which Quine does require.
+
+\begin{description}
+
+\item[Axiom of weak extensionality:]  $$(\forall xyz:z \in x \wedge (\forall w:w \in x \leftrightarrow w \in y) \rightarrow x=y)$$
+
+\end{description}
+
+We have an axiom of comprehension, with some preliminaries. Given a type $\tau$, any property of objects of that type determines a set, which is of the same type as $\tau$.  The preliminaries provide for types themselves as sets and for empty sets (in contrast to atoms).
+
+\begin{description}
+
+\item[Axiom of types:]  $(\forall x:(\exists \tau:x \in \tau \wedge  (\forall y:y \in \tau \leftrightarrow y \sim x)))$
+
+\item[Definition:]   For any $x$, we define $\tau(x)$, the type of $x$, as the unique $\tau$ such that $(\forall y:y \in \tau \leftrightarrow y \sim x)$, and note that $x \in \tau(x)$.  It is unique by weak extensionality.  The notation $V_x$ is also appropriate for $\tau(x)$.
+
+
+\item[Axiom of empty sets and definition of sethood:]  We introduce a primitive operation:  for any object $x$ there is an object $\emptyset_x$.  The axiom governing this construction is
+$$\emptyset_x \sim \tau(x) \wedge (\forall y:y \not\in \emptyset_x).$$  We define ${\tt set}(A)$ [read ``$A$ is a set"] as $(\exists x:x \in A \vee \emptyset_x = A)$.  Something which is not a set we call an atom.  We define $x \subseteq y$ as $${\tt set}(x) \wedge {\tt set}(y) \wedge x \sim y \wedge (\forall z:z \in x \rightarrow z \in y).$$
+
+
+\item[Axiom of comprehension:]  For any object $x$ and any\footnote{Forster, in an earlier presentation,  originally restricted the comprehension scheme to ``stratified" formulas (ones which make sense in the typed theory of sets) but this appears to us to somewhat hide what is going on.  It is telling that if we omit all suggestions that we are talking about the typed theory of sets,
+the fact that we are talking about the typed theory of sets nonetheless falls out.  In effect, the only information that is obtained by allowing unstratified formulas in comprehension is the conclusion drawn shortly that a type is disjoint from the types which include its iterated power sets.} formula $\phi$, $$(\exists A:A \sim \tau(x) \wedge (\forall y:y \in A \leftrightarrow (y \sim x \wedge \phi))).$$
+
+\item[Definition:]  We define $\{y \in \tau(x):\phi\}$ as the unique $A$ such that $${\tt set}(A) \wedge A \sim \tau(x) \wedge (\forall y:y \in A \leftrightarrow (y \sim x \wedge \phi))$$
+
+\end{description}
+
+
+We need one more natural axiom and it will turn out that we have implemented the classical typed theory of sets, though this may not be obvious.
+
+\begin{description}
+
+\item[Axiom of binary union:]  $$(\forall xy: x \sim y \rightarrow (\exists z:(\forall w:w \in z \leftrightarrow w \in x \vee w \in y)))$$
+
+\item[Definition:]  For any sets $x,y$, with $x \sim y$, we define $x \cup y$ as the unique set $z$ such that $(\forall w:w \in z \leftrightarrow w \in x \vee w \in y)$.
+
+\item[Definitions of sorts of non-set:]  We say that $x$ is an {\em atom\/} iff $\neg {\tt set}(x)$.  note that atoms have no elements.  We say that $x$ is an {\em individual\/} iff $\neg(\exists y:x \sim \tau(y))$.  An individual is not a set, and no element of the type it belongs to is a set.  Our axioms do not provide for the existence of either atoms or individuals, but these are important formal possibilities.
+
+\end{description}
+
+
+
+\section{Theorems about general structure}
+
+We continue the development of our own formulation of the theory.  We need to do some bookkeeping.
+
+\begin{description}
+
+\item[The relation of being of the same type is an equivalence relation:]  $x \sim x$ is evident because $x \in \tau(x) \wedge x \in \tau(x)$.  I enjoyed writing that!
+
+$x \sim y$ is equivalent to $(\exists z: x \in z \wedge y \in z)$ which is equivalent to $(\exists z:y \in z \wedge x \in z)$ which is equivalent to $y \sim x$.
+
+If $x \sim y$ and $y \sim z$, then $x \sim y$ and $z \sim y$, that is, $x \in \tau(y)$ and $z \in \tau(y)$, so $x \sim z$.
+
+\item[Definition scheme for local type hierarchy:]  We define $\tau^1(x)$ as $\tau(x)$ and $\tau^{n+1}(x)$ as $\tau(\tau^n(x))$.  This is purely a convenient scheme:  the indices here cannot be quantified over and do not represent objects of our theory.
+
+This notation can be extended (partially) to non-positive integer superscripts.  If $\tau^i(x)$ is a type, define $\tau^{i-1}(x)$ as the unique
+type which is of the same type as $x$ if there is one, and otherwise as $x$;  if $\tau^i(x)$ is not a type, leave $\tau^{i-1}(x)$ undefined.   
+
+When we refer to $\tau^n(x)$ we normally intend $n$ to be a positive integer, and will advise the reader if our intentions differ in some part of the text.
+
+\item[The Russell non-paradox:]  Define $R_x$ as $\{y \in \tau(x):y \not\in y\}$.  We know that $R_x \sim \tau(x)$, so
+$R_x \in \tau^2(x)$.  We know that $R_x \in R_x$ if and only if $R_x \in \tau(x) \wedge R_x \not\in R_x$, from which we conclude that $R_x \not\in \tau(x)$ (as contradiction would otherwise follow), so $R_x \not\sim x$, from which we draw the useful conclusion that $x \not\sim \tau(x)$.  This means that $\tau(x)$ and $\tau^2(x)$ are disjoint, 
+since any $y$ which was in both sets would stand in the relation $\sim$ to both $x$ and $\tau(x)$.  
+
+This can be extended to show that $\tau^n(x)$ is disjoint from $\tau(x)$ for any concretely given natural number $n$.
+Define $\{x\} = \iota(x)$ as $$\{y \in \tau(x):y=x\},$$ and define (schematically) $\iota^0(x)$ as $x$ and $\iota^{n+1}(x)$ as $\iota(\iota^n(x))$.  Note that $\iota(x) \in \tau^2(x)$ and in general $\iota^n(x) \in \tau^{n+1}(x)$.  Now define $R^n_x$ as $\{\iota^n(y) \in \tau^{n+1}(x):\iota^n(y) \not\in y\}$, or, in a more finicky format to make it clear that our axioms support this,  $$\{z\in \tau^{n+1}(x):(\exists y: z=\iota^n(y)\wedge z \not\in y)\}.$$ $R^n_x \in \tau^{n+2}(x)$
+and we see that $\iota^n(R^n_x) \in R^n_x \leftrightarrow \iota^n(R^n_x) \in \tau^{n+1}(x) \wedge \iota^n(R^n_x) \not\in R^n(x)$, from which we conclude that $\iota^n(R^n_x) \not\in \tau^{n+1}(x)$, from which $R^n_x \not\in \tau(x)$, so $R^n_x \not\sim x$, from which we can conclude that $\tau^{n+2}(x)$ cannot meet $\tau(x)$.
+
+It is straightforward to establish that there is no particular use for the notation $R^n_x$ going forward, as in fact $R^n_x = \tau^{n+1}(x)$.
+
+\item[Power sets and principal ultrafilters:]    We can define ${\cal P}(x)$ as the collection of all elements of $\tau(x)$ which are sets and all of whose elements are in $x$ (which belongs to $\tau^2(x)$).  Further, any nonempty $y$ all of whose elements $u$ belong to $x$ has the same extension as and is therefore
+equal to $\{z \in \tau(u):z \in y\}$, which belongs to $\tau^2(u)=\tau(x)$ [$\{z \in \tau(u):z \in x\}$ is equal to $x$ for the same reason, so we see that $\tau^2(u)=\tau(x)$].  Of course $\emptyset_x$ is the unique empty set in $\tau^2(x)$ which is a subset of $x$;  there are empty sets in other types, but these do not get confused with $\emptyset_x$.  So ${\cal P}(x)$ has as its elements $\emptyset_x$ and all nonempty sets whatsoever all of whose elements are in $x$ (all of which happen to be in $\tau(x)$).
+
+Observe that any set $y$ which contains $x$ as an element  is a subset of $\tau(x)$ ($y$ itself witnesses the fact that all its elements
+are of the same type as $x$), and so an element of ${\cal P}(\tau(x))$ and so an element of $\tau^2(x)$, so the collection of all sets which contain $x$ is a subset of $\tau^2(x)$ and an element of $\tau^3(x)$.  Sethood of the collection $B(x) = \{y:x \in y\}$ is not a feature of the usual set theory.
+
+\item[Stratification:]  We know now that if $x \in y$ we have $y \in \tau^2(x)$.   We would like to have a scheme of stratification, in which we have a fixed variable $x$
+and an assignment of natural numbers to all variables $y$ such that $y \in \tau^i(x)$.  Working upward, all is good:  if $y \in z$ and we know that $y \in \tau^i(x)$, we can conclude
+that $z \in \tau^{i+1}(x)$.  Now suppose that we know that $y \in z$ and that $z \in \tau^{i+1}(x)$.  We know that $z \in \tau^2(y)$ as well.   We would like to conclude
+from $\tau^2(y) = \tau^{i+1}(x)$ that $\tau(y) = \tau^i(x)$.  We know that $\tau(y) \in \tau^2(y) = \tau^{i+1}(x)$ and that $\tau^i(x) \in \tau^{i+1}(x)=\tau^2(y)$, so
+$\tau(y) \sim \tau^i(x)$, so $\tau(y) \cup \tau^i(x)$ exists, so  $y \sim \tau^{i-1}(x)$ [here we allow the possibility that the superscript $i-1$ on $\tau$ is 0, which we normally avoid], from which it follows
+that $y \in \tau^i(x)$.  The axiom of binary union allows type inference downward.  
+
+If we have a formula $\phi$ and a variable $x$ which is connected to all variables in $\phi$ in the obvious sense (by the transitive closure of the relation which obtains between variables occurring in the same atomic subformula of $\phi$) then we can infer types of the form $\tau^n(u)$ for every variable in $\phi$ -- we have $u$ here instead of $x$ because if we are computing types relative to $x$ and encounter the subformula $y \in x$, we should change every type $\tau^i(x)$ so far assigned to a variable to $\tau^{i+1}(y)$.
+
+There will be more discussion of the uses of stratification.  Note that it is possible that more than one type will be assigned to the same variable by the procedure we describe, and we do want to rectify this.
+
+\section{The axiom of infinity and arithmetic}
+
+We give the development of arithmetic as a sample of mathematical work in this theory.  We also need it for our pending finite axiomatization of the theory.
+
+\item[Definition (finite sets):]  We define $\mathbb F_x$, the collection of all finite subsets of $\tau(x)$, as {\small $$\{F\in \tau^2(x):(\forall I \in \tau^3(x):(\emptyset_x \in I \wedge (\forall G \in I:(\forall y \in \tau(x):  G \cup \{y\} \in I))) \rightarrow F \in I\}.$$}
+
+\item[Axiom of infinity:]  $(\forall x:\tau(x) \not\in \mathbb F_x)$:   all types are infinite sets.
+
+\item[The natural numbers and finite sets:]  We define $0_x$ as $\{\emptyset_x\}$, the set of all subsets of $\tau(x)$ with zero elements.
+
+We give a definition of an operation on all sets of sets which will be the successor operation when restricted to natural numbers.  For any set $A$ all of whose elements are sets, define $\sigma(A)$ as $$\{A \cup \{x\}:A \sim \tau(x) \wedge x \not\in A\}.$$ Note that this will be a set by comprehension because any such $A \cup \{x\}$ belongs to $\tau^2(x)$.
+
+We define $1_x = \sigma(0_x)$, $2_x = \sigma(1_x)$, $3_x = \sigma(2_x)$ and so forth.  Notice that for each concrete natural number $n$, $n_x$ will be defined as the set of all subsets of $\tau(x)$ with $n$ elements.  Notice also the at least apparent inconvenience that for each type $\tau(x)$ we have different natural numbers for counting elements of $\tau(x)$, these natural numbers living in $\tau^3(x)$.
+
+The set of natural numbers $\mathbb N_x$ is the set $$\{n \in \tau^3(x):(\forall I\in \tau^3(x):  0_x \in I \wedge (\forall k:k \in I \rightarrow \sigma(k)\in I) \rightarrow n \in I)\},$$ which belongs to $\tau^4(x)$.
+
+We have an implementation of Peano arithmetic (or many implementations).  We consider each of Peano's original axioms (in a form starting with 0 rather than 1).
+
+\begin{enumerate}
+
+\item $0_x \in \mathbb N_x$ is evident.
+
+\item $n \in \mathbb N_x \rightarrow \sigma(n) \in \mathbb N_x$ is evident.
+
+\item  $\sigma(n) \neq 0_x$ is evident.  Any element of $\sigma(n)$ has an element.
+
+\item  The assertion $(\forall mn \in \mathbb N_x:\sigma(m)=\sigma(n) \rightarrow m=n)$ requires a little more attention.
+
+We first use the axiom of infinity to argue that each natural number is nonempty.  Notice that for any element $A$ of $\mathbb F_a$ there is a set $A \cup \{x\}$ with $x \not\in A$ which belongs to $\mathbb F_a$ [because $A$ cannot be $\tau(a)$]. so for any natural number $n$, if $n$ contains an element of $\mathbb F_a$, $\sigma(n)$ also contains an element of $\mathbb F_a$.  $0_a$ obviously contains an element of $\mathbb F_a$, namely $\emptyset_a$.  It follows that every natural number contains an element of $\mathbb F_a$, and therefore that every natural number is nonempty.
+
+We then argue that for any natural number $n$, $$n = \{A - \{x\}:x \in A \wedge A \in \sigma(n)\}.$$  This is clearly true of $0_a$:  $1_a$ is the set of all singletons in $\tau^2(a)$, and the set of sets obtained by removing one element from the singleton contains exactly the empty set in $\tau^2(a)$.  Suppose it is true of $m \in \mathbb N_a$:  we argue that it is true of $\sigma(m)$.  Any set in $\sigma(m)$ is of the form $A - \{x\}$ for some $A$ in $\sigma(\sigma(m))$ [this relies on the fact that we know that $\sigma(\sigma(m))$ is inhabited]: if $B \in \sigma(m)$ there is a $B \cup \{x\} \in \sigma(\sigma(m))$ and
+$(B \cup \{x\}) - \{x\}) = B$.  Now consider any set of the form $A -\{x\}$ where $A \in \sigma(\sigma(m))$ and $x \not\in A$ is of appropriate type:  we need to show that $A -\{x\}\in \sigma(m)$.  $A-\{x\} = (B \cup \{y\}) \cup \{z\})$ where $B \in m$.  If $x$ is either $y$ or $z$, it can wlog be taken to be $z$, and $A - \{z\} = B \cup \{y\} \in \sigma(m)$ follows.  Otherwise, we have $A - \{x\} = (B \cup \{y\}) - \{x\})\cup \{z\}$ and by hypothesis $(B \cup \{y\}) - \{x\})\in m$, so $A - \{x\} = (B \cup \{y\}) - \{x\})\cup \{z\}\in \sigma(m)$.  This shows that we can exactly compute $n$ from $\sigma(n)$ for all $n$, which establishes the fourth Peano axiom.
+
+\item  The assertion that any set $S$ which contains $0_x$ and contains $\sigma(n)$ if it contains $n$, contains all elements of $\mathbb N_x$ follows immediately from the definition of $\mathbb N_x$.
+
+
+
+
+\end{enumerate}
+
+Note that $\mathbb F_x$ can be shown to be the set of all elements of $\tau^2(x)$ which belong to some element of $\mathbb N_x$.
+
+We have given the original five axiom formulation of Peano arithmetic, and we haven't yet said anything about addition or multiplication.
+
+
+For the moment, we supply some definitions.  A more extensive treatment of arithmetic relations and operations may appear later.
+
+\begin{description}
+
+\item[Definition (order on natural numbers):]  For $m,n \in \mathbb N_x$, we define $m \leq n$ as holding iff
+there are $A \in m$ and $B \in n$ with $A \subseteq B$.
+
+\item[Definition (addition of natural numbers):]  If $m,n \in \mathbb N_x$, we define $m+n$ as $\{A \cup B:A \in m \wedge B \in n \wedge A \cap B = \emptyset_x\}$.
+
+\item[Definition (raising natural numbers in type):]  If $n \in \mathbb N_x$ and $A \in n$, $T(n)$ is the natural number in $\mathbb N_{\tau(x)}$ containing $\iota``A$.
+
+\end{description}
+
+We leave to the reader the exercise of showing that the natural numbers are closed under addition and the operation has expected properties.
+
+
+
+\section{Relations and functions:  more mathematical technology}
+
+
+\item[ordered pairs, relations and functions:]  For any $x \sim y$ we define the unordered pair $\{x,y\}$ as $\{z \in \tau(x):z=z \vee z=y\}$\footnote{This entire essay could be recast as an essay on the enormous effects of the unrestricted axiom of pairing.  Zermelo comments on the axiom of pairing as in effect a repudiation of typing in his original 1908 paper on the axioms of set theory.  In Zermelo set theory, the fact that quantifiers over the entire universe can appear in instances of separation has enormous power;  in this theory, the same logical feature gives no particular power, as in effect all quantifiers are bounded in a way deducible from the syntax.}.  Notice that $\{x,x\} = \{x\}$.  We can then define $(x,y)$ as
+$\{\{x\},\{x,y\}\}$ as long as $x \sim y$.  Notice that $(x,y) \in \tau^3(x)$.
+
+Further, if $A, B \in \tau^2(x)$ we can define $A \times B$ as $$\{c \in \tau^4(x):(\exists ab:c=(a,b) \wedge a \in A \wedge a \in B)\}.$$
+
+We can then define relations with domain $A$ and codomain $B$ as subsets of $A \times B$ as usual.  If $R \subseteq A \times B$, we define $x \, R \, y$ as $(x,y)\in R$.  Notice that if $A,B \in \tau^2(x)$, $R \in \tau^4(x)$.  But we do need to note
+that we have binary relation symbols already in use which cannot be understood in this way.  $x \in y$ cannot be understood in this way because $x \sim y$ cannot hold.  $x=y$ and $x \subseteq y$ cannot be understood in this way because their use is not restricted to a single type.  We could define relations $=_x \, = \{(x,y) \in \tau^3(x):x=y\}$ and $\subseteq_x \, = \{(A,B) \in \tau^4(x):A \subseteq B\}$;  these are restrictions of our logical relations of equality and subset to fixed types.
+
+Now we can define a function from $A$ to $B$ as a subset of $A \times B$ with the property that for each $a \in A$ there is exactly one $b \in B$ such that $(a,b) \in f$:  we say $f:A \rightarrow B$ to mean that $f$ is a function from $A$ to $B$.  For each $a \in A$, we define $f(a)$ as the unique $b$ such that $(a,b)\in f$.  [Note that if $x$ and $f(x)$ live in $\tau(u)$,  $f$ will live in $\tau^3(u)$.]  And, again, we need to remember that we are already using function symbols which cannot be understood in this way:  we make heavy use of function symbols which apply to objects of many types and may have outputs at a different type than their inputs.
+
+\item[elementwise images:]  If $F$ is a function or an operation, we define $F``A = \{x\in \tau^0(A):(\exists y: x = F(y))\}$.
+
+\item[tuples of length $n$:]  We define $n$-tuples for any natural number $n$ (noting that our 2-tuples do not coincide with pairs).  We define an $n$-tuple as a function $t$ whose domain is the set of  natural numbers $m$ in $\mathbb N_x$ 
+with $1 \leq m \leq n$ and whose range is a subset of $\iota^2``\tau(x)$:  we write $t_i = y$ when $t(i) = \iota^2(y)$.
+We write $[t_1,\ldots,t_n]$ as notation for an $n$-tuple.
+
+The advantage of tuples defined in this way is that they have a fixed displacement in type from elements of $\tau(x)$:
+from the equation $t(i) = \iota^2(y)$ we see that $t \in \tau^6(x)$, three types higher than $\iota^2(y)\in \tau^3(x)$.  The details of this number do not matter:  all we need to know is that there is such a uniform type displacement and it does not depend on the length of the tuple.
+
+\item[concepts of degree $n$:]  We use terminology taken from Quine for $n$-ary relations considered with a particular purpose in mind.  We define $D^n_x$ as the set of all $n$-tuples in $\tau^6(x)$, and say that a set $C$ is a concept of degree $n$ precisely if $C \subseteq D^n_x \cup \{T^3(n)\}$ for some $n,x$ and $T^3(n) \in C$:  the appearance
+of $T^3(n)$ is to ensure that empty concepts of different degree are distinct.
+
+\item[concatenation of $n$-tuples:]  For $t \in D^m_x$ and $u \in D^n_x$, we define $t+u$ as the unique
+element $v$ of $D^{m+n}_x$ such that $v_i = t_i$ for $i$ in the domain of $t$, and $v_{m+i}=u_i$ for $i$ in the domain of $u$.
+
+\item[basic operations on concepts:]  If $A \in D^m_x$ and $B \in D^n_x$, we define
+
+\begin{enumerate}
+
+\item $A*B$ as $\{t+u:t \in A \wedge u \in B\}\cup \{T^3(m+n)\}$  This will belong to $D^{m+n}_x$.
+
+\item $A/B$ (if $n \leq m$) as $\{t \in \tau^6(x):(\exists u \in B:t+u \in A)\} \cup \{T^3(m-n)\}$.  This will belong to $D^{m-n}_x$.
+
+\item $\Delta A$ as $\{t+t:t \in A\}\cup \{T^3(2m)\}$.  This will belong to $D^{2m}_x$.
+
+\item $A^c$ as $\{t \in D^m_x:t \not\in A\}\cup \{T^3(m)\}$.  This will belong to $D^m_x$.
+
+\end{enumerate}
+
+
+
+\item[adjustment of the types of relations:]  Some complications in our development could be simplified if we could define an ordered pair $(x,y) \sim x$.
+
+And indeed this can be done for some types.  We proceed to define what is known as the Quine ordered pair $(a,b)_x$.  The need for the type locating parameter $x$ will become clear.
+
+Define $\sigma_0(y)$ as $\sigma(y)$ if $y$ is a natural number, and as $y$ otherwise.  Note that this requires that $y$ belong to a type $\tau^3(x)$.  Define $\sigma_1(z)$ as $\{\sigma_0(y) \in \tau(z):y \in z\}$ and $\sigma_2(z)$ as $\sigma_1(z) \cup \{0_x\}$, where we require $z \in \tau^4(x)$.  We then define
+$(a,b)_x$ as $\{\sigma_1(u) \in \tau(a):u \in a\} \cup \{\sigma_1(u) \in \tau(b):u \in b\}$, where we must have $a,b \in \tau^6(x)$.  This is demonstrably an ordered pair, and it is of the same type as its projections.  The apparent disadvantage is that it is defined only in types which contain sufficiently iterated power sets of a type.   We will subsequently explain why we consider this disadvantage only apparent.
+
+An easy remark here is that if we assume that there are no individuals, then every type is of the form $\tau^i(x)$ for each concrete $i$, and the Quine pair is universally definable.
+
+\item[accommodation of heterogenously typed relations and functions:]
+
+Notice that this formal system does not accommodate representation of functions between distinct types.  In certain cases this can be managed, and arguably these are the only important cases.
+
+The general idea is that a relation from $\tau^m(x)$ to $\tau^n(x)$ can be coded as a relation from $\iota^{n-{\tt min}(m,n)}``\tau^m(x)$ to $\iota^{m-{\tt min}(m,n)}``\tau^n(x)$:  in general, elements of $\tau(x)$ can be coded in $\tau^{n+1}(x)$ by elements of $\iota^n``\tau(x)$.
+
+The underlying idea which makes this seem sufficient is that types really do not seem to have anything to do with each other unless one is an iterated image of the other under the $\tau$ operation.
+
+We do not make the presumption that Quine does that the types are exactly the ones of the simply typed theory of sets, but we do not explicitly provide any machinery that goes beyond this.
+
+We note under this heading that one way the theory could be extended is with a primitive ordered pair with the following axioms:
+
+\begin{description}
+
+\item[primitive notion:]  For any $x,y$ (with no presumption that they are of the same type) there is an object $(x,y)$.
+
+\item[typing of pairs:]  If $x \sim y$ and $z \sim w$, then $(x,z) \sim (y,w)$.
+
+\item[basic property of pairs:]  If $x=y$ and $z=w$, then $(x,z)=(y,w)$.
+
+\end{description}
+
+We note the possibility of extending the theory in this way.  This allows general definitions of relation types and allows simulation of the more complicated type theory of Russell and Whitehead.  It also increases the ability
+of the theory to introspect on its own structure considerably, and we are not inclined to adopt it.  We may occasionally have reason to refer to this extension.
+
+\end{description}
+
+\section{Finite axiomatization of the theory}
+
+This theory is finitely axiomatizable.  This is perhaps surprising as it shares the trait with Zermelo set theory that unrestricted quantification is allowed in instances of its comprehension axiom.  But in fact the apparently unrestricted quantifiers in instances of our comprehension axiom can be assigned bounds.
+
+There are two steps in our argument.  We first show that every comprehension axiom is equivalent to a stratified comprehension axiom.  Then we show that any set defined by a stratified comprehension axiom can be built using a finite set of operations (justified by finitely many instances of comprehension) derived from Quine's calculus of concepts.
+
+
+
+\section{Quine's original axioms}
+
+Quine handles this somewhat differently, and here I believe I have made a significant formal improvement.  Quine schematically defines the types of the usual type theory.
+
+
+\begin{description}
+
+\item[definition of ``being of the previous type":]  $x\, {\tt PT}\, y$ is defined as $$(\exists zw: x \in w \wedge w \in z \wedge y \in z).$$
+
+\item[definition of type 0:]  $T_0(x)$ is defined as $(\forall y: \neg y\, {\tt PT}\, x)$.
+
+\item[definition of next type:]  For each concrete natural number $n$, $T_{n+1}(x)$ is
+defined as $(\forall y:  T_n(y) \rightarrow y\, {\tt PT}\, x)$
+
+\end{description}
+
+He then stated his axioms schematically.
+
+
+\begin{description}
+
+\item[Quine's comprehension axiom:]  For any formula $\phi$, $$(\exists A:  T_{n+1}(A) \wedge (x\in A \leftrightarrow (T_n(x) \wedge  \phi)))).$$
+
+\item[Quine's extensionality axiom:]  $$(\forall xyz:T_{n+1}(x) \wedge  T_{n+1}(y) \wedge (\forall w:T_n(w) \rightarrow (w \in x \leftrightarrow w \in y)) \wedge x \in z \rightarrow y \in z).$$  I preserve the form of this axiom, which reflects defining equality in terms of membership, but it could be phrased differently.
+
+\end{description}
+
+These are actually not the axioms as he first states them:  this is the original extensionality axiom together with a modified version of the comprehension axiom which he states later as a consequence of the assumption that all elements of type $n+1$ objects belong to type $n$, which his original axioms (astonishingly) do not imply.
+
+This theory is not quite the same as ours.  To begin with, it has what we regard as a formal defect:  there is no need to axiomatize the theory with schemata with concrete natural numbers as indices, as we have demonstrated with our axiomatization.  Quine does observe that he cannot prove and cannot even actually say that every object belongs to some type.  Further, his theory says nothing at all about objects which do not belong to a type. In our theory, it is immediate that every object belongs to a type, but the types may not be restricted to the familiar ones.  Our theory is actually finitely axiomatizable (which we will demonstrate below).
+
+Quine says more about individuals than we do.  Quine asserts that all individuals belong to the same type.  We have not felt the need to do this, but we could.  We are more tempted to assert that there are no individuals at all.
+
+We think that our presentation is superior to Quine's for a number of reasons.  Our presentation is finitely axiomatizable, and does not allude to the simple typed theory of sets at all in its formulation:  the fact that it is actually a presentation of the simple typed theory of sets unfolds in the development.  We dispute something that Quine says:  there is a strong place for systematic ambiguity in this theory; we are not through with this device when we transition to a one-sorted theory.  But this also comes out in the development.
+
+The axioms as selected above from Quine's treatment allow us to prove that
+all elements of a type $n+1$ object are of type $n$:  for any $x$ of type $n+1$ there
+is $x^*$ of type $n+1$ containing exactly the type $n$ elements of $x$, and then by his original formulation of extensionality, $x^*=x$, so in fact all elements of $x$ are of type $n$.  In our formulation, as will be seen, the axiom of binary union is used to prove the analogous assertion.
+
+Finally, our theory differs from Quine's quite deliberately in allowing atoms as well as empty sets.
+
+\section{The system of Resnick}
+
+What Quine did was a kludge.  The presence of meta theoretic natural number parameters corresponding exactly to the types
+reveals that he is not really describing an autonomously motivated system.
+
+Resnick gives a genuine one-sorted theory with one-sorted motivation from which type theory falls out, as we do.
+
+We list his seven axioms, staying closer to our own notation.
+
+\begin{description}
+
+\item[Definition:]  $x \sim y$ means $(\exists z:x \in z \wedge y \in z)$.  Resnick defines
+$x=y$ as $(\forall z:x \in z \leftrightarrow y \in z)$.  So does Quine; for us equality is a logical primitive, but the comprehension axiom
+of any of these theories should make this definition harmless.
+
+\item[Ax 1:]  $(\forall x:(\exists y:(\forall z:z \in y \leftrightarrow z \sim x)))$.  This is almost the same as our axiom of types:  ours has the extra clause $x \in y$ to ensure that $\sim$ is reflexive.  Strangely, the axiom of comprehension has to be used to fill in this detail in Resnick's system.
+
+\item[Ax 2:] $(\forall xyw:y \in x \wedge y \in w \rightarrow x \sim w)$.  Sets which meet have the same type.   Our argument for this depends strongly on our form of extensionality, which asserts that nonempty sets with the same extension are equal regardless of type.  I'm wondering whether this is provable from Resnick's other axioms.  
+
+\item[Ax 3:]  $(\forall uvwxy:  y \in x \wedge u \in x \wedge y \in w \wedge v \in w \rightarrow (\exists t:y \in t \wedge u \in t \wedge v \in t))$.  This axiom is used to support transitivity of $\sim$.  I believe that it is redundant.  If $y \in x \wedge u \in x$ then we have $y \in \tau(u)$, where $\tau(u)$ witnesses
+Ax 1 with $x := u$.  Similarly we have $v \in \tau(u)$.  $u \in \tau(u)$ is not a consequence of Ax 1 (as it is in our formulation) but it does hold here because
+$u$ belongs to some set by the hypotheses.  So we can choose $\tau(u)$ as $t$.
+
+\item[Ax 4:]  $(\forall vwxyz:y \in x \wedge v \in w \wedge x \in z \wedge w \in z \rightarrow y \sim v)$  This does what the axiom of binary union does for us.  We say that because $x$ and $w$ have the same type, they have a union, and of course this union will contain $y$ and $v$.  We have considered this exact statement as an axiom, but union seemed more clearly a natural axiom.
+
+\item[Definition:]  $x {\tt PT} y$ is defined (following Quine) as $(\exists zw:x \in w \wedge w \in z \wedge y \in z)$.  $T_0(x)$ ($x$ is an individual)
+is defined as meaning $\neg(\exists y:y {\tt PT} x)$:  nothing belonging to the same type as $x$ has elements.
+
+\item[Ax 5:]  $(\exists x:T_0(x))$  We do not commit ourselves to the existence of any individuals.  But it is natural to do so given the historical origin of this theory.
+
+\item[Ax 6:]  $(\neg T_0(x) \wedge x \sim y \wedge (\forall z:z \in x \leftrightarrow z \in y) \wedge x \in w) \rightarrow y \in w$.  The form of this looks peculiar to us because Resnick treats equality is a defined notion, but it is the axiom of extensionality.  It is a bit different from ours:  it is weaker in that it does not force equality of nonempty sets with the same extension (we do not need Ax 2 because our extensionality axiom flatly asserts that nonempty sets with the same extension are equal and so of course of the same type);  it allows individuals with the same empty extension to be distinct but any empty object in a type is the only empty object in that type.  This is natural;  we are more liberal in allowing many atoms in each type.
+
+\item[Ax 7:] For any formula $\phi$, $(\forall z:(\exists y:w \sim z \wedge (\forall x:x \in y \leftrightarrow (\phi \wedge x \in z))))$.  This is Zermelo's axiom scheme of separation, with the extra proviso that the set defined is of the same type as the bounding set.  We could have done this, and of course it is an immediate consequence of our approach, in which the bounding set is always a type.
+
+\end{description}
+
+The maneuver for showing that a general object belongs to a set is rather strange here, and I want to be sure that Resnick actually realizes that he has to do it.
+For an arbitrary $x$, there is $w \sim x$ with empty extension, by axiom 7...and incidentally, some set contains both $x$ and $w$, so $x$ belongs to a set.
+
+That said, this theory is the same as ours with stronger extensionality and the positive assertion that there are individuals.  I think that my axiomatics are cleaner, and that there are really good reasons to consider the possibility of atoms in addition to empty sets.
+
+
+
+\end{document}
