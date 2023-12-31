@@ -12,7 +12,7 @@
 
 \author{M. Randall Holmes}
 
-\date{version of 12/31/2023}
+\date{version of 5/15/2023}
 
 \begin{document}
 
@@ -43,9 +43,7 @@ to current students.
 
 \begin{description}
 
-\item[12/31/2023:]  Added a new section 2.2 giving basics of the unsorted approach to type theory.  The appendix remains as a more thorough discussion of the same approach;  some reconciliation of notations between the new section 2.2 and the appendix may be wanted.  Discussion of technical issues about the untyped theory in later chapters may be desirable.
-
-\item[5/15/2023:]  Careful readers noticed an error in the proof that all infinite sets have countable subsets.  8/3/2023 checked again, it is correct.
+\item[5/15/2023:]  Careful readers noticed a terminological error in the proof that all infinite sets have countable subsets.
 
 \item[9/14/2021:]  Added a subsection on arguments and added discussion of argument manipulations in Marcel to the basic discussion of propositional logic and quantifiers.
 
@@ -2050,176 +2048,7 @@ In much of this chapter, every variable
 we introduce will have a type, and a quantifier over that variable
 will be implicitly restricted to that type.
 
-We begin, however, with a theory without types (which is distinctly different from the usual untyped set theory that we will introduce later).  The typed theory is introduced in a self-contained way
-with a remark at the end that the untyped preamble provides a motivation;  the reader of this text or teacher from it may decide to make use of the untyped preamble or not.
-
-\section{Untyped Preamble}
-
-A longer development of this approach appears as an appendix.
-
-Our basic predicates are equality and membership:  atomic sentences $x=y$ and $x \in y$ are at bottom what all our discourse is built out of.
-
-We first introduce an essential identity criterion.  
-
-\begin{description}
-
-\item[Definition:]  An object $x$ is a {\em nonempty set\/} iff $(\exists y:y \in x)$.
-
-\item[Axiom of extensionality:]  $$(\forall xyz: z \in x \rightarrow x=y \leftrightarrow (\forall w:w \in x \leftrightarrow w \in y)).$$  Nonempty sets are equal exactly if they have the same elements.
-
-\end{description}
-
-We define  the notion of ``being of the same kind (or type)".  The definition is motivated by the idea that any set
-has elements all of the same kind, and every kind is a set.  Thus if two objects belong to the same set, they should be of the same kind, and further, if two objects are of the same kind there is a set (the common kind itself) to which they both belong.  This of course is informal.
-
-\begin{description}
-
-\item[Definition (being of the same type):]  We say that objects $x,y$ are of the same type, and write $x \sim_\tau y$, iff
-$(\exists z:x \in z \wedge y \in z)$.  We expect this to be an equivalence relation, and indieed this will follow from further axioms.
-
-\item[Axiom of types:]  $(\forall x:\exists \tau:x \in \tau \wedge (\forall y:y \in \tau \leftrightarrow x \sim_\tau y))$.
-
-\item[Definition (type of an object):]  For any object $x$, we define $\tau(x)$ as the unique $\tau$ such that $(\forall y:y \in \tau \leftrightarrow x \sim_\tau y)$:  there is one by the axiom of types and only one by the axiom of extensionality (since the axiom of types tells us it is nonempty).   The set $\tau(x)$ witnesses $x \sim_\tau x$, so the relation of being of the same kind is reflexive.
-
-\item[Definition (type hierarchy):]  We define $\tau^{\bf 1}(x)$ as $\tau(x)$ and for each numeral $n$ define $\tau^{\bf n+1}(x)$ as $\tau(\tau^{\bf n}(x))$.  Please note
-that this is an infinite sequence of independent definitions and we do not quantify over such superscripts $\bf n$ (we put such superscripts in boldface to remind us that they are constants, never variables).  We haven't yet defined the natural numbers as objects we can quantify over, nor have we analyzed the iterated application of a function as a mathematical operation.  We will!  For the moment, we view the use of superscripts as simply a device for abbreviation.
-
-\end{description}
-
-We have only considered nonempty sets so far.  We introduce empty sets.
-
-\begin{description}
-
-\item[Empty set construction and axiom of empty sets:]  For each $x$ we postulate an object $\emptyset_{\tau(x)}$(the empty set of the same kind as $\tau(x)$)  satisfying the axiom $\emptyset_{\tau(x)} \in \tau(x) \wedge (\forall y:y \not\in \emptyset_{\tau(x)}$.
-
-\item[Definition:]  We say ``$x$ is a set" and write this ${\tt set}(x)$ just in case $$(\exists y:y \in x \vee x = \emptyset_{\tau(y)}).$$  Note that
-two sets are equal iff they are of the same kind and they have the same elements, by extensionality and the axiom of empty sets.   Having distinct empty sets of distinct kinds is an unusual feature of this theory.  We refer to non-sets (if there are any) as {\em atoms\/}.  We refer to objects which are not of the same kind as any set as {\em individuals\/} (if there are any).  Clearly an individual is an atom.
-
-\item[Definition:]  We say that $x$ is a subset of $y$ and write $x \subseteq y$ iff $${\bf set}(x) \wedge {\bf set}(y) \wedge x \sim_\tau y \wedge (\forall z:z \in x \rightarrow z \in y).$$
-
-\end{description}
-
-The constructive power of set theory comes from the following axiom.  Any property of objects of a given kind determines a set, of the same kind as the given kind.
-
-\begin{description}
-
-\item[Axiom of comprehension:]  For any sentence $\phi$ of our language and any $u$ not free in $\phi$,
-
-$$(\exists A:{\tt set}(A) \wedge A \sim \tau(u) \wedge (\forall x:x \in A \leftrightarrow x \in \tau(u) \wedge \phi)).$$
-
-There is only one such object $A$ by the axioms of extensionality and empty sets, and we denote it by $\{x \in \tau(u):\phi)$.
-
-This is actually a separate axiom for each formula $\phi$ and so technically it is called an axiom scheme.
-
-\end{description}
-
-There is one more basic axiom of our theory.
-
-\begin{description}
-
-\item[Axiom of binary union:]  $$(\forall AB:(A \sim_\tau B \rightarrow \exists C:(\forall x:x \in C \leftrightarrow x \in A \vee x \in B))).$$  If $A$ and $B$ are sets, there is a unique such object $C$, the union of $A$ and $B$, which we write $A \cup B$.
-
-\end{description}
-
-Now we do some bookkeeping.
-
-\begin{description}
-
-\item[Theorem:]  $\sim_\tau$ is an equivalence relation.  Of course the equivalence classes under this relation are the types $\tau(x)$.
-
-\item[Proof:]  $x \sim_\tau x$ follows from the axiom of types ($x \in \tau(x)$ so $$(\exists z:x \in z \wedge x \in z)$$ [I enjoyed writing that.]
-
-$x \sim_\tau y$, that is, $(\exists z:x \in z \wedge y \in z)$ is equivalent simply as a matter of logic to $y \sim_\tau x$, that is $(\exists z:y \in z \wedge x \in z)$.
-
-Suppose $x \sim_\tau y$ and $y \sim_\tau z$.  It follows by the axiom of types and symmetry of the relation already established that
-$x \in \tau(y)$ and $z \in \tau(y)$, which witnesses $x \sim_\tau z$.
-
-\item[Stratification lemma (upward):]  $x \in y \rightarrow y \in \tau^2(x)$
-
-\item[Proof:]  Since $x \in y$, any $z \in y$ also belongs to $\tau(x)$.  So $\{u \in \tau(x):u \in y\}$ exists, belongs to $\tau^2(x)$ by comprehension,
-and is equal to $y$ because it is a nonempty set with the same extension.
-
-\end{description}
-
-This lemma handles type inference upward.  Type inference downward is handled by the following
-
-\begin{description}
-
-\item[Stratitification lemma (downward):]  $\tau^2(x) = \tau^2(y) \rightarrow \tau(x) = \tau(y)$.
-
-\item[Proof:]  Suppose $\tau^2(x)=\tau^2(y)$.  Then $\tau(x) \in \tau^2(x)$ and $\tau(y) \in \tau^2(y)=\tau^2(x)$, so
-$\tau(x) \sim_\tau \tau(y)$, so $\tau(x) \cup \tau(y)$ exists, and $x$ and $y$ both belong to this union, so $x \sim_\tau y$, 
-so $\tau(x)=\tau(y)$.
-
-This is why we have the axiom of binary union.
-
-\end{description}
-
-Combining the previous two results, we get the
-
-\begin{description}
-
-\item[Stratification lemma (full):]  $x \in y \rightarrow (x \in \tau(u) \leftrightarrow y \in \tau^2(u))$
-
-\end{description}
-
-
-
-We can define the important notion of power set.
-
-\begin{description}
-
-\item[Definition:]  We define ${\cal P}(x)$, the power set of a set $x$, as $\{y \in \tau(x):y \subseteq x\}$.  Any nonempty set $y$ all of whose elements
-belong to $x$ is an element of ${\cal P}(x)$ by downward stratification:  $u \in y$ implies $y \in \tau^2(u)$ and also implies $u \in x$ whence
-$x \in \tau^2(u) = \tau(x)$, so $y \in \tau(x)$ so $y \in {\cal P}(x)$.  The only empty element of ${\cal P}(x)$ is of course $\emptyset_{\tau(u)}$, where $u \in x$ or $x = \emptyset_{\tau(u)}$.
-
-\end{description}
-
-One might suppose that ${\cal P}(\tau(x)) = \tau^2(x)$, but the possibility of atoms means we cannot be sure of this.  $\tau$ might or might not be a special case of ${\cal P}$;  in any case they are intellectually distinct, though closely related.
-
-We give an extension of our definition of type hierarchy.
-
-\begin{description}
-
-\item[Definition (type hierarchy, nonpositive indices):]  We extend the notion $\tau^{\bf n}(x)$ to concretely given integer superscripts, not just
-natural numbers, defining $\tau^{\bf n-1}(x)$ as the $\tau(u) \in \tau^{\bf n}$, if there is one, and otherwise leave it undefined.  The stratification lemmas together establish that there is at most one such $\tau(u)$.  In particular, $\tau^0(x)$ is the unique $\tau(u)$ which belongs to $\tau(x)$ and includes $x$ as a subset;  if it is undefined, $x$ is an individual.
-
-\end{description}
-
-Our final piece of bookkeeping is to show that for any $x$, the types $\tau^{\bf n}(x)$ are distinct for distinct superscripts.  The observant reader
-will notice that we actually cannot say this in generality, because we do not quantify over the superscripts.  But we can prove for each concrete ${\bf n}$ with $n>1$ that $\tau^{\bf n}(x)\neq \tau(x)$.
-
-We warm up for this by showing that $\tau^2(x) \neq \tau(x)$, which is the local version of the infamous Russell paradox.
-
-\begin{description}
-
-\item[Theorem:]  $\tau^2(x) \neq \tau(x)$
-
-\item[Proof:]  Suppose that $\tau^2(x) = \tau(x)$.  Consider the set $R = \{y \in \tau(x): y \not\in y\}$.  We have $R \in \tau^2(x) = \tau(x)$.
-Thus $R \in R \leftrightarrow R \not\in R$, a contradiction.
-
-Notice that this implies not only that $\tau(x) \neq \tau^2(x)$, but that these types are disjoint, since distinct equivalence classes are disjoint.
-
-\end{description}
-
-The proof of the result for ${\bf n} >1$ general is quite similar.  It requires a definition.
-
-\begin{description}
-
-\item[Definition:]  We define $\iota(x)$ as $\{y \in \tau(x):y=x\}$.  We define $\iota^{\bf 0}(x)$ as $x$ and $\iota^{\bf n+1}(x)$ as $\iota(\iota^{\bf n}(x))$ for each concrete ${\bf n}$.
-
-Notice that this is the same kind of definition scheme as our definition of the type hierarchy.
-
-\item[Theorem:]  Let ${\bf n}$ be taken to be a concretely given natural number greater than 1.   Then $\tau^{\bf n}(x) \neq \tau(x)$
-
-\item[Proof:]  Consider $R = \{\iota^{\bf n-2}(y)\in \tau^{\bf n-1}(x):\iota^{\bf n-2}(y) \not\in y\}$.  That $\iota^{\bf n-2}(y)\in \tau^{\bf n-1}(x)$ iff $y \in \tau(x)$ for any specific ${\bf n}$ is straightfoward to establish in each case.
-$R$ belongs to $\tau^{\bf n}(x)$.  Suppose that $\tau^n(x) = \tau(x)$.  Then  $\iota^{\bf n-2}(R)\in \tau^{\bf n-1}(x)$ and $\iota^{\bf n-2}(R) \in R \leftrightarrow \iota^{\bf n-2}(R) \not\in R$, a contradiction.  It is a very similar argument but with more elaborate bookkeeping.
-
-\end{description}
-
-
-
-\newpage
+An Appendix entitled ``Unsorted Preamble" gives an explanation for the typed theory presented in the following sections in an unsorted language with unrestricted quantifiers.  This is a rather technical digression from the main development, but it might be useful as an alternative motivation of the system of type theory given below in the main line of the development.
 
 
 \section{Typed Theory of Sets}
@@ -2233,7 +2062,7 @@ advantage of using this type theory is that the constructions we
 introduce will not be the same as those you might have seen in other
 contexts, which will encourage careful attention to the constructions
 and proofs, which furthers other parts of our implicit agenda.  Later
-we will introduce a more familiar kind of set theory.  Please note that the development of this section is given independently of the previous section until a remark at the end, but we hope that the relationship between the two approaches will be reasonably clear.
+we will introduce a more familiar kind of set theory.
 
 Suppose we are given some sort of mathematical object (natural
 numbers, for example).  Then it is natural to consider collections of
@@ -2430,15 +2259,6 @@ There are two other axioms in our system, the Axiom of Infinity and
 the Axiom of Choice, but some formal development should be carried out
 before we introduce them.
 
-And now one may see the point of the untyped preamble.  Fix an object $i$ which is to be taken as inhabiting type {\bf 0}.  Now regard each variable $x^{\bf n}$ as ranging over
-values in $\tau^{\bf n+1}(i)$.  Any formula of our typed language can be converted to a formula of the untyped language of the preamble by replacing each quantifier $(\forall x^{\bf n}:\ldots)$ or 
-$(\exists x^{\bf n}:\ldots)$ with $(\forall x \in \tau^{\bf n+1}(i):\ldots)$ or 
-\newline $(\exists x \in \tau^{\bf n+1}(i):\ldots)$, in which the variable is no longer typed.  Bad formulas $x^{\bf m} = x^{\bf n}$ with $m \neq n$ or $x^{\bf m} \in x^{\bf n}$ with $m+1 \neq n$ become false rather than meaningless.
-
-It is not difficult to show that all the axioms of the typed theory translate to axioms or theorems of the untyped theory in the way indicated.
-
-It is interesting to note that nothing ensures that all objects in the universe of the untyped preamble are in the universe of our type theory:  there doesn't seem to be a way to make such a claim.  There might be other types.  We may revisit the untyped underpinnings of the type theory later.
-
 \newpage
 
 \section{Russell's Paradox?}
@@ -2504,14 +2324,13 @@ $x$ and $y$ are of the same type) we do not say $x \in y$ (it is
 ungrammatical, not false).  We do not ask whether $x \in x$; we do not
 say that it is false (or true) (for now).
 
-If the reader has looked at the untyped preamble, she will have seen an application of the Russell argument to show a fact we cannot express in our typed language.  In the theory of the untyped preamble,
-we treat every ill-typed atomic formula as false, rather than taking the liberal view outlined above.  But the liberal view allows this, of course.
+If the reader has looked at sections 9.1 and 9.2 (the unsorted preamble appendix), she will have seen an application of the Russell argument to show a fact we cannot express in our typed language.
 
 \newpage
 
 \section{Simple Ideas of Set Theory}
 
-In this section we develop some familiar ideas of set theory.  In an appendix, the same notions are developed in the theory of the untyped preamble.
+In this section we develop some familiar ideas of set theory.
 
 We first develop the familiar list notation for finite sets.  Here are
 the standard notations for one and two element sets.
@@ -16856,7 +16675,7 @@ Here is a quantifier example.
 
 \chapter{Appendix:  Unsorted Preamble}
 
-A brief introduction to this approach now appears at the beginning of chapter 2.  The notation used there may need some reconciliation with notation used here, and the axiomatics are slightly different, but the discussion here is sufficient to establish that the theories presented are the same.
+This could appear at the beginning of chapter 2, but it would be distractingly technical.
 
 \section{An unsorted theory of sets motivated by types}
 
