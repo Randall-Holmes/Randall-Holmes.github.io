@@ -4,7 +4,7 @@
 
 \title{The typed theory of sets as an untyped theory}
 
-\author{Randall Holmes (with deference to Quine and Thomas Forster)}
+\author{Randall Holmes (with deference to Quine and Resnik, and thanks to Thomas Forster)}
 
 \begin{document}
 
@@ -19,6 +19,8 @@ We argue here that the simple typed theory of sets can be very neatly presented 
 \section{Our axioms}
 
 The theory we present is a one-sorted theory with equality and membership as primitive predicates.  One more primitive notion is introduced in this section and one in the next.
+
+We call the theory TTGV (for ``type theory with general variables") following Quine, though we will see that our TTGV differs significantly from Quine's similarly motivated theory.
 
 We refer to general objects of this theory simply as objects.
 
@@ -38,12 +40,26 @@ Nonempty sets are equal if and only if they have the same elements:
 
 \end{description}
 
-We suppose that objects are of various kinds, that every set has elements of just one kind, and every kind is a set,
-and that every property of objects of a given kind is implemented as a set.  These are not formalized assertions:  they are motivation for the axioms which follow.
+We list some informal assertions which are not axioms for us but motivation for what follows.
+
+\begin{enumerate}
+
+\item  Objects are of various kinds (probably more than one).  Each object has one kind.
+
+\item  Sets of objects are sets of objects of a particular kind:  all of the elements of a given set are of the same kind.
+
+\item  Each kind is a set (there is a set of all the objects of a given kind).
+
+\item  Any property of objects of a given kind determines a set.
+
+\end{enumerate}
+
+
+A formal development follows.
 
 \begin{description}
 
-\item[Definition:]  We say that $x$ and $y$ are of the same type, written $x \sim y$, just in case $(\exists z:x \in z \wedge y \in z)$.  This is motivated by the idea that all elements of a given set are of the same kind.  This definition appears in Quine's original treatment and is the central idea of this approach.  One might expect this to be an equivalence relation, and indeed it is, but this will require proof.  We do not assume this at this point.
+\item[Definition:]  We say that $x$ and $y$ are of the same type (or the same kind), written $x \sim y$, just in case $(\exists z:x \in z \wedge y \in z)$.  This is motivated by the idea that all elements of a given set are of the same kind.  This definition appears in Quine's original treatment and is the central idea of this approach.  One might expect this to be an equivalence relation, and indeed it is, but this will require proof.  We do not assume this at this point.
 
 \item[Axiom of types and definition of the type operator:]  $$(\forall x:\exists \tau:x \in \tau \wedge (\forall y:y \in \tau \leftrightarrow x \sim y))$$
 
@@ -52,7 +68,7 @@ $x \in \tau(x)$ so it is nonempty, and uniqueness is enforced by extensionality.
 
 The reader may have heard rumors that not all sets are nonempty.
 
-\item[Axiom of empty sets and definition of sethood:]  We introduce a primitive operation:  for any object $x$ there is an object $\emptyset_{\tau(x)}$, which we call the empty set of the type of $x$.   The axiom governing this construction is
+\item[Axiom of empty sets and definition of sethood:]  We introduce a primitive operation:  for any type $\tau(x)$ there is an object $\emptyset_{\tau(x)}$, which we call the empty set of the type of $x$.   The axiom governing this construction is
 $$\emptyset_{\tau(x)} \sim \tau(x) \wedge (\forall y:y \not\in \emptyset_{\tau(x)}).$$  We define ${\tt set}(A)$ [read ``$A$ is a set"] as $(\exists x:x \in A \vee \emptyset_{\tau(x)} = A)$.  Notice that it is a consequence of this definition and the extensionality axiom that two sets are equal iff they have the same elements and are of the same type.  Something which is not a set we call an atom.  We define $x \subseteq y$ as $${\tt set}(x) \wedge {\tt set}(y) \wedge x \sim y \wedge (\forall z:z \in x \rightarrow z \in y).$$
 
 
@@ -83,7 +99,7 @@ Notice that this is trivially true if either $x$ or $y$ has no elements (and in 
 
 \section{Theorems about general structure}
 
-We continue the development of our own formulation of the theory.  We need to do some bookkeeping.
+We continue the development of TTGV.  We need to do some bookkeeping.
 
 \begin{description}
 
@@ -136,7 +152,7 @@ These axioms govern this strict partial order.
 
 \end{enumerate}
 
-The immediate application of this is to show using a finite set of axioms that $\pi(x)$ is disjoint from $\pi^i(x)$ for $i>1$:  we have just proved this, but using countably many distinct instances of comprehension.  We should see that this is basically all that this set of axioms does.  It is a technical device to make the theory finitely axiomatizable;  we shall see that it achieves this rather elegantly. There is no obstruction to $<_\tau$ appearing in instances of the comprehension scheme (but we will see that this adds no sets or indeed any additional information about the type hierarchies at all!)
+The immediate application of this is to show using a finite set of axioms that $\pi(x)$ is disjoint from $\pi^i(x)$ for each concretely given $i>1$:  we have just proved this, but using countably many distinct instances of comprehension.  We should see that this is basically all that this set of axioms does.  It is a technical device to make the theory finitely axiomatizable;  we shall see that it achieves this rather elegantly. There is no obstruction to $<_\tau$ appearing in instances of the comprehension scheme (but we will see that this adds no sets or indeed any additional information about the type hierarchies at all!)
 
 
 \end{description}
@@ -160,7 +176,7 @@ that $y \in \tau^i(x)$.  The axiom of binary union supports type inference downw
 
 If we have a formula $\phi$ and a variable $x$ which is connected to all variables in $\phi$ in the obvious sense (by the transitive closure of the relation which obtains between variables occurring in the same atomic subformula of $\phi$) then we can infer types of the form $\tau^n(u)$ for every variable in $\phi$ -- we have $u$ here instead of $x$ because if we are computing types relative to $x$ and encounter the subformula $y \in x$, we should change every type $\tau^i(x)$ so far assigned to a variable to $\tau^{i+1}(y)$.
 
-There will be more discussion of the uses of stratification.  Note that it is possible that more than one type will be assigned to the same variable by the procedure we describe, and we do want to rectify this.
+There will be more discussion of the uses of stratification.  Note that it is possible that more than one type will be assigned to the same variable by the procedure we describe, which is not desirable.
 
 \end{description}
 
@@ -218,7 +234,7 @@ For the moment, we supply some definitions.  A more extensive treatment of arith
 \item[Definition (order on natural numbers):]  For $m,n \in \mathbb N_{\tau^3(x)}$, we define $m \leq n$ as holding iff
 there are $A \in m$ and $B \in n$ with $A \subseteq B$.
 
-\item[Definition (addition of natural numbers):]  If $m,n \in \mathbb N_{\tau^3(x)}$, we define $m+n$ as $\{A \cup B:A \in m \wedge B \in n \wedge A \cap B = \emptyset_x\}$.
+\item[Definition (addition of natural numbers):]  If $m,n \in \mathbb N_{\tau^3(x)}$, we define $m+n$ as $\{A \cup B:A \in m \wedge B \in n \wedge A \cap B = \emptyset_{\tau^2(x)}\}$.
 
 \item[Definition (raising natural numbers in type):]  If $n \in \mathbb N_{\tau^3(x)}$ and $A \in n$, $T(n)$ is the natural number in $\mathbb N_{\tau^4(x)}$ containing $\iota``A$.
 
@@ -236,14 +252,14 @@ with the type we are working with as a parameter:  the subscript is the type whi
 \begin{description}
 
 \item[ordered pairs, relations and functions:]  For any $x \sim y$ we define the unordered pair $\{x,y\}$ as $\{z \in \tau(x):z=z \vee z=y\}$\footnote{This entire essay could be recast as an essay on the enormous effects of the unrestricted axiom of pairing.  Zermelo comments on the axiom of pairing as in effect a repudiation of typing in his original 1908 paper on the axioms of set theory.  In Zermelo set theory, the fact that quantifiers over the entire universe can appear in instances of separation has enormous power;  in this theory, the same logical feature gives no particular power, as in effect all quantifiers are bounded in a way deducible from the syntax.}.  Notice that $\{x,x\} = \{x\}$.  We can then define $(x,y)$ as
-$\{\{x\},\{x,y\}\}$ as long as $x \sim y$.  Notice that $(x,y) \in \tau^3(x)$.
+$\{\{x\},\{x,y\}\}$ as long as $x \sim y$.  Notice that $(x,y) \in \tau^3(x)=\tau^3(y)$.
 
 Further, if $A, B \in \tau^2(x)$ we can define $A \times B$ as $$\{c \in \tau^4(x):(\exists ab:c=(a,b) \wedge a \in A \wedge a \in B)\}.$$
 
-We can then define relations with domain $A$ and codomain $B$ as subsets of $A \times B$ as usual.  If $R \subseteq A \times B$, we define $x \, R \, y$ as $(x,y)\in R$.  Notice that if $A,B \in \tau^2(x)$, $R \in \tau^4(x)$.  But we do need to note
-that we have binary relation symbols already in use which cannot be understood in this way.  $x \in y$ cannot be understood in this way because $x \sim y$ cannot hold.  $x=y$ and $x \subseteq y$ cannot be understood in this way because their use is not restricted to a single type.  We could define relations $=_x \, = \{(x,y) \in \tau^3(x):x=y\}$ and $\subseteq_x \, = \{(A,B) \in \tau^4(x):A \subseteq B\}$;  these are restrictions of our logical relations of equality and subset to fixed types.
+We can then define relations with domain $A$ and codomain $B$ as subsets of $A \times B$ as usual.  If $R \subseteq A \times B$, we define $x \, R \, y$ as $(x,y)\in R$.  Notice that if $A,B \in \tau^2(x)$, $R \in \tau^5(x)$.  But we do need to note
+that we have binary relation symbols already in use which cannot be understood in this way.  $x \in y$ cannot be understood in this way because $x \sim y$ cannot hold.  $x=y$ and $x \subseteq y$ cannot be understood in this way because their use is not restricted to a single type.  We could define relations $=_x \, = \{(x,y) \in \tau^3(x):x=y\}$ and $\subseteq_x \, = \{(A,B) \in \tau^5(x):A \subseteq B\}$;  these are restrictions of our logical relations of equality and subset to fixed types.
 
-Now we can define a function from $A$ to $B$ as a subset of $A \times B$ with the property that for each $a \in A$ there is exactly one $b \in B$ such that $(a,b) \in f$:  we say $f:A \rightarrow B$ to mean that $f$ is a function from $A$ to $B$.  For each $a \in A$, we define $f(a)$ as the unique $b$ such that $(a,b)\in f$.  [Note that if $x$ and $f(x)$ live in $\tau(u)$,  $f$ will live in $\tau^3(u)$.]  And, again, we need to remember that we are already using function symbols which cannot be understood in this way:  we make heavy use of function symbols which apply to objects of many types and may have outputs at a different type than their inputs.
+Now we can define a function from $A$ to $B$ as a subset of $A \times B$ with the property that for each $a \in A$ there is exactly one $b \in B$ such that $(a,b) \in f$:  we say $f:A \rightarrow B$ to mean that $f$ is a function from $A$ to $B$.  For each $a \in A$, we define $f(a)$ as the unique $b$ such that $(a,b)\in f$.  [Note that if $x$ and $f(x)$ live in $\tau(u)$,  $f$ will live in $\tau^4(u)$.]  And, again, we need to remember that we are already using function symbols which cannot be understood in this way:  we make heavy use of function symbols which apply to objects of many types and may have outputs at a different type than their inputs.
 
 \item[elementwise images:]  If $F$ is a function or an operation, we define $F``A = \{x\in \tau^0(A):(\exists y: x = F(y))\}$.
 
@@ -312,24 +328,65 @@ of the theory to introspect on its own structure considerably, and we are not in
 
 \end{description}
 
+\section{Our theory and a general type theory}
+
+The usual simple typed theory of sets (which we call TST) is a multisorted theory with types indexed by the natural numbers,  It has equality and membership as primitive predicates.
+
+We handle the typing by providing a function from variables to natural numbers under which each natural number has a countable inverse image.  A variable $x$ then has sort ${\tt type}(x)$.  One could also include numerical indices as typographical components of the variables:  ${\tt type}(x)$ could be a feature of $x$.  We do not decorate our
+variables with superscripts, but if a variable has a superscript we do follow the convention ${\tt type}(x^i)=i$.
+
+Atomic subformulas $x=y$ are well-formed iff ${\tt type}(x)={\tt type}(y)$.   Atomic subformulas $x\in y$ are well-formed iff ${\tt type}(x)+1={\tt type}(y)$.  
+
+The axioms we adopt for TST are
+
+\begin{description}
+
+\item[(weak) extensionality:]  All well typed formulas of the shape $(\forall xyz:z \in x \rightarrow (x = y \leftrightarrow (\forall w:w \in x \leftrightarrow w \in y)))$.  It is usual to strengthen this so that any object, not just nonempty objects, has identity determined by its extension, but we keep it parallel to our base theory.  We do have reasons for preferring weak extensionality.
+
+\item[comprehension:]  For any formula $\phi$ and variable $A$ not appearing in $\phi$, $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$ is an axiom if it is well-formed.  Notice that for example $(\exists A:(\forall x:x \in A \leftrightarrow x \not\in x))$ is not an axiom because $x \in x$ is not a well-formed atomic subformula, as ${\tt type}(x)$ cannot be ${\tt type}(x)+1$
+
+\end{description}
+
+Our theory TTGV can in general terms interpret TST  using some $\tau(x)$ as type 0, and $\tau^{i+1}(x)$ as type $i$ (replacing typed variables with variables restricted to given sets).  However, the language of our theory affords no obvious way to describe the sequence of $\tau^i(x)$'s (and in fact provably cannot describe this sequence).
+
+To get a type theory which our theory can interpret nicely, we introduce a more general type system.   We have a system of notations for types.  There is a supply of atomic notations for types, some of which are specified as types of individuals.  For any type notation, $\tau^+$ is a type notation.  For any type notation not reducing  to atomic notation for a type of individuals,
+$\tau^-$ is a type notation.  A notation $(u^-)^+$ or $(u^+)^-$ reduces to $u$, where $u$ is any type notation, and these are the only reduction rules.  Now we provide a map from variables to reduced type notations, and stipulate that $x=y$ is well-formed iff ${\tt type}(x) = {\tt type}(y)$ and $x \in y$ is well-formed iff either $({\tt type}(x)^+ = {\tt type}(y)$
+or $({\tt type}(y))^- = {\tt type}(x)$.
+
+We call this theory TSTG.  Its axioms are exactly as above mod the more liberal type system.
+
+Now we can describe a putative interpretation of the language of TSTG  in our untyped theory  TTGV.  Given a model of TTGV, we provide an atomic type notation correlated with each type $\tau(x)$ and for any type notation $u$ interpreted as $\tau(x)$, we interpret $u^+$ as $\tau^2(x)$ and $u^-$ as $\tau^0(x)$ (the type of the same type as $x$) if this is defined.
+Clearly the reduction rules are valid.  We then stipulate that any free variable of type $u$ is to represent an element of the $\tau(x)$ associated with $u$, and any quantifier binding a variable of type $u$ is to be replaced with a (no longer typed) variable restricted to the associated $\tau(x)$.
+
+To promote it from putative interpretation to actual interpretation, we need to verify that the interpretations of the axioms of the type theory hold.  The axiom of weak extensionality of the type theory definitely holds because of the axiom of weak extensionality of our theory.
+
+The axiom of comprehension holds similarly obviously:  the set $\{y^u:\phi\}$ of the type theory is implemented by $\{y \in \tau(x):\phi^*\}$ (where $\phi^*$ is the translation of $\phi$ via the interpretation) where $\tau(x)$ is associated with the type $u$, and notice that this belongs to $\tau^2(x)$, which is associated with the type $u^+$ as required.
+
+That was unexciting and direct.  The excitement comes with the converse interpretation of our theory in the language of the typed theory.
+
+For purposes of this interpretation, we extend the language of the typed theory to an unsorted language, providing that for $x$ and $y$ of different types, $x=y$ is false, and for $x$ and $y$ of types such that $x \in y$ is ill-formed as a formula of the language of the type theory, $x \in y$ is false.
+
+We then claim that this extension of atomic subformulas makes a model of the typed theory (with disjoint domains for the types) a model of our theory with a single domain which is the union of all the types.  Note that any model of the typed theory can be converted to one in which all the domains are disjoint
+by replacing each domain $D_u$ interpreting type $u$ with $D_u \times \{u\}$ with the obvious induced redefinition of equality and membership in the model.
+
+Verification of the axioms is straightforward, with the sole exception of the scheme of comprehension.  The difficulty is that the comprehension scheme of our theory allows the construction of sets $\{y \in \tau(u):\phi\}$ where $\phi$ may not be in any obvious way the translation of a formula of the typed theory.
+
+We describe a procedure for converting formulas of the language of TTGV into equivalent formulas which are typable (at least to a great extent).    Consider a formula $(\forall x:\phi)$ as the conjunction over all types $\tau(a)$ of formulas $(\forall x \in tau(a):\phi^*)$, where $\phi^*$ denotes the transformation of $\phi$ by the process we are describing.  Comsider existential quantifiers as expanding similarly to infinitary disjunctions.  We do not need to expand quantifiers which are bounded in types containing no bound variable.  We suppose constant denotation from the model for any variables free in $\phi$.  Now consider any atomic formula $x=y$ or $x \in y$ in $\phi^*$:  by construction, we can determine a concrete type for each of $x$, $y$, by inspection of the model element if it is free and otherwise by inspection of the bound on the quantifier over  each variable (if the quantifier binding $x$ is bounded, the fact that we have concrete denotations for free variables ensures that we have a type assignment for $x$).  Replace the formula with the False if the types of $x$ and $y$ do not permit the formula to be true.
+Consider an innermost subexpression which is infinitary (an infinite conjunction or disjunction of formulas $(\forall x \in \tau(a):\phi)$, where $\phi$ is a formula in which all variables are free or restricted to types defined in terms of free variables, and so have concrete types taken from the model.  In all but finitely many of these formulas, every atomic subformula in which
+$x$ appears either has $y$ wuth type $\tau^2(a)$ or $\tau^0(a)$ or is eliminable in favor of the False, and all such formulas look the same, and the outermost quantifier can be removed (if there are no occurrences of $x$ in the transformed $\phi$) or replaced with $(\forall b:\tau(b) \neq \tau(a_1) \vee \ldots \tau(b) \neq \tau(a_n):(\forall x \in \tau(b):\phi^*))$, where
+the $a_i$'s are the types for which $\phi^*$ doesn't take this uniform form.  Further, this nasty formula will not have $x$ connected to any free variable in $\phi$ other than $x$ (variables assigned types depending on $a$ must have been bound), so it can be transformed into a sentence and reduced to a truth value (it reports a fact about the model).
+
 \section{Finite axiomatization of the theory}
 
-This theory is finitely axiomatizable.  This is perhaps surprising as it shares the trait with Zermelo set theory that unrestricted quantification is allowed in instances of its comprehension axiom.  But in fact the apparently unrestricted quantifiers in instances of our comprehension axiom can be assigned bounds.
+Stratified comprehension is finitely axiomatizable:  we will insert a proof of this here using the calculus of concepts machinery, just for fun.
 
-There are two steps in our argument.  We first show that every comprehension axiom is equivalent to a stratified comprehension axiom.  Then we show that any set defined by a stratified comprehension axiom can be built using a finite set of operations (justified by finitely many instances of comprehension) derived from Quine's calculus of concepts.
+The transformation above shows (with some thought) that the untyped comprehension scheme is fully axiomatized by the finite axiomatization of stratified comprehension plus the scheme asserting that $\tau^i(x) \neq \tau(x)$ for $i>1$ (needed for the elimination of bad atomic formulas).  The axioms of type order prove all instances of this scheme,
+so our theory with the (novel) axioms of type order is finitely axiomatizable.
 
-Define a function $t$ from variables to $\mathbb Z \cup \{\infty\}$ such that the inverse image of each singleton is countable.  A formula $\phi$ is stratified iff for each variable $x$ appearing in $\phi$, $t(x) = \infty$ iff $x$ is free in $\phi$, and for each atomic subformula $x=y$ with $x$ and $y$ both bound, we have $t(x)=t(y)$ and
-for each atomic subformula $x \in y$ with $x$ and $y$ both bound we have $t(x)+1 =t(y)$.
+It is interesting to observe that the axioms of type order do absolutely nothing.  In any model of TTGV without the axioms of type order, the relation which holds between any $\tau(x)$ and any $\tau^i(x)$ with $i>1$ and otherwise does not hold, satisfies the axioms of type order, without any change in 
+the capabilities of the theory at all.  Note that any atomic subformula in $<_\tau$ is eliminated in favor of a truth value by the procedure above as soon as the two variables involved are assigned concrete types.
 
-We define a procedure to convert an arbitrary formula $\phi$ in which all variables have type $\infty$ to a stratified formula.  Any open subformula of $\phi$ is stratified.  It is sufficient to explain how to convert a formula $(\forall x:\phi)$ where $x$ is of type $\infty$ and $\phi$ is stratified, to an equivalent stratified formula.   The idea is to convert it
-to a conjunction of formulas $(\forall x_i:\phi[x_i/x])$ where $x_i$ is a fresh variable and $t(x_i)=i$, where the range of values used for $i$ includes an interval around each type of a typed variable in $\phi$ with radius two [this more than covers any type which could be assigned to $x$ by type inference], then convert this to $(\forall x_i:\phi[x_i/x]^*)$, where the star indicates the process of replacing each
-badly typed atomic formula with $x_i \neq x_i$.  Note that any formula $t_i <_\tau  t_j$ can be converted to True or False, and that any such subformula involving a parameter stands for an unknown fixed truth value.  If no other typed variables are present, a single type assignment suffices.  The procedure for an existential quantifier is dual.  There is a final move (which explains the function of $t$):  after all quantifiers in a formula have been converted as described above, augment each outermost quantifier (existential or universal) with an additional quantifier (of the same flavor) over a new variable $u$ with $t(u)=1$, and bound each quantified variable $x$ other than $u$ with $t(x)=i$ in $\tau^i(u)$.   It is tidier to increment the types of all variables so that all indices are positive.  Notice that the final move removes any need to refer to specific types.
-
-This conversion shows that the comprehension axiom of the theory reduces to stratified instances of comprehension and the assertions that $\tau(x)$ is disjoint from $\tau^{i}(x)$ for $i>1$ (which is used in the conversion of formulas).  Each of these assertions can be proved using the axioms of type order.
-
-I suspect that the theory without the axioms of type order is not finitely axiomatizable;  and yet the axioms of type order appear to do very little.
-
-What is to follow here is the proof that the axiom scheme of stratified comprehension is equivalent to a finite conjunction of its instances, using the calculus of concepts and the preceding metatheorem.
+But, curiously, TTGV without the axioms of type order is not finitely axiomatizable.
 
 
 
