@@ -113,8 +113,8 @@ Thus types $\tau(x)$ are equivalence classes under $\sim$, and make up a partiti
 
 \item[Definition scheme for local type hierarchy:]  We define $\tau^1(x)$ as $\tau(x)$ and $\tau^{n+1}(x)$ as $\tau(\tau^n(x))$.  This is purely a convenient scheme:  the natural number indices here cannot be quantified over and do not represent objects of our theory.  We will define natural numbers as objects of the theory later, but these superscripts do not refer to them.
 
-This notation can be extended (partially) to non-positive integer superscripts.  If $\tau^i(x)$ is a type, define $\tau^{i-1}(x)$ as the unique
-type which is of the same type as $x$ if there is one, and otherwise as $x$; if $\tau^i(x)$ is not a type, leave $\tau^{i-1}(x)$ undefined.   
+This notation can be extended (partially) to non-positive integer superscripts.   We define $\tau^0(x)$ as the unique type of which $x$ is a subset, if there is one, and otherwise as $x$ itself (in case $x$ is an individual).  We define $\tau^{i-1}(x)$ for $i<1$ as the unique type belonging to $\tau^i(x)$, if there is one, and otherwise leave it undefined (this notation gives us no hint
+as to the individual to choose to be $\tau^{i-1}(x)$ in case $\tau^i(x)$ is a type of individuals, so we leave this vague).
 
 When we refer to $\tau^n(x)$ we normally intend $n$ to be a positive integer, and will advise the reader if our intentions differ in some part of the text.
 
@@ -146,9 +146,9 @@ These axioms govern this strict partial order.
 
 \item $(\forall xyz:x<_\tau y \wedge y <_\tau z \rightarrow x <_\tau z)$:  $<_\tau$ is transitive.
 
-\item $(\forall xy: x <_\tau y \leftrightarrow \pi(x) <_\tau \pi(y))$  $<_\tau$ on a pair of objects agrees with $<_\tau$ on their respective types.
+\item $(\forall xy: x <_\tau y \leftrightarrow \tau(x) <_\tau \tau(y))$  $<_\tau$ on a pair of objects agrees with $<_\tau$ on their respective types.
 
-\item $(\forall x:x <_\tau \pi(x))$  Type hierarchies increase relative to $<_\tau$.
+\item $(\forall x:x <_\tau \tau(x))$  Type hierarchies increase relative to $<_\tau$.
 
 \end{enumerate}
 
@@ -343,11 +343,11 @@ The axioms we adopt for TST are
 
 \item[(weak) extensionality:]  All well typed formulas of the shape $(\forall xyz:z \in x \rightarrow (x = y \leftrightarrow (\forall w:w \in x \leftrightarrow w \in y)))$.  It is usual to strengthen this so that any object, not just nonempty objects, has identity determined by its extension, but we keep it parallel to our base theory.  We do have reasons for preferring weak extensionality.
 
-\item[comprehension:]  For any formula $\phi$ and variable $A$ not appearing in $\phi$, $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$ is an axiom if it is well-formed.  Notice that for example $(\exists A:(\forall x:x \in A \leftrightarrow x \not\in x))$ is not an axiom because $x \in x$ is not a well-formed atomic subformula, as ${\tt type}(x)$ cannot be ${\tt type}(x)+1$
+\item[comprehension:]  For any formula $\phi$ and variable $A$ not appearing in $\phi$, $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$ is an axiom if it is well-formed.  Notice that for example $(\exists A:(\forall x:x \in A \leftrightarrow x \not\in x))$ is not an axiom because $x \in x$ is not a well-formed atomic subformula, as ${\tt type}(x)$ cannot be ${\tt type}(x)+1$.
 
 \end{description}
 
-Our theory TTGV can in general terms interpret TST  using some $\tau(x)$ as type 0, and $\tau^{i+1}(x)$ as type $i$ (replacing typed variables with variables restricted to given sets).  However, the language of our theory affords no obvious way to describe the sequence of $\tau^i(x)$'s (and in fact provably cannot describe this sequence).
+Our theory TTGV can in general terms interpret TST  using some $\tau(x)$ as type 0, and $\tau^{i+1}(x)$ as type $i$ (replacing type $j$ variables with variables restricted to $\tau^{j+1(x)}$).  However, the language of our theory affords no obvious way to describe the sequence of $\tau^i(x)$'s (and in fact provably cannot describe this sequence).
 
 To get a type theory which our theory can interpret nicely, we introduce a more general type system.   We have a system of notations for types.  There is a supply of atomic notations for types, some of which are specified as types of individuals.  For any type notation, $\tau^+$ is a type notation.  For any type notation not reducing  to atomic notation for a type of individuals,
 $\tau^-$ is a type notation.  A notation $(u^-)^+$ or $(u^+)^-$ reduces to $u$, where $u$ is any type notation, and these are the only reduction rules.  Now we provide a map from variables to reduced type notations, and stipulate that $x=y$ is well-formed iff ${\tt type}(x) = {\tt type}(y)$ and $x \in y$ is well-formed iff either $({\tt type}(x)^+ = {\tt type}(y)$
@@ -355,7 +355,7 @@ or $({\tt type}(y))^- = {\tt type}(x)$.
 
 We call this theory TSTG.  Its axioms are exactly as above mod the more liberal type system.
 
-Now we can describe a putative interpretation of the language of TSTG  in our untyped theory  TTGV.  Given a model of TTGV, we provide an atomic type notation correlated with each type $\tau(x)$ and for any type notation $u$ interpreted as $\tau(x)$, we interpret $u^+$ as $\tau^2(x)$ and $u^-$ as $\tau^0(x)$ (the type of the same type as $x$) if this is defined.
+Now we can describe a putative interpretation of the language of TSTG  in our untyped theory  TTGV.  Given a model of TTGV, we provide an atomic type notation $\chi(x)$ correlated with each type $\tau(x)$ satisfying $\chi(x)^+=\chi(\tau(x))$ and $\chi(x)^- = \chi(\tau^{-1}(x))$ if this is defined.   Recall that $\tau^{-1}(x)$ i
 Clearly the reduction rules are valid.  We then stipulate that any free variable of type $u$ is to represent an element of the $\tau(x)$ associated with $u$, and any quantifier binding a variable of type $u$ is to be replaced with a (no longer typed) variable restricted to the associated $\tau(x)$.
 
 To promote it from putative interpretation to actual interpretation, we need to verify that the interpretations of the axioms of the type theory hold.  The axiom of weak extensionality of the type theory definitely holds because of the axiom of weak extensionality of our theory.
@@ -371,10 +371,23 @@ by replacing each domain $D_u$ interpreting type $u$ with $D_u \times \{u\}$ wit
 
 Verification of the axioms is straightforward, with the sole exception of the scheme of comprehension.  The difficulty is that the comprehension scheme of our theory allows the construction of sets $\{y \in \tau(u):\phi\}$ where $\phi$ may not be in any obvious way the translation of a formula of the typed theory.
 
-We describe a procedure for converting formulas of the language of TTGV into equivalent formulas which are typable (at least to a great extent).    Consider a formula $(\forall x:\phi)$ as the conjunction over all types $\tau(a)$ of formulas $(\forall x \in tau(a):\phi^*)$, where $\phi^*$ denotes the transformation of $\phi$ by the process we are describing.  Comsider existential quantifiers as expanding similarly to infinitary disjunctions.  We do not need to expand quantifiers which are bounded in types containing no bound variable.  We suppose constant denotation from the model for any variables free in $\phi$.  Now consider any atomic formula $x=y$ or $x \in y$ in $\phi^*$:  by construction, we can determine a concrete type for each of $x$, $y$, by inspection of the model element if it is free and otherwise by inspection of the bound on the quantifier over  each variable (if the quantifier binding $x$ is bounded, the fact that we have concrete denotations for free variables ensures that we have a type assignment for $x$).  Replace the formula with the False if the types of $x$ and $y$ do not permit the formula to be true.
-Consider an innermost subexpression which is infinitary (an infinite conjunction or disjunction of formulas $(\forall x \in \tau(a):\phi)$, where $\phi$ is a formula in which all variables are free or restricted to types defined in terms of free variables, and so have concrete types taken from the model.  In all but finitely many of these formulas, every atomic subformula in which
-$x$ appears either has $y$ wuth type $\tau^2(a)$ or $\tau^0(a)$ or is eliminable in favor of the False, and all such formulas look the same, and the outermost quantifier can be removed (if there are no occurrences of $x$ in the transformed $\phi$) or replaced with $(\forall b:\tau(b) \neq \tau(a_1) \vee \ldots \tau(b) \neq \tau(a_n):(\forall x \in \tau(b):\phi^*))$, where
-the $a_i$'s are the types for which $\phi^*$ doesn't take this uniform form.  Further, this nasty formula will not have $x$ connected to any free variable in $\phi$ other than $x$ (variables assigned types depending on $a$ must have been bound), so it can be transformed into a sentence and reduced to a truth value (it reports a fact about the model).
+We describe a procedure for converting formulas of the language of TTGV into equivalent formulas which are typable (at least to a great extent).    We regard a formula $\phi$ as typable if each variable $u$ in $\phi$ is free (and so can be assigned type $\tau(u)$) or bound in a subformula $(\forall u \in \tau(b):\psi)$, where $u$ does not occur in $b$,
+in which case it can be assigned type $\tau(b)$.  We explain how to eliminate the unbounded quantifier from $(\forall x:\phi)$ where $\phi$ is a typable formula.  We first reconstrue this as $(\forall b:(\forall x \in \tau(b):\phi))$.  We then consider that there are a finite collection of special types to consider:  if a variable $u$ occurs in an atomic subformula
+with a variable $v$ assigned type $\tau^i(x)$, there is a specific type we have to consider applying to $x$:  if $u$ is assigned $\tau(a)$ and the atomic subformula is $v=u$ then $x$ ``should" be assigned $\tau^{1-i}(a)$;  if  the atomic subformula is $u \in v$, $x$ ``should" be assigned type $\tau^{2-i}(a)$;   if  the atomic subformula is $v \in u$, $x$ ``should" be assigned type $\tau^{-i}(a)$.  Let $\{a_i\}$
+be the finite list of types which should be assigned to $x$ in this sense, other than types $\tau^i(x)$.  We can further reconstrue the formula as $$(\forall x_1 \in \tau(a_1):\phi[x_1/x]) \wedge \ldots \wedge (\forall x_n \in \tau(a_n):\phi[x_n/x]) $$ $$\wedge (\forall b:(\tau(b) \neq \tau(a_1) \wedge \ldots \tau(b) \neq \tau(a_n) \rightarrow (\forall x \in \tau(b):\phi))$$
+The understanding here is that the variables $x_i$ are fresh variables.
+
+Note further that in this formula we can eliminate all atomic subformulas $u=v$ in which $u$ and $v$ are assigned types which cannot be equal, and all atomic subformulas $u \in v$ in which the type assigned to $v$ cannot be the image under $\tau$ of the type assigned to $u$ (by replacing them with the False):  notice that all occurrences of $x$ in the final conjunct will be eliminable in this way, except occurences in bounds $\tau^i(x)$ and ones occurring with variables actually assigned type $\tau^0(x)$, $\tau(x)$, or $\tau^2(x)$ appropriately, because all types other than $\tau(x)$ deducible for occurrences of $x$ by stratification are eliminated:  in this formula, as transformed, nothing assigned a type $\tau^i(x)$ will occur with anything not assigned
+a type of the form $\tau^j(x)$ so $x$ will not be connected to any free variable.  Logical manipulations allow us to move all variables other than those with types $\tau^i(x)$ out of the scope of the quantifier, so in fact the final conjunct can be arranged to be a closed formula.  We note that we do not apply our procedure again to the unbounded quantifier over $b$ in the final conjunct:  we apply it only to unbounded quantified variables appearing in the original form of the formula we start with, working from the inside out.
+
+Existential quantifiers are handled similarly using existential quantification and disjunction.
+
+We say that variables are connected if they stand to each other in the relation determined as the transitive closure of the relation of being in the same atomic subformula.  Notice that when a formula is completely transformed using the procedure described, each pair of connected bound variables $x,y$ assigned types $\tau(a), \tau(b)$ must have
+$\tau(b) = \tau^i(a)$ for some integer $i$.  Comprehension for such formulas follows from stratified comprehension:  to show that $\{x:\phi\}$ exists using stratified comprehension it is sufficient to be able to type all bound variables connected to $x$.  Stratification of all free variables can be forced by making them all different, and exploiting the fact
+that free variables are implicitly universally quantified.   Failures of stratification for variables not connected to $x$ can be handled by extracting all variables connected to $x$ from the scope of quantifiers over such variables; unstratified closed formulas do not present a problem for comprehension (they can be eliminated by case expansion, what happens when the formula is true and what happens when it is false). 
+
+We would love to claim that all formulas are equivalent to stratified formulas, but the final conjuncts in the expansions of unbounded quantifiers are not necessarily stratified.  We note that if a suitable ambiguity axiom is assumed, then in fact all final conjuncts are equivalent to stratified formulas and every formula is equivalent to a stratified formula.  Details to follow.
+
 
 \section{Finite axiomatization of the theory}
 
