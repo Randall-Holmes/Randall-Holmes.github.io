@@ -1,0 +1,424 @@
+\documentclass{slides}
+
+\title{Type theory with general variables}
+
+\author{Randall Holmes (with nods to Quine, Resnik, and Forster)}
+
+\date{Edmonton logic group, 1/23/2024}
+
+\begin{document}
+
+\begin{slide}
+
+\maketitle
+
+\end{slide}
+
+\begin{slide}
+
+{\Large Introduction to our program}
+
+This talk is about the project of presenting the simple typed theory of sets (which we have been calling TST;  I'll actually present TSTU, which is arguably more natural) as an untyped theory.  The project is originally due to Quine.  There is a later implementation due to Resnik which is close to what Forster and I have done, independently and much later.  Mine is the best, of course!
+
+We adopt Quine's phrase for this theory, ``type theory with general variables", abbreviated TTGV.  It has nothing at all to do with ``trains de tres grand vitesse", Thomas, we are completely serious people here!
+
+\end{slide}
+
+\begin{slide}
+
+{\Large What Quine did right}
+
+Quine's central contribution is a natural definition of ``being of the same type" which makes sense in an untyped set theory.
+
+He suggests that two objects are of the same kind precisely if they belong to a common set.
+
+\begin{description}
+
+\item[Definition:]  We say that $x$ and $y$ are of the same type, and write $x \sim y$, just in case $(\exists z:x \in z \wedge y \in z)$.
+
+\end{description}
+
+This makes good sense, speaking informally, because we certainly suppose that all elements of any given set are of the same type, and also
+that each type is the extension of a set (of the next higher type).
+
+\end{slide}
+
+\begin{slide}
+
+{\Large What Quine did next, or how not to do it}
+
+Quine then defines the notion of $x$ being of the type preceding the type of $y$:
+
+\begin{description}
+
+\item[Definition:]  We define $x \in^2 y$ as \newline $(\exists z:x \in z \wedge z \in y)$, then define $x {\tt PT} y$ as $(\exists z:x \in^2 z \wedge y \in z)$.  
+
+\end{description}
+
+then gives a schematic definition of predicates implementing the types of TST
+
+\begin{description}
+
+\item[Definition:]  We define $T_0(x)$ as $(\forall z:\neg z{\tt PT}x)$.  This implements type 0 of TST.
+
+\item[Definition scheme:]  For each concrete natural number $i$ we define $T_{i+1}(x)$ as $$(\forall z:T_i(z) \rightarrow z {\tt PT} x).$$
+
+\end{description}
+
+\end{slide}
+
+\begin{slide}
+
+
+Now of course we can translate any formula of TST into untyped set theoretical language by replacing each quantified sentence \newline $(\forall x^n:\phi(x^n))$ with
+$(\forall x:T_n(x) \rightarrow \phi(x))$ and similarly each quantified sentence $(\exists x^n:\phi(x^n))$ with
+$(\exists x:T_n(x) \wedge \phi(x))$.
+
+Then Quine adopts as his axioms the translations of the extensionality and comprehension axioms of TST.
+
+
+\end{slide}
+
+\begin{slide}
+
+This is really not how to do it.  It does give an untyped theory which is easily seen to imitate all the capabilities of TST.  But it is ugly.
+
+TST can be criticized for example for having an infinite scheme of extensionality axioms instead of a single one (one for each type).  A simple extensionality axiom is an obvious payoff for going to an untyped theory.  Note that if we take a model of TST with disjoint types and interpret badly typed membership statements
+as false, we get weak extensionality (nonempty sets with the same extension are equal) right off the bat.  Null sets of different types are different, but we can assert in addition that objects which are not of type 0 and which have the same extension are equal (we do not exactly do this, but Resnik does, at least in effect).
+
+\end{slide}
+
+\begin{slide}
+
+Quine's translated axioms are a scheme not reducible to a single axiom, and they have a further strange feature (which he fixes later).  The translated axiom asserts that two sets of type $n+1$ which have the same elements of type $n$ are equal.  His original formulation doesn't even bother to remove the possibility that
+some elements of a type $n+1$ object might not be of type $n$ at all, though such redundant elements will not affect the identity of the set (its extension over type $n$ determines it completely).
+
+Quine's comprehension axiom as initially formulated similarly asserts the existence of a type $n+1$ object whose type $n$ elements $x$ are all and only those such that $\phi(x)$.  But it might, so far as the initial translation goes, have other elements.
+
+\end{slide}
+
+\begin{slide}
+
+Quine notes the general point that though he clearly might want to, he cannot formally exclude the possibility that there are objects not of any type -- and because of the way his axioms are formulated, he says nothing about such objects at all.
+
+Subsequently, he proposes an additional axiom to the effect that all elements of type $n+1$ objects are in fact of type $n$.  But it is remarkable that he doesn't regard this as essential from the outset.
+
+This awkwardness of the theory is an objection I have, but it is only a special case of my general objection.  The formulation of this theory cannot be understood unless TST is already understood.  It should be possible to present
+a genuine untyped theory which unfolds into TST or something like it.  Resnik does something closer to this;  we will not give an account of his presentation here [at least not immediately;  I may add it later], but only say that it is much closer to the account we give.
+
+
+\end{slide}
+
+\begin{slide}
+
+{\Large We start over.}
+
+We are developing an untyped theory with equality and membership.
+
+We repeat from above:
+
+\begin{description}
+
+\item[Definition:]   We say that $x$ and $y$ are of the same type (written $x \sim y$) just in case $$(\exists z:x \in z \wedge y \in z).$$
+
+Notice that though the form of words here may suggest that we are assuming it, we are not in fact assuming that $\sim$ is an equivalence relation.  We will be able to prove it.
+
+\end{description}
+
+\end{slide}
+
+\begin{slide}
+
+
+
+We say that an object $x$ is a nonempty set just in case $(\exists z:z \in x)$.  We supply an identity criterion for nonempty sets.
+
+\begin{description}
+
+\item[Axiom of (weak) extensionality:]  $$(\forall xyz: z \in x \wedge (\forall w:w \in x \leftrightarrow w \in y) \rightarrow x=y).$$ Nonempty sets with the same elements are equal.
+
+\end{description}
+
+\end{slide}
+
+\begin{slide}
+
+We introduce types as sets.
+
+\begin{description}
+
+\item[Axiom of types:]  $$(\forall x:(\exists t:x \in t \wedge (\forall y:y \in t \leftrightarrow x \sim y))$$
+
+We define $\tau(x)$ as the set $\{y:x \sim y\}$, which exists by this axiom and is unique by weak extensionality.
+
+\item[Theorem:]  $\sim$ is an equivalence relation.
+
+\item[Proof:]  $x \sim x$ by the axiom of types, because $x \in \tau(x) \wedge x \in \tau(x)$:  $\sim $ is reflexive.  That $x \sim y \leftrightarrow y \sim x$ is a theorem of first order logic.  Suppose that $x \sim y$ and $y \sim z$.  It follows that
+$x \sim y$ and $z \sim y$, so $x \in \tau(y)$ and $z \in \tau(y)$, so $x \sim y$:  $\sim$ is transitive.  We have completed the proof.
+
+\end{description}
+
+\end{slide}
+
+\begin{slide}
+
+{\Large The definition scheme of type hierarchy}
+
+\begin{description}
+
+
+\item[Definition scheme:]  We define $\tau^1(x)$ as $\tau(x)$.  For each concrete natural number $i$, we define $\tau^{i+1}(x)$ as $\tau(\tau^i(x))$.
+
+We will extend this scheme to allow nonpositive superscripts below, but this requires an axiom we have not stated yet.
+
+\end{description}
+
+The superscripts here are not variables we can quantify over.
+
+\end{slide}
+
+\begin{slide}
+ {\Large An additional axiom}
+
+\begin{description}
+
+\item[Axiom of downward typing:]  $$(\forall xy: \tau(x) \sim \tau(y) \rightarrow \tau(x) = \tau(y))$$
+
+\item[Extension of hierarchy scheme:]  For any integer $i$, we define $\tau^{i-1}(x)$ as the unique type which is an element of $\tau^i(x)$, if there is one; we define $\tau^0(x)$ as $x$ if $x$ is an individual.
+
+\end{description}
+
+This axiom has various interesting consequences.
+
+\end{slide}
+
+\begin{slide}
+
+The gentle reader may have heard rumors that there are empty sets.
+
+\begin{description}
+
+\item[Axiom of empty sets:]  We postulate for each type $t$  which has a nonempty set as an element an object $\emptyset_{t}$ such that $\emptyset_{t}\in t$ and $(\forall z:z \not\in \emptyset_{t})$.
+
+\item[Definition:]  We say that $x$ is a set (${\tt set}(x)$) iff $(\exists z:z \in x \vee x = \emptyset_{\tau^2(z)})$.  We say that $x$ is an atom if $x$ is not a set.  We say that $x$ is an individual iff
+$(\forall y:y \sim x \rightarrow \neg {\tt set}(y))$.
+
+\end{description}
+
+\end{slide}
+
+\begin{slide}
+
+Notice that we are not asserting that all atoms are individuals (we want to talk about TSTU. not just TST, certainly because NFU is more pleasant to talk about than NF, but we have more general philosophical reasons for this preference), nor are we asserting
+that there is a set of all individuals (a type 0).  We could arrange for the stronger extensionality of TST or for the existence of a unique type of individuals, of course.
+
+\end{slide}
+
+\begin{slide}
+
+{\Large An improvement of extensionality}
+
+\begin{description}
+
+\item[Theorem (set extensionality):]  If $x$ and $y$ are sets of the same type with the same elements, they are equal.
+
+\item[Proof:]  If $x$ is nonempty, this follows by weak extensionality.  If $x$ and $y$ are empty sets of the same type, note that we provide for at most one empty set in any type.
+
+\end{description}
+
+\end{slide}
+
+\begin{slide}
+
+
+
+{\Large Every set theory needs a comprehension axiom$\ldots$}
+
+Here is the main comprehension axiom of this theory.
+
+\begin{description}
+
+\item[Axiom scheme of comprehension:]  For any formula $\phi(x)$ in which the variables $u, A$ do not occur, $$(\forall u:(\exists A:{\tt set}(A) \wedge A \sim \tau(u) $$ $$ \wedge (\forall x:x \in A \leftrightarrow (x \sim u \wedge \phi(x)))))$$ is an axiom.
+
+The  object $A$ asserted to exist by the axiom is unique by the set extensionality theorem:  we introduce the notation $\{x \in \tau(u):\phi(x)\}$ for this object.
+
+\end{description}
+
+\end{slide}
+
+\begin{slide}
+
+{\Large Power sets exist and behave sensibly}
+
+We begin by defining the subset relation, then define the power set.
+
+\begin{description}
+
+\item[Definition:]  We say that $A$ is a subset of $B$ (written $A \subseteq B$) iff $${\tt set}(A) \wedge {\tt set}(B) \wedge A \sim B \wedge (\forall x:x \in A \rightarrow x \in B).$$
+
+\item[Definition:]  If $A$ is a set, we define ${\cal P}(A)$ as $\{B \in \tau(A):B \subseteq A\}$.
+
+\item[Theorem:]  If $B$ is a nonempty set, and every element of $B$ belongs to $A$, then $B \in {\cal P}(A)$.
+
+\item[Proof:]  Suppose $u \in B$ and $(\forall x:x \in B \rightarrow x \in A)$.  We can then observe that $u \in A$, so for any $x \in A$, $x \in \tau(u)$.  Now
+\newline $\{x \in \tau(u):x \in B\}$ has the same elements as $B$, and both are nonempty sets, so they are equal by weak extensionality.  The type of $\{x \in \tau(u):x \in B\}$ is $\tau^2(u)$
+by comprehension, so $\tau^2(u) = \tau(B)$.  Similarly, $\{x \in \tau(u):x \in A\}$ is equal to $A$ and has the same type as $A$, so $\tau^2(u) = \tau(A)$, so $A \sim B$, so $B \in \tau(A)$ and $B \subseteq A$, so $B \in {\cal P}(A)$.
+
+\end{description}
+
+The only empty set in ${\cal P}(A)$ is of course $\emptyset_{\tau(A)}$.  This theorem tells us that the power set
+of $A$ has exactly the extent we expect from common sense and an understanding of TST(U).  Notice that ${\cal P}(\tau^i(x)) \subseteq \tau^{i+1}(x)$.  This is not necessarily an equation because we allow atoms in all types.
+
+\end{slide}
+
+\begin{slide}
+
+{\Large Stratification lemmas!}
+
+Notice that we have shown that if $x \in y$, we have any $z \in y$ also an element of $\tau(x)$, so $y \subseteq \tau(x)$ so $y \in \tau^2(x)$.  So if $x \in \tau^i(u)$ and $x \in y$ we have $y \in \tau^{i+1}(u)$.
+Now suppose $y \in \tau^i(u)$ and $x \in y$.  We have $\tau^2(x) = \tau(y) = \tau^i(u)$, and of course $\tau(x)$ is an element of $\tau^2(x)$.  This means that $\tau(x)$ is a (and thus the unique) type belonging to $\tau^i(u)$, that is $\tau^{i-1}(u)$.
+
+\end{slide}
+
+\begin{slide}
+
+{\Large Unions exist}
+
+Suppose $A$ and $B$ are nonempty sets of the same type with $u \in A$ and $v \in B$.  We have just shown that $A \subseteq \tau(u)$ and $B \subseteq \tau(v)$ (by the Theorem of the previous slide) so
+$\tau(u) \sim \tau(v)$, so $\tau(u) = \tau(v)$ by the axiom of downward typing, so $A \cup B = \{x \in \tau(u):x \in A \vee x \in B\}$ exists and has the extension we expect.
+
+In the current treatment, I have the axiom of binary union justifying the theorem of downward typing, but in earlier treatments I had an axiom of binary union, from which the theorem of downward typing can be proved.
+
+The existence of $A \cup B$ when $A$ and $B$ are of the same type and at least one of them is the empty set of that type is evident.
+
+Similarly, if $\cal A$ is a set of sets, and $u \in A \in \cal A$, it can be proved that $$\bigcup {\cal A} = \{x \in \tau(u):(\exists B \in {\cal A}:x \in B)\}$$ has as its elements exactly the elements of elements of $\cal A$.
+
+
+\end{slide}
+
+\begin{slide}
+
+{\bf An alternative approach}
+
+Instead of the axiom of downward typing we could assert the axiom of binary union.
+
+\begin{description}
+
+\item[$^*$Axiom (binary union):]  $$(\forall AB:  {\tt set}(A) \wedge {\tt set}(B) \wedge A \sim B $$ $$\rightarrow (\exists C:{\tt set}(C) \wedge (\forall x:x \in C \leftrightarrow (x \in A \vee x \in B))))$$
+
+The witness $C$ to this is unique for given $A$ and $B$ by set extensionality and we define $A \cup B$ as this unique witness.
+
+\item[Theorem (downward typing):]  $$(\forall xy: \tau(x) \sim \tau(y) \rightarrow x \sim y)$$
+
+\item[Proof:]  Suppose that $\tau(x) \sim \tau(y)$.  It follows that $\tau(x) \cup \tau(y)$ exists, and of course $x \in \tau(x) \cup \tau(y)$ and $y \in \tau(x) \cup \tau(y)$, so $x \sim y$.
+
+\end{description}
+
+\end{slide}
+
+\begin{slide}
+
+{\Large The local incarnation of the Russell paradox:  the type disjointness scheme}
+
+\begin{description}
+
+\item[Definition:]  Define $\iota(x)$ as $\{x\} = \{y \in \tau(x)y=x\}$ and define $\iota^0(x)$ as $x$ and $\iota^{i+1}(x)$ as $\{\iota^i(x)\}$ (a definition scheme).
+
+\item[Theorem:]  $\tau^2(x) \neq \tau(x)$
+
+\item[Proof:]  Define $R$ as $\{y \in \tau(x):y \not\in y\}$.  We have $R \in R$ iff $R \in \tau(x) \wedge R \not\in R$, and also $R \in \tau^2(x)$, both by comprehension.
+If $\tau(x) = \tau^2(x)$ this immediately gives a contradiction.
+
+Notice that if we have $y \in y$, we get $y \in \tau^2(y)$, and we have just shown that $\tau(y)$ and $\tau^2(y)$ are distinct, therefore disjoint, so in fact $R = \tau(x)$.
+
+\end{description}
+
+
+\end{slide}
+
+\begin{slide}
+
+
+{\Large Proving the full type disjointness scheme}
+
+We generalize the argument above to show that $\tau^{i+2}(x)$ is distinct from $\tau(x)$ for $i \geq 0$.
+
+It is straightforward to show that $\iota^i(x) \in \tau^{i+1}(x)$ for each concrete $i$.
+
+For a concrete $i \geq 0$ redefine $R$ as $$\{\iota^i(y) \in \tau^{i+1}(x):\iota^i(y)\not\in y\}.$$  By comprehension, we have $R \in \tau^{i+2}(x)$ and $\iota^i(R) \in R$ iff $\iota^i(R) \in \tau^{i+1}(x)$ and $\iota^i(R) \not\in R$.
+From this we conclude that $\iota^i(R) \not\in \tau^{i+1}(x)$ on pain of paradox, so $\tau(R) \neq \tau(x)$, so $\tau(x) \neq \tau^{i+2}(x)$.
+\end{slide}
+
+\begin{slide}
+{\Large The interpretation of a type theory in TTGV}
+
+An interpretation of TSTU in TTGV suggests itself.  Let type 0 be a type $\tau(x)$.  Interpret type $i$ for each natural number $i$ as $\tau^{1+i}(x)$.
+
+The extensionality and comprehension axioms of TST follow quite directly from what we have done.
+
+It can be noted that a model of TTGV may have quite a lot more in it.   More generally, we can use the types of a model of TTGV as indices for types.  If $t$ is a type, define $t^+$ as $\tau(t)$ and $t^-$ as the unique type (if there is one) which belongs to $t$.
+Now generalize the typed language to allow formulas $x = y$ to be well formed iff $x$ and $y$ are assigned the same type, and $x \in y$ to be well-typed iff the type of $y$ is the image under $\tau$ of the type of $x$.
+The generalized forms of extensionality and comprehension will hold, but the types are not restricted to a sequence isomorphic to the natural numbers:  there may be any number of such sequences of types, and also any number of sequences of types of the isomorphism type of the integers.
+
+
+\end{slide}
+
+\begin{slide}
+
+{\Large Resnik's axiomatics}
+
+I digress for a few slides to the presentation of Resnik.  This is very close to ours, but has some formal defects.  Resnik chooses to implement TST, not TSTU, which is a difference but not a defect.  He also forces all individuals to be of the same type, which verges on being a defect in our mind, and is related to a feature of his exposition which is definitely a formal defect.
+
+We present axioms and definitions.
+
+\begin{description}
+
+
+\item[Definition:]  ${\tt ST}(x,y)$ is initially defined as $$(\exists z:x \in z \wedge y \in z).$$  We feel free to write this as $x \sim y$ in conformity with our own notation.  This is the notion that $x$ and $y$ are of the same type.  Resnik asserts that
+this is an equivalence relation (this is supported by the axioms he presents) and defines $T(x)$, the type of $x$, just as we define $\tau(x)$.
+
+\item[Definition:]  ${\tt PT}(x,y)$ is initially defined as $$(\exists z:x \in z \wedge y \sim z)$$.  This is the notion of $x$ being of the type immediately preceding the type of $y$.
+
+\end{description}
+
+We note an awkward point.   In his definition 3, he defines ${\tt ST}(x,y)$ not as above but as $$(\forall z:{\tt PT}(z,x) \leftrightarrow {\tt PT}(z,y)),$$ which is not equivalent.  Originally,
+I thought he made an actual error here, but he states axiom 1 in the scope of the second definition, not the first, so I suppose the consequences that he claims follow.  We will use
+$x \sim y$ for the original sense of ${\tt ST}(x,y)$ in stating his axioms.
+
+He defines $T_0(x)$ as $(\forall y:\neg {\tt PT}(y,x))$:  this means that $x$ is an individual.
+
+\begin{description}
+
+\item[Ax1:]   $(\forall x:(\exists y:(\forall z:z \in y \leftrightarrow {\tt ST}zx)))$
+
+This asserts the existence of types, but not exactly in the sense of his original discussion.  This implies that all individuals are of the same type, which would not follow if ${\tt ST}(x,y)$ simply meant $x \sim y$.  This
+axiom has the immediate consequence that ${\tt ST}(x,y) \leftrightarrow x \sim y$.    We also want to show that if $x \sim y$, it follows that ${\tt ST}(x,y)$.  We need to show that ${\tt PT}(z,x)$ implies ${\tt PT}(z,y)$.  ${\tt PT}(z,x)$ asserts that
+$z$ belongs to some $u$ such that $u \sim x$.  $z$ belongs of course to $T(z)$ and by Ax2 $T(z) \sim x$.  Thus $x \in T^2(z)$  We have $w$ such that $x \in w$ and $y \in w$.  We have then $w \sim T^2(z)$ by Ax2.  Thus $y \sim T(z)$ by Ax4 so ${\tt PT}(z,y)$.  That was rather hairy.
+
+\item[Ax2:]  $y \in x \wedge y \in w \rightarrow x \sim w$  This says in our terminology that sets which meet are of the same type.
+
+\item[Ax3:]  $y \sim u \wedge y \sim v \rightarrow (\exists t:y  \in t \wedge u \in t \wedge v \in t)$  This asserts that the relation of being the same type is transitive.  This is redundant:  if $y \sim u$ and $y \sim v$, then $u \sim y$ and $v \sim y$ (because it is a truth of logic that
+$\sim$ is symmetric) so by Ax1,  $y \in T(y)$ and $u \in T(y)$ and $v \in T(y)$, witnessing the conclusion.  We think that Resnik may have thought this was needed to show that $x \sim y$ implies ${\tt ST}(x,y)$ and so $x \in T(y)$, but it is not, as we showed above.
+
+\item[Ax4:]  $y \in x \wedge v \in w \wedge x \sim w \rightarrow y \sim v$  This is basically the axiom of downward typing.
+
+\item[Ax5:]  $(\exists x:T_0(x)$  This asserts the existence of an individual.  Notice that the second definition of ${\tt ST}$ along with Ax forces all individuals to be of the same type.
+
+\item[Ax6:]  $(\forall xyw:  (\neg(T_0(x) \wedge x \sim y \wedge (\forall z:z \in x \leftrightarrow z \in y) \wedge x \in w) \rightarrow y \in w)$  This is the axiom of extensionality.  It is formulated in a way which doesn't require equality to be primitive, and it asserts that
+empty objects of the same type which are not individuals are equal (it is the extensionality of TST, not TSTU).
+
+\item[Ax7:]  For any formula $\phi$ in which $y$ is not free, $$(\forall z: \exists y:y \sim z \wedge (\forall x:x \in y \leftrightarrow \phi \wedge x \in z))$$ is an axiom. This is Zermelo's axiom of separation, asserting the existence of \newline $\{x \in z:\phi\}$, with the additional information that this object is of the same type as $z$.
+
+\end{description}
+
+\end{slide}
+
+\begin{slide}
+
+Resnik's system is equivalent to our TTGV with three additional propositions:  there are individuals, all individuals are of the same type, and all atoms are individuals.  We review this equivalence.
+
+\end{slide}
+
+
+
+\end{document}
