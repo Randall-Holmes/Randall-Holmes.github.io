@@ -400,7 +400,7 @@ axiom has the immediate consequence that ${\tt ST}(x,y) \rightarrow x \sim y$.  
 
 \item[Ax4:]  $y \in x \wedge v \in w \wedge x \sim w \rightarrow y \sim v$  This is basically the axiom of downward typing.
 
-\item[Ax5:]  $(\exists x:T_0(x)$  This asserts the existence of an individual.  Notice that the second definition of ${\tt ST}$ along with Ax forces all individuals to be of the same type.
+\item[Ax5:]  $(\exists x:T_0(x)$  This asserts the existence of an individual.  Notice that the second definition of ${\tt ST}$ along with Ax1 forces all individuals to be of the same type.
 
 \item[Ax6:]  $(\forall xyw:  (\neg(T_0(x) \wedge x \sim y \wedge (\forall z:z \in x \leftrightarrow z \in y) \wedge x \in w) \rightarrow y \in w)$  This is the axiom of extensionality.  It is formulated in a way which doesn't require equality to be primitive, and it asserts that
 empty objects of the same type which are not individuals are equal (it is the extensionality of TST, not TSTU).
@@ -415,12 +415,82 @@ empty objects of the same type which are not individuals are equal (it is the ex
 
 To clean this up, we need to show that $x \sim y$ implies ${\tt ST}(x,y)$.
 
+Note that ${\tt ST}$ is an equivalence relation purely as a matter of logic.
+
+We define $T(x)$ as the set provided by Ax1 which contains all $y$ such that ${\tt ST}(x,y)$.
+
+If ${\tt ST}(x,y)$ it follows that $x \in T(x)$ and $y \in T(x)$ so $x \sim y$.
+
+Now we want to show that $x \sim y \rightarrow {\tt ST}(x,y)$.
+
+To do this it is sufficient to show that $x \sim y$ and ${\tt PT}(z,x)$ implies ${\tt PT}(y,x)$.  Symmetry will establish the converse.
+
+So we have $x \sim y$, and we have $u$ such that $z \in u$ and $u \sim x$.  By Ax3 we then have $u \sim y$ and so $z \in u$ and $u \sim y$, so ${\tt PT}(y,x)$.
+
+Thus $x \sim y \rightarrow {\tt ST}(x,y)$.
+
+
+\end{slide}
+
+\begin{slide}
+
+I'd like to show that Ax3 is redundant and that there is no reason to mention the strangely defined {\tt ST} in the axiomatization.  I don't think Ax3 actually is redundant [I'm still musing about whether it might be], but eliminating the weird {\tt ST}
+from Ax1 and adding the assertion that all individuals are of the same type (in the sense of $\sim$) makes it so and gives the same theory, with a significantly cleaner exposition, without equivocation on what constitutes being of the same type.
+
+Ax1 should assert the existence of $$T(x)=\{y:y \sim x\}$$ [letting ${\tt ST}$ be cohabitation, a far simpler and more natural relation and the original one proposed by Quine and mentioned by Resnik himself].   I assert $x \in T(x)$ as part of my analogous axiom;  but I also note
+that Ax7 in Resnik's version provides that for any $z$ at all there is an object $y$ such that $y \sim z$ and (any statement at all), and so there is $y \sim z$, so there is a set $u$ such that $y \in u$ and $z \in u$, so there is
+a set $u$ such that $z \in u$ and $z \in u$, so $z \sim z$, so $z \in T(z)$.
+
+If we adopted this axiom, Ax3 would be redundant.  If $x \sim y$ and $y \sim z$, then $z \sim y$ [logic] so $x \in T(y)$ and $z \in T(y)$, so $x \sim z$.
+
+Replace Ax3 with the assertion $T_0(x) \wedge T_0(y) \rightarrow x \sim y$ [all individuals are of the same type].
+
+Now show that $x \sim y$ is equivalent to $$(\forall z:{\tt PT}(z,x) \leftrightarrow {\tt PT}(z,y)).$$
+
+If $x \sim y$ and ${\tt PT}(z,x)$, we have $u$ such that $z \in u$ and $u \sim x$.  From this it follows that $u \sim y$ (by easy theorem not axiom) and so ${\tt PT}(z,y)$.
+
+If $(\forall z:{\tt PT}(z,x) \leftrightarrow {\tt PT}(z,y))$ and $x$ and $y$ are individuals, the new Ax3 asserts that $x \sim y$.  Otherwise there is $z$ such that ${\tt PT}(z,x)$ and ${\tt PT}(z,y)$ so there is $u$ such that $z \in u$ and $u \sim x$ and $v$ such that $z \in v$ and $v \sim y$,
+and $u \sim v$ by Ax2 so $x \sim y$ by the transitivity theorem.
+
 
 \end{slide}
 
 \begin{slide}
 
 Resnik's system is equivalent to our TTGV with three additional propositions:  there are individuals, all individuals are of the same type, and all atoms are individuals.  We review this equivalence.
+
+TTGV+ = my theory with additional assumptions that all atoms are individuals, there are atoms, and all atoms are of the same type.
+
+TTGV+ proves Resnik's Ax1:  this follows using the argument above that ${\tt ST}$ implies $\sim$ [which includes the assumption that all individuals are the same type among its hypotheses].
+
+TTGV proves Ax2:  if two sets $A$ and $B$ have a common element, all elements of both are of the same type $t$.  Sets $\{x \in t:x \in A\}$ and $\{x \in t:x \in B\}$ exist and are of the same type $\tau(t)$ by comprehension of TTGV,
+and are respectively equal to $A$ and $B$ by weak extensionality.  The fact that weak extensionality is independent of type is a distinguishing feature of our theory.
+
+TTGV proves Ax3, just as the modified version of Resnik does.
+
+TTGV proves Ax4 using the downward typing axiom.   If $x \in y$ and $z \in w$ and $y \sim w$  then  $\tau(x) \in \tau(y)$ and $\tau(z) \in \tau(w) = \tau(y)$, but only one type can belong to $\tau(y)$, so $\tau(x)=\tau(w)$ and $x \sim w$.
+
+TTGV+ includes Ax5 as an axiom.
+
+TTGV proves the extensionality axiom Ax6 with use of the assumption that all atoms are individuals.  
+
+TTGV proves Ax7 easily:  $\{x \in A:\phi\}$ is $\{x \in \tau^0(A):\phi\}$ if $A$ is not an individual and can be taken to be $A$ itself if $A$ is an individual, and is in either case of the same type as $A$.
+
+\end{slide}
+
+\begin{slide}
+
+Resnik's system proves our weak extensionality axiom using Ax6 and Ax2:  Ax2 is needed because our axiom does not have the hypothesis that the two nonempty sets with the same extension are of the same type.
+
+Resnik's system proves our axiom of empty set trivially, since by Ax7 there is a unique empty subset of each type.
+
+Resnik's system proves our axiom of downward typing using Ax4:  if $\tau(x) \sim \tau(y)$ then $x \in \tau(x)$, $y \in \tau(y)$, and $\tau(x) \sim \tau(y)$ imply $x \sim y$ and so $\tau(x)=\tau(y)$ by Ax4.
+
+Resnik's system proves our axiom of comprehension, because our axiom is simply the special case of Ax7 where the bounding set is a type.
+
+The extra axioms of TTGV+ are of course theorems of Resnik's system.
+
+
 
 \end{slide}
 
