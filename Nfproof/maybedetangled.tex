@@ -107,6 +107,9 @@ I have restored correctness I believe:  this involved imposing a condition on th
 
 \item Sky thinks that the claim about how many supports there are depends on $\mu$ being a strong limit cardinal as well as having cofinality at least $\kappa$.
 
+\item[2/8/2024:]  Sky identified a bug in my definition of specification.  It does not contain enough information.  I also need to refine the definition of support.  These are issues caused by the incorporation of supports into the data in f-maps;  there are no analogous problems with previous versions of the argument using strong supports,
+and in fact such versions were formally verified.  On the workbench it goes...  In effect, I have reinstated the use of strong supports.  The language describing augmentations of supports is very dense and needs to be tidied up.
+
 \end{description}
 
 % \end{comment}
@@ -565,7 +568,7 @@ Note that an $\alpha$-allowable permutation is actually defined on the entire su
 Elements of the range of a support are called support conditions.
 
 We make the formal requirement on supports
-that if the range of a support contains $(x,A)$ and $(y,A)$ where $x,y$ are typed near-litters and $x \sim y$, that $(z,A)$ is in the range of the support for all typed atoms $z$ of the right type with $z \cap \tau_{-1}$ in the symmetric difference of $x \cap \tau_{-1}$ and $y \cap \tau_{-1}$.  
+that if the range of a support contains $(x,A)$ and $(y,A)$ where $x,y$ are typed near-litters and either $(x \Delta y)\cap \tau_{-1}$ or $(x \cap y) \cap \tau_{-1}$ is small, that all $(z,A)$ with $z\cap \tau_{-1}$ a singleton subset of this small set are included in the range of the support. [NOTE:  2/8/2024 correction]
 
 For any supports $S$ and $T$ we denote by $S+T$ a support which consists
 of $S$, followed by $T$, followed by the atoms which need to be added to make this a support (to make it satisfy the additional condition):  what this means is that $(S+T)_\epsilon = S(\epsilon)$ [which we write $S_\epsilon$] for $\epsilon$ in the domain of $S$, $(S+T)_{{\tt dom}(S)+\epsilon} = T_\epsilon$ for $\epsilon$ in the domain of $T$, and the rest of the range of $S+T$ consists of the support conditions with atomic first component  which must be added to satisfy the additional condition [this is not uniquely determined:  supports usually have many possible sums because the needed additional conditions can be added in any order.]
@@ -756,6 +759,39 @@ $(\pi^{-1}\circ \pi')(x)= x$, so $\pi(x)=\pi'(x)$, ensuring that the map $\chi_{
 
 \item[Definition (the specification of a support):]   For each support $S$ we define a combinatorial object $S^*$ [not actually unique]  which we call its {\em specification\/}.  We will show below that what it specifies is the orbit in the action of allowable permutations on supports to which it belongs.
 
+NOTE:  massive modification 2/8/2024:  the original language is preserved in a hidden comment.
+
+We first define an extension of the action of $S$ to finite lists of small ordinals.  We say that $S^+$ is an augmentation of $S$ iff  
+
+\begin{enumerate}
+\item $S^+_{[\epsilon]}$ is $S_\epsilon$ where $\epsilon$ is in the domain of $S$ and $[\epsilon]$ denotes the one term sequence with $\epsilon$ as its only term
+\item and for each $\epsilon$ such that $S_\epsilon$ is $(N_\beta,A)$ and $N$ is a near-litter, and $N^\circ=f_{\gamma,\beta}(x,T)$ for $-1<\gamma<{\tt min}(A_1)$, for $x\in \tau_\gamma$ then $S^+_{[\epsilon]+\eta} = (T^+_{\eta})^{\uparrow {\tt max}(A)}$  where $T^+$ is an augmentation of $T$, $[\epsilon]+\eta$ represents
+the result of prepending $\epsilon$ to the list $\eta$, and $(z,B)^{\uparrow \chi}$ is defined as $(z,B \cup \{\chi\})$.  There are additional values $S^+_{[\epsilon]+[\chi]} = (z,B)$, $\chi$'s forming an interval above the domain of $T$ and contiguous with it, where $(z,B)$ does not occur in the range of $S^+$ at a position lexicographically prior to $[\epsilon]+[\chi]$,
+$z \cap \tau_{-1}$ is a singleton, and $z \cap \tau_{-1}$ is a subset of a small intersection or set difference of $\pi_1(S^+_\eta)$'s with $\pi_1(S^+_\eta)=B$ for $\eta$ lexicographically prior to $[\epsilon]+[\chi]$; all such $(z,B)$'s occur as such values.
+
+\item and for each $\epsilon$ such that $S_\epsilon$ is $(N_\beta,A)$ and $N$ is a near-litter, and $N^\circ=f_{-1,\beta}(x,T)$, $S^+_{[\epsilon]+[0]} = (\{x\}_{{\tt min}(A_1)},A_1)$,
+
+\item and all values of $S^+$ are computed in one of the ways described.
+
+
+\end{enumerate}
+
+A $\chi$-specification $S^*$ of a $\chi$-support $S$ is a function with the same domain as an augmentation $S^+$.  We use the notation $S^*_\epsilon$ for $S^*(\epsilon)$.  Notice that $\epsilon$ and $\delta$ here range over lists of ordinals, not ordinals.
+
+\begin{enumerate}
+
+\item  If $S_{\epsilon}$ is $(\{x\}_\beta,A)$, then $S^*_\epsilon$ is $(0,\beta,\Sigma,A)$ where  $\Sigma$ is the set of all $\delta$ such that $\pi_1(S_\epsilon) \subseteq \pi_1(S_\delta)$ (this captures identical atoms and near litters containing the given atom)
+
+\item  If $S_\epsilon$ is $(N_\beta,A)$ and $N$ is a near-litter, and either $|A|=1$ or $N^\circ$ is not in the range of any $f_{\gamma,\beta}$ for $\gamma<{\tt min}(A_1)$, then $S^*_\epsilon$ is $(1,\beta,A)$.
+
+\item  If $S_\epsilon$ is $(N_\beta,A)$ and $N$ is a near-litter, and $N^\circ=f_{\gamma,\beta}(x,T)$ for $-1<\gamma<{\tt min}(A_1)$, for $x\in \tau_\gamma$ then 
+$S^*_\epsilon$ is $(2,\beta,\chi_{x,T},A)$.  
+
+\item  If $S_\epsilon$ is $(N_\beta,A)$ and $N$ is a near-litter, and $N^\circ=f_{-1,\beta}(x,\emptyset)$  then $S^*_\epsilon$ is $(3,\beta,\Sigma,A)$, where  $\Sigma$ is the set of all $\delta$ such that $S_\delta$ is $(\{x\}_{{\tt min}(A_1)},{\tt min}(A_1))$.
+
+\end{enumerate}
+
+\begin{comment}
 A $\chi$-specification $S^*$ of a $\chi$-support $S$ is a function with the same domain as $S$.  We use the notation $S^*_\epsilon$ for $S^*(\epsilon)$.
 
 \begin{enumerate}
@@ -771,6 +807,8 @@ $S^*_\epsilon$ is $(2,\beta,\chi_{x,T},(S_{(\gamma)}+T)^*,A)$.  $S_{(\gamma)}$ d
 
 \end{enumerate}
 
+\end{comment}
+
 \begin{comment}
 
 Peter wants a definition of the type specification independent of the type support.  Use tags.   It's a good idea.
@@ -785,28 +823,28 @@ Peter wants a definition of the type specification independent of the type suppo
 
 It is straightforward to see that if $S$ is a $\beta$-support and if $\pi$ is a $\beta$-allowable permutation, and $S^*$ is a specification for $S$, that $S^*$ is also a specification for $\pi[S]$.  The relationships between items in the support recorded in the specification are invariant under application of allowable permutations.
 
-It remains to show that if $S$ and $T$ are supports, and $S^*=T^*$ is a specification for both, there is an allowable permutation $\pi$ such that $\pi[S]=T$.
+It remains to show that if $S$ and $T$ are supports, and $S^*=T^*$ is a specification for both, there is an allowable permutation $\pi$ such that $\pi[S]=T$.  In fact we show that $\pi[S^+]=T^+$  [defining this action in the obvious way].
 
 We construct $\pi$ using the Freedom of Action Theorem.
 
-If we have $S_\epsilon = (\{x\}_\beta,A)$, we will have $T_\epsilon = (\{y\}_\beta,A)$ for some $y$, and we will set $\pi^0_A(\{x\}_\beta) = \{y\}_\beta$ as part of the construction of the local bijection to be used.
+If we have $S^+_\epsilon = (\{x\}_\beta,A)$, we will have $T^+_\epsilon = (\{y\}_\beta,A)$ for some $y$, and we will set $\pi^0_A(\{x\}_\beta) = \{y\}_\beta$ as part of the construction of the local bijection to be used.
 
-If we have $S_\epsilon = ((M_\beta,A)$ for $M$ a near litter and either $|A|=1$ or $M^\circ$ is not in the range of any $f_{\gamma,\beta}$ for $\gamma<{\tt min}(A_1)$, then $T_\epsilon = (N_\beta,A)$ for $N$ a near litter, with analogous properties, and we set $\pi^0_A(M^\circ_\beta) = N^\circ_\beta$  as part of the data for application of the Freedom of Action Theorem [actually, we set $\pi^0_A((M^-_\beta) = N^-_\beta$  for suitable subsets of $M^-$ and $N^-$, excluding any atoms in $M$ or $N$ that are assigned values;  this adjustment can be made at the end of the process].
+If we have $S^+_\epsilon = ((M_\beta,A)$ for $M$ a near litter and either $|A|=1$ or $M^\circ$ is not in the range of any $f_{\gamma,\beta}$ for $\gamma<{\tt min}(A_1)$, then $T^+_\epsilon = (N_\beta,A)$ for $N$ a near litter, with analogous properties, and we set $\pi^0_A(M^\circ_\beta) = N^\circ_\beta$  as part of the data for application of the Freedom of Action Theorem [actually, we set $\pi^0_A((M^-_\beta) = N^-_\beta$  for suitable subsets of $M^-$ and $N^-$, excluding any atoms in $M$ or $N$ that are assigned values;  this adjustment can be made at the end of the process].
 
 
-If we have $S_\epsilon= (M_\beta,A)$ for $M$ a near litter with $M^\circ = f_{\gamma,\beta}(x,U)$, where $-1<\gamma<{\tt min}(A_1)$,
-then $S^*_\epsilon$ is $(2,\beta,\chi_{x,U},(S_{(\gamma)} +U)^*,A)$ and where $T_\epsilon=(N_\beta,A)$, $T^*_\epsilon$ is $(2,\beta,\chi_{y,V},(T_{(\gamma)} +V)^*,A),$, where $N^\circ = f_{\gamma,\beta}(y,V)$ and the component specifications and coding functions are the same.
+If we have $S^+_\epsilon= (M_\beta,A)$ for $M$ a near litter with $M^\circ = f_{\gamma,\beta}(x,U)$, where $-1<\gamma<{\tt min}(A_1)$,
+then $S^*_\epsilon$ is $(2,\beta,\chi_{x,U},A)$ and where $T^+_\epsilon=(N_\beta,A)$, $T^*_\epsilon$ is $(2,\beta,\chi_{y,V},A),$, where $N^\circ = f_{\gamma,\beta}(y,V)$ and the component specifications and coding functions are the same.
 
-We use the inductive hypothesis that things work for lower index to get an allowable permutation whose action sends $S_{(\gamma)} +U$ to $T_{(\gamma)} +V$ (which requires decisions about what the added atoms in the sums of supports are [made when we determine that $S$ and $T$ actually have these specifications];  adding these atoms may require adding full orbits as discussed below), and use this to define
-the approximation at atomic and flexible elements of the supports;  note that inclusion of parts of the original supports prevents conflict with what is done one level up.
+We use the inductive hypothesis that this procedure works on specifications of lower type to get an allowable permutation whose action sends $U^+$ to $T^+$ [and acts correctly on atoms appended after data from $U^+$ and $V^+$ in the respective computations of $S^+$ and $T^+$];  adding these atoms may require adding full orbits as discussed below), and use this allowable permutation to define
+the approximation at atomic and flexible elements of the supports.  [I think there are choices about exactly how to describe the induction here].
 
 and this ensures that $\pi(M_\beta)\cap \tau_{-1} \Delta N_\beta\cap \tau_{-1}$ is small:  we need to augment the local bijection to prevent anomalies, and there is a way to do this.
 
 We want to ensure that elements of $M \setminus M^{\circ}$ and elements of $M^{\circ} \setminus M$ correlate with typed atoms in the domain of $\pi^0_A$ and sent to elements of $N_\beta$, and similarly elements of $M$ are chosen to have their associated typed atoms mapped by $\pi^0_A$ to type correlates of elements of $N\setminus N^\circ$ and $N^\circ \setminus N$.
- Some additional work must be done.  For each new element introduced to the domain of $\pi^0_A$, we have the obligation to fill in its complete orbit in $\pi^0_A$.   The restriction we must obey as we do this is that any element of a near-litter whose typed version appears with index $A$ in $S$ must be mapped by $(\pi^0)_{A\cup \{-1\}}$ to an element of the corresponding near-litter in $T$ and any element of a near-litter in $T$  whose typed version appears with index in $A$ in $S$ must be mapped by $((\pi^0)_{A\cup \{-1\}}^{-1}$ to an element of the corresponding near-litter in $S$.  Since only countably many new values are needed to fill in each orbit and $\kappa$ is uncountable, there is no obstruction to doing this.  Note that atoms already in the domain of $\pi^0_A$ are already constrained to behave in this way.  The map eventually constructed by Freedom of Action will send
+ Some additional work must be done.  For each new element introduced to the domain of $\pi^0_A$, we have the obligation to fill in its complete orbit in $\pi^0_A$.   The restriction we must obey as we do this is that any element of a near-litter whose typed version appears with index $A$ in $S^+$ must be mapped by $(\pi^0)_{A\cup \{-1\}}$ to an element of the corresponding near-litter in $T^+$ and any element of a near-litter in $T^+$  whose typed version appears with index in $A$ in $S^+$ must be mapped by $((\pi^0)_{A\cup \{-1\}}^{-1}$ to an element of the corresponding near-litter in $S^+$.  Since only countably many new values are needed to fill in each orbit and $\kappa$ is uncountable, there is no obstruction to doing this.  Note that atoms already in the domain of $\pi^0_A$ are already constrained to behave in this way.  The map eventually constructed by Freedom of Action will send
 $M_\beta$ to $N_\beta$ because it maps typed atoms correlated with elements of $M \Delta M^\circ$ to and elements of $N \Delta N^{\circ}$ to appropriate values individually, and all other typed atoms ``in" $M_\beta$ must be mapped to values in $N_\beta$ (and typed atom ``elements" of $N_\beta$ mapped from elements of $M_\beta$) because the map constructed by Freedom of Action has no exceptions not in the domain of the local bijection.
 
-If we have $S_\epsilon= (M_\beta,A)$ for $M$ a near litter with $M^\circ = f_{-1,\beta}(x,\emptyset)$, then we have $T_\epsilon=(N_\beta,A)$
+If we have $S^+_\epsilon= (M_\beta,A)$ for $M$ a near litter with $M^\circ = f_{-1,\beta}(x,\emptyset)$, then we have $T^+_\epsilon=(N_\beta,A)$
 where  $N^\circ = f_{-1,\beta}(y,\emptyset)$, and we add to our approximation the information that $\{x\}_{{\tt min}(A_1)}$ is mapped to 
 $\{y\}_{{\tt min}(A_1)}$ by $\pi^0_{A_1}$, which enforces mapping of $M_\beta$ to $N_\beta$ up to nearness, and the fix to get $M_\beta$ to map precisely to $N_\beta$ is as in the previous case.
 
