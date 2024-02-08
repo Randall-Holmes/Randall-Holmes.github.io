@@ -1,5 +1,5 @@
 
- (*
+(*
 
 \documentclass[12pt]{article}
 
@@ -255,7 +255,7 @@ from the previous argument by a comma if it is mixfix;  the previous version det
 
 \item[3/10/2020:] 
 
-Interesting innovation in pretty printing:  put breaks before \verb ({def}  and \verb ({let} .  This further suggests that we should not put the def into lambda terms appearing as arguments.
+Interesting innovation in pretty printing:  put breaks before \verb|{def}|  and \verb |{let}| .  This further suggests that we should not put the def into lambda terms appearing as arguments.
 
 I found a subtle parser difference between the old version and the new which I think I will leave as is
 (and make corrections when it arises in files).  There is already a difference involving the need
@@ -380,7 +380,7 @@ Logical conjunction is a function taking two arguments of type {\tt prop} to a p
 
 The rule of conjunction takes a proof $pp$ of $p$ and a proof $qq$ of $q$ to a proof of $p \wedge q$.    The type of this is 
 
-$$[(p:\verb prop ),(q:{\tt prop}),(pp: \verb that   \, p),(qq:{\tt that}\, q) \Rightarrow {\tt that}\, p \wedge q].$$
+$$[(p:\verb|prop| ),(q:{\tt prop}),(pp: \verb|that|   \, p),(qq:{\tt that}\, q) \Rightarrow {\tt that}\, p \wedge q].$$
 
 One might think that the rule of conjunction has only two arguments, the proofs of the two components.  But it also needs to know what the two propositions are.  On the other hand, having to enter the first two arguments and display them seems excessive, since they can be inferred from the last two.  The intention is that Lestrade will type the rule of conjunction as shown but allow the suppression of the first two arguments in input and output (the feature of implicit argument inference).  This illustrates what is meant by the assertion that the
 sorts of arguments may depend on earlier arguments.
@@ -988,7 +988,7 @@ fun desome x = x;
 fun makestring s = Int.toString s;
 
 (* BEGIN for PolyML decomment this; 
-for Moscow ML 2.10 in addition comment out first line *}
+for Moscow ML 2.10 in addition comment out first line
 
 open PolyML *)
 
@@ -1808,7 +1808,7 @@ breaks and indentation.  The degree of indentation is determined by the move we 
 the degree of nesting within brackets \verb|[]| at which we are processing.  Note the theme of identification of declaration environments (moves) with variable binding environments (lambda terms and function sorts).
 
 There are separate pretty printers for output and for command lines, since backslashes need to be inserted in command lines.
-The special prompt \verb >>>  is inserted by the pretty printer, and the log file reader uses the prompt to identify commands to be executed.\footnote{This has the effect that the file format for this version is quite different from that of the previous version;  but the previous version has a facility to export files in a format this version can read.}
+The special prompt \verb|>>>|  is inserted by the pretty printer, and the log file reader uses the prompt to identify commands to be executed.\footnote{This has the effect that the file format for this version is quite different from that of the previous version;  but the previous version has a facility to export files in a format this version can read.}
 
 The pretty printer is devious about the appearance of underscores in bound variables in output, and it takes special account of the behavior of parentheses,
 braces, brackets and commas when deciding whether to insert spaces.
@@ -2233,7 +2233,7 @@ The meaning of a parenthesized term is the same as the meaning of the term enclo
 
 (Implicit in this description is that all names when used as mixfixes are of the same precedence and group to the rignt.)
 
-The meaning of a mixfix term is the same as the meaning of the applicative term beginning with the name used as the mixfix, followed by \verb ( , followed by the initial object term, followed by a comma, followed by the final open term list, followed by \verb ) .  The parentheses and comma are likely not be be needed here, but in certain cases they would be necessary (if the intial open term were parenthesized, or if the final open term list began with a name of arity greater than one).
+The meaning of a mixfix term is the same as the meaning of the applicative term beginning with the name used as the mixfix, followed by \verb|(| , followed by the initial object term, followed by a comma, followed by the final open term list, followed by \verb|)| .  The parentheses and comma are likely not be be needed here, but in certain cases they would be necessary (if the intial open term were parenthesized, or if the final open term list began with a name of arity greater than one).
 
 \end{description}
 
