@@ -21,6 +21,28 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \documentclass[12pt]{article}
 
 \title{Lestrade Tutorial}
@@ -773,9 +795,15 @@ end Lestrade execution
 
 The rule of universal generalization tells us that if we have a procedure to generate from any $x$ of type {\tt obj} evidence for ${\tt pred}(x)$, then we have evidence for $(\forall x:{\tt pred}(x))$.
 
-The reason that a second version is given is that, as we will see, it is sometimes but not always possible for the implicit argument mechanism to deduce from {\tt univev2} what the predicate {\tt pred} is.  It can be very convenient not to have to type the predicate.
+The reason that a second version is given is that, as we will see, it is sometimes but not always possible for the implicit argument mechanism to deduce from {\tt univev2} what the predicate {\tt pred} is.  It can be very convenient not to have to write out the predicate.
 
 Here we have developed the universal quantifier for untyped mathematical objects (type {\tt obj}).  We are likely later to present the declarations introducing quantification over types $({\tt in} \verb| | \tau)$.
+
+A difference between Lestrade and other systems of this family is that in many of them an item of evidence for $p \rightarrow q$
+{\em is\/} a function from evidence for $p$ to evidence for $q$, and an item of evidence for $(\forall x:{\tt pred}(x))$ {\em is\/}
+a function taking each appropriate $x$ to evidence for ${\tt pred}(x)$.  We find it useful to separate objects from functions for reasons which we hope will be seen as we carry out developments.  For those in the know (and for everyone once we look at mathematical functions) it will be seen that the same thing happens on the other side of the Curry-Howard isomorphism:  evidence for an implication is an object in the Lestrade sense produced by applying a constructor ({\tt Deduction}) to a function in the Lestrade sense;  mathematical objects in type theory which a mathematician (including this author) would describe as a function will actually be Lestrade objects which package Lestrade functions in the same way.
+
+
 
 \newpage
 
@@ -820,7 +848,656 @@ So we do not view functions as complete infinite tables of values but as rules w
 
 And, curiously enough, classical logic and Cantorian set theory make perfectly good sense in this framework, as we will see.
 
+\newpage
 
+\section{Definitions and proofs: logic}
+
+In this section we will build machinery for logic in Lestrade and prove some theorems, with both the usefulness of such a Lestrade theory in mind and the implicit illustration of how Lestrade works.
+
+The theory of dependent type theorem proving might be taken to suggest a preference for constructive logic.  We are actually fine with classical logic, but we are concerned to illustrate that it is compatible with our Aristotelean philosophical framework.
+
+So, we will give independent constructive definitions for the connectives of propositional logic, but also provide the principle of double negation, so that classical equivalences obtain.
+
+\subsection{More propositional logic declarations}
+
+We introduce disjunction as a primitive.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare p prop
+
+   p : prop
+
+   {move 1}
+
+   >>> declare q prop
+
+   q : prop
+
+   {move 1}
+
+   >>> postulate V p q prop
+
+   V : [(p_1 : prop), (q_1 : prop) => 
+       (--- : prop)]
+
+   {move 0}
+
+   >>> declare pp that p
+
+   pp : that p
+
+   {move 1}
+
+   >>> declare qq that q
+
+   qq : that q
+
+   {move 1}
+
+   >>> postulate Addition1 q pp that p V q
+
+   Addition1 : [(.p_1 : prop), (q_1 
+       : prop), (pp_1 : that .p_1) => 
+       (--- : that .p_1 V q_1)]
+
+   {move 0}
+
+   >>> postulate Addition2 p qq that p V q
+
+   Addition2 : [(p_1 : prop), (.q_1 
+       : prop), (qq_1 : that .q_1) => 
+       (--- : that p_1 V .q_1)]
+
+   {move 0}
+end Lestrade execution
+
+\end{verbatim}
+
+It is interesting to note that the rules of addition need the other proposition as an argument.  It is hardly a surprise,
+as the other proposition does not appear as a component of what you might think is the default input, but it is there.
+
+The rule of disjunction elimination (proof by cases) is more complicated.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> declare r prop
+
+   r : prop
+
+   {move 1}
+
+   >>> open
+
+      {move 2}
+
+      >>> declare pp1 that p
+
+      pp1 : that p
+
+      {move 2}
+
+      >>> postulate case1 pp1 that r
+
+      case1 : [(pp1_1 : that p) => (--- 
+          : that r)]
+
+      {move 1}
+
+      >>> declare qq1 that q
+
+      qq1 : that q
+
+      {move 2}
+
+      >>> postulate case2 qq1 that r
+
+      case2 : [(qq1_1 : that q) => (--- 
+          : that r)]
+
+      {move 1}
+
+      >>> close
+
+   {move 1}
+
+   >>> postulate Cases case1, case2 that \
+       p V q
+
+   Cases : [(.p_1 : prop), (.q_1 : prop), (.r_1 
+       : prop), (case1_1 : [(pp1_2 : that 
+          .p_1) => (--- : that .r_1)]), (case2_1 
+       : [(qq1_2 : that .q_1) => (--- 
+          : that .r_1)]) => (--- : that 
+       .p_1 V .q_1)]
+
+   {move 0}
+end Lestrade execution
+
+\end{verbatim}
+
+A nice feature here is that we do not need a separate environment for each case:  one environment with two hypothetical arguments works, because we can keep track in our declarations of which hypthoses are used.
+
+Arguments to a function which are themselves functions should be separated by commas from what follows to avoid
+a misreading in which the function argument is {\em applied\/} to what follows.  {\tt case1} in the definition of
+{\tt Cases} is an example.
+
+The negation and the biconditional are introduced by definition.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+{move 1}
+
+   >>> declare p prop
+
+   p : prop
+
+   {move 1}
+
+   >>> declare q prop
+
+   q : prop
+
+   {move 1}
+
+   >>> define ~ p : p -> False
+
+   ~ : [(p_1 : prop) => 
+       ({def} p_1 -> False : prop)]
+
+   ~ : [(p_1 : prop) => (--- : prop)]
+
+   {move 0}
+
+   >>> define <-> p q : (p -> q) & (q -> \
+       p)
+
+   <-> : [(p_1 : prop), (q_1 : prop) => 
+       ({def} (p_1 -> q_1) & q_1 -> p_1 
+       : prop)]
+
+   <-> : [(p_1 : prop), (q_1 : prop) => 
+       (--- : prop)]
+
+   {move 0}
+
+   >>> declare maybe that ~ ~ p
+
+   maybe : that ~ (~ (p))
+
+   {move 1}
+
+   >>> postulate Dneg maybe that p
+
+   Dneg : [(.p_1 : prop), (maybe_1 : that 
+       ~ (~ (.p_1))) => (--- : that 
+       .p_1)]
+
+   {move 0}
+end Lestrade execution
+
+\end{verbatim}
+
+We derive rules for the use of these defined operators.  We start with negation introduction.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+{move 1}
+
+   >>> declare p prop
+
+   p : prop
+
+   {move 1}
+
+   >>> open
+
+      {move 2}
+
+      >>> declare pp1 that p
+
+      pp1 : that p
+
+      {move 2}
+
+      >>> postulate contra1 pp1 that False
+
+      contra1 : [(pp1_1 : that p) => (--- 
+          : that False)]
+
+      {move 1}
+
+      >>> close
+
+   {move 1}
+
+   >>> define Negintro1 contra1 : Deduction \
+       contra1
+
+   Negintro1 : [(.p_1 : prop), (contra1_1 
+       : [(pp1_2 : that .p_1) => (--- 
+          : that False)]) => 
+       ({def} Deduction (contra1_1) : that 
+       .p_1 -> False)]
+
+   Negintro1 : [(.p_1 : prop), (contra1_1 
+       : [(pp1_2 : that .p_1) => (--- 
+          : that False)]) => (--- : that 
+       .p_1 -> False)]
+
+   {move 0}
+end Lestrade execution
+
+\end{verbatim}
+
+We would like the rule of negation introduction to prove a theorem with the negation symbol in it!  There is a general technique to handle this.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+{move 1}
+
+   >>> declare p prop
+
+   p : prop
+
+   {move 1}
+
+   >>> declare pp that p
+
+   pp : that p
+
+   {move 1}
+
+   >>> define Fixform p pp : pp
+
+   Fixform : [(p_1 : prop), (pp_1 : that 
+       p_1) => 
+       ({def} pp_1 : that p_1)]
+
+   Fixform : [(p_1 : prop), (pp_1 : that 
+       p_1) => (--- : that p_1)]
+
+   {move 0}
+end Lestrade execution
+
+\end{verbatim}
+
+The subtlety here is that {\tt Fixform} will check by matching, which includes expansion of definitions,
+that its second argument {\tt pp} is of a type equivalent to \verb|that| $p$, and will return the literal type \verb|that| $p$ as its type.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+{move 1}
+
+   >>> declare p prop
+
+   p : prop
+
+   {move 1}
+
+   >>> declare pp that p
+
+   pp : that p
+
+   {move 1}
+
+   >>> declare contra1 [pp => that False]
+
+   contra1 : [(pp_1 : that p) => (--- 
+       : that False)]
+
+   {move 1}
+
+   >>> define Negintro contra1 : Fixform \
+       (~ p, Negintro1 contra1)
+
+   Negintro : [(.p_1 : prop), (contra1_1 
+       : [(pp_2 : that .p_1) => (--- : that 
+          False)]) => 
+       ({def} ~ (.p_1) Fixform Negintro1 
+       (contra1_1) : that ~ (.p_1))]
+
+   Negintro : [(.p_1 : prop), (contra1_1 
+       : [(pp_2 : that .p_1) => (--- : that 
+          False)]) => (--- : that ~ (.p_1))]
+
+   {move 0}
+end Lestrade execution
+
+\end{verbatim}
+
+There is an important feature of Lestrade which is introduced briefly here to save time.  One can declare {\tt contra1} without opening a block as shown above.  It is possible to avoid ever entering abstraction terms like {\tt [pp => that False]} by suitable use of blocks, but it is very convenient to do so.  Notice that the LTI uses a declaration in the next move to determine the type of the bound occurrence of {\tt pp}, though (as you can see in the previous proof using a block) if we did this using a block this would not be a variable in the next move but in a further move which we do not admit opening here.
+
+And as noted we use {\tt Fixform} to coerce the type of the output of {\tt Negintro} to the form desired.
+
+We develop the standard strategy for proving a biconditional.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+{move 1}
+
+   >>> declare p prop
+
+   p : prop
+
+   {move 1}
+
+   >>> declare q prop
+
+   q : prop
+
+   {move 1}
+
+   >>> declare pp that p
+
+   pp : that p
+
+   {move 1}
+
+   >>> declare qq that q
+
+   qq : that q
+
+   {move 1}
+
+   >>> declare part1 [pp => that q]
+
+   part1 : [(pp_1 : that p) => (--- : that 
+       q)]
+
+   {move 1}
+
+   >>> declare part2 [qq => that p]
+
+   part2 : [(qq_1 : that q) => (--- : that 
+       p)]
+
+   {move 1}
+
+   >>> define Bicondintro part1, part2 : Fixform \
+       (p <-> q, Conj (Deduction part1, Deduction \
+       part2))
+
+   Bicondintro : [(.p_1 : prop), (.q_1 
+       : prop), (part1_1 : [(pp_2 : that 
+          .p_1) => (--- : that .q_1)]), (part2_1 
+       : [(qq_2 : that .q_1) => (--- : that 
+          .p_1)]) => 
+       ({def} (.p_1 <-> .q_1) Fixform Deduction 
+       (part1_1) Conj Deduction (part2_1) : that 
+       .p_1 <-> .q_1)]
+
+   Bicondintro : [(.p_1 : prop), (.q_1 
+       : prop), (part1_1 : [(pp_2 : that 
+          .p_1) => (--- : that .q_1)]), (part2_1 
+       : [(qq_2 : that .q_1) => (--- : that 
+          .p_1)]) => (--- : that .p_1 
+       <-> .q_1)]
+
+   {move 0}
+end Lestrade execution
+
+\end{verbatim}
+
+This is work in a much more succinct style, taking advantage of the ability to write variable binding expressions
+for function types and declare variables of such types without opening a block, and then (in the proof of {\tt Bicondintro})
+taking an algebraic approach of just writing down the proof as a mathematical expression.
+
+It is worth noting in passing that Lestrade's default view of display of most functions of two explicit arguments is to use them as infixes;  for example, {\tt Conj} is used as an infix in Lestrade output above.
+
+\subsection{Proving the exportation theorem}
+
+In this section I present a proof in something like my favored natural deduction style for paper proofs
+of the theorem $P \rightarrow (Q \rightarrow R) \leftrightarrow (P \wedge Q) \rightarrow R$.  This should give
+an idea of a strategy for proof development in Lestrade.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+{move 1}
+
+   >>> declare p prop
+
+   p : prop
+
+   {move 1}
+
+   >>> declare q prop
+
+   q : prop
+
+   {move 1}
+
+   >>> declare r prop
+
+   r : prop
+
+   {move 1}
+
+   >>> open
+
+      {move 2}
+
+      >>> declare aa that p -> (q -> r)
+
+      aa : that p -> q -> r
+
+      {move 2}
+
+      >>> declare bb that (p & q) -> r
+
+      bb : that (p & q) -> r
+
+      {move 2}
+
+      >>> comment we start by proving p & q -> \
+          r using aa
+
+      {move 2}
+
+      >>> open
+
+         {move 3}
+
+         >>> declare cc that p & q
+
+         cc : that p & q
+
+         {move 3}
+
+         >>> open
+
+            {move 4}
+
+            >>> define dd : Simp1 cc
+
+            dd : that p
+
+            {move 3}
+
+            >>> define ee : Simp2 cc
+
+            ee : that q
+
+            {move 3}
+
+            >>> define ff : Mp aa dd
+
+            ff : that q -> r
+
+            {move 3}
+
+            >>> define gg : Mp ff ee
+
+            gg : that r
+
+            {move 3}
+
+            >>> close
+
+         {move 3}
+
+         >>> define hh cc : gg
+
+         hh : [(cc_1 : that p & q) => 
+             (--- : that r)]
+
+         {move 2}
+
+         >>> close
+
+      {move 2}
+
+      >>> define ii aa : Deduction hh
+
+      ii : [(aa_1 : that p -> q -> r) => 
+          (--- : that (p & q) -> r)]
+
+      {move 1}
+
+      >>> declare jj that (p & q) -> r
+
+      jj : that (p & q) -> r
+
+      {move 2}
+
+      >>> open
+
+         {move 3}
+
+         >>> declare kk that p
+
+         kk : that p
+
+         {move 3}
+
+         >>> open
+
+            {move 4}
+
+            >>> declare ll that q
+
+            ll : that q
+
+            {move 4}
+
+            >>> open
+
+               {move 5}
+
+               >>> define mm : Conj kk ll
+
+               mm : that p & q
+
+               {move 4}
+
+               >>> define nn : Mp jj mm
+
+               nn : that r
+
+               {move 4}
+
+               >>> close
+
+            {move 4}
+
+            >>> define oo ll : nn
+
+            oo : [(ll_1 : that q) => (--- 
+                : that r)]
+
+            {move 3}
+
+            >>> define rr : Deduction oo
+
+            rr : that q -> r
+
+            {move 3}
+
+            >>> close
+
+         {move 3}
+
+         >>> define ss kk : rr
+
+         ss : [(kk_1 : that p) => (--- 
+             : that q -> r)]
+
+         {move 2}
+
+         >>> define tt : Deduction ss
+
+         tt : that p -> q -> r
+
+         {move 2}
+
+         >>> close
+
+      {move 2}
+
+      >>> define uu jj : tt
+
+      uu : [(jj_1 : that (p & q) -> r) => 
+          (--- : that p -> q -> r)]
+
+      {move 1}
+
+      >>> close
+
+   {move 1}
+
+   >>> define Export p q r : Bicondintro \
+       ii, uu
+
+   Export : [(p_1 : prop), (q_1 : prop), (r_1 
+       : prop) => 
+       ({def} Bicondintro ([(aa_2 : that 
+          p_1 -> q_1 -> r_1) => 
+          ({def} Deduction ([(cc_3 : that 
+             p_1 & q_1) => 
+             ({def} (aa_2 Mp Simp1 (cc_3)) Mp 
+             Simp2 (cc_3) : that r_1)]) : that 
+          (p_1 & q_1) -> r_1)], [(jj_2 
+          : that (p_1 & q_1) -> r_1) => 
+          ({def} Deduction ([(kk_3 : that 
+             p_1) => 
+             ({def} Deduction ([(ll_4 
+                : that q_1) => 
+                ({def} jj_2 Mp kk_3 Conj 
+                ll_4 : that r_1)]) : that 
+             q_1 -> r_1)]) : that p_1 -> 
+          q_1 -> r_1)]) : that (p_1 -> 
+       q_1 -> r_1) <-> (p_1 & q_1) -> r_1)]
+
+   Export : [(p_1 : prop), (q_1 : prop), (r_1 
+       : prop) => (--- : that (p_1 -> q_1 
+       -> r_1) <-> (p_1 & q_1) -> r_1)]
+
+   {move 0}
+end Lestrade execution
+
+\end{verbatim}
 
 
 
@@ -828,5 +1505,21 @@ And, curiously enough, classical logic and Cantorian set theory make perfectly g
 
 
 \end{document}
+
+This proof has the exact structure of a natural deduction proof with nested proofs of implications.  At certain points
+we went one move deeper than strictly necessary so that definitions which amount to lines in the proof would be
+locally constant expressions rather than functions with hypotheses as explicit parameters.  The shallower style is perfectly manageable.  Another thing to notice is that definitions made in moves below move 0 are expanded out (any definition made in a move is expanded out everywhere when that move is closed) so reading the term defining {\tt Export}
+will actually reveal the complete proof in an unaccustomed, more algebraic style.  This expansion of the length of
+{\tt Export} would not occur if lemmas in its proof were proved at move 0.
+
+In large proofs, displayed proof terms can get quite large.  Your devoted author actually {\em read\/} the term
+defining {\tt Export}, and it does say the right thing.
+
+It is also worth noticing here that the feedback from Lestrade includes both the abstraction term representing {\tt Export} as a function (with the large embedded term embodying its definition) and the shorter term which is an abstraction term representing the sort of {\tt Export}.
+
+This proof is large enough to exhibit Lestrade's automatic indentation of text to indicate both depth in {\tt open/close} blocks and depth in abstraction terms (these two depths being intellectually very closely related).
+
+It should be also noted that the settings of Lestrade under which this is run do not display bodies of definitions
+except in move 0 declarations;  this is a setting designed to minimize clutter but turning if off might be interesting for our present purposes.
 
 (* quit *)
