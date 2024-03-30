@@ -43,6 +43,12 @@
 
 
 
+
+
+
+
+
+
 \documentclass[12pt]{article}
 
 \title{Lestrade Tutorial}
@@ -1501,25 +1507,197 @@ end Lestrade execution
 
 
 
-
-
-
-\end{document}
-
 This proof has the exact structure of a natural deduction proof with nested proofs of implications.  At certain points
 we went one move deeper than strictly necessary so that definitions which amount to lines in the proof would be
 locally constant expressions rather than functions with hypotheses as explicit parameters.  The shallower style is perfectly manageable.  Another thing to notice is that definitions made in moves below move 0 are expanded out (any definition made in a move is expanded out everywhere when that move is closed) so reading the term defining {\tt Export}
 will actually reveal the complete proof in an unaccustomed, more algebraic style.  This expansion of the length of
-{\tt Export} would not occur if lemmas in its proof were proved at move 0.
+a proof term does not occur when lemmas are proved at move 0.
 
 In large proofs, displayed proof terms can get quite large.  Your devoted author actually {\em read\/} the term
-defining {\tt Export}, and it does say the right thing.
+defining {\tt Export}, and it does say the right thing (reading it requires awareness that {\tt Mp} and {\tt Conj} are unexpectedly being used as infixes, and that all infix operators have the same precedence and grouping is to the right).
 
-It is also worth noticing here that the feedback from Lestrade includes both the abstraction term representing {\tt Export} as a function (with the large embedded term embodying its definition) and the shorter term which is an abstraction term representing the sort of {\tt Export}.
+It is also worth noticing here that the feedback from Lestrade includes both the abstraction term representing {\tt Export} as a function (with the large embedded term embodying its definition) and the shorter term which is an abstraction term representing the sort of {\tt Export}.  The latter term is easier to read to see what has been proved rather than how to prove it.
 
 This proof is large enough to exhibit Lestrade's automatic indentation of text to indicate both depth in {\tt open/close} blocks and depth in abstraction terms (these two depths being intellectually very closely related).
 
 It should be also noted that the settings of Lestrade under which this is run do not display bodies of definitions
 except in move 0 declarations;  this is a setting designed to minimize clutter but turning if off might be interesting for our present purposes.
+
+\newpage
+
+\section{Translation of an important mathematical text:  Zermelo set theory}
+
+In this section I use Lestrade to analyze an index text of the foundations of mathematics, Zermelo's original
+paper on the axiomatics of set theory, and at the same time exhibit what Lestrade can do and how a Lestrade book
+can relate to an underlying test.
+
+Zermelo's paper is written in numbered paragraphs.  I paraphrase essentials of each paragraph and follow with any relevant Lestrade declarations.
+
+\begin{enumerate}
+
+\item  The text says that set theory is concerned with a domain $\cal B$ of individuals which we will call simply objects, some of which are sets.  If two objects $a,b$ are the same we write $a=b$, and otherwise we write $a \neq b$.  We say that an object exists if it belongs to $\cal B$;  we say of a class $\cal R$ of objects that there exist objects of this class
+iff $\cal R$ contains at least one individual of this class.
+
+An important observation here is that the class $\cal B$ and the classes $\cal R$ cannot be interpreted as sets in $\cal B$,
+and the notion of being contained in $\cal B$ or a class $\cal R$ mentioned here cannot be the relation $\in$ introduced in the next paragraph.
+
+There is no need to declare $\cal B$:  it can be construed as the Lestrade sort {\tt obj}.  A class in the sense
+mentioned here can be viewed as a Lestrade function from {\tt obj} to {\tt prop}.
+
+\begin{verbatim}
+
+begin Lestrade execution
+
+   >>> clearcurrent
+{move 1}
+
+   >>> declare a obj
+
+   a : obj
+
+   {move 1}
+
+   >>> declare b obj
+
+   b : obj
+
+   {move 1}
+
+   >>> declare c obj
+
+   c : obj
+
+   {move 1}
+
+   >>> postulate isaset a prop
+
+   isaset : [(a_1 : obj) => (--- : prop)]
+
+   {move 0}
+
+   >>> postulate = a b prop
+
+   = : [(a_1 : obj), (b_1 : obj) => 
+       (--- : prop)]
+
+   {move 0}
+
+   >>> postulate Refleq a that a = a
+
+   Refleq : [(a_1 : obj) => (--- : that 
+       a_1 = a_1)]
+
+   {move 0}
+
+   >>> declare eqev that a = b
+
+   eqev : that a = b
+
+   {move 1}
+
+   >>> declare R [c => prop]
+
+   R : [(c_1 : obj) => (--- : prop)]
+
+   {move 1}
+
+   >>> declare rev that R a
+
+   rev : that R (a)
+
+   {move 1}
+
+   >>> postulate Subs eqev R, rev that R b
+
+   Subs : [(.a_1 : obj), (.b_1 : obj), (eqev_1 
+       : that .a_1 = .b_1), (R_1 : [(c_2 
+          : obj) => (--- : prop)]), (rev_1 
+       : that R_1 (.a_1)) => (--- : that 
+       R_1 (.b_1))]
+
+   {move 0}
+
+   >>> define Subs2 eqev rev : Subs eqev, R, rev
+
+   Subs2 : [(.a_1 : obj), (.b_1 : obj), (eqev_1 
+       : that .a_1 = .b_1), (.R_1 : [(c_2 
+          : obj) => (--- : prop)]), (rev_1 
+       : that .R_1 (.a_1)) => 
+       ({def} Subs (eqev_1, .R_1, rev_1) : that 
+       .R_1 (.b_1))]
+
+   Subs2 : [(.a_1 : obj), (.b_1 : obj), (eqev_1 
+       : that .a_1 = .b_1), (.R_1 : [(c_2 
+          : obj) => (--- : prop)]), (rev_1 
+       : that .R_1 (.a_1)) => (--- : that 
+       .R_1 (.b_1))]
+
+   {move 0}
+
+   >>> postulate Exists R prop
+
+   Exists : [(R_1 : [(c_2 : obj) => 
+          (--- : prop)]) => (--- : prop)]
+
+   {move 0}
+
+   >>> postulate Ei R, a rev that Exists \
+       R
+
+   Ei : [(a_1 : obj), (R_1 : [(c_2 
+          : obj) => (--- : prop)]), (rev_1 
+       : that R_1 (a_1)) => (--- : that 
+       Exists (R_1))]
+
+   {move 0}
+
+   >>> declare p prop
+
+   p : prop
+
+   {move 1}
+
+   >>> declare existsev that Exists R
+
+   existsev : that Exists (R)
+
+   {move 1}
+
+   >>> declare wev [a rev => that p]
+
+   wev : [(a_1 : obj), (rev_1 : that 
+       R (a_1)) => (--- : that p)]
+
+   {move 1}
+
+   >>> postulate Witnessintro existsev, wev \
+       that p
+
+   Witnessintro : [(.R_1 : [(c_2 : obj) => 
+          (--- : prop)]), (.p_1 : prop), (existsev_1 
+       : that Exists (.R_1)), (wev_1 
+       : [(a_2 : obj), (rev_2 : that 
+          .R_1 (a_2)) => (--- : that .p_1)]) => 
+       (--- : that .p_1)]
+
+   {move 0}
+end Lestrade execution
+
+\end{verbatim}
+
+Here I declare the basic properties of equality (reflexivity and substitution), expressing the stated meaning of $a=b$.
+
+I need to define or declare inequality.  I am not certain as I write whether I will exploit the logic above or extract logic declarations local to this development from what Zermelo does.  How I declare inequality depends on the decision about this.
+
+I introduce the basic declarations for existence of something in a class (which is actually the existential quantifier).
+
+
+
+\end{enumerate}
+
+
+
+
+\end{document}
 
 (* quit *)
