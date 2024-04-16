@@ -129,6 +129,8 @@ All is well, because it all works in Lean.
 
 \item[4/14/2024:]  Working systematically through a document Sky prepared for reconciliation of the formalization and the paper.  Fixed things up to the end of the proof of uniqueness of distinguished extensions, while making systematic changes in the machinery driven by the Lean formalization.
 
+\item[4/15/2024:]  This note is attached to a non public version of this paper which has been edited up to just after the definition of specification in section 4 to coordinate with the formalization.  Things are looking good.
+
 \end{description}
 
 % \end{comment}
@@ -641,24 +643,26 @@ $\pi_\beta$ such that $\pi(x) \cap \tau_\beta = \pi_\beta``(x \cap \tau_\beta)$ 
   More generally, for any finite subset $A$ of $\lambda \cup \{-1\}$ with maximum $\alpha$,
 define $\pi_A$ as $(\pi_{A \setminus \{{\tt min}(A)\}})_{{\tt min}(A)}$.  The maps $\pi_A$ may be referred to as iterated derivatives of $\pi$.  It should be clear that a structural permutation is exactly determined by its iterated derivatives which are $-1$-structural.
 
-We introduce the brief notation $\pi^+_A(x) = \pi_{A \cup \{-1\}}(x)$ where $x \in \tau_{-1}$ and $-1 \not\in A$.
+We introduce the brief notation $\pi^+_A(x) = \pi_{A \cup \{-1\}}(x)$ where $x \in \tau_{-1}$ and $-1 \not\in A$ [in fact, $\pi^+_A = (\pi_A)_{-1}$, but we find the short notation useful.]
 
 \item[allowable permutations defined:]  Structural permutations are defined on the supertype structure generally.  We need a subclass of structural permutations which respects our extensionality requirements.
 
 A $-1$-allowable permutation is a permutation $\pi$ of $\tau_{-1}$ such that for any near-litter $N$, $\pi``N$ is a near-litter.
 
-An $\alpha$-allowable permutation is an $\alpha$-structural permutation, each of whose derivatives $\pi_\beta$ is a $\beta$-allowable permutation (and satisfies the condition that $\pi_\beta``\tau_\beta = \tau_\beta$) and which satisfies a coherence condition relating the $f$ maps and derivatives of the permutation:  for suitable $\beta,\gamma<\alpha$, $$f_{\beta,\gamma}(\pi_\beta(x),\pi_{\beta}[S]) \sim (\pi_\gamma)_{-1}``f_{\beta,\gamma}(x,S).$$  (where the action of structural permutations on supports will be defined shortly).
+An $\alpha$-allowable permutation is an $\alpha$-structural permutation, each of whose derivatives $\pi_\beta$ is a $\beta$-allowable permutation (and satisfies the condition that $\pi_\beta``\tau_\beta = \tau_\beta$) and which satisfies a coherence condition relating the $f$ maps and derivatives of the permutation:  for suitable $\beta,\gamma<\alpha$, $$f_{\beta,\gamma}(\pi_\beta(x),\pi_{\beta}[S]) \sim \pi_\gamma^+``f_{\beta,\gamma}(x,S).$$  (where the action of allowable
+ permutations on supports will be defined shortly).
 
 Note that an $\alpha$-allowable permutation is actually defined on the entire supertype structure, though what interests us about it is its actions on objects in our purported TTT model.
 
 Of course, for each $-1<\beta<\alpha$ we have already defined $\beta$-allowable permut
 ations in the same way earlier in the recursive construction.
 
-\item[supports defined:]  Where $0\leq\beta \leq \alpha$, a {\em $\beta$-support\/} is defined as a function from a small ordinal to a collection of pairs $(x,A)$, where $A$ is a finite subset of $\lambda$ with minimum $\gamma> 0$ and maximum $\beta$ and $x\subseteq \tau_{-1}$ is either a singleton or a near-litter.   
+\item[supports defined:]  Where $0\leq\beta \leq \alpha$, a {\em $\beta$-support\/} is defined as a function from a small ordinal to a collection of pairs $(x,A)$, where $A$ is a finite subset of $\lambda$  with maximum $\beta$ (note that it will not contain $-1$) and $x\subseteq \tau_{-1}$ is either a singleton or a near-litter.   We may write $S_\delta$ intead of $S(\delta)$.
 
 Elements of the range of a support are called support conditions.
 
-For any support condition $(x,B)$ we define $(x,B)^{\uparrow \alpha}$ as $(x,B\cup \{\alpha\})$.
+For any support condition $(x,B)$ we define $(x,B)^{\uparrow \alpha}$ as $(x,B\cup \{\alpha\})$ if $\alpha$ dominates $B$ and $(x,B)^{\uparrow A}$ as $(x,B\cup A)$ if all elements of the set $A$ dominate all elements of the set $B$.
+Further, if $S$ is a support, we define $S^{\uparrow \alpha}$ so that $(S^{\uparrow \alpha})_\epsilon = (S_\epsilon)^{\uparrow \alpha}$ and define $S^{\uparrow A}$ so that $(S^{\uparrow A})_\epsilon = (S_\epsilon)^{\uparrow A}$
 
 \begin{comment}
 
@@ -674,11 +678,11 @@ of $S$, followed by $T$:  what this means is that $(S+T)_\epsilon = S(\epsilon)$
 
 By fiat, we state that there is one $-1$-support, the empty set.  {\bf NOTE: Something else is used as the support of an atom in the formalization, but in both cases an atom has only one support, and it is never actually used for anything.}
 
-We define the action of a $\beta$-allowable permutation $\pi$ on a $\beta$-support $S$:  if $S(d) = (x,A)$, $\pi[S](d) = (\pi^+_A``x,A)$.  In the case of $-1$-supports $S$, $\pi[\emptyset]=\emptyset$.   We may write $S_d$ intead of $S(d)$.
+We define the action of a $\beta$-allowable permutation $\pi$ on a $\beta$-support $S$:  if $S(\delta) = (x,A)$, $\pi[S](\delta) = (\pi^+_A``x,A)$.  In the case of $-1$-supports $S$, $\pi[\emptyset]=\emptyset$.   
 
 An element $x$ of $\tau^*_\beta$ ($\beta \geq 0$) has $\beta$-support $S$ iff for every $\beta$-allowable permutation $\pi$, if $\pi[S] = S$ then $\pi(x)=x$.  We say that  an element $x$ of $\tau^*_\beta$ which has a $\beta$-support is $\beta$-symmetric. Every element of $\tau_{-1}$ has the empty set as support (by fiat).
 
-It is straightforward to observe that there are $\mu$ supports, since there are $\mu$ atoms, $\mu$ near-litters (this depends on the cofinality of $\mu$ being at least $\kappa$) and
+It is straightforward to observe that there are $\mu$ supports, since there are $\mu$ atoms, $\mu$ near-litters, and
 $<\kappa$ finite sets of elements of $\lambda$.  Thus $\tau_\beta^+$ is already known to be of size $\mu$ for $\beta<\alpha$.
 
 It is important to note that if $S$ is a support of $x\in \tau_\beta$, $\pi[S]$ is a support of $\pi(x)$ for any $\beta$-allowable permutation $\pi$.
@@ -883,7 +887,7 @@ that the construction actually succeeds at every type.
 \item if $(x,A)$ and $(y,A)$ belong to the range of $S$, $x$ and $y$ are near-litters, and $x \Delta y$ is small, then for each
 $z \in x \Delta y$,  $(\{z\},A)$ is in the range of $S$.
 
-\item if $S_\epsilon = (x,A)$, and $x^\circ = f_{\gamma,\delta}(y,T)$, then the range of $T^{\uparrow \alpha}$ is a subset of the range of $S \lceil \epsilon$:  supports appearing in inverse images under $f$ of litters which are near the first projections of an element of the support have a type-raised copy (mod reindexing) appearing in the support before that item.
+\item if $S_\epsilon = (x,A)$, and $x^\circ = f_{\gamma,\delta}(y,T)$, then the range of $T^{\uparrow A_1}$ is a subset of the range of $S \lceil \epsilon$:  supports appearing in inverse images under $f$ of litters which are near the first projections of an element of the support have a type-raised copy (mod reindexing) appearing in the support before that item.
 
 \end{enumerate}
 
@@ -901,18 +905,19 @@ $(\pi^{-1}\circ \pi')(x)= x$, so $\pi(x)=\pi'(x)$, ensuring that the map $\chi_{
 \item  If $S_{\epsilon}$ is $(\{x\},A)$, where $\beta={\tt min}(A)$, then $S^*_\epsilon$ is $(0,\beta,\Sigma,A)$ where  $\Sigma$ is the set of all $\delta$ such that $A=\pi_2(S_\delta)$ and $x \in  \pi_1(S_\delta)$ (this captures identical atoms and near litters containing the given atom)
 
 \item  If $S_\epsilon$ is $(N,A)$ and $N$ is a near-litter, where $\beta={\tt min}(A)$, and either $|A|=1$ or $N^\circ$ is not in the range of any $f_{\gamma,\beta}$ for $\gamma<{\tt min}(A_1)$, then $S^*_\epsilon$ is $(1,\beta,\Sigma,A)$, where
-$\Sigma$ is the set of all $\delta$ such that $A=\pi_2(S_\delta)$ and $N \sim  \pi_1(S_\delta)$
+$\Sigma$ is the set of all $(\delta_1,\delta_2)$ such that $\pi_2(S_{\delta_1}) = \pi_2(S_{\delta_2}) = A$ and $\pi_1(S_{\delta_1})\sim N$ and $\pi_1(S_{\delta_2}) \subseteq \pi_1(S_{\delta_1}) \Delta N$.
 
 \item  If $S_\epsilon$ is $(N,A)$ and $N$ is a near-litter, where $\beta={\tt min}(A)$, and $N^\circ=f_{\gamma,\beta}(x,T)$ with $-1<\gamma<{\tt min}(A_1)$ and $x\in \tau_\gamma$ then 
-$S^*_\epsilon$ is $(2,\beta,\chi_{x,T},\Sigma,A)$, where $\Sigma$ is a bijection from the domain of $T$ into $\epsilon$
-such that $S_{\Sigma(\delta)} = (\pi_1(T_\delta),(\pi_2(T_\delta) \cup \{\alpha\})$ for each $\delta$ in the domain of $T$.
+$S^*_\epsilon$ is $(2,\beta,\chi_{x,T},F,\Sigma,A)$, where $F$ is a function from the domain of $T$ into $\epsilon$
+such that $S_{F(\delta)} = (T^{\uparrow A_1})_\delta$ for each $\delta$ in the domain of $T$ and $\Sigma$ is the set of all $(\delta_1,\delta_2)$ such that $\pi_2(S_{\delta_1}) = \pi_2(S_{\delta_2}) = A$ and $\pi_1(S_{\delta_1})\sim N$ and $\pi_1(S_{\delta_2}) \subseteq \pi_1(S_{\delta_1}) \Delta N$.
 
-\item  If $S_\epsilon$ is $(N,A)$ and $N$ is a near-litter, where $\beta={\tt min}(A)$, and $N^\circ=f_{-1,\beta}(x,\emptyset)$  then $S^*_\epsilon$ is $(3,\beta,\Sigma,A)$, where  $\Sigma$ is the set of all $\delta$ such that $S_\delta$ is $(\{x\},A_1)$.
+\item  If $S_\epsilon$ is $(N,A)$ and $N$ is a near-litter, where $\beta={\tt min}(A)$, and $N^\circ=f_{-1,\beta}(x,\emptyset)$  then $S^*_\epsilon$ is $(3,\beta,\Sigma_1,\Sigma_2,A)$, where  $\Sigma_1$ is the set of all $\delta$ such that $S_\delta$ is $(\{x\},A_1)$
+and and $\Sigma_2$ is the set of all $(\delta_1,\delta_2)$ such that $\pi_2(S_{\delta_1}) = \pi_2(S_{\delta_2}) = A$ and $\pi_1(S_{\delta_1})\sim N$ and $\pi_1(S_{\delta_2}) \subseteq \pi_1(S_{\delta_1}) \Delta N$.
 
 \end{enumerate}
 
 \item[Remark:]  It should be evident that every strong support has a specification and that for any $\beta$-allowable permutation $\pi$ and strong $\beta$-support $S$,
-$(\pi(S))^* = S^*$.  What is less evident and our first target result here is that if $S$ is a strong support then any $T$ with $T^* = S^*$ is the image of $S$ under the action of an allowable permutation:  the specifications precisely code the orbits in the strong supports under the allowable permutations.
+$(\pi[S])^* = S^*$.  What is less evident and our first target result here is that if $S$ is a strong support then any $T$ with $T^* = S^*$ is the image of $S$ under the action of an allowable permutation:  the specifications precisely code the orbits in the strong supports under the allowable permutations.
 
 \item[Observation:]  On the inductive hypothesis that there are $<\mu$ $\gamma$-coding functions and $<\mu$ $\gamma$-specifications for each $\gamma<\beta$, we observe that there are $<\mu$ specifications of $\beta$-supports for $\beta\leq \alpha$.
 
