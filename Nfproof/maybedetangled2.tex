@@ -6,7 +6,7 @@
 
 \title{New Foundations is consistent}
 
-\author{M. Randall Holmes}
+\author{M. Randall Holmes and Holly Sky Wilshaw}
 
 \begin{document}
 
@@ -131,11 +131,26 @@ All is well, because it all works in Lean.
 
 \item[4/15/2024:]  This note is attached to a non public version of this paper which has been edited up to just after the definition of specification in section 4 to coordinate with the formalization.  Things are looking good.
 
+\item[4/16/2024:]  Added Sky as an author and added a statement about the history of the paper and the roles of the authors.
+
 \end{description}
 
 % \end{comment}
 
+
+
 \section{Development of relevant theories}
+
+\subsection{Introductory note}
+
+We are presenting an argument for the consistency of Quine's set theory New Foundations (NF).  The consistency of this theory relative to the usual systems of set theory has been an open question since the theory was proposed in 1937, with added urgency after Specker showed in 1954 that NF disproves the Axiom of Choice.
+Jensen showed in 1969 that NFU (New Foundations with extensionality weakened to allow urelements) is consistent and in fact consistent with Choice (and also with Infinity and with further strong axioms of infinity).
+
+The first author showed the equiconsistency of NF with the quite bizarre system TTT (tangled type theory) in 1995, which gave a possible approach to a consistency proof.  Since 2010, the first author has been attempting to write out proofs, first of the existence of a tangled web of cardinals in Mac Lane set theory [an indication of this approach is given below] and then directly of the existence of a model of tangled type theory.  The second author (with the assistance of others initially)
+has formally verified the proof of the first author of the existence of a model of TTT, and so of the consistency of New Foundations, in the Lean proof verification system, and in the process has suggested minor corrections and considerable formal improvements to the argument originally proposed by the first author.
+
+Any remarks in the first person singular may be attributed to the first author.
+
 
 \subsection{The simple theory of types TST and TSTU}
 
@@ -904,17 +919,20 @@ $(\pi^{-1}\circ \pi')(x)= x$, so $\pi(x)=\pi'(x)$, ensuring that the map $\chi_{
 
 \item  If $S_{\epsilon}$ is $(\{x\},A)$, where $\beta={\tt min}(A)$, then $S^*_\epsilon$ is $(0,\beta,\Sigma,A)$ where  $\Sigma$ is the set of all $\delta$ such that $A=\pi_2(S_\delta)$ and $x \in  \pi_1(S_\delta)$ (this captures identical atoms and near litters containing the given atom)
 
-\item  If $S_\epsilon$ is $(N,A)$ and $N$ is a near-litter, where $\beta={\tt min}(A)$, and either $|A|=1$ or $N^\circ$ is not in the range of any $f_{\gamma,\beta}$ for $\gamma<{\tt min}(A_1)$, then $S^*_\epsilon$ is $(1,\beta,\Sigma,A)$, where
-$\Sigma$ is the set of all $(\delta_1,\delta_2)$ such that $\pi_2(S_{\delta_1}) = \pi_2(S_{\delta_2}) = A$ and $\pi_1(S_{\delta_1})\sim N$ and $\pi_1(S_{\delta_2}) \subseteq \pi_1(S_{\delta_1}) \Delta N$.
+\item  If $S_\epsilon$ is $(N,A)$ and $N$ is a near-litter, where $\beta={\tt min}(A)$, and either $|A|=1$ or $N^\circ$ is not in the range of any $f_{\gamma,\beta}$ for $\gamma<{\tt min}(A_1)$, then $S^*_\epsilon$ is $(1,\beta,\Sigma,\Pi,A)$, where $\Sigma$ is the set of all $\delta$ such that $\pi_2(S_\delta) = A$
+and $\pi_1(S_\delta) \sim \pi_1(S_\epsilon)$ and
+$\Pi$ is the set of all $(\delta_1,\delta_2)$ such that $\pi_2(S_{\delta_1}) = \pi_2(S_{\delta_2}) = A$ and $\pi_1(S_{\delta_1})\sim N$ and $\pi_1(S_{\delta_2}) \subseteq \pi_1(S_{\delta_1}) \Delta N$.
 
 \item  If $S_\epsilon$ is $(N,A)$ and $N$ is a near-litter, where $\beta={\tt min}(A)$, and $N^\circ=f_{\gamma,\beta}(x,T)$ with $-1<\gamma<{\tt min}(A_1)$ and $x\in \tau_\gamma$ then 
-$S^*_\epsilon$ is $(2,\beta,\chi_{x,T},F,\Sigma,A)$, where $F$ is a function from the domain of $T$ into $\epsilon$
-such that $S_{F(\delta)} = (T^{\uparrow A_1})_\delta$ for each $\delta$ in the domain of $T$ and $\Sigma$ is the set of all $(\delta_1,\delta_2)$ such that $\pi_2(S_{\delta_1}) = \pi_2(S_{\delta_2}) = A$ and $\pi_1(S_{\delta_1})\sim N$ and $\pi_1(S_{\delta_2}) \subseteq \pi_1(S_{\delta_1}) \Delta N$.
+$S^*_\epsilon$ is $(2,\beta,\chi_{x,T},F,\Pi,A)$, where $F$ is a function from the domain of $T$ into $\epsilon$
+such that $S_{F(\delta)} = (T^{\uparrow A_1})_\delta$ for each $\delta$ in the domain of $T$ and $\Pi$ is the set of all $(\delta_1,\delta_2)$ such that $\pi_2(S_{\delta_1}) = \pi_2(S_{\delta_2}) = A$ and $\pi_1(S_{\delta_1})\sim N$ and $\pi_1(S_{\delta_2}) \subseteq \pi_1(S_{\delta_1}) \Delta N$.
 
-\item  If $S_\epsilon$ is $(N,A)$ and $N$ is a near-litter, where $\beta={\tt min}(A)$, and $N^\circ=f_{-1,\beta}(x,\emptyset)$  then $S^*_\epsilon$ is $(3,\beta,\Sigma_1,\Sigma_2,A)$, where  $\Sigma_1$ is the set of all $\delta$ such that $S_\delta$ is $(\{x\},A_1)$
-and and $\Sigma_2$ is the set of all $(\delta_1,\delta_2)$ such that $\pi_2(S_{\delta_1}) = \pi_2(S_{\delta_2}) = A$ and $\pi_1(S_{\delta_1})\sim N$ and $\pi_1(S_{\delta_2}) \subseteq \pi_1(S_{\delta_1}) \Delta N$.
+\item  If $S_\epsilon$ is $(N,A)$ and $N$ is a near-litter, where $\beta={\tt min}(A)$, and $N^\circ=f_{-1,\beta}(x,\emptyset)$  then $S^*_\epsilon$ is $(3,\beta,\Sigma,\Pi,A)$, where  $\Sigma$ is the set of all $\delta$ such that $S_\delta$ is $(\{x\},A_1)$
+and and $\Pi$ is the set of all $(\delta_1,\delta_2)$ such that $\pi_2(S_{\delta_1}) = \pi_2(S_{\delta_2}) = A$ and $\pi_1(S_{\delta_1})\sim N$ and $\pi_1(S_{\delta_2}) \subseteq \pi_1(S_{\delta_1}) \Delta N$.
 
 \end{enumerate}
+
+\item[Note:]  This is roughly how it looks in the formalization.  The first author believes that the entries $\Pi$ are redundant:  a pair $(\delta_1,\delta_2)$ such that $\pi_2(S_{\delta_1}) = \pi_2(S_{\delta_2}) = A$ and $\pi_1(S_{\delta_1})\sim N$ and $\pi_1(S_{\delta_2}) \subseteq \pi_1(S_{\delta_1}) \Delta N$ (where $(N,A) = S_\epsilon$) is a pair $(\delta_1,\delta_2)$ such that $S_{\delta_2}$ is of the form $(\{y\},A)$ with either $\epsilon \in \pi_3(S^*_{\delta_2})$ and $\delta_1 \not\in \pi_3(S^*_{\delta_2})$ or $\epsilon \not\in \pi_3(S^*_{\delta_2})$ and $\delta_1 \in \pi_3(S^*_{\delta_2})$:  all the information in the components labelled $\Pi$ is in a specification.  I can easily believe that adding this information to the component of the specification at $\epsilon$ makes the Lean proof easier, and I may find it convenient in the paper proof.
 
 \item[Remark:]  It should be evident that every strong support has a specification and that for any $\beta$-allowable permutation $\pi$ and strong $\beta$-support $S$,
 $(\pi[S])^* = S^*$.  What is less evident and our first target result here is that if $S$ is a strong support then any $T$ with $T^* = S^*$ is the image of $S$ under the action of an allowable permutation:  the specifications precisely code the orbits in the strong supports under the allowable permutations.
