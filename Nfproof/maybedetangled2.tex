@@ -133,6 +133,8 @@ All is well, because it all works in Lean.
 
 \item[4/16/2024:]  Added Sky as an author and added a statement about the history of the paper and the roles of the authors.
 
+1:03 PM Boise time, revisions to section 3 which I believe eliminate all notes from the reconciliation process, and correction of some errors in the text of the proof of Freedom of Action.
+
 \end{description}
 
 % \end{comment}
@@ -144,10 +146,12 @@ All is well, because it all works in Lean.
 \subsection{Introductory note}
 
 We are presenting an argument for the consistency of Quine's set theory New Foundations (NF).  The consistency of this theory relative to the usual systems of set theory has been an open question since the theory was proposed in 1937, with added urgency after Specker showed in 1954 that NF disproves the Axiom of Choice.
-Jensen showed in 1969 that NFU (New Foundations with extensionality weakened to allow urelements) is consistent and in fact consistent with Choice (and also with Infinity and with further strong axioms of infinity).
+Jensen showed in 1969 that NFU (New Foundations with extensionality weakened to allow urelements) is consistent and in fact consistent with Choice (and also with Infinity and with further strong axioms of infinity).  
 
-The first author showed the equiconsistency of NF with the quite bizarre system TTT (tangled type theory) in 1995, which gave a possible approach to a consistency proof.  Since 2010, the first author has been attempting to write out proofs, first of the existence of a tangled web of cardinals in Mac Lane set theory [an indication of this approach is given below] and then directly of the existence of a model of tangled type theory.  The second author (with the assistance of others initially)
-has formally verified the proof of the first author of the existence of a model of TTT, and so of the consistency of New Foundations, in the Lean proof verification system, and in the process has suggested minor corrections and considerable formal improvements to the argument originally proposed by the first author.
+The first author showed the equiconsistency of NF with the quite bizarre system TTT (tangled type theory) in 1995, which gave a possible approach to a consistency proof.  Since 2010, the first author has been attempting to write out proofs, first of the existence of a tangled web of cardinals in Mac Lane set theory [an indication of this approach is given below] and then directly of the existence of a model of tangled type theory.  These proofs are difficult to read, insanely involved, and involve the sort of elaborate bookkeeping which makes it easy to introduce errors every time a new draft is prepared.  The second author (with the assistance of others initially)
+has formally verified the proof of the first author of the existence of a model of TTT, and so of the consistency of New Foundations, in the Lean proof verification system, and in the process has suggested minor corrections and considerable formal improvements to the argument originally proposed by the first author.  The second author reports that the formalized proof is still difficult to read and insanely involved with nasty bookkeeping.  Both authors feel that there ought to be a simpler approach, but the existing argument at least strongly resists attempts at simplification.
+
+All the theories mentioned here are discussed (and referenced) in this section.
 
 Any remarks in the first person singular may be attributed to the first author.
 
@@ -450,6 +454,9 @@ It should be clear that as long as $M$ satisfies the condition that an element o
 
 Some advantages of this framework are that the membership relations in TTT are interpreted as subrelations of the membership relation of the metatheory, while the types are sensibly disjoint.
 
+\item[Note on general systems of types and extensions therein:]  Notice that if $\alpha<_\tau \beta$ are supertypes, and $x \in \tau_\alpha$, $x \cap \tau^*_\beta$ is the extension of $x$ over supertype $\beta$.  This will be inherited by a scheme of types $\tau_\gamma$ with each $\tau_\gamma \subseteq \tau^*_\gamma$ if an additional condition holds:  for $\alpha>\beta$, we will have
+for $x \in \tau_\alpha$ that $x \cap \tau^*_\beta$ is the extension of $x$ over supertype $\beta$ as already noted:  for it to be the extension over type $\beta$ we need the general condition $x \cap \tau^*_\gamma \subseteq \tau_\gamma$ for all $\delta>\gamma$ and $x \in \tau_\delta$.
+
 \item[preliminaries of our construction;  cardinal parameters and type $-1$:]Now we introduce the notions of our particular construction in this framework.
 
 Let $\lambda$ be a limit ordinal.  Let $\leq_\tau$ be the order on $\lambda \cup \{-1\}$ which has $-1$ as minimal and agrees otherwise with the usual order on $\lambda$.
@@ -461,9 +468,11 @@ Let $\mu$ be a strong limit cardinal greater than $\kappa$ with cofinality at le
 Let $\tau^*_{-1}=\tau_{-1}$ be $$\{(\nu,\beta,\gamma,\alpha):\nu<\mu \wedge  \beta \in \lambda\cup \{-1\} \wedge \gamma \in \lambda \setminus \{\beta\}\wedge \alpha<\kappa\}.$$  Note that this completes the definition of the supertype structure we are working in:  we now have a definite reference
 for $\tau^*_\alpha$ for $\alpha\in \lambda$.
 
-\item[type shorthand:]  Notice that if $\alpha,\beta$ are types, $\alpha\in \beta$ is a convenient short way to say $-1 <_\tau \alpha <_\tau \beta$.   We will usually write $<$ instead of $<_\tau$.  {\bf NOTE:  Sky suggests that the following sentence could be deferred to enforcement of extensionality conditions.  I need to check this.}  Notice that if $\alpha<_\tau \beta$ are types, and $x \in \tau_\alpha$, $x \cap \tau_\beta$ is the extension of $x$ over supertype $\beta$:  we presume here that $\tau_\gamma \subseteq \tau^*_\gamma$ for each type $\gamma$.
 
-A nonempty finite subset of $\lambda \cup \{-1\}$ may be termed an {\em extended type index}.  If $A$ is an extended type index with at least two elements, $A_1$ is defined as $A \setminus \{{\tt min}(A)\}$.
+
+
+
+\item[type shorthand, extended type indices:]  Notice that if $\alpha,\beta$ are type indices, $\alpha\in \beta$ is a convenient short way to say $-1 <_\tau \alpha <_\tau \beta$.   A nonempty finite subset of $\lambda \cup \{-1\}$ may be termed an {\em extended type index}.  If $A$ is an extended type index with at least two elements, $A_1$ is defined as $A \setminus \{{\tt min}(A)\}$.
 
 \item[atoms, litters and near-litters:]  
 
@@ -473,7 +482,7 @@ A {\em litter\/} is a subset of $\tau_{-1}$ of the form $L_{\nu,\beta,\gamma} = 
 (which is of size $\mu$) into size $\kappa$ sets.
 
 On each litter $L =  L_{\nu,\beta,\gamma}$ define a well-ordering $\leq_L$:  $(\nu,\beta,\gamma,\alpha) \leq_L (\nu,\beta,\gamma,\alpha')$  iff $\alpha\leq \alpha'$.
-The strict well-ordering $<_L$ is defined in the obvious way.  {\bf NOTE:  this well-ordering is used in only one place (in the proof of Freedom of Action) to make it clear that part of the construction there is quite concrete and doesn't need choice.  As the remarks there suggest, its use is optional, and it is not used in the formalization.  I do think a nice fine point is made by its use in the paper.}
+The strict well-ordering $<_L$ is defined in the obvious way.  This well-ordering is used in only one place in the paper, and its use could easily be avoided, but we find its concreteness appealing.
 
 A {\em near-litter\/} is a subset of $\tau_{-1}$ with small symmetric difference from a litter.  We define $M \sim N$ as $|M \Delta N|<\kappa$, for $M,N$ near-litters:  in English, we say ``$M$ is near $N$" iff $M \sim N$.  Note that nearness is an equivalence relation on near-litters.  
 \begin{description}
@@ -495,8 +504,7 @@ $f_\beta$ for $\beta<\lambda$.   Because $\mu$ is a strong limit cardinal of cof
 
 We define $N^\circ$, for $N$ a near-litter, as the litter $L$ such that $L \sim N$.  
 
-Define ${\bf X}_{\beta,\gamma}$ as $\{L_{\nu,\beta,\gamma}:\nu < \mu\}$.  This gives us a set of litters of size $\mu$ for each pair of
-types $\beta\in \lambda \cup \{-1\}$ and $\gamma \in \lambda \setminus \{\beta\}$:  the collection of sets ${\bf X}_{\beta,\gamma}$ is pairwise disjoint.  
+
 
 \item[enforcing extensionality in the type system:]  We describe the mechanism which enforces extensionality in the substructure of this supertype structure that we will build.
 
@@ -508,16 +516,12 @@ Elements $x$ of $\tau^*_\alpha$ which we consider for membership in $\tau_\alpha
 We suppose that each $\tau_\beta$ already constructed is of cardinality $\mu$.  Note that we already know that
 $\tau_{-1}$ is of cardinality $\mu$.
 
-\begin{comment}
-We postulate a well-ordering $\leq_\beta$ of $\tau_\beta$, of order type $\mu$, with associated strict well-ordering $<_\beta$, for each $\beta<\alpha$.   Note that these well-orderings do not depend on $\alpha$:  once constructed, they remain the same at later stages.  Some conditions on these well-orderings will be stated later.  We define $\iota_*(x)$, where $x \in \tau_\gamma$, $[\gamma <\alpha$] as the order type of the restriction of $\leq_\gamma$ to
-$\{y:y <_\gamma x\}$.  Note that this gives us the ability to compare the ordinal position of elements of different types.
-\end{comment}
 
 We further intimate that for each $x \in \tau_\gamma$, $-1<\gamma<\alpha$, we have defined objects $S$ for which we say that $S$ is a support of $x$.  The definition of supports will be given later.  For the moment, we define $\tau_\gamma^+$ as the set of all $(x,S)$ for which $x \in \tau_\gamma$ and $S$ is a support of $x$.  It is a hypothesis of the recursion
 that $\tau_\gamma$ is of cardinality $\mu$, from which it follows that  $\tau^+_\gamma$ is of cardinality $\mu$, since there are $\mu$ supports (as we will see when supports are defined). We provide that $\tau_{-1}^+$ is the set
 of all $(x,\emptyset)$ for $x \in \tau_{-1}$.  
 
-We also provide a well-ordering $\leq^+_\gamma$ of order type $\mu$ of $\tau_\gamma^+$ ($-1 \leq \gamma <\alpha$), by postulating an injection $\iota^+_\gamma$ from $\tau_\gamma^+$ into $\mu$ (it does not need to be onto) and defining $x \leq^+_\gamma y$ as $\iota^+_\gamma(x) \leq \iota^+_\gamma(y)$.   There are some hypotheses of the recursion about $\iota^+_\gamma$ which are stated below.  
+We also provide a well-ordering $\leq^+_\gamma$ of order type $\mu$ of $\tau_\gamma^+$ ($-1 \leq \gamma <\alpha$), by postulating an injection $\iota^+_\gamma$ from $\tau_\gamma^+$ into $\mu$ (it does not need to be onto) and defining $x \leq^+_\gamma y$ as $\iota^+_\gamma(x) \leq \iota^+_\gamma(y)$.   There are some hypotheses of the recursion about $\iota^+_\gamma$ which are stated below.   For any model element $x$, we define $\iota^+_*(x)$ as $\iota^+_\gamma(x)$, where $x \in \tau_\gamma$.
 
 
 We provide that for every near litter $N$ and every $\beta<\alpha$, there is a unique element $N_\beta$ of $\tau_\beta$ such that $N_\beta \cap \tau_{-1}=N$ (we will quite shortly give a precise description of all extensions of this object).
@@ -554,19 +558,21 @@ An additional property involving $\iota_*$ which is enforced by decisions explai
 \end{description}
 
 
-We define for each $\beta,\gamma <\alpha$ a function $f_{\beta,\gamma}$ (whose definition does not actually depend on $\alpha$:  it will be the same at every stage).  $f_{\beta,\gamma}$ is an injection from $\tau_\beta^+$ into the set of litters, with range included in ${\bf X}_{\beta,\gamma}$ to ensure that distinct $f$ maps have disjoint ranges.
+We define for each $\beta,\gamma <\alpha$ a function $f_{\beta,\gamma}$ (whose definition does not actually depend on $\alpha$:  it will be the same at every stage).  $f_{\beta,\gamma}$ is an injection from $\tau_\beta^+$ into the set of litters, with range included in \newline $\{L_{\nu,\beta,\gamma}:\nu < \mu\}$ to ensure that distinct $f$ maps have disjoint ranges.
 
 \begin{description}
 \item [the definition of the $f$ maps (crucially important):]  When we define $f_{\beta,\gamma}(x)$, we presume that we have already defined it for $y <^+_\beta x$.
 We define $f_{\beta,\gamma}(x)$ as $L$, where $\iota(L)$ is minimal such that 
 
 \begin{enumerate}
-\item $L \in {\bf X}_{\beta,\gamma}$, 
+\item $L \in  \{L_{\nu,\beta,\gamma}:\nu < \mu\}$, 
 
 \item  $\iota_*(L)>\iota^+_*(x)$ [and so for any $N \sim L$, $\iota_*(N)>\iota^+_*(x)$], 
 
 \item and for any $y<_\beta^+ x$, $f_{\beta,\gamma}(y) \neq L$, \item  and for any $z \in L$, $\iota^+_*(x) < \iota_*(z)$.
 \end{enumerate}
+
+Note that the ranges of distinct $f$ maps are disjoint sets.
 
 \end{description}
 
@@ -611,7 +617,7 @@ It follows that for any $\delta \neq \gamma$ and $M_\delta \in x$ we have $\iota
 if $\delta$ were the index of another distinguished extension, and $\iota_*(M)$ were chosen minimal so that $M_\delta \in x$, it would follow that $\iota(M)<\iota(N)$ as above
 but also that $\iota(N) < \iota(M)$, which is absurd.
 
-\item[Definition ($A$ maps and $A^{-1}$):] For any $\delta \in \alpha$ and nonempty subset $a$ of type $\gamma \neq \delta$, we define $A_\delta(a)$ as $$\{N_\delta:(\exists x \in a:\exists S:N \sim f_{\gamma,\delta}(x,S))\}.$$  For any nonempty subset of type $\delta$ there is at most one subset $y$ of any type such that $A_\delta(y)=x$.  There cannot be more than one such $y$ in any given type because the $f$ maps are injective.  There cannot be more than one such $y$ in different types because the ranges of $f$ maps with distinct index pairs are disjoint.   We use the notation $A^{-1}(y)$ for this set if it exists, defining a very partial function $A^{-1}$ on nonempoty subsets of types.
+\item[Definition ($A$ maps and $A^{-1}$):] For any $\delta \in \alpha$ and nonempty subset $a$ of type $\gamma \neq \delta$, we define $A_\delta(a)$ as $$\{N_\delta:(\exists x \in a:\exists S:N \sim f_{\gamma,\delta}(x,S))\}.$$  For any nonempty subset of type $\delta$ there is at most one subset $y$ of any type such that $A_\delta(y)=x$.  There cannot be more than one such $y$ in any given type because the $f$ maps are injective.  There cannot be more than one such $y$ in different types because the ranges of $f$ maps with distinct index pairs are disjoint.   We use the notation $A^{-1}(y)$ for this set if it exists, defining a very partial function $A^{-1}$ on nonempty subsets of types.
 
 \end{description}
 
@@ -691,18 +697,17 @@ of $S$, followed by $T$, followed by the atoms which need to be added to make th
 For any supports $S$ and $T$ we denote by $S+T$ a support which consists
 of $S$, followed by $T$:  what this means is that $(S+T)_\epsilon = S(\epsilon)$ [which we write $S_\epsilon$] for $\epsilon$ in the domain of $S$, $(S+T)_{{\tt dom}(S)+\epsilon} = T_\epsilon$ for $\epsilon$ in the domain of $T$.
 
-By fiat, we state that there is one $-1$-support, the empty set.  {\bf NOTE: Something else is used as the support of an atom in the formalization, but in both cases an atom has only one support, and it is never actually used for anything.}
+By fiat, we state that there is one $-1$-support, the empty set.   Supports of atoms are never used in the argument, and it is most convenient to have a single dummy object to fill the support slot in elements of
+$\tau_{-1}^+$.  The Lean formalization uses a different approach but similarly gives each atom just one support, which is never used for anything.
 
 We define the action of a $\beta$-allowable permutation $\pi$ on a $\beta$-support $S$:  if $S(\delta) = (x,A)$, $\pi[S](\delta) = (\pi^+_A``x,A)$.  In the case of $-1$-supports $S$, $\pi[\emptyset]=\emptyset$.   
 
-An element $x$ of $\tau^*_\beta$ ($\beta \geq 0$) has $\beta$-support $S$ iff for every $\beta$-allowable permutation $\pi$, if $\pi[S] = S$ then $\pi(x)=x$.  We say that  an element $x$ of $\tau^*_\beta$ which has a $\beta$-support is $\beta$-symmetric. Every element of $\tau_{-1}$ has the empty set as support (by fiat).
+An element $x$ of $\tau^*_\beta$ ($\beta \geq 0$) has $\beta$-support $S$ iff for every $\beta$-allowable permutation $\pi$, if $\pi[S] = S$ then $\pi(x)=x$.  We say that  an element $x$ of $\tau^*_\beta$ which has a $\beta$-support is $\beta$-symmetric. Every element of $\tau_{-1}$ has the empty set as support (by fiat, as noted).
 
 It is straightforward to observe that there are $\mu$ supports, since there are $\mu$ atoms, $\mu$ near-litters, and
 $<\kappa$ finite sets of elements of $\lambda$.  Thus $\tau_\beta^+$ is already known to be of size $\mu$ for $\beta<\alpha$.
 
 It is important to note that if $S$ is a support of $x\in \tau_\beta$, $\pi[S]$ is a support of $\pi(x)$ for any $\beta$-allowable permutation $\pi$.
-
-We will use the notation $S_\gamma$ for $S(\gamma)$ as noted above.
 
 \item[motivation of the coherence condition:]  The motivation for this is that we need $\alpha$-allowable permutations to send extensional elements of supertypes to extensional elements.  Suppose
 $x \cap \tau_\beta = \{b\}$.  If $x$ is extensional, this has to be the distinguished extension of $x$.  For any $\gamma \in \alpha \setminus \{\beta\}$,
@@ -733,7 +738,7 @@ We still have to prove that the cardinality of $\tau_\alpha$, and so of $\tau^+_
 
 \item[Observation ($\kappa$-completeness of the structure):]  For any subset $X$ with cardinality $<\kappa$ of a type $\gamma$ and $\beta>\gamma$, it should be clear that $X_\beta$ has a support, whose range is obtained from the union of the ranges of the supports of the elements of $X$  by replacing each element $(u,B)$ of the union of the ranges  with $(u,B \cup \{\beta\})$, and therefore belongs to the model.  $X_\beta$ is obviously extensional (the extension $X$ is clearly the distinguished extension and has no image under $A^{-1}$).
 
-\item[conditions on choice of the distinguished well-orderings of types:]   The well-ordering $<_\alpha$ of $\tau_\alpha$ can be chosen freely.
+\item[conditions on choice of distinguished ordinal indexings of supported types:]  
 
 $\iota_*^+(x,\emptyset)$ is defined as $\iota_*(x)$.
 The well-ordering $\leq_{-1}^+$ is defined by $$(x,\emptyset) \leq_{-1}^+ (y,\emptyset) \leftrightarrow \iota_*(x) < \iota_*(y).$$
@@ -755,6 +760,8 @@ The conditions constraining choice of functions $\iota^+_\beta$ ($-1 \leq \beta 
 \end{enumerate}
 
 We then define $x \leq^+_\beta y$ as $\iota^+_\beta(x) \leq \iota^+_\beta(y)$.
+
+There is no difficulty in satisfying these constraints as there are only a small set of constraints on any particular value of $\iota_*^+$ and $\mu$ is of cofinality at least $\kappa$.
 
 Of course, if $\beta<\alpha$ this records a hypothesis of the recursion:  one of these is noted above already.
 
@@ -799,7 +806,7 @@ that each $\pi^0(A)$ (which we write $\pi^0_A$) is a function with the following
 \end{enumerate}
 
 We say that $\pi^0$ approximates a $\beta$-allowable permutation $\pi$ just in case $\pi^+_A``x = \pi^0_A(x)$ if
-$x$ has cardinality 1, and $\pi^+_A``x \sim \pi^0_A(x)$ otherwise.
+$x$ has cardinality 1, and $\pi^+_A``x \sim \pi^0_A(x)$ otherwise, for each $(x,A)$ in the domain of $\pi^0$.
 
 Notice that each such $\pi^0$ has an inverse $(\pi_0)^{-1}$ determined by $(\pi^0)^{-1}_A = (\pi^0_A)^{-1}$, which is also a $\beta$-approximation.
 
@@ -819,7 +826,7 @@ for every exception $x$ of a $\pi_{A \cup \{-1\}}$ ($A$ not containing $-1$) we 
 \item[Theorem (freedom of action):]  A $\beta$-approximation $\pi^0$ will exactly approximate some $\beta$-allowable permutation $\pi$ if it satisfies the additional condition that any domain element $x$ of $\pi^0_A$ which is a litter is $A$-flexible.
 
 \item[Proof:]   For each pair of sets $L,M$ which are co-small subsets of litters, we define $\pi_{L,M}$ as the unique map $\rho$ from $L$ onto $M$ such
-that for any $x,y \in L$, $$x <_{L^{\circ}} y \leftrightarrow \rho(x) <_{M^\circ} \rho(y):$$  $\pi_{L,M}$ is the unique map from $L$ onto $M$ which is strictly increasing in the order determined by fourth projections of atoms.  Notice that if $L' \subseteq M$ and $M' = \pi_{L,M}``L'$, then $\pi_{L',M'} \subseteq \pi_{L,M}$.  \footnote{the choice of these maps does not need to be so concrete, but the fact that it can be indicates for example that there is no use of choice here.}
+that for any $x,y \in L$, $$x <_{L^{\circ}} y \leftrightarrow \rho(x) <_{M^\circ} \rho(y):$$  $\pi_{L,M}$ is the unique map from $L$ onto $M$ which is strictly increasing in the order determined by fourth projections of atoms.  Notice that if $L' \subseteq M$ and $M' = \pi_{L,M}``L'$, then $\pi_{L',M'} \subseteq \pi_{L,M}$.  \footnote{the choice of these maps does not need to be so concrete, but the fact that it can be indicates for example that there is no use of choice here.  We like the concreteness of this approach.}
 
 We also choose an extension of each  $\pi^0_A$ to all $A$-flexible litters;  we do this without notational comment, simply assuming that $\pi^0_A$ is defined for each $A$ at each $A$-flexible litter $M$, which can be arranged harmlessly
 (for example, one could have $\pi^0_A$ act as the identity on the new $A$-flexible litters, but we do not require this).
@@ -834,12 +841,14 @@ We use the notation $\pi^{+*}_A(x)$ for $\pi^*_{A \cup \{-1\}}(x)$.
 
 We first indicate how to compute $\pi^*_A(L_{{\tt min}(A)})$, where $L$ is a litter.  We compute  $(\pi^{-1}_A)^*(L_{\tt min(A)})$ in the same way.
 
-If $L$ is $A$-flexible, we can compute $\pi^*_A(L_{\tt {\tt min}(A)})^\circ$ as $(\pi^0_A(L))_{{\tt min}(A)}$
-
 We further extend this, once $\pi^*(L_{{\tt min}(A)})^\circ$ is computed as $M_{{\tt min}(A)}$, to describe the action of $\pi^{+*}_A$ on elements of $L$:
 for each $x \in L$, if $\{x\}$ is in the domain of $\pi^0_A$, which maps it to $\{y\}$, $\pi^{+*}_{A}$ maps $x$ to $y$.  Define $L^-$ as the set of all $x \in L$ such that
 $\{x\}$ is not in the domain of $\pi^0_A$ and define $M^-$ as the set of all $x \in M$ such that
-$\{x\}$ is not in the domain of $\pi^0_A$.  For $x \in L^-$ we define $\pi^{+*}_{A}(x)$ as $\pi_{L^-,M^-}(x)$.
+$\{x\}$ is not in the domain of $\pi^0_A$.  For $x \in L^-$ we define $\pi^{+*}_{A}(x)$ as $\pi_{L^-,M^-}(x)$.  Note that this approach ensures that, where $\pi$ is the permutation we eventually construct, there can be no exceptions of $\pi^+_A$ other than sole elements of elements of the domain of $\pi^0_A$.
+
+If $L$ is $A$-flexible, we can compute $\pi^*_A(L_{\tt {\tt min}(A)})^\circ$ as $(\pi^0_A(L))_{{\tt min}(A)}$
+
+
 
 We can then exactly compute $\pi^*_A(L_{{\tt min}(A)})$ as $(\pi^{+*}_A``L)_{{\tt min}(A)}$
 
@@ -853,12 +862,12 @@ If $\gamma>-1$, the hypothesis of the recursion allows us to compute values of $
 under an additional inductive hypothesis which implies that we can already compute the action of $\pi^*$ on $S$.
 
 This hypothesis is that  we have computed $\pi_{A_1 \cup C}^*(z)$ and $(\pi_{A_1 \cup C}^{-1})^*(z)$ whenever ${\tt max}(C)=\gamma$ [or $C = \emptyset$, an option needed below] and $z$ is an item of type ${\tt min}(A_1 \cup C)$ which is a subset
-of the image under an $f$ map of a $(y,T)$ with $\iota^+_*((y,T)) < \iota^+_*((x,S))$.  The condition on the construction of the orders
-$\leq^+_\beta$ ensures that this implies that we can compute $\pi_{A_1 \cup C}^*[S]$ and $(\pi_{A_1 \cup C}^{-1})^*[S]$ 
+of the image under an $f$ map of a $(y,T)$ with $\iota^+_*((y,T)) < \iota^+_*((x,S))$.  The conditions on the construction of the orders
+$\leq^+_\beta$ ensure that this implies that we can compute $\pi_{A_1 \cup C}^*[S]$ and $(\pi_{A_1 \cup C}^{-1})^*[S]$ 
 
 We intend to construct a $\gamma$-approximation which must send $S$ to  $\pi_{A_1 \cup C}^*[S]$.  If $(y,B)$ is in the range of $S$ with $y$ the singleton of an atom, 
 or there is a $(z,B)\in S$ with $y \subseteq z \Delta z^\circ$, or if  $y$ is a singleton of an atom and $\pi_{A_1 \cup B}^0(y)$ is defined,
-we need $\rho^0_B(y) = \pi_{A_1 \cup B}^{+*}``(y)$.  If $(y,B)$ is $B$-flexible, we need $\rho^0_B$ to be $\pi_{A_1 \cup B}^*(b)$, if this is defined, and otherwise we can choose it freely.  We have to fill in orbits, since each $\rho^0_B$ must have domain the same as its range.  We fill in the orbits, adding at most a countably infinite number of atoms to domains of $\rho^0_B$ per atom already there, subject to the condition that where we are choosing the image or preimage of the singleton of an atom under $\rho^0_B$ and we know  its elementwise image or preimage under $\pi_{A_1 \cup B}^{+*}$ we use that (and we will know this if
+we need $\rho^0_B(y) = \pi_{A_1 \cup B}^{+*}``(y)$.  If $(y,B)$ is $B$-flexible, we need $\rho^0_B(y^\circ)$ to be $\pi_{A_1 \cup B}^*(y)^\circ$, if this is defined, and otherwise we can choose it freely.  We have to fill in orbits, since each $\rho^0_B$ must have domain the same as its range.  We fill in the orbits, adding at most a countable number of flexible litters (which present no difficulties) and a countable number of atoms to domains of $\rho^0_B$ per atom or flexible near-litter already there, subject to the condition that where we are choosing the image or preimage of the singleton of an atom under $\rho^0_B$ and we know  its elementwise image or preimage under $\pi_{A_1 \cup B}^{+*}$ we use that (and we will know this if
 we know the elementwise image or preimage under $\pi_{A_1 \cup B}^{+*}$ of a near-litter which includes it, as in the case of near-litters in the support).  Where we do not have this information, we can choose
 images and preimages freely as long as they are not already known elementwise preimages or images under $\pi_{A_1 \cup B}^{+*}$.  
 
@@ -873,10 +882,7 @@ Now we compute  $\pi^*_{A_1\cup \{\gamma\}}(x)$ as $\rho(x)$, and so we know  $\
 If $\gamma=-1$, we need to compute $\pi^*_{A_1\cup \{-1\}}(x)$, for which it is sufficient to compute $\pi^*_{A_1}(M_{{\tt min}(A_1)})$, where $M$ is the litter containing $x$.  The condition we need is that an if an atom $x$ belongs to a litter $M$ then the position of $(x,\emptyset)$ in
 $\leq^+_{-1}$ is subsequent to the position of $(y,T)$ such that $f_{\delta,\epsilon}(y,T)=M$, and this is enforced in the construction of the $f$ maps.  The case of our additional recursive hypothesis with $C = \emptyset$ stated above works here:  we then have the action of $\pi^*_{A_1}$ computable at $(y,T)$ and so $\pi^*_A$ computable at $L$ up to nearness (of course if the values of $\delta, \epsilon$ do not exist or are such that $L$ is $A_1$-flexible this is unproblematic).
 
-In this way we have computed $\pi^*_A(L)^\circ$, which we call $M$.  Let $L^-$ be the largest subset of $L$ which does not include any $x$ such that $\{x\}$ is in the domain of $\pi^0_A$.  Let $M^-$ be the largest subset of $M$ which does not include any $x$ such that $\{x\}$ is in the domain of $\pi^0_A$.  We can define $\pi^*_A(L_{{\tt min}(A)})$ as the union of $M^-_{{\tt min}(A)}$ and all $\pi^*_A(\{x\}_{{\tt min}(A)})$ for $x \in L\setminus L^-$.
-
-We further extend this to describe the action of $\pi^+_{A}$ on elements of $L$:
-for each $x \in L$, if $\{x\}$ is in the domain of $\pi^0_A$, which maps it to $\{y\}$, $\pi^{+*}_{A}$ maps $x$ to $y$.   For $x \in L^-$ we define $\pi^*_A(x)$ as $\pi_{L^-,M^-}(x)$.
+In this way we have computed $\pi^*_A(L)^\circ$. 
 
  The process given will compute $\pi_A(x)$ and $\pi_A^{-1}(x)$ for every atom $x$ and every $A$ containing $-1$.  Since every action on every atom is fixed, $\pi$ is fixed as a structural permutation.
 
@@ -932,7 +938,7 @@ and and $\Pi$ is the set of all $(\delta_1,\delta_2)$ such that $\pi_2(S_{\delta
 
 \end{enumerate}
 
-\item[Note:]  This is roughly how it looks in the formalization.  The first author believes that the entries $\Pi$ are redundant:  a pair $(\delta_1,\delta_2)$ such that $\pi_2(S_{\delta_1}) = \pi_2(S_{\delta_2}) = A$ and $\pi_1(S_{\delta_1})\sim N$ and $\pi_1(S_{\delta_2}) \subseteq \pi_1(S_{\delta_1}) \Delta N$ (where $(N,A) = S_\epsilon$) is a pair $(\delta_1,\delta_2)$ such that $S_{\delta_2}$ is of the form $(\{y\},A)$ with either $\epsilon \in \pi_3(S^*_{\delta_2})$ and $\delta_1 \not\in \pi_3(S^*_{\delta_2})$ or $\epsilon \not\in \pi_3(S^*_{\delta_2})$ and $\delta_1 \in \pi_3(S^*_{\delta_2})$:  all the information in the components labelled $\Pi$ is in a specification.  I can easily believe that adding this information to the component of the specification at $\epsilon$ makes the Lean proof easier, and I may find it convenient in the paper proof.
+\item[Note:]  This is roughly how the definition of specification looks in the formalization.  The first author believes that the entries $\Pi$ are redundant:  a pair $(\delta_1,\delta_2)$ such that $\pi_2(S_{\delta_1}) = \pi_2(S_{\delta_2}) = A$ and $\pi_1(S_{\delta_1})\sim N$ and $\pi_1(S_{\delta_2}) \subseteq \pi_1(S_{\delta_1}) \Delta N$ (where $(N,A) = S_\epsilon$) is a pair $(\delta_1,\delta_2)$ such that $S_{\delta_2}$ is of the form $(\{y\},A)$ with either $\epsilon \in \pi_3(S^*_{\delta_2})$ and $\delta_1 \not\in \pi_3(S^*_{\delta_2})$ or $\epsilon \not\in \pi_3(S^*_{\delta_2})$ and $\delta_1 \in \pi_3(S^*_{\delta_2})$:  all the information in the components labelled $\Pi$ is in a ``specification" defined in a way which omits these components.  I can easily believe that adding this information to the component of the specification at $\epsilon$ makes the Lean proof easier, and I may find it convenient in the paper proof.
 
 \item[Remark:]  It should be evident that every strong support has a specification and that for any $\beta$-allowable permutation $\pi$ and strong $\beta$-support $S$,
 $(\pi[S])^* = S^*$.  What is less evident and our first target result here is that if $S$ is a strong support then any $T$ with $T^* = S^*$ is the image of $S$ under the action of an allowable permutation:  the specifications precisely code the orbits in the strong supports under the allowable permutations.
@@ -947,99 +953,7 @@ $(\pi[S])^* = S^*$.  What is less evident and our first target result here is th
 
 
 
-Now we argue that (given that everything worked out correctly already at lower types) each type $\alpha$ is of size $\mu$, which ensures
-that the construction actually succeeds at every type.
-
 \begin{description}
-
-
-\item[Definition (coding functions):]  For any presupport $S$ and object $x$, we can define a function $\chi_{x,S}$ which sends $T=\pi[S]$ to $\pi(x)$ for every $T$ in the orbit of $S$ under
-the action of allowable permutations.  We call such functions {\em coding functions\/}.  Note that if $\pi[S]=\pi'[S]$ then $(\pi^{-1}\circ \pi')[S]= S$, so 
-$(\pi^{-1}\circ \pi')(x)= x$, so $\pi(x)=\pi'(x)$, ensuring that the map $\chi_{x,S}$ for which we gave an implicit definition is well defined.
-
-
-
-
-
-\item[Definition (the specification of a support):]   For each $\eta$-support $S$ we define a combinatorial object $S^*$ [not actually unique]  which we call its {\em specification\/}. We will show below that what it specifies is the orbit in the action of allowable permutations on supports to which it belongs.
-
-NOTE:  massive modification 2/8/2024:  the original language is preserved in a hidden comment.
-
-We first define an extension of the support $S$ indexed by finite sequences of ordinals rather than single ordinals.
-
-We use a modified lexicographic order on finite sequences of ordinals:  if $s$ and $t$ are finite sequences of ordinals, we say $s<t$ if, $i$ being the first index for which $s_i=t_i$ does not hold, either $s_i<t_i$ or $s_i$ is defined and $t_i$ is not.  Note that a sequence appears {\em before\/} its proper initial segments.
-
-We say that $S^+$ is an augmentation of $S$ iff  $S^+$ is a function from finite sequences of ordinals to support conditions and
-
-\begin{enumerate}
-\item $S^+_{[\epsilon]}$ is $S_\epsilon$ where $\epsilon$ is in the domain of $S$ and $[\epsilon]$ denotes the one term sequence with $\epsilon$ as its only term
-\item and for each $\epsilon$ such that $S_\epsilon$ is $(N_\beta,A)$ and $N$ is a near-litter, and $N^\circ=f_{\gamma,\beta}(x,T)$ for $-1<\gamma<{\tt min}(A_1)$, for $x\in \tau_\gamma$, we give a description of how all values $S^+_t$ with $\epsilon$ the first term of the sequence $t$ are selected;  choose an augmentation
-$T^+$, and assign values $S^+_{[\epsilon]+u} = (T^+_{u})^{\uparrow \eta}$ for each $u$ in the domain of $T^+$ ($[\epsilon]+u$ being the result of prepending $\epsilon$ to the sequence $u$, and $\uparrow$ being used to correct the top elements of second projections of support conditions), then choose a $[\chi_0]$ dominating all elements of the domain of $T^+$ and assign further values  $S^+_{[\epsilon]+[\chi]} = (z,B)$, where $\chi>\chi_0$, $(z,B)$ does not occur as a value of $S^+$ with index less than $[\epsilon]+[\chi_0]$,
-$z \cap \tau_{-1}$ is a singleton, and $z \cap \tau_{-1}$ is a subset of a small intersection or set difference $\pi_1(S^+_{\eta_1}) \cap \pi_1(S^+_{\eta_2})$ or $\pi_1(S^+_{\eta_1}) \setminus \pi_1(S^+_{\eta_2})$ with $\pi_1(S^+_{\eta_{i}})=B$ and $\eta_i<[\epsilon]+[\chi_0]$ for $i=1,2$; all such $(z,B)$'s occur as such values at just one index $[\epsilon]+[\chi]$.  There are no other values of $S^+$ at finite sequences with first term $\epsilon$.  Augmentations of supports are not unique because there are multiple ways to
-index such $(z,B)$'s.
-
-
-
-
-
-
-\item and for each $\epsilon$ such that $S_\epsilon$ is $(N_\beta,A)$ and $N$ is a near-litter, and $N^\circ=f_{-1,\beta}(x,T)$, $S^+_{[\epsilon]+[0]} = (\{x\}_{{\tt min}(A_1)},A_1)$,
-
-\item and all values of $S^+$ are computed in one of the ways described.
-
-Notice that the modified order on finite sequences ensures that we are inserting supports of inverses under $f$-maps of near-litter items before the near litter items, so in fact $S^+$ is a presupport, and clearly if $S$ is a support of any $x$, $S^+$ is a presupport of $x$.
-
-
-
-
-\end{enumerate}
-
-It is important to notice that the domain of $S^+$ is well-ordered by the modified lexicographic order on sequences.   This has to do with the order conditions on the construction of the $f$ maps.
-If there is a failure of well-ordering, there is a first $\epsilon_0$ standing at the beginning of a descending sequence, then a first $\epsilon_1$ standing at the second position of
-a descending sequence starting with $\epsilon_0$, and so forth.  Now look at the items in $\tau_\delta^+$'s corresponding to these indices in $S^+$:  the values of $\iota_*^+$ at these items must decrease strictly, which is impossible.
-
-We define for any $\eta$-support $S$ the notation $S^+_{(\gamma,\epsilon)}$ for $\gamma<\eta$ as signifying $$\{(\epsilon^*,(z,B)):{\tt max}(B)=\gamma \wedge (\epsilon^*,(z,B)^{\uparrow \eta}) \in S^+\wedge \epsilon^*<\epsilon\}.$$  Clearly this is a $\gamma$-presupport using modified lexicographic order on its domain.
-
-A $\chi$-specification $S^*$ of a $\chi$-support $S$ is a function with the same domain as an augmentation $S^+$.  We use the notation $S^*_\epsilon$ for $S^*(\epsilon)$.  Notice that $\epsilon$ and $\delta$ here range over lists of ordinals, not ordinals.
-
-\begin{enumerate}
-
-\item  If $S^+_{\epsilon}$ is $(\{x\}_\beta,A)$, then $S^*_\epsilon$ is $(0,\beta,\Sigma,A)$ where  $\Sigma$ is the set of all $\delta$ such that $\pi_1(S^+_\epsilon) \subseteq \pi_1(S^+_\delta)$ and $\pi_2(S^+_\epsilon)=\pi_2(S^+_\delta)$ (this captures identical atoms and near litters containing the given atom)
-
-\item  If $S^+_\epsilon$ is $(N_\beta,A)$ and $N$ is a near-litter, and either $|A|=1$ or $N^\circ$ is not in the range of any $f_{\gamma,\beta}$ for $\gamma<{\tt min}(A_1)$, then $S^*_\epsilon$ is $(1,\beta,\Sigma,A)$  where $\Sigma$ is the set of all $\delta$ such that $\pi_1(S^+_\epsilon)\sim\pi_1(S^+_{\delta})$   and $\pi_2(S^+_\epsilon)=\pi_2(S^+_\delta)$.
-
-\item  If $S^+_\epsilon$ is $(N_\beta,A)$ and $N$ is a near-litter, and $N^\circ=f_{\gamma,\beta}(x,T)$ for $-1<\gamma<{\tt min}(A_1)$, for $x\in \tau_\gamma$ then 
-$S^*_\epsilon$ is $(2,\beta,\chi_{x,S^+_{(\gamma,\epsilon)}},A)$.
-
-\item  If $S^+_\epsilon$ is $(N_\beta,A)$ and $N$ is a near-litter, and $N^\circ=f_{-1,\beta}(x,\emptyset)$  then $S^*_\epsilon$ is $(3,\beta,\Sigma,A)$, where  $\Sigma$ is the set of all $\delta$ such that $S^+_\delta$ is $(\{x\}_{{\tt min}(A_1)},{\tt min}(A_1))$.
-
-\end{enumerate}
-
-\begin{comment}
-A $\chi$-specification $S^*$ of a $\chi$-support $S$ is a function with the same domain as $S$.  We use the notation $S^*_\epsilon$ for $S^*(\epsilon)$.
-
-\begin{enumerate}
-
-\item  If $S_{\epsilon}$ is $(\{x\}_\beta,A)$, then $S^*_\epsilon$ is $(0,\beta,\Sigma,A)$ where  $\Sigma$ is the set of all $\delta$ such that $\pi_1(S_\epsilon) \subseteq \pi_1(S_\delta)$ (this captures identical atoms and near litters containing the given atom)
-
-\item  If $S_\epsilon$ is $(N_\beta,A)$ and $N$ is a near-litter, and either $|A|=1$ or $N^\circ$ is not in the range of any $f_{\gamma,\beta}$ for $\gamma<{\tt min}(A_1)$, then $S^*_\epsilon$ is $(1,\beta,A)$.
-
-\item  If $S_\epsilon$ is $(N_\beta,A)$ and $N$ is a near-litter, and $N^\circ=f_{\gamma,\beta}(x,T)$ for $-1<\gamma<{\tt min}(A_1)$, for $x\in \tau_\gamma$ then 
-$S^*_\epsilon$ is $(2,\beta,\chi_{x,T},(S_{(\gamma)}+T)^*,A)$.  $S_{(\gamma)}$ denotes the following modification of $S$: if  $$Z=\{(x,B)\in {\tt rng}(S):{\tt max}(B \setminus \{{\tt max}(B)\})=\gamma\}$$ is empty, $S_{(\gamma)}$ is the empty support; otherwise let $\delta$ be the element of $Z$ with minimal index in $S$  and let $(S_{(\gamma)})_\chi$ be  $(x,B\setminus \{{\tt max}(B)\})$ where $(x,B)=\delta$ if $S_\chi \not\in Z$ and otherwise $(x,B\setminus \{{\tt max}(B)\})$ where $(x,B)=S_\chi$. .  The sum of two supports is not unique (the order of the atoms to be added is not determinate), thus specifications are not unique.
-
-\item  If $S_\epsilon$ is $(N_\beta,A)$ and $N$ is a near-litter, and $N^\circ=f_{-1,\beta}(x,\emptyset)$  then $S^*_\epsilon$ is $(3,\beta,\Sigma,A)$, where  $\Sigma$ is the set of all $\delta$ such that $S_\delta$ is $(\{x\}_{{\tt min}(A_1)},{\tt min}(A_1))$.
-
-\end{enumerate}
-
-\end{comment}
-
-\begin{comment}
-
-Peter wants a definition of the type specification independent of the type support.  Use tags.   It's a good idea.
-
-\end{comment}
-
-\item[Observation:]  On the inductive hypothesis that there are $<\mu$ $\gamma$-coding functions and $<\mu$ $\gamma$-specifications for each $\gamma<\beta$, we observe that there are $<\mu$ specifications of $\beta$-supports for $\beta\leq \alpha$.
 
 \item[Lemma:]  The specification(s) of a $\beta$-support exactly determine the orbit in the action of $\beta$-allowable permutations on supports to which it belongs:  if two $\beta$-supports have a common specification, we show that they are in the same orbit, and then it follows that they have exactly the same specifications.
 
