@@ -20,7 +20,21 @@
 
 \newpage
 
-\section{Remarks on this version}
+\section{Introduction}
+
+\subsection{Introductory note}
+
+We are presenting an argument for the consistency of Quine's set theory New Foundations (NF).  The consistency of this theory relative to the usual systems of set theory has been an open question since the theory was proposed in 1937, with added urgency after Specker showed in 1954 that NF disproves the Axiom of Choice.
+Jensen showed in 1969 that NFU (New Foundations with extensionality weakened to allow urelements) is consistent and in fact consistent with Choice (and also with Infinity and with further strong axioms of infinity).  
+
+The first author showed the equiconsistency of NF with the quite bizarre system TTT (tangled type theory) in 1995, which gave a possible approach to a consistency proof.  Since 2010, the first author has been attempting to write out proofs, first of the existence of a tangled web of cardinals in Mac Lane set theory [an indication of this approach is given below] and then directly of the existence of a model of tangled type theory.  These proofs are difficult to read, insanely involved, and involve the sort of elaborate bookkeeping which makes it easy to introduce errors every time a new draft is prepared.  The second author (with the assistance of others initially)
+has formally verified the proof of the first author of the existence of a model of TTT, and so of the consistency of New Foundations, in the Lean proof verification system, and in the process has suggested minor corrections and considerable formal improvements to the argument originally proposed by the first author.  The second author reports that the formalized proof is still difficult to read and insanely involved with nasty bookkeeping.  Both authors feel that there ought to be a simpler approach, but the existing argument at least strongly resists attempts at simplification.
+
+All the theories mentioned here are discussed (and referenced) in the next section.
+
+Any remarks in the first person singular may be attributed to the first author.
+
+\subsection{Dated remarks on versions}
 
 11/17/2023  Though I am preserving the comment below and the daily notes from the previous version, this is the start of a new series of versions.  This was caused by a suggestion of Sky Wilshaw, the current Lean worker, that the domain of an f map ought to include support information.  This causes the notion of strong support to disappear, and seems to 
 make the proofs simpler, though it creates another recursion in the structure.
@@ -28,9 +42,6 @@ make the proofs simpler, though it creates another recursion in the structure.
 initial note for the previous series:  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should avoid metamathematics, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.
 
 Versions after 8/11/2022 use a different set theoretical coding of structures for models of TTT, but the argument remains about the same.  The last version with the older coding remains up on my web site for comparison.
-
-
-\subsection{Version updates}
 
 \begin{description}
 
@@ -151,21 +162,10 @@ I observe that I seem to be using the condition that nearby litters in the range
 
 % \end{comment}
 
-
+\newpage
 
 \section{Development of relevant theories}
 
-\subsection{Introductory note}
-
-We are presenting an argument for the consistency of Quine's set theory New Foundations (NF).  The consistency of this theory relative to the usual systems of set theory has been an open question since the theory was proposed in 1937, with added urgency after Specker showed in 1954 that NF disproves the Axiom of Choice.
-Jensen showed in 1969 that NFU (New Foundations with extensionality weakened to allow urelements) is consistent and in fact consistent with Choice (and also with Infinity and with further strong axioms of infinity).  
-
-The first author showed the equiconsistency of NF with the quite bizarre system TTT (tangled type theory) in 1995, which gave a possible approach to a consistency proof.  Since 2010, the first author has been attempting to write out proofs, first of the existence of a tangled web of cardinals in Mac Lane set theory [an indication of this approach is given below] and then directly of the existence of a model of tangled type theory.  These proofs are difficult to read, insanely involved, and involve the sort of elaborate bookkeeping which makes it easy to introduce errors every time a new draft is prepared.  The second author (with the assistance of others initially)
-has formally verified the proof of the first author of the existence of a model of TTT, and so of the consistency of New Foundations, in the Lean proof verification system, and in the process has suggested minor corrections and considerable formal improvements to the argument originally proposed by the first author.  The second author reports that the formalized proof is still difficult to read and insanely involved with nasty bookkeeping.  Both authors feel that there ought to be a simpler approach, but the existing argument at least strongly resists attempts at simplification.
-
-All the theories mentioned here are discussed (and referenced) in this section.
-
-Any remarks in the first person singular may be attributed to the first author.
 
 
 \subsection{The simple theory of types TST and TSTU}
@@ -421,6 +421,7 @@ We think there is merit in giving a brief description of a situation in a more f
 
 In this section we give a complete description of what we claim is a model of tangled type theory.  Our metatheory is some fragment of ZFC.
 
+\subsection{The abstract supertype framework}
 
 \begin{description}
 \item[Abstract considerations about types; the system of supertypes defined:]  Types are indexed by a well-ordering $\leq_\tau$ (from which we define a strict well-ordering $<_\tau$ in the obvious way).
@@ -468,6 +469,14 @@ Some advantages of this framework are that the membership relations in TTT are i
 
 \item[Note on general systems of types and extensions therein:]  Notice that if $\alpha<_\tau \beta$ are supertypes, and $x \in \tau_\alpha$, $x \cap \tau^*_\beta$ is the extension of $x$ over supertype $\beta$.  This will be inherited by a scheme of types $\tau_\gamma$ with each $\tau_\gamma \subseteq \tau^*_\gamma$ if an additional condition holds:  for $\alpha>\beta$, we will have
 for $x \in \tau_\alpha$ that $x \cap \tau^*_\beta$ is the extension of $x$ over supertype $\beta$ as already noted:  for it to be the extension over type $\beta$ we need the general condition $x \cap \tau^*_\gamma \subseteq \tau_\gamma$ for all $\delta>\gamma$ and $x \in \tau_\delta$.
+
+
+\end{description}
+
+\subsection{Preliminaries of the construction}
+
+\begin{description}
+
 
 \item[preliminaries of our construction;  cardinal parameters and type $-1$:]Now we introduce the notions of our particular construction in this framework.
 
@@ -517,11 +526,12 @@ segment in $\mu$ of the correct cardinality whose lower limit is the first ordin
 $f_\beta$ for $\beta<\lambda$.   Because $\mu$ is a strong limit cardinal of cofinality $\geq \kappa$, the first undefined $f_\alpha$ must be at a limit and satisfy $\alpha \geq \kappa$ and $\mu_\alpha = \mu$.   The union of the maps $f_\alpha$ is a function with domain $\mu$ whose range includes every small subset of $\mu$, because any small subset of $\mu$ must be included in some $\mu_\alpha$, $\alpha<\mu$.
 
 
+\end{description}
 
 
 
-
-\item[enforcing extensionality in the type system:]  We describe the mechanism which enforces extensionality in the substructure of this supertype structure that we will build.
+\subsection{Machinery for enforcing extensionality in the model}
+  We describe the mechanism which enforces extensionality in the substructure of this supertype structure that we will build.
 
 The levels of the structure we will define are denoted by $\tau_\alpha$ for \newline $\alpha \in \lambda \cup \{-1\}$.  As we have already noted, $\tau_{-1}=\tau^*_{-1}$ as defined above.
 
@@ -664,6 +674,12 @@ and $D$ has an even number of iterated images under $A^{-1}$, then it is the uni
 \end{description}
 
 We assume that all elements of $\tau_\beta$'s already constructed are extensional.  This completes the mechanism for enforcement of extensionality in the structure we are defining.
+
+\subsection{Allowable permutations and supports}
+
+\begin{description}
+
+
 
 \item[brief note on our further needs:]  A crucial aspect of this is that we will need to define $\tau_\alpha$ so that it has cardinality $\mu$ for the process to continue.  It is certainly not a sufficient restriction to require elements of $\tau_\alpha$ to be extensional:  we will require a further symmetry condition.
 
@@ -1022,8 +1038,6 @@ The strategy of our argument for the size of the types is to show that that ther
 \begin{description}
 
 \item[Analysis of coding functions for type 0:]  We describe all coding functions for type 0.  The orbit of a 0-support in the allowable permutations is determined by the positions in the support  occupied by near-litters, and for each position in the support occupied by a singleton, the position, if any, of the near-litter in the support  which includes it.  There are no more than $2^\kappa$ ways to specify an orbit.  Now for each such equivalence class, there is a natural partition of type $-1$ into near-litters, singletons, and a large complement set.  The partition has $\nu<\kappa$ elements, and there will be $2^\nu\leq 2^\kappa$ coding functions for that orbit in the supports, determined by specifying for each compartment in the partition whether it is to be included or excluded from the set computed from a support in that orbit.  So there are no more than $2^\kappa<\mu$ coding functions over type 0.
-
-{\bf --OLD VERSION---}
 
 \item[Analysis of the general case:]  
 
