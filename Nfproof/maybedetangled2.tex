@@ -170,6 +170,11 @@ in this version.  There isn't an essential difficulty (it is so nice to know the
 
 As of 9:33 am, support definition restored to what it was and proof of Freedom of Action substantially corrected.  The change in the definition of approximation required a substantial addition to the proof and there were serious typos.
 
+As of 12:42 pm I believe sanity is restored to the text of the counting argument (fingers crossed).
+
+The paper proof is still a mess.  There are definitely conceptual slips (which by courtesy may be called typos) in instances of complex notations in the text as it stands, and further there are difficulties caused by multiple bouts of revisions of different parts of the text, lately driven by the demands of the formalization.
+Cleaning it up remains a daunting task.  However, the formalized proof, which was built by reading an earlier version of the paper proof and coding it into Lean, proves the desired result.  This means that cleanup will converge, if pursued diligently, to a correct text.
+
 \end{description}
 
 % \end{comment}
@@ -917,8 +922,8 @@ If $\gamma>-1$, the hypothesis of the recursion allows us to compute values of $
 under an additional inductive hypothesis which implies that we can already compute the action of $\pi^*$ on $S$.
 
 This hypothesis is that  we have computed $\pi_{A_1 \cup C}^*(z)$ and $(\pi_{A_1 \cup C}^{-1})^*(z)$ whenever ${\tt max}(C)=\gamma$ [or $C = \emptyset$, an option needed below] and $z$ is an item of type ${\tt min}(A_1 \cup C)$ with $z \cap \tau_{-1}$ a subset
-of the image under an $f$ map of a $(y,T)$ with $\iota^+_*((y,T)) < \iota^+_*((x,S))$.  The conditions on the construction of the orders
-$\leq^+_\beta$ ensure that this implies that we can compute $\pi_{A_1 \cup \{\gamma\}}^*[S]$ and $(\pi_{A_1 \cup \{\gamma\}}^{-1})^*[S]$ 
+of the image under an $f$ map of a $(y,T)$ with $\iota^+_*((y,T)) < \iota^+_*((x,S))$.  The conditions on the construction of the indexings
+$\iota^+_\beta$ ensure that this implies that we can compute $\pi_{A_1 \cup \{\gamma\}}^*[S]$ and $(\pi_{A_1 \cup \{\gamma\}}^{-1})^*[S]$ 
 
 We intend to construct a $\gamma$-approximation $\rho$  which must send $S$ to  $\pi_{A_1 \cup \{\gamma\}}^*[S]$.  Each atomic and flexible item in $S$ is to be mapped by the $\gamma$-approximation to the corresponding
 item in $\pi_{A_1 \cup \{\gamma\}}^*[S]$ (with the proviso that where near-litter items correspond, they will be modified to litter items).  We have to fill in orbits, since each $\rho^0_B$ must have domain the same as its range.  We fill in the orbits, adding at most a countable number of flexible litters (which present no difficulties) and a countable number of atoms to domains of $\rho^0_B$ per atom or flexible near-litter already there, subject to the condition that where we are choosing the image or preimage of the singleton of an atom under $\rho^0_B$ and we know  its elementwise image or preimage under $\pi_{A_1 \cup B}^{+*}$ we use that (and we will know this if
@@ -932,7 +937,7 @@ We construct $\rho$ exactly approximated by $\rho^0$.  We need to verify that $\
 is that $\rho^0$ agrees with $\pi^*_{A_1 \cup \{\gamma\}}$ for each support condition in $S$ which has first component the singleton of an atom or flexible, because this information was packed into $\rho^0$:  how do we know that it agrees with $\pi^*_{A_1 \cup \{\gamma\}}$  at inflexible items?  Suppose it failed to agree:  there would be an $\iota^+_*$ minimal item at which
 disagreement occurred.  If the support condition were $(N,A_1 \cup D)$, we know that $\rho_D$ and $\pi^*_{A_1 \cup D}$ agree up to nearness at $N_\epsilon$ ($\epsilon = {\tt min}(D)$)
 because the actions of $\rho$ and  $\pi^*_{A_1 \cup \{\gamma\}}$ agree on the support appearing in the inverse image under the appropriate $f$ map
-of $N^\circ$.   Further, we have ensured by construction that any exceptional action of $\rho_B$ in $N$ will agree with the expected action of $\pi_{A_1 \cup B}$:  any exceptional action of $\rho_B$ must either agree with computed action of $\pi_{A_1 \cup B}$ or be in a litter for which we have computed no value for $\pi_{A_1 \cup B}$.  Thus we
+of $N^\circ$.   Further, we have ensured by construction that any exceptional action of $\rho_B$ in $N$ will agree with the expected action of $\pi_{A_1 \cup B}$:  any exceptional action of $\rho_B$ must either agree with computed action of $\pi^*_{A_1 \cup B}$ or be in a litter for which we have computed no value for $\pi_{A_1 \cup B}$.  Thus we
 get not just nearness but identity.
 
 
@@ -942,7 +947,7 @@ Now we compute  $\pi^*_{A_1\cup \{\gamma\}}(x)$ as $\rho(x)$, and so we know  $\
 If $\gamma=-1$, we need to compute $\pi^*_{A_1\cup \{-1\}}(x)$, for which it is sufficient to compute $\pi^*_{A_1}(M_{{\tt min}(A_1)})$, where $M$ is the litter containing $x$.  The condition we need is that an if an atom $x$ belongs to a litter $M$ then the position of $(x,\emptyset)$ in
 $\leq^+_{-1}$ is subsequent to the position of $(y,T)$ such that $f_{\delta,\epsilon}(y,T)=M$, and this is enforced in the construction of the $f$ maps.  The case of our additional recursive hypothesis with $C = \emptyset$ stated above works here:  we then have the action of $\pi^*_{A_1}$ computable at $(y,T)$ and so $\pi^*_A$ computable at $L$ up to nearness (of course if the values of $\delta, \epsilon$ do not exist or are such that $L$ is $A_1$-flexible this is unproblematic).
 
-In this way we have computed $\pi^*_A(L)^\circ$. 
+In this way we have computed $\pi^*_A(L_{{\tt min}(A)})^\circ$ in every case and above we indicate how to compute $\pi^*_A(L_{{\tt min}(A)})$ exactly given this.
 
  The process given will compute $\pi_A(x)$ and $\pi_A^{-1}(x)$ for every atom $x$ and every $A$ containing $-1$.  Since every action on every atom is fixed, $\pi$ is fixed as a structural permutation.
 
@@ -974,15 +979,17 @@ that the construction actually succeeds at every type.
 \item[Remark:]  It should be evident that if $\pi$ is a $\beta$-allowable permutation and $S$ is a $\beta$-strong support,
 $\pi[S]$ is also a $\beta$-strong support.
 
+\item[Remark:]  Each support $S$ is the terminal segment of a strong support.  Such a strong support can be constructed by prefixing to $S$, for each $T^{\uparrow A_1}$ such that for some $\epsilon$ in the domain of $S$, $S_\epsilon = (x,A)$, and $x^\circ = f_{\gamma,\delta}(y,T)$, a strong support with $T^{\uparrow A_1}$ as a terminal segment, which will be obtainable as $U^{\uparrow A_1}$ where $U$ is a strong support with $T$ as a terminal segment, which exists by the inductive hypothesis that this is true for supports with lower type index than $S$, followed by all atomic items which must be added to satisfy the first condition in the definition of strong support.   In fact, we can define a canonical strong support of which $S$ is a terminal segment by stipulating that the $U^{\uparrow A_1}$'s are added in the order in which the correlated
+$S_\epsilon$'s appear in $S$ and that $U$ is the canonical downward extension of $T$ in each case, and that the atomic items are added in the order of their images under $\iota^+_*$, with some fixed well-ordering of extended type indices used to resolve order of items with the same value under $\iota^+_*$.
 
 \item[Definition (coding functions):]  For any support $S$ and object $x$, we can define a function $\chi_{x,S}$ which sends $T=\pi[S]$ to $\pi(x)$ for every $T$ in the orbit of $S$ under
 the action of allowable permutations.  We call such functions {\em coding functions\/}.  Note that if $\pi[S]=\pi'[S]$ then $(\pi^{-1}\circ \pi')[S]= S$, so 
 $(\pi^{-1}\circ \pi')(x)= x$, so $\pi(x)=\pi'(x)$, ensuring that the map $\chi_{x,S}$ for which we gave an implicit definition is well defined.
 
-\item[designated supports:]  For each ordinal $\gamma$, and for each orbit in $\tau_\gamma$ under allowable permutations, choose $x$ in the orbit, choose a strong support $S$ of $x$, and for each $\gamma$-allowable permutation
-$\pi$ define the designated support of $\pi(x)$ as $\pi[S]$. 
+\item[designated supports:]  For each ordinal $\gamma$, and for each orbit in $\tau_\gamma$ under allowable permutations, choose $x$ in the orbit (the designated element of the orbit), choose a strong support $S$ of $x$, and for each $\gamma$-allowable permutation
+$\pi$ define the designated support of $\pi(x)$ as $\pi[S]$.  
 
-\item[Definition (specification):]  A $\chi$-specification $S^*$ of a strong $\chi$-support $S$ is a function with the same domain as $S$.  We use the notation $S^*_\epsilon$ for $S^*(\epsilon)$.
+\item[Definition (specification):]  A $\chi$-specification $S^*$ of a $\chi$-support $S$ is a function with the same domain as $S$.  We use the notation $S^*_\epsilon$ for $S^*(\epsilon)$.
 
 \begin{enumerate}
 
@@ -1003,6 +1010,8 @@ such that $S_{F(\delta)} = (T^{\uparrow A_1})_\delta$ for each $\delta$ in the d
 
 \item[Remark:]  It should be evident that every strong support has a specification and that for any $\beta$-allowable permutation $\pi$ and strong $\beta$-support $S$,
 $(\pi[S])^* = S^*$.  What is less evident and our first target result here is that if $S$ is a strong support then any $T$ with $T^* = S^*$ is the image of $S$ under the action of an allowable permutation:  the specifications precisely code the orbits in the strong supports under the allowable permutations.
+
+Not all supports have specifications;  some supports which are not strong do have specifications.
 
 \item[Observation:]  On the inductive hypothesis that there are $<\mu$ $\gamma$-coding functions and $<\mu$ $\gamma$-specifications for each $\gamma<\beta$, we observe that there are $<\mu$ specifications of $\beta$-supports for $\beta\leq \alpha$.
 
@@ -1052,6 +1061,10 @@ In the indicated way, we construct an approximation such that the allowable perm
 
 \item[There are not too many orbits:]  Since the $\beta$-specifications precisely determine the orbits in supports under $\beta$-allowable permutations, and there are $<\mu$ $\beta$-specifications
 (on stated hypotheses) there are $<\mu$ such orbits.
+
+\item[weak specifications:]  Notice that we can give a kind of specification for any support $S$:  give the specification for a strong support $T$ of which $S$ is an end extension and the index at which $S$ starts:  this will determine the orbit in which $S$ lies in the allowable permutations.
+This establishes that the collection of orbits in the $\beta$-supports is no larger than the collection of orbits in the strong $\beta$-supports.  These weak specifications are not unique.
+
 \end{description}
 
 
@@ -1071,34 +1084,23 @@ Our inductive hypothesis is that for each $\beta<\alpha$ we have $<\mu$ $\beta$-
 
 
 
-We specify an object $X\in \tau_\alpha$ and an $\alpha$-support $S$ for $X$, and develop a recipe for the coding function $\chi_{X,S}$ which can be used to see that there are $<\mu$ $\alpha$-coding functions (assuming of course that we know that things worked out correctly for $\beta<\alpha$).
+We specify an object $X\in \tau_\alpha$ and a strong $\alpha$-support $S$ for $X$, and develop a recipe for the coding function $\chi_{X,S}$ which can be used to see that there are $<\mu$ $\alpha$-coding functions (assuming of course that we know that things worked out correctly for $\beta<\alpha$).
 
 $X = B_\alpha$, where $B$ is a subset of $\tau_\beta$.  
 
-We define $S_b$ as the designated strong support for $b$.
+We define $S_b$ as the designated strong support for $b$, and $T_b$ as the canonical extension to a strong support of $S_b^{\uparrow \alpha}+S$.
 
-We describe the computation of an $\alpha$-support $T_b$
-for $\{b\}_\alpha$ (where $b$ is an element of $B$) from the $\beta$ support $S_b$ whose construction is described above .  $T_b$ is obtained by extending $S_b^{\{\alpha\}}$, defined by $(S_b^{\{\alpha\}})_\epsilon=(\pi_1((S_b)_\epsilon,\pi_2(S_b)_\epsilon \cup \{\alpha\})$
-
-
-This was quite elaborate in the previous version, but here we can simply describe it as $S_b^{\{\alpha\}}$, defined by $(S_b^{\{\alpha\}})_\epsilon=(\pi_1((S_b)_\epsilon,\pi_2(S_b)_\epsilon \cup \{\alpha\})$.:  note that a lot more information can be read from $T_b$ because
-we can consult $f$ maps with higher index to find additional information about near-litters.
 
 It is given that $T_b$ is computed from
-$S_b$, but what we actually need is something like the specification of $T_b$ being computable from the specification of $S_b$:  we cannot in fact compute the specification of $T_b$ from the specification of $S_b$, but we argue that there are $<\mu$ possibilities for specifications of supports $T_b$ given the specification of $S_b$..   This is much easier than in the previous version.
-$T_b$ is precisely parallel in structure to $S_b$, and the only additional information in $T_b^*$  is the addition of data involving coding functions and indexing information where we look at typed near-litters which are flexible in $S_b$ and not flexible in $T_b$.  There will be a small collection of insertions of such data taken from collections which are of size $<\mu$ by inductive hypothesis.
-
-
+$S_b$, but what we actually need is something like the specification of $T_b$ being computable from the specification of $S_b$:  we cannot in fact compute the specification of $T_b$ from the specification of $S_b$, but we can note
+that there are $<\mu$ possible specifications of $T_b$ given the specification of $S_b$, because the specification of $T_b$ is obtained by prepending specifications of type raised supports of lower indices to the specification of $S_b^{\uparrow \alpha}+S$ [though this is not necessarily strong, it does have a specification], and it is straightforward to observe that there are $<\mu$ possibilities for each of these extensions, and so for a small sequence of such extensions,
+because it is already supposed that there are $<\mu$ $\gamma$-coding functions for $\gamma<\alpha$, and all other ingredients of specifications are taken from sets of controlled size.
 
 For each $b \in B$ there is a support $S_b$ chosen as above, from which the support $T_b$ can be computed as described above.  If $b' \in B$ is in the range of the same coding function $\chi_{b,S_b}$ as $b$, $S_{b'}$ is $\pi[S_{b}]$ for some $\beta$-allowable $\pi$ with $\pi(b) = b'$.
 If we have the further condition that $T_b$ and $T_{b'}$ have the same specification, it follows that there is a permutation $\pi_2$ such that $\pi_2[T_b] = T_{b'}$.  Note that $(\pi_2)_\beta[S_b]=S_{b'}$, from which it follows that $\pi^{-1} \circ (\pi_2)_\beta$ fixes $b$, since it fixes all elements of $S_b$, so $b'=\pi(b) = (\pi_2)_\beta(b)$, from which it follows
 that $\pi_2(\{b\}_\alpha) = \{b'\}_\alpha$ so $\{b\}_\alpha$ and $\{b'\}_\alpha$ are in the range of the same coding function $\chi_{\{b\}_\alpha,T_b}$.  Now there are $<\mu$ possible specifications of a coding function $\chi_{b,S_b}$ followed by a specification for $T_b$, so by this procedure we describe a family of $<\mu$ coding functions $\chi_{\{b\}_\alpha,T_b}$ whose range covers all type $\alpha$ singletons of elements of $B$.
 
- 
-
-
-
-\begin{comment}
+ \begin{comment}
 
 There are $<\mu$ coding functions $\chi_{b,S_b}$ by inductive hypothesis whose range covers all $b \in B$.  Choose a single $b$ from the range of each such coding function,
 and $\chi_{\{b\}_\alpha,T_b}(T_b)  = \{b\}_\alpha$.  We claim that for any $b'$ in the range of the coding function  $\chi_{b,S_b}$ (for one of the selected $b$'s),  $\{b'\}_\alpha$ is in the range of  $\chi_{\{b\}_\alpha,T_b}$, which implies that we have a family of $<\mu$ coding functions whose ranges cover the type $\alpha$ singletons of elements of $B$.  To verify this, we need to describe a support $T'_b$ such that $\chi_{\{b\}_\alpha,T_b}(T_b')  = \{b'\}_\alpha$.  Take any $\beta$-allowable permutation $\pi_1$ sending $b$ to $b'$.
@@ -1121,17 +1123,17 @@ There are $<\mu$ possible descriptions of such processes of insertion (this invo
 
 \end{comment}
 
-We claim that $\chi_{X,S}$ can be defined in terms of the orbit of $S$ in the allowable permutations and the set of coding functions $\chi_{\{b\}_\alpha,T_b}$.  There are $<\mu$ coding functions of this kind, and we have shown above that there are $<\mu$ orbits in the $\alpha$-strong supports under allowable permutations, so this will imply that there are $\leq \mu$ elements of type $\alpha$ (it is obvious that there are $\geq \mu$ elements of each type).
+We claim that $\chi_{X,S}$ can be defined in terms of the orbit of $S$ in the allowable permutations and the set of coding functions $\chi_{\{b\}_\alpha,T_b}$.  There are $<\mu$ coding functions of this kind [using the fact that a set of size $<\mu$ has $<\mu$ subsets], and we have shown above that there are $<\mu$ orbits in the $\alpha$-strong supports under allowable permutations, so this will imply that there are $\leq \mu$ elements of type $\alpha$ (it is obvious that there are $\geq \mu$ elements of each type).
 Of course we get $\leq \mu$ codes for each $\beta<\alpha$, but we know that $\lambda<\kappa<\mu$.
 
-The definition that we claim works is that $\chi_{X,S}(U) = B'_\alpha$, where $B'$ is the set of all $\bigcup (\chi_{\{b\}_\alpha,T_b}(U')\cap \pi_\beta$) for $b \in B$ and $U'$ end extending $U$.  Clearly this definition depends only on the orbit of $S$ and the set of coding functions $T_b$ derived from $B$ as described above.  Before we know that this is actually the coding function desired, we will write it as $\chi_{X,S}^*$.
+The definition that we claim works is that $\chi_{X,S}(U) = B'_\alpha$, where $B'$ is the set of all $\bigcup (\chi_{\{b\}_\alpha,T_b}(U')\cap \pi_\beta$) for $b \in B$ and $U$ a terminal segment of  $U'$.  Clearly this definition depends only on the orbit of $S$ and the set of coding functions $T_b$ derived from $B$ as described above.  Before we know that this is actually the coding function desired, we will write it as $\chi_{X,S}^*$.
 
 The function we have defined is certainly a coding function, in the sense that $\chi_{X,S}^*(\pi[S]) = \pi(\chi_{X,S}^*(S))$.  What requires work is to show that
 $\chi_{X,S}^*(S)=X$, from which it follows that it is in fact the intended function.
 
-Clearly each $b \in B$ belongs to $\chi^*_{X,S}(S)$ as defined, because $b = \bigcup (\chi_{\{b\}_\alpha,T_b}(T_b)\cap \tau_{\beta})$, and $T_b$ end extends $S$.
+Clearly each $b \in B$ belongs to $\chi^*_{X,S}(S)$ as defined, because \newline $b = \bigcup (\chi_{\{b\}_\alpha,T_b}(T_b)\cap \tau_{\beta})$, and $T_b$ has $S$ as a terminal segment.
 
-An arbitrary $c \in \chi_{X,S}^*(S)$ is of the form $\bigcup (\chi_{\{b\}_\alpha,T_b}(U)\cap \tau_{\beta})$, where $U$ end extends $S$ and of course must be in the orbit of $T_b$ under allowable permutations, so some $\pi_0[T_b] = U$. Now observe that $\pi_0[S]=S$, so $\pi_0(X)=X$, so
+An arbitrary $c \in \chi_{X,S}^*(S)$ is of the form $\bigcup (\chi_{\{b\}_\alpha,T_b}(U)\cap \tau_{\beta})$, where $U$ has $S$ as a terminal segment and of course must be in the orbit of $T_b$ under allowable permutations, so some $\pi_0[T_b] = U$. Now observe that $\pi_0[S]=S$, so $\pi_0(X)=X$, so
 $(\pi_0)_\beta``B=B$.  Further $(\pi_0)_\beta(b) = c$, so in fact $c \in B$ which completes the argument.  The assertion $(\pi_0)_\beta(b) = c$ might be thought to require verification:   the thing to observe is that $c=\bigcup (\chi_{\{b\}_\alpha,T_b}(U) \cap \tau_\beta)=\bigcup(\pi_0(\chi_{\{b\}_\alpha,T_b}(S)\cap \tau_\beta)=
 \bigcup (\pi_0(\{b\}_\alpha)\cap \tau_\beta) =\bigcup(\{(\pi_0)_\beta(b)\}_\beta \cap \tau_\beta) = (\pi_0)_\beta(b)$
 
@@ -1173,7 +1175,7 @@ If we have predicative comprehension and union, we note that for any formula $\p
 
 So what we need to show is that if  $\alpha>\beta>\gamma$ and $G \subseteq \tau_\gamma$, and $$\{\{g\}_\beta:g \in G\}_\alpha$$ is symmetric (has an $\alpha$-support, so belongs to $\tau_\alpha$), then $G_\beta$ is symmetric (has a $\beta$-support, so belongs to $\tau_\beta$).
 
-Suppose that $\{\{g\}_\beta:g \in G\}_\alpha$ is symmetric.  It then has a support $S$.  We claim that $S_{(\beta)}$ (definition of this given in previous subsection) is a $\beta$-support for $G_\beta$.
+Suppose that $\{\{g\}_\beta:g \in G\}_\alpha$ is symmetric.  It then has a support $S$.  We claim that $S_{(\beta)}$, defined as $\{(z,C): {\tt max}(C)=\beta \wedge (z,C\cup \{\alpha\}) \in S$,  is a $\beta$-support for $G_\beta$.
 
 Any $g \in G$ has a $\gamma$-support $T$ which extends $(S_{(\beta)})_{(\gamma)}$. 
 
@@ -1190,7 +1192,7 @@ Close up the $\gamma$-support $T$ under the processes of action of $\pi$ and inc
 
 We construct the allowable permutation $\pi^*$ by Freedom of Action so that the action of $(\pi^*_\beta)_\gamma$ on atomic and flexible items in $T^*$ agrees with the action of $\pi_\gamma$ on $T^*$
 and the action of $\pi_*$ fixes atomic and flexible items in $S$.  On any non-flexible litter $L$ in $S$, $\pi^*_\beta$ acts correctly because it acts correctly on a support of the inverse image of $L$ under the appropriate $f$ map (fixing all of its elements), and there will be no unexpected exceptional actions because the permutation is constructed by Freedom of Action, so we get identity rather than nearness.
-The tricky case seems to require a little extra attention to the action on $T^*$:  if a non-flexible litter has inverse image $u$ under $f_{-1,\gamma}$, it is mapped by $\pi$ to something with inverse image $v$ under $f^{-1,\gamma}$, we arrange for the
+The tricky case seems to require a little extra attention to the action on $T^*$:  if a non-flexible litter has inverse image $u$ under $f_{-1,\gamma}$, it is mapped by $\pi$ to something with inverse image $v$ under $f_{-1,\gamma}$, we arrange for the
 approximation generating $\pi^*$ to induce
 $\pi^*_\beta$ to map $\{u\}_\beta$ to $\{v\}_\beta$.  Thus  $(\pi^*_\beta)_\gamma$ maps $g$ to $\pi_\gamma(g)$ as required for the argument above.  That said, any non-flexible item is sent to its image under the appropriate derivative of $\pi$ because
 a support is acted on correctly and there will be no exceptional actions of derivatives of $\pi^*$ disagreeing with exceptional actions of $\pi$ because $T^*$ is closed under exceptional actions of $\pi$ in litters.  This completes the argument.
