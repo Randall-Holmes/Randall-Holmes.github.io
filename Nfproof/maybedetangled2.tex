@@ -36,7 +36,7 @@ Any remarks in the first person singular may be attributed to the first author.
 
 \subsection{Acknowledgements}
 
-The first author thanks Robert Solovay, who read a number of early versions of a related argument for Con(NF) and offered just criticisms which I have tried to take to heart.  I also thank Thomas Forster and Asaf Karagila, who have endured attempts of mine to present this argument at length.  Further, I thank Peter Lumsdaine
+The first author thanks Robert Solovay, who read a number of early versions of a related argument for Con(NF) and offered just criticisms which I have tried to take to heart.  I also thank Thomas Forster and Asaf Karagila, who have endured attempts of mine to present various relatives of this argument at length.  Further, I thank Peter Lumsdaine
 and the members of the group of students at Cambridge who attempted formalization of an earlier version of this proof in Spring 2022.
 
 \subsection{Dated remarks on versions}
@@ -171,6 +171,8 @@ in this version.  There isn't an essential difficulty (it is so nice to know the
 As of 9:33 am, support definition restored to what it was and proof of Freedom of Action substantially corrected.  The change in the definition of approximation required a substantial addition to the proof and there were serious typos.
 
 As of 12:42 pm I believe sanity is restored to the text of the counting argument (fingers crossed).
+
+As of 7:24 pm, reviewed section 3 which looks very clean.  Fixed the description of the recursion in the proof of the inflexible case in Freedom of Action.
 
 The paper proof is still a mess.  There are definitely conceptual slips (which by courtesy may be called typos) in instances of complex notations in the text as it stands, and further there are difficulties caused by multiple bouts of revisions of different parts of the text, lately driven by the demands of the formalization.
 Cleaning it up remains a daunting task.  However, the formalized proof, which was built by reading an earlier version of the paper proof and coding it into Lean, proves the desired result.  This means that cleanup will converge, if pursued diligently, to a correct text.
@@ -604,12 +606,12 @@ We define for each type index $\beta$ and each ordinal $\gamma$ less than $\alph
 
 
  When we define $f_{\beta,\gamma}(x)$, we presume that we have already defined it for $y <^+_\beta x$.
-We define $f_{\beta,\gamma}(x)$ as $L$, where $\iota(L)$ is minimal such that 
+We define $f_{\beta,\gamma}(x)$ as $L$, where $\iota_*(L)$ is minimal such that 
 
 \begin{enumerate}
 \item $L \in  \{L_{\nu,\beta,\gamma}:\nu < \mu\}$, 
 
-\item  $\iota_*(L)>\iota^+_*(x)$ [and so for any $N \sim L$, $\iota_*(N)>\iota^+_*(x)$], 
+\item  $\iota^+_*(x) <\iota_*(L)$ [and so for any $N \sim L$, $\iota^+_*(x) <\iota_*(N)$], 
 
 \item and for any $y<_\beta^+ x$, $f_{\beta,\gamma}(y) \neq L$, \item  and for any $z \in L$, $\iota^+_*(x) < \iota_*(z)$.
 \end{enumerate}
@@ -723,8 +725,7 @@ An $\alpha$-allowable permutation is an $\alpha$-structural permutation, each of
 
 Note that an $\alpha$-allowable permutation is actually defined on the entire supertype structure, though what interests us about it is its actions on objects in our purported TTT model.
 
-Of course, for each $-1<\beta<\alpha$ we have already defined $\beta$-allowable permut
-ations in the same way earlier in the recursive construction.
+Of course, for each $-1<\beta<\alpha$ we have already defined $\beta$-allowable permutations in the same way earlier in the recursive construction.
 
 
 
@@ -809,7 +810,7 @@ The well-ordering $\leq_\alpha^+$ of $\tau_\alpha^+$ ($\alpha \in \lambda$) must
 
 \end{comment}
 
-The conditions constraining choice of functions $\iota^+_\beta$ ($-1 \leq \beta \leq \alpha$) are
+The conditions constraining choice of functions $\iota^+_\beta$ ($-1 < \beta \leq \alpha$) are
 
 \begin{enumerate}
 
@@ -911,6 +912,8 @@ $\{x\}$ is not in the domain of $\pi^0_A$.  For $x \in L^-$ we define $\pi^{+*}_
 
 We can then exactly compute $\pi^*_A(L_{{\tt min}(A)})$ as $(\pi^{+*}_A``L)_{{\tt min}(A)}$
 
+Note at this point that we can already see that if we have computed $\pi^{+*}_{A}(x)$, then it will always be the case either that $\{x\}$ is in the domain of $\pi^0_A$ or that we have previously computed $\pi^*_A(L_{{\tt min}(A)})$ where $L$ is the litter containing $x$.
+
 If $L$ is $A$-flexible, we can compute $\pi^*_A(L_{\tt {\tt min}(A)})^\circ$ as $(\pi^0_A(L))_{{\tt min}(A)}$
 
 If $L$ is $A$-inflexible, we have $f_{\gamma,{\tt min}(A)}(x,S) = L$ for some $\gamma<{\tt min}(A_1)$, $x \in \tau_\gamma$, and $S$ a support of $x$.
@@ -921,9 +924,15 @@ We expect $\pi^*_A(f_{\gamma,{\tt min}(A)}(x,S)_{{\tt min}(A)})$ to be near $$f_
 If $\gamma>-1$, the hypothesis of the recursion allows us to compute values of $\pi^*_{A_1\cup \{\gamma\}}$ and images under this permutation of $\gamma$-supports,
 under an additional inductive hypothesis which implies that we can already compute the action of $\pi^*$ on $S$.
 
+\begin{comment}
 This hypothesis is that  we have computed $\pi_{A_1 \cup C}^*(z)$ and $(\pi_{A_1 \cup C}^{-1})^*(z)$ whenever ${\tt max}(C)=\gamma$ [or $C = \emptyset$, an option needed below] and $z$ is an item of type ${\tt min}(A_1 \cup C)$ with $z \cap \tau_{-1}$ a subset
-of the image under an $f$ map of a $(y,T)$ with $\iota^+_*((y,T)) < \iota^+_*((x,S))$.  The conditions on the construction of the indexings
+of the  image under an $f$ map of a $(y,T)$ with $\iota^+_*((y,T)) < \iota^+_*((x,S))$.  The conditions on the construction of the indexings
 $\iota^+_\beta$ ensure that this implies that we can compute $\pi_{A_1 \cup \{\gamma\}}^*[S]$ and $(\pi_{A_1 \cup \{\gamma\}}^{-1})^*[S]$ 
+\end{comment}
+
+This hypothesis is that  we have computed $\pi_{A_1 \cup C}^*(z)$ and $(\pi_{A_1 \cup C}^{-1})^*(z)$ whenever ${\tt max}(C)=\gamma$ [or $C = \emptyset$, an option needed below] and $z$ is an item of type ${\tt min}(A_1 \cup C)$ with $\iota_*(z \cap \tau_{-1}) < \iota^+_*((x,S)) < \iota_*(L)$.  The conditions on the construction of the indexings
+$\iota^+_\beta$ ensure that this implies that we can compute $\pi_{A_1 \cup \{\gamma\}}^*[S]$ and $(\pi_{A_1 \cup \{\gamma\}}^{-1})^*[S]$ 
+
 
 We intend to construct a $\gamma$-approximation $\rho$  which must send $S$ to  $\pi_{A_1 \cup \{\gamma\}}^*[S]$.  Each atomic and flexible item in $S$ is to be mapped by the $\gamma$-approximation to the corresponding
 item in $\pi_{A_1 \cup \{\gamma\}}^*[S]$ (with the proviso that where near-litter items correspond, they will be modified to litter items).  We have to fill in orbits, since each $\rho^0_B$ must have domain the same as its range.  We fill in the orbits, adding at most a countable number of flexible litters (which present no difficulties) and a countable number of atoms to domains of $\rho^0_B$ per atom or flexible near-litter already there, subject to the condition that where we are choosing the image or preimage of the singleton of an atom under $\rho^0_B$ and we know  its elementwise image or preimage under $\pi_{A_1 \cup B}^{+*}$ we use that (and we will know this if
@@ -940,12 +949,14 @@ because the actions of $\rho$ and  $\pi^*_{A_1 \cup \{\gamma\}}$ agree on the su
 of $N^\circ$.   Further, we have ensured by construction that any exceptional action of $\rho_B$ in $N$ will agree with the expected action of $\pi_{A_1 \cup B}$:  any exceptional action of $\rho_B$ must either agree with computed action of $\pi^*_{A_1 \cup B}$ or be in a litter for which we have computed no value for $\pi_{A_1 \cup B}$.  Thus we
 get not just nearness but identity.
 
-
-
 Now we compute  $\pi^*_{A_1\cup \{\gamma\}}(x)$ as $\rho(x)$, and so we know  $\pi^*_A(f_{\gamma,{\tt min}(A)}(x,S)_{{\tt min}(A)})$ up to nearness, because we know how to compute $$f_{ \gamma,{\tt min}(A)}(\pi^*_{A_1\cup \{\gamma\}}(x),\pi^*_{A_1\cup \{\gamma\}}[S]))_{{\tt min}(A)}.$$
 
-If $\gamma=-1$, we need to compute $\pi^*_{A_1\cup \{-1\}}(x)$, for which it is sufficient to compute $\pi^*_{A_1}(M_{{\tt min}(A_1)})$, where $M$ is the litter containing $x$.  The condition we need is that an if an atom $x$ belongs to a litter $M$ then the position of $(x,\emptyset)$ in
+If $\gamma=-1$, we need to compute $\pi^*_{A_1\cup \{-1\}}(x)$, for which it is sufficient to compute $\pi^*_{A_1}(M_{{\tt min}(A_1)})$, where $M$ is the litter containing $x$.  We have $\iota_*(M)<\iota^+(x,\emptyset)<\iota_*(L)$ so by inductive hypothesis stated above we have already computed  $\pi^*_{A_1}(M_{{\tt min}(A_1)})$, so we can compute $\pi^*_{A_1}(x)$, and so we can compute $\pi^*_A(L)$ up to nearness.
+
+\begin{comment}
+  The condition we need is that an if an atom $x$ belongs to a litter $M$ then the position of $(x,\emptyset)$ in
 $\leq^+_{-1}$ is subsequent to the position of $(y,T)$ such that $f_{\delta,\epsilon}(y,T)=M$, and this is enforced in the construction of the $f$ maps.  The case of our additional recursive hypothesis with $C = \emptyset$ stated above works here:  we then have the action of $\pi^*_{A_1}$ computable at $(y,T)$ and so $\pi^*_A$ computable at $L$ up to nearness (of course if the values of $\delta, \epsilon$ do not exist or are such that $L$ is $A_1$-flexible this is unproblematic).
+\end{comment}
 
 In this way we have computed $\pi^*_A(L_{{\tt min}(A)})^\circ$ in every case and above we indicate how to compute $\pi^*_A(L_{{\tt min}(A)})$ exactly given this.
 
