@@ -47,7 +47,9 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should avoid metamathematics, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
 
-\item[4/21/2024:]  as of 9 am Boise time, Minor repairs to the text.  The definition of $\iota_*^+$ was stated incorrectly, but easy to fix as the correct definition is everywhere presumed.  Other things more minor.
+\item[4/21/2024:]  as of 1147 am, posted revised text for the Freedom of Action Theorem proof, emphasizing the point that a recursion on $\iota_*$ drives the order in which computations are made in every case.
+
+as of 9 am Boise time, Minor repairs to the text.  The definition of $\iota_*^+$ was stated incorrectly, but easy to fix as the correct definition is everywhere presumed.  Other things more minor.
 
 \item[4/20/2024:] 4 PM Boise time:  removed comments from before the completion of the formalization and reordered them so they can be added at the top from now on.
 
@@ -830,7 +832,7 @@ for every exception $x$ of a $\pi_{A \cup \{-1\}}$ ($A$ not containing $-1$) we 
 \item[Theorem (freedom of action):]  A $\beta$-approximation $\pi^0$ will exactly approximate some $\beta$-allowable permutation $\pi$ if it satisfies the additional condition that any domain element $x$ of $\pi^0_A$ which is a litter is $A$-flexible.
 
 \item[Proof:]   For each pair of sets $L,M$ which are co-small subsets of litters, we define $\pi_{L,M}$ as the unique map $\rho$ from $L$ onto $M$ such
-that for any $x,y \in L$, $$x <_{L^{\circ}} y \leftrightarrow \rho(x) <_{M^\circ} \rho(y):$$  $\pi_{L,M}$ is the unique map from $L$ onto $M$ which is strictly increasing in the order determined by fourth projections of atoms.  Notice that if $L' \subseteq M$ and $M' = \pi_{L,M}``L'$, then $\pi_{L',M'} \subseteq \pi_{L,M}$.  \footnote{the choice of these maps does not need to be so concrete, but the fact that it can be indicates for example that there is no use of choice here.  We like the concreteness of this approach.}
+that for any $x,y \in L$, $$x <_{L^{\circ}} y \leftrightarrow \rho(x) <_{M^\circ} \rho(y):$$  $\pi_{L,M}$ is the unique map from $L$ onto $M$ which is strictly increasing in the order determined by fourth projections of atoms.  Notice that \newline $ \pi_{M,N} \circ \pi_{L,M} = \pi_{L,N}$ will hold if $L,M,N$ are subsets of the same litter, and $\pi_{L,M} \circ \pi_{M,L} = \pi_{L,L}$ which is the identity map on $L$, under the same conditions.  The relationship to composition is neatly handled by our concrete definition.\footnote{the choice of these maps does not need to be so concrete, but the fact that it can be indicates for example that there is no use of choice here.  We like the concreteness of this approach.}
 
 We also choose an extension of each  $\pi^0_A$ to all $A$-flexible litters;  we do this without notational comment, simply assuming that $\pi^0_A$ is defined for each $A$ at each $A$-flexible litter $M$, which can be arranged harmlessly
 (for example, one could have $\pi^0_A$ act as the identity on the new $A$-flexible litters, but we do not require this).
@@ -839,7 +841,7 @@ We choose an approximation $\pi^0$ satisfying the conditions of the theorem and 
 all support conditions (and therefore compute all its derivatives $\pi_A$ (and $\pi^{-1}_A$) at all atoms ($-1 \in A$), so completely defining it, using the assumption that we already know how to carry out this construction to
 define $\gamma$-allowable permutations exactly approximated by any given $\gamma$-approximation for $\gamma<\beta$.
 
-The basic order of the construction of $\pi$ is that the value of $(\pi^+_A)^i``x$ for $i=\pm 1$ is computed at each atom or near-litter $x$ assuming that the values have already been computed for $(\pi^+_B)^j``y$ for each $i = \pm1$ where $\iota_*(y)<\iota_*(x)$ and $A \subseteq B$ or $B=A_1$ [of course, this is equivalent to computing
+The basic order of the construction of $\pi$ is that the value of $(\pi^+_A)^i``x$ for $i=\pm 1$ is computed at each atom or near-litter $x$ assuming that the values have already been computed for $(\pi^+_B)^j``y$ for each $i = \pm1$ and extended type index $B$ [of course, this is equivalent to computing
 $\pi_A(x_{{\tt min}(A)})$ and we may discuss it in that form].  All specific discussions of inductive hypotheses below conform to this.
 
 We use the notation $\pi^*_A$ for the partially computed $\pi_A$ at any point in the calculation before we are done. 
@@ -855,7 +857,8 @@ $\{x\}$ is not in the domain of $\pi^0_A$.  For $x \in L^-$ we define $\pi^{+*}_
 
 We can then exactly compute $\pi^*_A(L_{{\tt min}(A)})$ as $(\pi^{+*}_A``L)_{{\tt min}(A)}$
 
-Note at this point that we can already see that if we have computed $\pi^{+*}_{A}(x)$, then it will always be the case either that $\{x\}$ is in the domain of $\pi^0_A$ or that we have previously computed $\pi^*_A(L_{{\tt min}(A)})$ where $L$ is the litter containing $x$.
+Note that the general inductive hypothesis ensures that when we are computing $\pi_A^+(x)$ and $L$ is the litter containing $x$, we have already computed
+$\pi^+_A``L$, because $\iota_*(L) < \iota_*(\{x\}$.  The paragraph above indicates how this computation is carried out for every atom and extended type index.
 
 If $L$ is $A$-flexible, we can compute $\pi^*_A(L_{\tt {\tt min}(A)})^\circ$ as $(\pi^0_A(L))_{{\tt min}(A)}$
 
@@ -863,18 +866,10 @@ If $L$ is $A$-inflexible, we have $f_{\gamma,{\tt min}(A)}(x,S) = L$ for some $\
 
 We expect $\pi^*_A(f_{\gamma,{\tt min}(A)}(x,S)_{{\tt min}(A)})$ to be near $$f_{ \gamma,{\tt min}(A)}(\pi^*_{A_1\cup \{\gamma\}}(x),\pi^*_{A_1\cup \{\gamma\}}[S]))_{{\tt min}(A)}.$$
 
+If $\gamma>-1$, we will show that the inductive hypotheses allow us to compute values of $\pi^*_{A_1\cup \{\gamma\}}$ and so images under this permutation of $\gamma$-supports.
 
-If $\gamma>-1$, the hypothesis of the recursion allows us to compute values of $\pi^*_{A_1\cup \{\gamma\}}$ and images under this permutation of $\gamma$-supports,
-under an additional inductive hypothesis which implies that we can already compute the action of $\pi^*$ on $S$.
-
-\begin{comment}
-This hypothesis is that  we have computed $\pi_{A_1 \cup C}^*(z)$ and $(\pi_{A_1 \cup C}^{-1})^*(z)$ whenever ${\tt max}(C)=\gamma$ [or $C = \emptyset$, an option needed below] and $z$ is an item of type ${\tt min}(A_1 \cup C)$ with $z \cap \tau_{-1}$ a subset
-of the  image under an $f$ map of a $(y,T)$ with $\iota^+_*((y,T)) < \iota^+_*((x,S))$.  The conditions on the construction of the indexings
-$\iota^+_\beta$ ensure that this implies that we can compute $\pi_{A_1 \cup \{\gamma\}}^*[S]$ and $(\pi_{A_1 \cup \{\gamma\}}^{-1})^*[S]$ 
-\end{comment}
-
-This hypothesis is that  we have computed $\pi_{A_1 \cup C}^*(z)$ and $(\pi_{A_1 \cup C}^{-1})^*(z)$ whenever ${\tt max}(C)=\gamma$ [or $C = \emptyset$, an option needed below] and $z$ is an item of type ${\tt min}(A_1 \cup C)$ with $\iota_*(z \cap \tau_{-1}) < \iota^+_*((x,S)) < \iota_*(L)$.  The conditions on the construction of the indexings
-$\iota^+_\beta$ ensure that this implies that we can compute $\pi_{A_1 \cup \{\gamma\}}^*[S]$ and $(\pi_{A_1 \cup \{\gamma\}}^{-1})^*[S]$ 
+  The conditions on the construction of the indexings
+$\iota^+_\beta$ ensure that we can compute $\pi_{A_1 \cup \{\gamma\}}^*[S]$ and $(\pi_{A_1 \cup \{\gamma\}}^{-1})^*[S]$, because $\iota_*(u) < \iota^+_*((x,S))<\iota_*(L)$ for each $(u,U) \in S$ so we have already computed each $\pi_*^+``u$.
 
 
 We intend to construct a $\gamma$-approximation $\rho$  which must send $S$ to  $\pi_{A_1 \cup \{\gamma\}}^*[S]$.  Each atomic and flexible item in $S$ is to be mapped by the $\gamma$-approximation to the corresponding
@@ -882,8 +877,7 @@ item in $\pi_{A_1 \cup \{\gamma\}}^*[S]$ (with the proviso that where near-litte
 we know the elementwise image or preimage under $\pi_{A_1 \cup B}^{+*}$ of a litter which includes it, as in the case of litters near the near-litters in the support).  Where we do not have this information, we can choose
 images and preimages freely as long as they are not already known elementwise preimages or images under $\pi_{A_1 \cup B}^{+*}$.  
 
-There is a further point to do with anomalous elements of near-litters $N$ with $(N,B) \in S$:  it is supposed in an inductive hypothesis that we have computed $\pi_{A_1 \cup B}^*(N_\beta)$, and so we must have computed $\pi_{A_1 \cup B}^{*+}(z)$ for each $z \in N \setminus N^\circ$ by examination of our method
-of computation, and we could only have computed this if either $(z,A_1\cup B)$ is in the domain of $\pi^0$ or we have computed $\pi_{A_1 \cup B}^*(M_\beta)$ where $M$ is the litter containing $z$.  We stipulate that $\rho^0_B(M)$ be defined as  $(\pi_{A_1 \cup B}^*(M_\beta)\cap \tau_\beta)^\circ$ in the latter case.
+There is a further point to do with anomalous elements of near-litters $N$ with $(N,B) \in S$ which are not litters:  for any $z \in N\setminus N^\circ$, with $z$ belonging to a litter $M$, $\iota_*(M) < \iota_*(\{z\})<\iota_*^+(x,S) < \iota_*(L)$ so $\pi^+_B``\{z\}$ and $\pi^+_B``M$ have both been computed, and appropriate values can be assigned to $\rho^0$ at $(\{z\},B)$ and $(M,B)$, to ensure that $\rho$ will act correctly on $N$.
 
 We construct $\rho$ exactly approximated by $\rho^0$.  We need to verify that $\rho[S]$ really can be relied upon to agree with $\pi^*_{A_1 \cup \{\gamma\}}[S]$.  The difficulty
 is that $\rho^0$ agrees with $\pi^*_{A_1 \cup \{\gamma\}}$ for each support condition in $S$ which has first component the singleton of an atom or flexible, because this information was packed into $\rho^0$:  how do we know that it agrees with $\pi^*_{A_1 \cup \{\gamma\}}$  at inflexible items?  Suppose it failed to agree:  there would be an $\iota^+_*$ minimal item at which
