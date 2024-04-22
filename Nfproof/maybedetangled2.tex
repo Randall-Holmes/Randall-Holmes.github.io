@@ -47,6 +47,10 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should avoid metamathematics, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
 
+\item[4/22/2024:]  as of 4:30 pm, added a final section to section 2 on the Hailperin axiomatization in the version actually used in the formalization and comments on its use in the formal proof in the last subsection of section 4.
+
+The new material on the Hailperin axioms is quite dense and needs reading.
+
 \item[4/21/2024:]  as of 1147 am, posted revised text for the Freedom of Action Theorem proof, emphasizing the point that a recursion on $\iota_*$ drives the order in which computations are made in every case.
 
 as of 9 am Boise time, Minor repairs to the text.  The definition of $\iota_*^+$ was stated incorrectly, but easy to fix as the correct definition is everywhere presumed.  Other things more minor.
@@ -373,8 +377,139 @@ We think there is merit in giving a brief description of a situation in a more f
 
 \newpage
 
+\subsection{An axiomatization of TST with finitely many templates}
+
+We discuss a finite axiomization of NF derived from that of Hailperin (it is an implementation of Hailperin's axiom set in Metamath, and there are minor changes from the original formulation), making the important observation that it actually provides us with an axiomatization of TST with finitely many
+axiom templates (in the sense that each axiom is a type shifted version of one of a finite set of axioms).
+
+The finite axiomatization of NF takes this form (the definitions inserted are ours, and we have modified the order of the axioms to make the definitions work sensibly).  We also present this as a finite axiomatization of TST, with the proviso that each typed form of each axiom is asserted:
+
+\begin{description}
+
+\item[extensionality axiom:]  $(\forall x:(\forall y:(\forall z:z \in x \leftrightarrow z \in y)\rightarrow x=y))$
+
+\item[anti-intersection axiom:]  $(\forall xy:(\exists z:(\forall w:w \in z \leftrightarrow \neg(w \in x \wedge w \in y))))$
+
+\item[singleton axiom:]  $(\forall x:(\exists y:(\forall z:z \in y \leftrightarrow z = x)))$
+
+\item[definition:]  $\{x\}$ denotes for each $x$ the set whose only element is $x$, whose existence is provided by the previous axiom.  We define $\iota(x)$ as $\{x\}$ and define $\iota^1(x)$ as $\iota(x)$ and $\iota^{n+1}(x)$ as $\{\iota^n(x)\}$, for each concrete natural number $n$.
+
+\item[cardinal one axiom:] $(\exists x:(\forall y:y \in x \leftrightarrow (\exists z:(\forall w:w \in y \leftrightarrow w = z))))$
+
+\item[definition:]  We define 1 as the set of all singletons, provided by the previous axiom.
+
+\item[definition:]   $x | y$ denotes the set $z$ whose existence is provided by the anti-intersection axiom:  $z \in x | y \leftrightarrow \neg(z \in x \wedge z \in y)$.
+We define $x^c$ as $x | x$.  We define $x \cap y$ as $(x|y)^c$.  We define $x \cup y$ as $x^c | y^c$.  We define $V$ as $1|1^c$ (noting that it is straightforward to prove $x|x^c = V$ for any $x$, since this is the universal set).  We define $\{x,y\}$ as $\{x\} \cup \{y\}$.  We define $(x,y)$ as $\{\{x\},\{x,y\}\}$.  We define
+$(x,y,z)$ as $(\{\{x\}\},(y,z))$.   More generally, we define $(x_1,\ldots,x_n)$ as $(\iota^{2n-4}(x_1),(x_2,\ldots,x_n))$ for $n>2$ a concrete natural number.
+
+\item[cross product axiom:]  $(\forall x:(\exists y:(\forall z:z \in y \leftrightarrow (\exists wt:z = (w,t) \wedge t \in x))))$
+
+\item[definition:]  We define $V \times x$ as the set introduced by the previous axiom:  $z \in V  \times x \leftrightarrow (\exists wt:z = (w,t) \wedge t \in x)$.  Note that $V \times V$ is the set of all ordered pairs.
 
 
+
+\item[converse axiom:] $(\forall x:(\exists y:(\forall zw:(z,w)\in y \leftrightarrow (w,z) \in x)))$
+
+\item[definition:]  For any set $R$, we define $R^{-1}$ as the intersection of $V \times V$ with a set introduced by the previous axiom:  $(\forall zw:(z,w)\in R^{-1} \leftrightarrow (w,z) \in R))) \wedge (\forall u:u \in R^{-1} \leftrightarrow (\exists zw:(z,w)=u))$
+
+\item[definition:]  We define $x \times V$ as $(V \times x)^{-1}$ and $x \times y$ as $(x \times V) \cap (V \times y)$.
+
+\item[singleton image axiom:]  $(\forall x:(\exists y:(\forall zw:(\{z\},\{w\}) \in y \leftrightarrow (z,w) \in x)))$.  
+\item[definition:]  We define $R^{\iota}$ for any set $R$ as the intersection of a set provided by the previous axiom with $1 \times 1$.  $R^{\iota}$ is the set whose members are exactly the ordered pairs $(\{z\},\{w\})$ such that $(z,w)\in R$.
+
+We define $\iota^2``x$ as $(x \times x) \cap V$.  This is the image of $x$ under the double singleton operation.
+
+Note that $\iota^2``V$ is the equality relation.
+
+We can define $A \times B \times C$ as $\iota^2(A) \times (B \times C)$.
+
+\item[insertion two axiom:]  $(\forall x:(\exists y:(\forall zwt:(z,w,t) \in y \leftrightarrow (z,t) \in x)))$
+
+We define $I_2(R)$ as the intersection of a set provided by the previous axiom with $V \times V \times V$.
+
+\item[insertion three axiom:] $(\forall x:(\exists y:(\forall zwt:(z,w,t) \in y \leftrightarrow (z,w) \in x)))$
+
+We define $I_3(R)$ as the intersection of a set provided by the previous axiom with $V \times V \times V$.
+
+\item[definition:]  It seems natural to define $I_1(R)$ as $\iota^2(V) \times R$, but this requires no new axiom.
+
+\item[type lowering axiom:]  $(\forall x:(\exists y:(\forall z:z \in y \leftrightarrow (\forall w:(w,\{z\}) \in x))))$
+
+\item[definition:]  
+We define ${\tt TL}(x)$ by $(\forall z:z \in {\tt TL}(x) \leftrightarrow (\forall w:(w,\{z\}) \in x))$.  This is a very strange operation!
+
+We define $\iota^{-1}``x$ as ${\tt TL}(V \times x)$.  This is the set of all elements of singletons
+belonging to $x$.  We can then define $\iota``x$, the elementwise image of $x$ under the singleton operation, as $\iota^{-1}``(\iota^2``(x))$.
+
+Further, we define $\iota^{-(n+1)}``(x)$ as $\iota^{-1}``(\iota^{-n}``(x)$ for each concrete natural number $n$, and $\iota^{n+1}``(x)$ as $\iota``(\iota^{n}``(x)$ 
+
+We develop an important operation step by step.
+
+${\tt TL}(R) = \{z:(\forall w:(w,\{z\})\in R)\}$
+
+Dually, $({\tt TL}(R^c))^c = \{z:(\exists w:(w,\{z\})\in R)\}$
+
+Now $({\tt TL}((R^\iota)^c))^c = \{z:(\exists w:(w,\{z\})\in R^\iota)\}$,
+
+which is the same as $({\tt TL}((R^\iota)^c))^c = \{z:(\exists w:(\{w\},\{z\})\in R^\iota)\}$ because all elements
+of the domain of $R^{\iota}$ are singletons,
+
+which is the same as $({\tt TL}((R^\iota)^c))^c = \{z:(\exists w:(w,z)\in R)\}$
+
+so we define ${\tt rng}(R)$ as $({\tt TL}((R^\iota)^c))^c$,
+and define ${\tt dom}(R)$ as ${\tt rng}(R^{-1})$.
+
+\item[subset axiom:]  $(\exists x:(\forall yz:(y,z) \in x \leftrightarrow (\forall w:w \in y \rightarrow w \in z)))$
+
+We define $[\subseteq]$ as the intersection of a set provided by the previous axiom with $V \times V$:  $[\subseteq]$ is the set of all ordered pairs $(x,y)$ such that $x \subseteq y$.
+
+We define $[\in]$ as $[\subseteq]\cap 1 \times V$.
+
+
+
+\end{description}
+
+This is not our favorite finite axiomatization of NF (or our favorite finite template axiomatization of TST) but it is the one in the formalization and also basically the oldest one, so we present a verification of it in outline at least.
+
+What we need to do is verify that $\{x:\phi\}$ exists for each formula $\phi$ of the language of TST, to ensure that comprehension holds.  We do this by induction on the structure of formulas.
+
+$\{x:\neg \phi\}$ is $\{x :\phi\}^c$.
+
+$\{x :\phi \wedge \psi\}$ is $\{x:\phi \} \cap \{x:\psi\}$.
+
+Now we have the much more complex task of analyzing $\{x:(\forall x_i:\phi(x_1,\ldots,x_n,x)\}$.
+
+Choose a type $\tau'$ higher than the type $\tau_i$ of each $x_i$ and the type $\tau$ of $x$.
+
+We work with $\{(\iota^{\tau'-\tau_1}(x),\ldots,\iota^{\tau'-\tau_n}(x_n),\iota^{\tau'-\tau}(x)):\phi(x_1.\ldots,x_n,x)\}$
+as a representation of $\phi(x_1,\ldots,x_n,x)$.
+
+The set $\{(x_1,\ldots,x_n):x_1 = x_i\}$ is obtained as $I_3^{n-j}(I_2^{i-1}(\iota``V))$.  We then can represent the
+set $\{(x_1,\ldots,x_n):x_i = x_j\}$ (wlog $i<j$) as \newline $I_1^{i-1}\{(x_1,\ldots,x_{n-i+1}):x_1 = x_{j-i+1}\})$.
+
+The set $\{(\{x_1\},x_2):x_1 \in x_2\}$ has already been defined above as $[\in]$.
+
+The set $\{(x_1,\ldots,x_n):(\exists uv:x_i = \iota^{n+1}(u) \wedge x_j = \iota^n(v) \wedge u\in v)\}$ is
+$${\tt rng}^2((R^{\iota})^n[\in] \cap \{(x_1,\ldots,x_{n+2}:x_1 = x_{i+2}\} \cap \{(x_1,\ldots,x_{n+2}):x_2=x_{j+2}\}).$$  This
+handles all representations of membership statements between $x_i$'s  in the framework we are using.
+
+The set $\{(x_1,\ldots,x_n):(\exists x_i:(x_1,\ldots,x_n) \in R)$ is equal to $${\tt rng}^n\{(x_1,\ldots,x_{2n}):(x_1,\ldots,x_{2n}) \in I_1^n(R)\} \cap \bigcap_{j \neq i}\{(x_1,\ldots,x_{2n}):x_j = x_{n+j}\}).$$
+
+This gives sufficient machinery to handle representations of all sentences in the language of TST (or stratified sentences in the language of NF) in the format we are using.  However, the final representation of $\{x:\phi\}$ obtained in this way
+will be of the form $R=\{(\iota^{\tau'-\tau_1}(x),\ldots,\iota^{\tau'-\tau_n}(x_n),\iota^{\tau'-\tau}(x)):\phi(x_1.\ldots,x_n,x)\}$
+where some of the $x_i$'s are bound variables (all values of which will appear), and some are parameters.  Let $P$ be the set  of $i$ such that
+$x_i$ is a parameter.
+
+The final computation of $\{x:\phi\}$ for values $t_i$ of the parameters $x_i$ will be as 
+$$\iota^{-(\tau'-\tau)``}({\tt rng}^n(R \cap \bigcap_{i \in P}\{(x_1,\ldots,x_n,x):x_i = \iota^{\tau_i-\tau}(t_i)\}))$$
+
+where a final bit of computation must be exhibited:  $\{(x_i,\ldots,x_n,x):x_i = t\}$ is realized as
+$I_1^{i-1}(I_3^{(n+1)-i}(\{t\} \times V))$.
+
+
+
+
+\newpage
 
 \section{The model description}
 
@@ -1090,9 +1225,7 @@ There are easier proofs of the consistency of predicative tangled type theory;  
 It should be noted that the construction given here is in a sense a Frankel-Mostowski construction, though we have no real need to reference the usual
 FM constructions in ZFA here.  Constructions analogous to Frankel-Mostowski constructions can be carried out in TST using permutations of type 0;  here we are doing something much more complicated involving many permutations of type $-1$ which intermesh in precisely the right way.  Our explanation of our technique is self-contained, but we do acknowledge this intellectual debt.
 
-% \begin{comment}
-{\bf Note for the formal verification project:}  We note that in order to avoid metamathematics, we actually suggest proving finitely many instances of comprehension with typed parameters from which the full comprehension scheme can be deduced.  That there are such finite schemes (mod the infinite sequence of types) is well-known.  For the project, a list should be provided here.
-% \end{comment}
+
 
 \newpage
 \subsection{Impredicativity:  verifying the axiom of union}
@@ -1124,10 +1257,11 @@ approximation generating $\pi^*$ to induce
 $\pi^*_\beta$ to map $\{u\}_\beta$ to $\{v\}_\beta$.  Thus  $(\pi^*_\beta)_\gamma$ maps $g$ to $\pi_\gamma(g)$ as required for the argument above.  That said, any non-flexible item is sent to its image under the appropriate derivative of $\pi$ because
 a support is acted on correctly and there will be no exceptional actions of derivatives of $\pi^*$ disagreeing with exceptional actions of $\pi$ because $T^*$ is closed under exceptional actions of $\pi$ in litters.  This completes the argument.
 
-\begin{comment}
-NOTE:  Difficult interactions with $S$ are avoided because an incompatibility of $\pi$ with fixing $S$ would involve moving most elements of a litter in the range of $f_{-1,\beta}$, and while $\pi$ may do this, nothing in the definition
+Note that difficult interactions with $S$ are avoided because an incompatibility of $\pi$ with fixing $S$ would involve moving most elements of a litter in the range of $f_{-1,\beta}$, and while $\pi$ may do this, nothing in the definition
 of $\pi^*$ can force this to happen;  there is no conflict between the conditions imposed by $S$ and the conditions imposed by $T^*$.
-\end{comment}
+
+This completes the proof.  In the formal proof in Lean, what is actually done is a proof that each of the assertions in the finite axiomatization of Hailperin in the version discussed in the final subsection of section 2  holds in all typed versions in our structure for the language of TTT, so it is in fact a model of TTT.  The axioms in Hailperin other than the axiom of type lowering
+admit demonstration by the methods of the previous subsection.  In the formalization, the axiom of type lowering, which contains rather more content than the axiom of set union proved here, is proved directly [NOTE: I believe using the proof of set union given here], which is enough to finish the result.
 
 
 
@@ -1142,10 +1276,8 @@ of $\pi^*$ can force this to happen;  there is no conflict between the condition
 
 
 
-% \begin{comment}
-{\bf Note for formal verification project:}  This is converging to a full description at the level needed for formalization...
 
-% \end{comment}
+
 \newpage
 
 \section{Conclusions, extended results, and questions}
