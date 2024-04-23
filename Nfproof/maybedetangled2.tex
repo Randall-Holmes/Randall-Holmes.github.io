@@ -47,7 +47,13 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should avoid metamathematics, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
 
-\item[4/22/2024:]  as of 4:30 pm, added a final section to section 2 on the Hailperin axiomatization in the version actually used in the formalization and comments on its use in the formal proof in the last subsection of section 4.
+\item[4/22/2024:]  
+
+as of 12:55 am the next day, definition of quantification in the Hailperin treatment was incorrect, is now incomplete.  The proof doesn't hinge on this at all (the Hailperin axiomatization is known to work), but I'd like to get it straight.
+
+as of 11:36 pm, corrected oversimplifications of the discussion of why the Hailperin axioms work.  They are quite horrible and there are probably still indexing errors in my development.
+
+as of 4:30 pm, added a final section to section 2 on the Hailperin axiomatization in the version actually used in the formalization and comments on its use in the formal proof in the last subsection of section 4.
 
 The new material on the Hailperin axioms is quite dense and needs reading.
 
@@ -413,15 +419,14 @@ $(x,y,z)$ as $(\{\{x\}\},(y,z))$.   More generally, we define $(x_1,\ldots,x_n)$
 \item[definition:]  For any set $R$, we define $R^{-1}$ as the intersection of $V \times V$ with a set introduced by the previous axiom:  $(\forall zw:(z,w)\in R^{-1} \leftrightarrow (w,z) \in R))) \wedge (\forall u:u \in R^{-1} \leftrightarrow (\exists zw:(z,w)=u))$
 
 \item[definition:]  We define $x \times V$ as $(V \times x)^{-1}$ and $x \times y$ as $(x \times V) \cap (V \times y)$.
+We define $x_1 \times x_2 \ldots \times x_n$ as $\iota^{2(n-2)}``x \times (x_2 \times \ldots \times x_n)$.
 
 \item[singleton image axiom:]  $(\forall x:(\exists y:(\forall zw:(\{z\},\{w\}) \in y \leftrightarrow (z,w) \in x)))$.  
-\item[definition:]  We define $R^{\iota}$ for any set $R$ as the intersection of a set provided by the previous axiom with $1 \times 1$.  $R^{\iota}$ is the set whose members are exactly the ordered pairs $(\{z\},\{w\})$ such that $(z,w)\in R$.
+\item[definition:]  We define $R^{\iota}$ for any set $R$ as the intersection of a set provided by the previous axiom with $1 \times 1$.  $R^{\iota}$ is the set whose members are exactly the ordered pairs $(\{z\},\{w\})$ such that $(z,w)\in R$.  Let $R^{\iota^1}$ be defined as $R^{\iota}$ and $R^{\iota^{n+1}}$ be defined as $(R^{\iota^n})^\iota$.
 
 We define $\iota^2``x$ as $(x \times x) \cap V$.  This is the image of $x$ under the double singleton operation.
 
-Note that $\iota^2``V$ is the equality relation.
-
-We can define $A \times B \times C$ as $\iota^2(A) \times (B \times C)$.
+Note that $\iota^2``V$ is the equality relation.  Define $\iota^{2(n+1)}``x$ as $\iota^2``(\iota^{2n}``x)$.
 
 \item[insertion two axiom:]  $(\forall x:(\exists y:(\forall zwt:(z,w,t) \in y \leftrightarrow (z,t) \in x)))$
 
@@ -432,6 +437,13 @@ We define $I_2(R)$ as the intersection of a set provided by the previous axiom w
 We define $I_3(R)$ as the intersection of a set provided by the previous axiom with $V \times V \times V$.
 
 \item[definition:]  It seems natural to define $I_1(R)$ as $\iota^2``(V) \times R$, but this requires no new axiom.
+
+\item[definition:]  Define $I_{1,n}(R)$ as $\iota^{2(n-2)}``V \times R$:  this is correct for prepending all possible initial projections
+to an $n$-tuple.  Then define $I^1_{1,n}(R)$ as $I_{1,n}(R)$ and define $I^{m+1}_{1,n}(R)$ as $I_{1,n+m+1}(I^m_{1,n}(R))$:  this takes
+into account the fact that the tuples get longer.
+
+Define $I_{2,n}(R)$ as $I_2(R) \cap (V\times \iota^{2(n-3)}(V)\times V)$, and define $I^{m+1}_{2,n}(R)$ as $I_{1,n+m+1}(I^m_{2,n}(R))$:  this takes
+into account the fact that the tuples get longer.
 
 \item[type lowering axiom:]  $(\forall x:(\exists y:(\forall z:z \in y \leftrightarrow (\forall w:(w,\{z\}) \in x))))$
 
@@ -484,16 +496,25 @@ Choose a type $\tau'$ higher than the type $\tau_i$ of each $x_i$ and the type $
 We work with $\{(\iota^{\tau'-\tau_1}(x),\ldots,\iota^{\tau'-\tau_n}(x_n),\iota^{\tau'-\tau}(x)):\phi(x_1.\ldots,x_n,x)\}$
 as a representation of $\phi(x_1,\ldots,x_n,x)$.
 
-The set $\{(x_1,\ldots,x_n):x_1 = x_i\}$ is obtained as $I_3^{n-j}(I_2^{i-1}(\iota``V))$.  We then can represent the
-set $\{(x_1,\ldots,x_n):x_i = x_j\}$ (wlog $i<j$) as \newline $I_1^{i-1}\{(x_1,\ldots,x_{n-i+1}):x_1 = x_{j-i+1}\})$.  There is an abuse here: all our uses of $I_1^n$'s actually add lots of unintended elements to the sets...but it appears that this effect is always cancelled subsequently.
+For any such representation, we have a type signature $$\iota^{\tau'-\tau_1}``V \times \ldots \times \iota^{\tau'-\tau_n}``V \times \iota^{\tau'-\tau}``V.$$  We abbreviate this as $\tau^*$.  The exact form of the type signature should be read from context (there is not always a final $x$).
+
+The set $\{(x_1,\ldots,x_n):x_1 = x_n\}$ is obtained as $I_{2,2}^{n-2}(\iota``V)\cap \tau^*$.
+
+The set $\{x_1,\dots,x_n):x_1 = x_i\}$ ($i<n$) is obtained as $I_{2,3}^{i-3}(I_3(\iota``V))\cap \tau^*$.
+
+We then can represent the
+set $\{(x_1,\ldots,x_n):x_i = x_j\}$ (wlog $i<j$) as \newline $I_{1,n-i+1}^{i-1}\{(x_1,\ldots,x_{n-i+1}):x_1 = x_{j-i+1}\})\cap \tau^*$.
 
 The set $\{(\{x_1\},x_2):x_1 \in x_2\}$ has already been defined above as $[\in]$.
 
 The set $\{(x_1,\ldots,x_n):(\exists uv:x_i = \iota^{k+1}(u) \wedge x_j = \iota^k(v) \wedge u\in v)\}$ is
-$${\tt rng}^2((R^{\iota})^k[\in] \cap \{(x_1,\ldots,x_{n+2}:x_1 = x_{i+2}\} \cap \{(x_1,\ldots,x_{n+2}):x_2=x_{j+2}\}).$$  This
+$${\tt rng}^2(I_3((R^{\iota^{k+2n}}[\in]) \cap \{(x_1,\ldots,x_{n+2}:x_1 = x_{i+2}\} \cap \{(x_1,\ldots,x_{n+2}):x_2=x_{j+2}\}).$$  This
 handles all representations of membership statements between $x_i$'s  in the framework we are using.
 
-The set $\{(x_1,\ldots,x_n):(\exists x_i:(x_1,\ldots,x_n) \in R)$ is equal to $${\tt rng}^n(I_1^n(R) \cap \bigcap_{j \neq i}\{(x_1,\ldots,x_{2n}):x_j = x_{n+j}\}).$$
+The set $\{(x_1,\ldots,x_n):(\exists x_1:(x_1,\ldots,x_n)\in R))$ is representable as $I_{1,n-1}({\tt dom}(R^{-1})$.
+
+More to do for general quantification...
+
 
 This gives sufficient machinery to handle representations of all sentences in the language of TST (or stratified sentences in the language of NF) in the format we are using.  However, the final representation of $\{x:\phi\}$ obtained in this way
 will be of the form $R=\{(\iota^{\tau'-\tau_1}(x),\ldots,\iota^{\tau'-\tau_n}(x_n),\iota^{\tau'-\tau}(x)):\phi(x_1.\ldots,x_n,x)\}$
@@ -503,8 +524,8 @@ $x_i$ is a parameter.
 The final computation of $\{x:\phi\}$ for values $t_i$ of the parameters $x_i$ will be as 
 $$\iota^{-(\tau'-\tau)``}({\tt rng}^n(R \cap \bigcap_{i \in P}\{(x_1,\ldots,x_n,x):x_i = \iota^{\tau_i-\tau}(t_i)\}))$$
 
-where a final bit of computation must be exhibited:  $\{(x_i,\ldots,x_n,x):x_i = t\}$ is realized as
-$I_1^{i-1}(I_3^{(n+1)-i}(\{t\} \times V))$.
+where a final bit of computation must be exhibited:  $\{(x_1,\ldots,x_n,x):x_i = t\}$ is realized as
+$I^{i-1}_{1,2}(\{\iota^{2(n-i)}(t_i)\}\times V))\cap \tau^*$
 
 
 
