@@ -47,6 +47,8 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should avoid metamathematics, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
 
+\item[4/25/2024:]  Edits to the proof of union of sets of singletons for clarity.
+
 \item[4/24/2024:]  A general reading pass.  I added one missing bibliography item.
 
 I corrected some indexing errors in section 2.5 on the Hailperin axioms.
@@ -1256,30 +1258,28 @@ If we have predicative comprehension and union, we note that for any formula $\p
 
 So what we need to show is that if  $\alpha>\beta>\gamma$ and $G \subseteq \tau_\gamma$, and $$\{\{g\}_\beta:g \in G\}_\alpha$$ is symmetric (has an $\alpha$-support, so belongs to $\tau_\alpha$), then $G_\beta$ is symmetric (has a $\beta$-support, so belongs to $\tau_\beta$).
 
-Suppose that $\{\{g\}_\beta:g \in G\}_\alpha$ is symmetric.  It then has a support $S$.  We claim that $S_{(\beta)}$, defined as $\{(z,C): {\tt max}(C)=\beta \wedge (z,C\cup \{\alpha\}) \in S$,  is a $\beta$-support for $G_\beta$.
+Suppose that $\{\{g\}_\beta:g \in G\}_\alpha$ is symmetric.  It then has a strong support $S$.  We claim that $S_{(\beta)}$, defined as $\{(z,C): {\tt max}(C)=\beta \wedge (z,C\cup \{\alpha\}) \in S$,  is a $\beta$-support for $G_\beta$.
 
 Any $g \in G$ has a $\gamma$-support $T$ which extends $(S_{(\beta)})_{(\gamma)}$. 
 
 Suppose that the action of the $\beta$-allowable permutation $\pi$ fixes $S_{(\beta)}$.
 
-Our plan is to use freedom of action technology to construct a permutation $\pi^*$ whose action on $S$ is the identity
+Our plan is to use freedom of action technology to construct an $\alpha$-allowable permutation $\pi^*$ whose action on $S$ is the identity
 and whose action on $T^{\{\alpha,\beta\}}$ precisely parallels the action of $\pi$ on $T^{\{\beta\}}$.
 
 If this is accomplished, then the action of $\pi^*$ fixes $S$ and so fixes $$\{\{g\}_\beta:g \in G\}_\alpha,$$ while at the same
 time $(\pi^*_\beta)_\gamma$ agrees with $\pi_\gamma$ on $G$.  This implies that $\pi_\gamma(g) \in G$ (and the same argument applies to $\pi^{-1}$)
 so $\pi$ fixes $\{\{g\}_\beta:g \in G\}$.
 
-Close up the $\gamma$-support $T$ under the processes of action of $\pi$ and inclusion of atoms at which $\pi$ acts exceptionally to obtain $T^*$.
+Close up the $\gamma$-support $T$ to a support $T^*$ under action of $\pi$ (for each $(x,A)$ in the range of $T^*$ and each integer $i$, $((\pi^i)^+_A``x,A) \in T^*$) and values at exceptions
+(if $(x,A) \in T^*$ and $y \in x \Delta x^\circ$, then $(\{y\},A) \in T^*$; in combination with closure under actions of $\pi$, this handles all exceptional actions).  That $T$ can be extended to a support with these properties should be clear.
 
 We construct the allowable permutation $\pi^*$ by Freedom of Action so that the action of $(\pi^*_\beta)_\gamma$ on atomic and flexible items in $T^*$ agrees with the action of $\pi_\gamma$ on $T^*$
 and the action of $\pi_*$ fixes atomic and flexible items in $S$.  On any non-flexible litter $L$ in $S$, $\pi^*_\beta$ acts correctly because it acts correctly on a support of the inverse image of $L$ under the appropriate $f$ map (fixing all of its elements), and there will be no unexpected exceptional actions because the permutation is constructed by Freedom of Action, so we get identity rather than nearness.
 The tricky case seems to require a little extra attention to the action on $T^*$:  if a non-flexible litter has inverse image $u$ under $f_{-1,\gamma}$, it is mapped by $\pi$ to something with inverse image $v$ under $f_{-1,\gamma}$, we arrange for the
 approximation generating $\pi^*$ to induce
-$\pi^*_\beta$ to map $\{u\}_\beta$ to $\{v\}_\beta$.  Thus  $(\pi^*_\beta)_\gamma$ maps $g$ to $\pi_\gamma(g)$ as required for the argument above.  That said, any non-flexible item is sent to its image under the appropriate derivative of $\pi$ because
+$\pi^*_\beta$ to map $\{u\}_\beta$ to $\{v\}_\beta$.  Thus  $(\pi^*_\beta)_\gamma$ maps $g$ to $\pi_\gamma(g)$ as required for the argument above.  Since the action of $\pi$ fixes $S_{(\beta)}$ there can be no conflict with the other obligation to fix $S$.  That said, any non-flexible item is sent to its image under the appropriate derivative of $\pi$ because
 a support is acted on correctly and there will be no exceptional actions of derivatives of $\pi^*$ disagreeing with exceptional actions of $\pi$ because $T^*$ is closed under exceptional actions of $\pi$ in litters.  This completes the argument.
-
-Note that difficult interactions with $S$ are avoided because an incompatibility of $\pi$ with fixing $S$ would involve moving most elements of a litter in the range of $f_{-1,\beta}$, and while $\pi$ may do this, nothing in the definition
-of $\pi^*$ can force this to happen;  there is no conflict between the conditions imposed by $S$ and the conditions imposed by $T^*$.
 
 This completes the proof.  In the formal proof in Lean, what is actually done is a proof that each of the assertions in the finite axiomatization of Hailperin in the version discussed in the final subsection of section 2  holds in all typed versions in our structure for the language of TTT, so it is in fact a model of TTT.  The axioms in Hailperin other than the axiom of type lowering are predicative comprehension axioms and
 admit demonstration by the methods of the previous subsection, done explicitly without metamathematics.  In the formalization, the axiom of type lowering, which contains rather more content than the axiom of set union restricted to sets of singletons which is proved here, is proved by first proving the existence of an iterated image under elementwise application of the singleton operation of the desired set, whose definition is predicative, then repeatedly applying the result of this section that sets of singletons have unions.
