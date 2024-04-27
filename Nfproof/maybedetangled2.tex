@@ -47,6 +47,8 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should avoid metamathematics, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
 
+\item[4/26/2024:]  This version has a differently formatted and I hope clearer presentation of the proof that Con(TTT(U)) is equivalent to Con(NF(U)).
+
 \item[4/25/2024:]  Edits to the proof of union of sets of singletons for clarity.
 
 I added a footnote noting the similarity of the development leading up to the definition of
@@ -307,15 +309,40 @@ There is now a striking
 
 \item[Theorem (Holmes):]  TTT(U) is consistent iff NF(U) is consistent.
 
-\item[Proof:]  Suppose NF(U) is consistent.  Let $(M,E)$ be a model of NF(U) (a set $M$ with a membership relation $E$).  Implement type $\alpha$ as $M \times \{\alpha\}$ for
+\item[Proof:]  
+\begin{enumerate}
+
+\item Suppose NF(U) is consistent.  Let $(M,E)$ be a model of NF(U) (a set $M$ with a membership relation $E$).  Implement type $\alpha$ as $M \times \{\alpha\}$ for
 each $\alpha<\lambda$.  Define $E_{\alpha,\beta}$ for $\alpha<\beta$ as $\{((x,\alpha),(y,\beta)):xEy\}$.  This gives a model of TTT(U).   Empty sets in TTTU present no essential additional difficulties.
 
-Suppose TTT(U) is consistent, and so we can assume we are working with a fixed model of TTT(U).  Let $\Sigma$ be a finite set of sentences in the language of TST(U).  Let $n$ be the smallest type such that no type $n$ variable occurs in any sentence in $\Sigma$.  We define a partition of the $n$-element subsets of $\lambda$.  Each $A \in [\lambda]^n$ is put in a compartment
-determined by the truth values of the sentences $\phi^s$ in our model of TTT(U), where $\phi \in \Sigma$ and ${\tt rng}(s \lceil \{0,\ldots,n-1\}) = A$.  By Ramsey's theorem, there is a homogeneous set $H \subseteq \lambda$ for this partition, which includes the range of a strictly increasing sequence $h$.  There is a complete extension of TST(U) which includes
-$\phi$ iff the theory of our model of TTT(U) includes $\phi^h$.  This extension satisfies $\phi \leftrightarrow \phi^+$ for each $\phi \in \Sigma$.  But this implies by compactness that the full Ambiguity Scheme $\phi \leftrightarrow \phi^+$ is consistent with TST(U), and so that NF(U) is consistent by the 1962 result of Specker.
+\item \begin{enumerate}
 
-We note that we can give a treatment of the result of Specker (rather different from Specker's own) using TTT(U).  Note that it is easy to see that if we have a model of TST(U) augmented with a Hilbert symbol (a primitive term construction $(\epsilon x:\phi)$ (same type as $x$) with axiom scheme $\phi[(\epsilon x:\phi)/x] \leftrightarrow (\exists x:\phi)$) which cannot appear in instances of comprehension (the quantifiers are not defined in terms of the Hilbert symbol, because they do need to appear in instances of comprehension) and Ambiguity (for all formulas, including those which mention the Hilbert symbol) then we can readily get a model of NF, by constructing a term model using the Hilbert symbol in the natural way, then identifying all terms with their type-raised versions.  All statements in the resulting type-free theory can be decided by raising types far enough (the truth value of an atomic sentence $(\epsilon x:\phi) \,R\, (\epsilon y:\psi)$ in the model of NF is determined by raising the type of both sides (possibly by different amounts) until the formula is well-typed in TST and reading the truth value of the type raised version;  $R$ is either = or $\in$).  Now observe that a model of TTT(U) can readily be equipped with a Hilbert symbol if this creates no obligation to add instances of comprehension
+
+\item Suppose TTT(U) is consistent, and so we can assume we are working with a fixed model of TTT(U).  Let $\Sigma$ be a finite set of sentences in the language of TST(U).  Our first aim is to construct a model of TST(U) in which $\phi \leftrightarrow \phi^+$ holds for each sentence $\phi \in \Sigma$.
+
+\item Let $n$ be the smallest type such that no type $n$ variable occurs in any sentence in $\Sigma$.  We define a partition of the $n$-element subsets of $\lambda$.  Each $A \in [\lambda]^n$ is put in a compartment
+determined by the truth values of the sentences $\phi^s$ in our model of TTT(U), where $\phi \in \Sigma$ and ${\tt rng}(s \lceil \{0,\ldots,n-1\}) = A$.  By Ramsey's theorem, there is a homogeneous set $H \subseteq \lambda$ for this partition, which includes the range of a strictly increasing sequence $h$.  
+
+\item Any strictly increasing sequence $s$ determines a model of TST(U) in which each type $i$ is implemented as type $s(i)$ of our fixed model of TTT(U)  and membership in the derived model of TST(U) of type $i$ objects in type $i+1$ objects is implemented as membership in the fixed model of TTT(U) is implemented as membership of type $s(i)$ objects in type $s(i+1)$ objects.
+
+\item This model determined in this way by $h$ satisfies  $\phi \leftrightarrow \phi^+$ for each $\phi \in \Sigma$.   This achieves our first aim.
+
+\item But this implies by compactness that the full Ambiguity Scheme $\phi \leftrightarrow \phi^+$ is consistent with TST(U).  We could at this point say that  NF(U) is consistent by the 1962 result of Specker, but we will continue and indicate how to prove this directly.
+
+\item If we have a model of TST(U) augmented with a Hilbert symbol (a primitive term construction $(\epsilon x:\phi)$ (same type as $x$) with axiom scheme $\phi[(\epsilon x:\phi)/x] \leftrightarrow (\exists x:\phi)$) which cannot appear in instances of comprehension (the quantifiers are not defined in terms of the Hilbert symbol, because they do need to appear in instances of comprehension) and Ambiguity (for all formulas, including those which mention the Hilbert symbol) then we can readily get a model of NF, by constructing a term model using the Hilbert symbol in the natural way, then identifying all terms with their type-raised versions.  
+
+\item All statements in the resulting type-free theory can be decided by raising types far enough (the truth value of an atomic sentence $(\epsilon x:\phi) \,R\, (\epsilon y:\psi)$ in the model of NF is determined by raising the type of both sides (possibly by different amounts) until the formula is well-typed in TST and reading the truth value of the type raised version;  $R$ is either = or $\in$). 
+
+\item  Now observe that a model of TTT(U) can readily be equipped with a Hilbert symbol if this creates no obligation to add instances of comprehension
 containing the Hilbert symbol (use a well-ordering of the set implementing each type to interpret a Hilbert symbol  $(\epsilon x:\phi)$ in that type as the first $x$ such that $\phi$), and the argument above for consistency of TST(U) plus Ambiguity with the Hilbert symbol goes through.
+
+\item  We remark that our method of proving the Specker ambiguity result is distinctly different from the original method.
+
+\item From this it follows that NF(U) is consistent.
+
+\end{enumerate}
+
+\end{enumerate}
 
 \item[Theorem (essentially due to Jensen):]  NFU is consistent.
 
