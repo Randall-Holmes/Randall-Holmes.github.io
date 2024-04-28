@@ -47,6 +47,10 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should avoid metamathematics, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
 
+\item[4/28/2024:]  I have noticed a problem for the conclusions section (not affecting the main paper at all):  $\lambda <\kappa$ prevents the axiom of cantorian sets or the axiom of large ordinals from holding in the resulting model of NF.   I have modified the hypotheses on the cardinal parameters, and I am told that at least the permission to have $\lambda>\kappa$ is easily supported in the formalization;  the changes in the paper argument are minimal and clearly things go through.  A further hypothesis needed to get a model with Cantorian Sets is indicated in footnotes, and seems also to be demonstrable.
+
+For the record, the hypothesis $\lambda < \kappa$ is still at this time made in the formalization, and this supports consistency of NF, but a model of NF constructed under this hypothesis will most definitely refute Cantorian Sets.
+
 \item[4/27/2024:]  minor revisions of the revised argument for the equivalence of strength of TTT(U) and NF(U).
 
 \item[4/26/2024:]  This version has a differently formatted and I hope clearer presentation of the proof that Con(TTT(U)) is equivalent to Con(NF(U)).
@@ -85,6 +89,8 @@ as of 11:36 pm, corrected oversimplifications of the discussion of why the Hailp
 as of 4:30 pm, added a final section to section 2 on the Hailperin axiomatization in the version actually used in the formalization and comments on its use in the formal proof in the last subsection of section 4.
 
 The new material on the Hailperin axioms is quite dense and needs reading.
+
+
 
 \item[4/21/2024:]  as of 1147 am, posted revised text for the Freedom of Action Theorem proof, emphasizing the point that a recursion on $\iota_*$ drives the order in which computations are made in every case.
 
@@ -659,9 +665,9 @@ for $x \in \tau_\alpha$ that $x \cap \tau^*_\beta$ is the extension of $x$ over 
 
 Let $\lambda$ be a limit ordinal.  Let $\leq_\tau$ be the order on $\lambda \cup \{-1\}$ which has $-1$ as minimal and agrees otherwise with the usual order on $\lambda$.
 
-Let $\kappa>\lambda$ be a regular cardinal (that is, a regular initial ordinal).  Note that since $\kappa>\lambda$, $\kappa$ is uncountable.  Sets of cardinality $<\kappa$ we call ``small".  Sets which are not small we may call ``large".
+Let $\kappa$ be an uncountable regular cardinal (that is, a regular initial ordinal).  Sets of cardinality $<\kappa$ we call ``small".  Sets which are not small we may call ``large".
 
-Let $\mu$ be a strong limit cardinal greater than $\kappa$ with cofinality at least $\kappa$.
+Let $\mu$ be a strong limit cardinal greater than ${\tt max}(\kappa,\lambda)$ with cofinality at least $\kappa$.
 
 Let $\tau^*_{-1}=\tau_{-1}$ be $$\{(\nu,\beta,\gamma,\alpha):\nu<\mu \wedge  \beta \in \lambda\cup \{-1\} \wedge \gamma \in \lambda \setminus \{\beta\}\wedge \alpha<\kappa\}.$$  Note that this completes the definition of the supertype structure we are working in:  we now have a definite reference
 for $\tau^*_\alpha$ for $\alpha\in \lambda$.
@@ -916,7 +922,7 @@ We define the action of a $\beta$-allowable permutation $\pi$ on a $\beta$-suppo
 An element $x$ of $\tau^*_\beta$ ($\beta \geq 0$) has $\beta$-support $S$ iff for every $\beta$-allowable permutation $\pi$, if $\pi[S] = S$ then $\pi(x)=x$.  We say that  an element $x$ of $\tau^*_\beta$ which has a $\beta$-support is $\beta$-symmetric. Every element of $\tau_{-1}$ has the empty set as support (by fiat, as noted).
 
 It is straightforward to observe that there are $\mu$ supports, since there are $\mu$ atoms, $\mu$ near-litters, and
-$<\kappa$ finite sets of elements of $\lambda$.  Thus $\tau_\beta^+$ is already known to be of size $\mu$ for $\beta<\alpha$.
+$<\mu$ finite sets of elements of $\lambda$.  Thus $\tau_\beta^+$ is already known to be of size $\mu$ for $\beta<\alpha$.
 
 It is important to note that if $S$ is a support of $x\in \tau_\beta$, $\pi[S]$ is a support of $\pi(x)$ for any $\beta$-allowable permutation $\pi$.
 
@@ -1161,7 +1167,7 @@ such that $S_{F(\delta)} = (T^{\uparrow A_1})_\delta$ for each $\delta$ in the d
 \item[Remark:]  It should be evident that every support has a specification, and that a strong support will have a specification with no instances of $F = 1$, and that for any $\beta$-allowable permutation $\pi$ and strong $\beta$-support $S$,
 $(\pi[S])^* = S^*$.  What is less evident and our first target result here is that if $S$ is a strong support then any $T$ with $T^* = S^*$ is the image of $S$ under the action of an allowable permutation:  the specifications precisely code the orbits in the strong supports under the allowable permutations.
 
-\item[Observation:]  On the inductive hypothesis that there are $<\mu$ $\gamma$-coding functions for each $\gamma<\beta$, we observe that there are $<\mu$ specifications of $\beta$-supports for $\beta\leq \alpha$.
+\item[Observation:]  On the inductive hypothesis that there are $<\mu$ $\gamma$-coding functions for each $\gamma<\beta$, we observe that there are $<\mu$ specifications of $\beta$-supports for $\beta\leq \alpha$.\footnote{On the strong assumption that $\lambda$ itself is a strong limit cardinal greater than $\kappa$ with cofinality at least $\kappa$, and the stronger inductive hypothesis that there are $<\lambda$ $\gamma$-coding functions for each $\gamma<\beta$, there are $<\lambda$ such specifications.}
 
 \item[Lemma:]  The specification(s) of a strong $\beta$-support exactly determine the orbit in the action of $\beta$-allowable permutations on supports to which it belongs:  if two $\beta$-supports have the same specification, they are in the same orbit.
 
@@ -1219,7 +1225,7 @@ This establishes that the collection of orbits in the $\beta$-supports is no lar
 
 
 
-The strategy of our argument for the size of the types is to show that that there are $<\mu$ coding functions for each type, which implies that there are no more than $\mu$ (and so exactly $\mu$) elements of each type, since every element of a type is obtainable by applying a coding function (of which there are $<\mu$) to a support (of which there are $\mu$).
+The strategy of our argument for the size of the types is to show that that there are $<\mu$ coding functions\footnote{or, on stronger hypotheses mentioned in an earlier footnote, $<\lambda$ coding functions} for each type, which implies that there are no more than $\mu$ (and so exactly $\mu$) elements of each type, since every element of a type is obtainable by applying a coding function (of which there are $<\mu$) to a support (of which there are $\mu$).
 
 \begin{description}
 
@@ -1245,7 +1251,7 @@ If we have the further condition that $T_b$ and $T_{b'}$ have the same specifica
 that $\pi_2(\{b\}_\alpha) = \{b'\}_\alpha$ so $\{b\}_\alpha$ and $\{b'\}_\alpha$ are in the range of the same coding function $\chi_{\{b\}_\alpha,T_b}$.  Now there are $<\mu$ possible specifications of a coding function $\chi_{b,S_b}$ [we know that there are $<\mu$ $\beta$-coding functions]  followed by a specification for $T_b$ [we know that there are $<\mu$ $\alpha$-specifications], so by this procedure we describe a family of $<\mu$ coding functions $\chi_{\{b\}_\alpha,T_b}$ whose range covers all type $\alpha$ singletons of elements of $B$.
 
 
-We claim that $\chi_{X,S}$ can be defined in terms of the orbit of $S$ in the allowable permutations and the set of coding functions $\chi_{\{b\}_\alpha,T_b}$ for $b \in B$.  There are $<\mu$ coding functions $\chi_{\{b\}_\alpha,T_b}$ for $b \in \tau_\beta$, and so there are $<\mu$ sets of coding functions of this kind, because $\mu$ is strong limit, and we have shown above that there are $<\mu$ orbits in the $\alpha$-strong supports under allowable permutations, so this will imply that there are $<\mu$ $\alpha$-coding functions, which will further imply that there are $\leq \mu$ elements of type $\alpha$ (it is obvious that there are $\geq \mu$ elements of each type).
+We claim that $\chi_{X,S}$ can be defined in terms of the orbit of $S$ in the allowable permutations and the set of coding functions $\chi_{\{b\}_\alpha,T_b}$ for $b \in B$.  There are $<\mu$ coding functions $\chi_{\{b\}_\alpha,T_b}$ for $b \in \tau_\beta$, and so there are $<\mu$ sets of coding functions of this kind, because $\mu$ is strong limit, and we have shown above that there are $<\mu$ orbits in the $\alpha$-strong supports under allowable permutations, so this will imply that there are $<\mu$ $\alpha$-coding functions, which will further imply that there are $\leq \mu$ elements of type $\alpha$ (it is obvious that there are $\geq \mu$ elements of each type).\footnote{Under stronger hypotheses mentioned above, we get $<\lambda$ coding functions.}
 
 
 The definition that we claim works is that $\chi_{X,S}(U) = B'_\alpha$, where $B'$ is the set of all $\bigcup (\chi_{\{b\}_\alpha,T_b}(U')\cap \pi_\beta$) for $b \in B$ and $U$ a terminal segment of  $U'$.  Clearly this definition depends only on the orbit of $S$ and the set of coding functions $\chi_{\{b\}_\alpha,T_b}$ derived from $B$ as described above.  Before we know that this is actually the coding function desired, we will write it as $\chi_{X,S}^*$.
@@ -1348,7 +1354,7 @@ That the continuum can be well-ordered or that the axiom of dependent choices ca
 
 Questions of consistency with NF of global choice-like statements such as ``the universe is linearly ordered"  cannot be resolved by the method used here (at least, not without major changes).  One statement which seems to be about big sets can be seen to hold in our models:  the power set of any well-orderable set is well-orderable, and more generally, beth numbers are alephs.  We indicate the proofs:  a relation which one of our models of TTT thinks is a well-ordering actually is a well-ordering, because the models are countably complete;  so a well-ordering with a certain support has all elements of its domain sets with the same support (a permutation whose action fixes a well-ordering has action fixing all elements of its domain), and all subsets of and relations on the domain are sets with the same support (adjusted for type differential), and this applies further to the well-ordering of the subsets of the domain which we find in the metatheory.  Applying the same result to sets with well-founded extensional relations on them proves the more general result about beth numbers.  This form of choice seems to allow us to use choice freely on any structure one is likely to talk about in the usual set theory.  It also proves, for example, that the power set of the set of ordinals (a big set!) is well-ordered.
 
-NF with strong axioms such as the Axiom of Counting (introduced by Rosser in \cite{rosser}, an admirable textbook based on {\em NF\/}), the Axiom of Cantorian Sets (introduced in \cite{henson})  or my axioms of Small Ordinals and Large Ordinals (introduced in  my \cite{mybook}, which pretends to be a set theory textbook based on {\em NFU\/}) can be obtained by choosing $\lambda$ large enough to have strong partition properties, more or less exactly as I report in my paper \cite{strongaxioms} on strong axioms of infinity in NFU:  the results in that paper are not all mine, and I owe a good deal to Robert Solovay in that connection (unpublished conversations and \cite{nfub}).
+NF with strong axioms such as the Axiom of Counting (introduced by Rosser in \cite{rosser}, an admirable textbook based on {\em NF\/}), the Axiom of Cantorian Sets (introduced in \cite{henson})\footnote{Getting Cantorian Sets or Large Ordinals to hold is very sensitive to the relationship between $\kappa$ and $\lambda$, and the first author is not yet entirely certain of the details.  It requires the hypothesis mentioned above in footnotes that $\lambda > \kappa$ is a strong limit cardinal of cofinality $\geq \kappa$, to avoid outright refutability of this axiom in resulting models of NF, and then a large cardinal hypothesis.} or my axioms of Small Ordinals and Large Ordinals (introduced in  my \cite{mybook}, which pretends to be a set theory textbook based on {\em NFU\/}) can be obtained by choosing $\lambda$ large enough to have strong partition properties, more or less exactly as I report in my paper \cite{strongaxioms} on strong axioms of infinity in NFU:  the results in that paper are not all mine, and I owe a good deal to Robert Solovay in that connection (unpublished conversations and \cite{nfub}).
 
 That NF has $\alpha$-models for each standard ordinal $\alpha$ should follow by the same methods Jensen used for NFU in his original paper \cite{nfu}.   No model of NF can contain all countable subsets of its domain;  all well-typed combinatorial consequences
 of closure of a model of TST under taking subsets of size $<\kappa$ will hold in our models, but the application of compactness which gets us from TST + Ambiguity to NF forces the existence of externally countable proper classes, a result which has long been known and which also holds in NFU.
