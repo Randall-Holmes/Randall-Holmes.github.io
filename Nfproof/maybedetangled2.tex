@@ -47,6 +47,8 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should avoid metamathematics, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
 
+\item[5/14/2024:]  I have made an explicit list of the hypotheses of the recursive construction in section 3, noting where they are used and where they are verified for subsequent stages.
+
 \item[5/5/2024:]  Updates to the postscript.  Later, added a footnote about the rumors of inconsistency derived from the inconsistency of the first edition of ML and falsely ascribed to NF.
 
 \item[5/3/2024:]  Added a postscript commenting on philosophical relevance.
@@ -419,7 +421,7 @@ type $i+1$ as inhabited by sets of type $i$ objects in the obvious way, identify
 
 In a model of TTT, do this along some increasing sequence of types of order type $\omega$ whose range includes an infinite ordinal $\alpha$.  In the resulting model of bounded Zermelo set theory,
 let $\tau_A$ represent the cardinality of the range of $\iota_A$ as in the previous discussion (for nonempty subsets of type $A$ all with maximum the same infinite $\alpha$).  Suppose further for the sake of argument that our model of TTT is $\lambda$-complete, in the sense that any subset of a type of cardinality that of $\lambda$ or less is implemented as a set in each higher type.
-It will follow that $A \mapsto \tau_A$ is actually a function. [It is an incidentally interesting fact that the models we construct (with no dependence on this section) actually have this completeness property].
+It will follow that $A \mapsto \tau_A$ is actually a function. [It is an incidentally interesting fact that the models we construct (with no dependence on this section) can have this completeness property (using section 3 terminology, under the condition $\lambda<\kappa$ we have $\lambda$-completeness; $\alpha<\kappa$ actually suffices for existence of a tangled web)].
 
 We describe the situation which holds for these cardinals.  
 
@@ -720,8 +722,48 @@ $\mu_0 = 0$.  $f_0$ is the empty function.  $\mu_{\alpha+1}=2^{\mu_\alpha}$.  $f
 to ${\cal P}({\mu_\alpha})$ from the smallest segment in $\mu$ of the correct cardinality whose lower limit is the first ordinal not in the range of $f_{\alpha}$.  For a limit ordinal $\lambda$, $\mu_{\lambda}$ is the supremum of the set of
 $\mu_\beta$ for $\beta<\lambda$ and $f_{\lambda}$ is a bijection to ${\cal P}({\mu_\lambda})$ from the smallest
 segment in $\mu$ of the correct cardinality whose lower limit is the first ordinal not in the range of any
-$f_\beta$ for $\beta<\lambda$.   Because $\mu$ is a strong limit cardinal of cofinality $\geq \kappa$, the first undefined $f_\alpha$ must be at a limit and satisfy $\alpha \geq \kappa$ and $\mu_\alpha = \mu$.   The union of the maps $f_\alpha$ is a function with domain $\mu$ whose range includes every small subset of $\mu$, because any small subset of $\mu$ must be included as a subset in some $\mu_\alpha$, $\alpha<\mu$.
+$f_\beta$ for $\beta<\lambda$.   Because $\mu$ is a strong limit cardinal of cofinality $\geq \kappa$, the first $\alpha$ for which $f_\alpha$ is undefined must be at a limit and satisfy $\alpha \geq \kappa$ and $\mu_\alpha = \mu$.   The union of the maps $f_\alpha$ is a function with domain $\mu$ whose range includes every small subset of $\mu$, because any small subset of $\mu$ must be included as a subset in some $\mu_\alpha<\mu$.
 
+
+\end{description}
+
+The construction of the types $\tau_\alpha$ is by a recursion.  The initial type $\tau_{-1}$ has already been defined.  For an ordinal $\alpha<\mu$ we are assuming that $\tau_\beta$ for $-1\leq \beta<\alpha$ have already been constructed and satisfy various hypotheses of the recursion.  We state hypotheses of the recursion in the following subsections in which the construction of $\tau_\alpha$ is described.  We list them here as well, but they are likely best understood where they are encountered in the construction.  Each of these is enforced for $\alpha$ as well:  most of these conditions are explicitly enforced in the course of the construction of $\tau_\alpha$ in this section, but that ({\bf I2}) holds for $\alpha$ requires an extensive proof in the next section.
+
+\begin{description}
+
+\item[(I1):]  We assume that for $\gamma<\beta<\alpha$, if $x \in \tau_\beta$, $x \cap \tau^*_\gamma \subseteq \tau_\gamma$.
+
+\item[(I2):]  We suppose that each $\tau_\beta$ already constructed is of cardinality $\mu$.  Note that we already know that
+$\tau_{-1}$ is of cardinality $\mu$.
+
+\item[(I3):]  We further intimate that for each $x \in \tau_\gamma$, $-1<\gamma<\alpha$, we have defined objects $S$ for which we say that $S$ is a support of $x$.  [This is introduced before the definition of support is actually given].
+
+\item[(I4):]  We also provide a well-ordering $\leq^+_\gamma$ of order type $\mu$ of $\tau_\gamma^+$ ($-1 \leq \gamma <\alpha$), by postulating an injection $\iota^+_\gamma$ from $\tau_\gamma^+$ into $\mu$ (it does not need to be onto) and defining $x \leq^+_\gamma y$ as $\iota^+_\gamma(x) \leq \iota^+_\gamma(y)$.    For any model element $x$ and support $S$ of $x$, we define $\iota^+_*(x,S)$ as $\iota^+_\gamma(x,S)$, where $x \in \tau_\gamma$.    [Hypotheses of the recursion about maps $\iota^+_\gamma$ are stated later].
+
+\item[(I5):]  We provide that for every near litter $N$ and every $\beta<\alpha$, there is a unique element $N_\beta$ of $\tau_\beta$ such that $N_\beta \cap \tau_{-1}=N$.
+
+\item[(I6):]  We further stipulate that extensionality holds for each $\beta\in \alpha$ (for each $\gamma\in \beta$, any $x \in \tau_\beta$ is uniquely determined by $x \cap \tau_\gamma$;  $x$ is uniquely determined by $x \cap \tau_{-1}$ only on the additional assumption that $x \cap \tau_{-1}$ is nonempty).
+
+\item[(I7):]  We assert that $\iota_*(N) \leq \iota_*^+(N_\delta,S)$ will hold for any near litter $N$ and support $S$ of $N_\delta$, $\delta<\alpha$.  This depends on the definition
+of the position function $\iota_*$ which appears below at a convenient point but involves no recursion.  This appears on a list of hypotheses about $\iota_*^+$ which appears later, because it is used early.
+
+\item[(I8):]  We presume that all elements of $\tau_\beta$, $\beta\in \alpha$, are pre-extensional.   The definition of this term appears below.
+
+\item[(I9):]  We assume that all elements of $\tau_\beta$'s already constructed are extensional.  The definition of this term appears below.
+
+\item[(I10):]  We stipulate that all elements of $\tau_\beta$ have $\beta$-supports.
+
+\item[(I11):]  The conditions constraining choice of functions $\iota^+_\beta$ ($-1 < \beta < \alpha$) are
+
+\begin{enumerate}
+
+\item $\iota_*(t) < \iota^+_*(x,S)$ if $(t,A)$ is in the range of $S$ and $x$ is not a typed atom or near-litter
+
+\item $\iota_*(t) \leq \iota^+_*(t_\gamma,S)$
+
+\end{enumerate}
+
+We then define $x \leq^+_\beta y$ as $\iota^+_\beta(x) \leq \iota^+_\beta(y)$.
 
 \end{description}
 
@@ -733,20 +775,20 @@ $f_\beta$ for $\beta<\lambda$.   Because $\mu$ is a strong limit cardinal of cof
 The levels of the structure we will define are denoted by $\tau_\alpha$ for \newline $\alpha \in \lambda \cup \{-1\}$.  As we have already noted, $\tau_{-1}=\tau^*_{-1}$ as defined above.
 
 In defining $\tau_\alpha \subseteq \tau^*_\alpha$ for each $\alpha$, we assume that we have already defined $\tau_\beta$ for each $\beta<\alpha$, and that the system of types $\{\tau_\beta:\beta <_\tau \alpha\}$ already defined satisfies various hypotheses which we will discuss as we go.
-Elements $x$ of $\tau^*_\alpha$ which we consider for membership in $\tau_\alpha$ will have $x \cap \tau^*_\beta \subseteq \tau_\beta$ for $\beta<\alpha$.  We assume that for $\gamma<\beta<\alpha$, if $x \in \tau_\beta$, $x \cap \tau^*_\gamma \subseteq \tau_\gamma$.
+Elements $x$ of $\tau^*_\alpha$ which we consider for membership in $\tau_\alpha$ will have $x \cap \tau^*_\beta \subseteq \tau_\beta$ for $\beta<\alpha$.  We assume that for $\gamma<\beta<\alpha$, if $x \in \tau_\beta$, $x \cap \tau^*_\gamma \subseteq \tau_\gamma$ ({\bf  I1}).
 
 We suppose that each $\tau_\beta$ already constructed is of cardinality $\mu$.  Note that we already know that
-$\tau_{-1}$ is of cardinality $\mu$.
+$\tau_{-1}$ is of cardinality $\mu$ ({\bf I2}).
 
 
-We further intimate that for each $x \in \tau_\gamma$, $-1<\gamma<\alpha$, we have defined objects $S$ for which we say that $S$ is a support of $x$.  The definition of supports will be given later.  For the moment, we define $\tau_\gamma^+$ as the set of all $(x,S)$ for which $x \in \tau_\gamma$ and $S$ is a support of $x$.  It is a hypothesis of the recursion
+We further intimate that for each $x \in \tau_\gamma$, $-1<\gamma<\alpha$, we have defined objects $S$ for which we say that $S$ is a support of $x$.  The definition of supports will be given later ({\bf I3}).  For the moment, we define $\tau_\gamma^+$ as the set of all $(x,S)$ for which $x \in \tau_\gamma$ and $S$ is a support of $x$.  It is a hypothesis of the recursion
 that $\tau_\gamma$ is of cardinality $\mu$, from which it follows that  $\tau^+_\gamma$ is of cardinality $\mu$, since there are $\mu$ supports (as we will see when supports are defined). We provide that $\tau_{-1}^+$ is the set
 of all $(x,\emptyset)$ for $x \in \tau_{-1}$.  
 
-We also provide a well-ordering $\leq^+_\gamma$ of order type $\mu$ of $\tau_\gamma^+$ ($-1 \leq \gamma <\alpha$), by postulating an injection $\iota^+_\gamma$ from $\tau_\gamma^+$ into $\mu$ (it does not need to be onto) and defining $x \leq^+_\gamma y$ as $\iota^+_\gamma(x) \leq \iota^+_\gamma(y)$.   There are some hypotheses of the recursion about maps $\iota^+_\gamma$ which are stated below.   For any model element $x$ and support $S$ of $x$, we define $\iota^+_*(x,S)$ as $\iota^+_\gamma(x,S)$, where $x \in \tau_\gamma$.
+We also provide a well-ordering $\leq^+_\gamma$ of order type $\mu$ of $\tau_\gamma^+$ ($-1 \leq \gamma <\alpha$), by postulating an injection $\iota^+_\gamma$ from $\tau_\gamma^+$ into $\mu$ (it does not need to be onto) and defining $x \leq^+_\gamma y$ as $\iota^+_\gamma(x) \leq \iota^+_\gamma(y)$.   There are some hypotheses of the recursion about maps $\iota^+_\gamma$ which are stated below ({\bf I4}).   For any model element $x$ and support $S$ of $x$, we define $\iota^+_*(x,S)$ as $\iota^+_\gamma(x,S)$, where $x \in \tau_\gamma$.
 
 
-We provide that for every near litter $N$ and every $\beta<\alpha$, there is a unique element $N_\beta$ of $\tau_\beta$ such that $N_\beta \cap \tau_{-1}=N$ (we will quite shortly give a precise description of all extensions of this object).
+We provide that for every near litter $N$ and every $\beta<\alpha$, there is a unique element $N_\beta$ of $\tau_\beta$ such that $N_\beta \cap \tau_{-1}=N$ (({\bf I5}):  we will quite shortly give a precise description of all extensions of this object).
 
 \begin{description}
 
@@ -758,7 +800,7 @@ If $x \in \tau_{-1}$, we refer to any $\{x\}_\beta$ as a {\em typed atom\/} (of 
 
 \end{description}
 
-We further stipulate that extensionality holds for each $\beta\in \alpha$ (for each $\gamma\in \beta$, any $x \in \tau_\beta$ is uniquely determined by $x \cap \tau_\gamma$;  $x$ is uniquely determined by $x \cap \tau_{-1}$ only on the additional assumption that $x \cap \tau_{-1}$ is nonempty)
+We further stipulate ({\bf I6}) that extensionality holds for each $\beta\in \alpha$ (for each $\gamma\in \beta$, any $x \in \tau_\beta$ is uniquely determined by $x \cap \tau_\gamma$;  $x$ is uniquely determined by $x \cap \tau_{-1}$ only on the additional assumption that $x \cap \tau_{-1}$ is nonempty)
 \begin{description}
 \item[position function for atoms and near-litters:]  We posit a bijection $\iota_*$ from the set of all atoms and near-litters to $\mu$ with the following properties:
 
@@ -775,7 +817,7 @@ We further stipulate that extensionality holds for each $\beta\in \alpha$ (for e
 The function may be constructed directly: first choose an ordering of type $\mu$ on litters, then put atoms directly after the litter they are inside (and before all later litters), then put near-litters after the corresponding litter and all atoms in the symmetric difference, then map each atom or near-litter to its position in the resulting order.
 We don't run out of room before finishing the construction because \( \mu \) has cofinality at least \( \kappa \).
 
-An additional property involving $\iota_*$ which is enforced by inductive hypotheses explained later about the maps $\iota_\beta^+$ is that $\iota_*(N) \leq \iota_*^+(N_\delta,S)$ will hold for any near litter $N$ and support $S$ of $N_\delta$.  It must be noted here because it is shortly used.
+An additional property involving $\iota_*$ which is enforced by inductive hypotheses explained later about the maps $\iota_\beta^+$ is that $\iota_*(N) \leq \iota_*^+(N_\delta,S)$ will hold for any near litter $N$ and support $S$ of $N_\delta$ ({\bf I7)}.  It must be noted here because it is shortly used.
 
 
 \item [the definition of the $f$ maps (crucially important)] \footnote{The use of model elements with support rather than simply model elements as domain elements of the $f$ maps is a substantial contribution of the second author to the mathematics of the paper, above simply verifying the work of the first author.  The proof could be carried out without this, but it is much easier to present with this refinement.  There are other ways in which the second author has contributed to the mathematics, but this one is especially worthy of note.}:
@@ -804,7 +846,7 @@ $x \cap \tau_{-1}$ is nonempty or if any $x \cap \tau_\delta$ ($\delta \in \beta
 
 \end{description}
 
-We presume that all elements of $\tau_\beta$, $\beta\in \alpha$, are pre-extensional. 
+We presume that all elements of $\tau_\beta$, $\beta\in \alpha$, are pre-extensional ({\bf I8}). 
 
  
 
@@ -862,7 +904,7 @@ and $D$ has an even number of iterated images under $A^{-1}$, then it is the uni
 
 \end{description}
 
-We assume that all elements of $\tau_\beta$'s already constructed are extensional.  This completes the mechanism for enforcement of extensionality in the structure we are defining.
+We assume that all elements of $\tau_\beta$'s already constructed are extensional ({\bf I9}).  This completes the mechanism for enforcement of extensionality in the structure we are defining.
 
 \subsection{Allowable permutations and supports}
 
@@ -874,10 +916,10 @@ We assume that all elements of $\tau_\beta$'s already constructed are extensiona
 
 \item[structural permutations defined:]  We define classes of permutations of our structures.
 
-A $-1$-structural permutation is a permutation of $\tau_{-1}$.
+A $-1$-structural permutation is a permutation of $\tau_{-1}^* = \tau_{-1}$.
 
-An $\alpha$-structural permutation is a permutation $\pi$ of $\tau_\alpha$ such that for each type $\beta<\alpha$ there is a $\beta$-structural permutation
-$\pi_\beta$ such that $\pi(x) \cap \tau_\beta = \pi_\beta``(x \cap \tau_\beta)$ for any $x \in \tau_\beta$.
+An $\alpha$-structural permutation is a permutation $\pi$ of $\tau_\alpha^*$ such that for each type $\beta<\alpha$ there is a $\beta$-structural permutation
+$\pi_\beta$ such that $\pi(x) \cap \tau^*_\beta = \pi_\beta``(x \cap \tau^*_\beta)$ for any $x \in \tau^*_\beta$.
 
 \item[derivatives of structural permutations:]  The maps $\pi_\beta$ are referred to as derivatives of $\pi$.
 
@@ -890,17 +932,17 @@ We introduce the brief notation $\pi^+_A(x) = \pi_{A \cup \{-1\}}(x)$ where $x \
 
 A $-1$-allowable permutation is a permutation $\pi$ of $\tau_{-1}$ such that for any near-litter $N$, $\pi``N$ is a near-litter.
 
-An $\alpha$-allowable permutation is an $\alpha$-structural permutation, each of whose derivatives $\pi_\beta$ is a $\beta$-allowable permutation (and satisfies the condition that $\pi_\beta``\tau_\beta = \tau_\beta$) and which satisfies a coherence condition relating the $f$ maps and derivatives of the permutation:  for suitable $\beta,\gamma<\alpha$, $$f_{\beta,\gamma}(\pi_\beta(x),\pi_{\beta}[S]) \sim \pi_\gamma^+``f_{\beta,\gamma}(x,S).$$  (where the action of allowable
+An $\beta$-allowable permutation ($\beta \leq \alpha$) is an $\beta$-structural permutation, each of whose derivatives $\pi_\gamma$ is a $\gamma$-allowable permutation (and satisfies the condition that $\pi_\gamma``\tau_\gamma = \tau_\gamma$) and which satisfies a coherence condition relating the $f$ maps and derivatives of the permutation:  for suitable $\gamma,\delta<\beta$, $$f_{\gamma,\delta}(\pi_\gamma(x),\pi_{\gamma}[S]) \sim \pi_\delta^+``f_{\gamma,\delta}(x,S).$$  (where the action of allowable
  permutations on supports will be defined shortly).
 
 Note that an $\alpha$-allowable permutation is actually defined on the entire supertype structure, though what interests us about it is its actions on objects in our purported TTT model.
 
-Of course, for each $-1<\beta<\alpha$ we have already defined $\beta$-allowable permutations in the same way earlier in the recursive construction.
 
 
 
 
-\item[Definition (support condition):]  A $\beta$-support condition is defined as a pair $(x,A)$, where 
+
+\item[Definition (support condition):]  A $\beta$-support condition ($\beta \in \alpha$) is defined as a pair $(x,A)$, where 
 \begin{enumerate}
 
 \item $A$ is a finite subset of $\lambda$  with maximum $\beta$ (note that it will not contain $-1$), 
@@ -962,10 +1004,12 @@ Now this implies that if $a \subseteq \tau_\gamma$, then $A^{-1}(a)$ exists and 
 
 
 
-\item[the definition of $\tau_\alpha$:]  We stipulate that all elements of $\tau_\beta$ have $\beta$-supports, and define $\tau_\alpha$ as the set of elements $x$ of $\tau^*_\alpha$ such that
+\item[the definition of $\tau_\alpha$:]  We stipulate that all elements of $\tau_\beta$ have $\beta$-supports ({\bf I10)}), and define $\tau_\alpha$ as the set of elements $x$ of $\tau^*_\alpha$ such that
 $x \cap \tau^*_{\beta} \subseteq \tau_\beta$ for each $\beta<\alpha$, $x$ is extensional, and $x$ has an $\alpha$-support.
 
-We still have to prove that the cardinality of $\tau_\alpha$, and so of $\tau^+_\alpha$, is $\mu$, to show that the construction works.
+The definition explicitly enforces {\bf I1, I3, I5 (a near-litter obviously has a support), I6, I8, I9, I10} for subsequent stages of the construction.
+
+We still have to prove that the cardinality of $\tau_\alpha$, and so of $\tau^+_\alpha$, is $\mu$, to show that the construction works (verification of {\bf I2} for subsequent stages is in the next section).
 
 \item[Observation ($\kappa$-completeness of the structure):]  For any subset $X$ with cardinality $<\kappa$ of a type $\gamma$ and $\beta>\gamma$, it should be clear that $X_\beta$ has a support, whose range is obtained from the union of the ranges of the supports of the elements of $X$  by replacing each element $(u,B)$ of the union of the ranges  with $(u,B \cup \{\beta\})$, and therefore belongs to the model.  $X_\beta$ is obviously extensional (the extension $X$ is clearly the distinguished extension and has no image under $A^{-1}$).
 
@@ -980,7 +1024,7 @@ The well-ordering $\leq_\alpha^+$ of $\tau_\alpha^+$ ($\alpha \in \lambda$) must
 
 \end{comment}
 
-The conditions constraining choice of functions $\iota^+_\beta$ ($-1 < \beta \leq \alpha$) are
+The conditions constraining choice of functions $\iota^+_\beta$ ($-1 < \beta \leq \alpha$) ({\bf I11, I4, I7 and verification of {\bf I4, I7, I11} for subsequent stages}) are
 
 \begin{enumerate}
 
@@ -1132,7 +1176,7 @@ The method of computation verifies that the coherence conditions will hold.  The
 \subsection{Types are of size $\mu$ (so the construction actually succeeds)}
 
 Now we argue that (given that everything worked out correctly already at lower types) each type $\alpha$ is of size $\mu$, which ensures
-that the construction actually succeeds at every type.
+that the construction actually succeeds at every type (verificaiton of {\bf I2} for subsequent stages of the construction is thus completed).
 
 \begin{description}
 
