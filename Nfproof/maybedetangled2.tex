@@ -27,7 +27,7 @@
 We are presenting an argument for the consistency of Quine's set theory New Foundations (NF) (see \cite{nf}).  The consistency of this theory relative to the usual systems of set theory has been an open question since the theory was proposed in 1937, with added urgency after Specker showed in 1954 that NF disproves the Axiom of Choice (see \cite{notac}).
 Jensen showed in 1969 that NFU (New Foundations with extensionality weakened to allow urelements) is consistent and in fact consistent with Choice (and also with Infinity and with further strong axioms of infinity) (see \cite{nfu}).  
 
-The first author showed the equiconsistency of NF with the quite bizarre system TTT (tangled type theory) in 1995 (see \cite{tangled};  I really don't recommend this paper; the presentation of its results here is better), which gave a possible approach to a consistency proof.  Since 2010, the first author has been attempting to write out proofs, first of the existence of a tangled web of cardinals in Mac Lane set theory [an indication of this approach is given below] and then directly of the existence of a model of tangled type theory.  These proofs are difficult to read, insanely involved, and involve the sort of elaborate bookkeeping which makes it easy to introduce errors every time a new draft is prepared.  The second author (with the assistance of others initially)
+The first author showed the equiconsistency of NF with the quite bizarre system TTT (Tangled Type Theory) in 1995 [see \cite{tangled)}, but this paper is not really recommened; the presentation of its results here is better], which gave a possible approach to a consistency proof.  Since 2010, the first author has been attempting to write out proofs, first of the existence of a tangled web of cardinals in Mac Lane set theory [an indication of this approach is given below] and then directly of the existence of a model of tangled type theory.  These proofs are difficult to read, insanely involved, and involve the sort of elaborate bookkeeping which makes it easy to introduce errors every time a new draft is prepared.  The second author (with the assistance of others initially)
 has formally verified the proof of the first author of the existence of a model of TTT (see \cite{wilshaw}), and so of the consistency of New Foundations, in the Lean proof verification system, and in the process has suggested minor corrections and considerable formal improvements to the argument originally proposed by the first author.  The second author reports that the formalized proof is still difficult to read and insanely involved with nasty bookkeeping.  Both authors feel that there ought to be a simpler approach, but the existing argument at least strongly resists attempts at simplification.
 
 All the theories mentioned here are discussed (and referenced) in the next section.
@@ -37,7 +37,12 @@ Any remarks in the first person singular may be attributed to the first author.
 \subsection{Acknowledgements}
 
 The first author thanks Robert Solovay, who read a number of early versions of a related argument for Con(NF) and offered just criticisms which I have tried to take to heart.  I also thank Thomas Forster and Asaf Karagila, who have endured attempts of mine to present various relatives of this argument at length.  Further, I thank Peter Lumsdaine
-and the members of the group of students at Cambridge who attempted formalization of an earlier version of this proof in Spring 2022.
+and the members of the group of students at Cambridge who attempted formalization of an earlier version of this proof in Summer 2022.
+\begin{comment}
+Thomas suggests thanking those who funded the first Lean effort. Queens,
+DPMMS and - more importantly - The Wes and Margaret foundation put up
+money. I should also thank Timothy Chow for promoting the 2022 activity.
+\end{comment}
 
 \subsection{Dated remarks on versions}
 
@@ -54,6 +59,8 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 1:10 pm further revisions after a pass through section 3 with Thomas.
 
 1:51 pm debugged the motivation of the coherence condition, which seems to have been edited to change variables around in a way that wasn't completed correctly.  It should now say the right things.
+
+7:45 pm:  some minor tweaks in response to remarks from Thomas.
 
 \item[5/5/2024:]  Updates to the postscript.  Later, added a footnote about the rumors of inconsistency derived from the inconsistency of the first edition of ML and falsely ascribed to NF.
 
@@ -200,7 +207,7 @@ We introduce a theory which we call the simple typed theory of sets or TST, a na
 TST is a first order multi-sorted theory with sorts (types) indexed by the nonnegative integers.  The primitive predicates of TST are equality and membership.
 
 The type of a variable $x$ is written ${\tt type}($`$x$'$)$:  this will be a nonnegative integer.   A countably infinite supply of variables of each type is supposed.  An atomic equality sentence `$x=y$' is well-formed iff ${\tt type}($`$x$'$)={\tt type}($`$y$'$)$.
-An atomic membership sentence `$x \in y$' is well-formed iff ${\tt type}$`$(x$'$)+1 = {\tt type}($`$y$'$)$.
+An atomic membership sentence `$x \in y$' is well-formed iff ${\tt type}($`$x$'$)+1 = {\tt type}($`$y$'$)$.
 
 The axioms of TST are extensionality axioms and comprehension axioms.
 
@@ -221,7 +228,7 @@ Provide a bijection $(x \mapsto x^+)$ from variables to variables of positive ty
 
 If $\phi$ is a formula, define $\phi^+$ as the result of replacing every variable $x$ (free and bound) in $\phi$ with $x^+$ (and occurrences of $\emptyset^i$ with $\emptyset^{i+1}$ if this is in use).   It should be evident that if $\phi$ is well-formed, so is $\phi^+$,
 and that if $\phi$ is a theorem, so is $\phi^+$ (the converse is not the case).  Further, if we define a mathematical object as a set abstract $\{x:\phi\}$ we have an analogous
-object $\{x^+:\phi^+\}$ of the next higher type (this process can be iterated).
+object $\{x^+:\phi^+\}$ of the next higher type (this process can be iterated).\footnote{We do {\em not\/} furnish our variables with type superscripts.  One could follow the convention that if a variable has the shape $x^i$ that ${\tt type}($`$x^i$'$) = i$ and $($`$x^i$'$)^+ = $`$x^{i+1}$', but we do not presume that variables take such shapes.}
 
 The axiom scheme asserting $\phi \leftrightarrow \phi^+$ for each closed formula $\phi$ is called the Ambiguity Scheme.   Notice that this is a stronger assertion than is warranted by the symmetry of proofs described above.
 
@@ -273,7 +280,7 @@ In ordinary set theory TST and each theory TST$_n$ have natural models, in which
 Further, each TST$_n$ has natural models in TST itself, though some care must be exercised in defining them.  Let $X$ be a set.  Implement type $i$ for each $i<n$ as
 $\iota^{(n-1)-i}``{\cal P}^i(X)$.  If $X$ is in type $j$, each of the types of this interpretation of TST$_n$ is a set in the same type $j+n-1$.  For any relation $R$, define
 $R^{\iota}$ as $\{(\{x\},\{y\}):x R y\}$.  The membership relation of type $i-1$ in type $i$ in the interpretation described is the restriction of $\subseteq^{\iota^{(n-1)-i}}$ to
-the product of the sets implementing type $i-1$ and type $i$.
+the product of the sets implementing type $i-1$ and type $i$.\label{tstnmodel}
 
 Notice then that, for each concrete natural number $n$, we can define truth for formulas in these natural models of TST$_n$  in TST, though not in a uniform way which would allow us to define truth for formulas
 in TST in TST.
@@ -351,7 +358,7 @@ each $\alpha<\lambda$.  Define $E_{\alpha,\beta}$ for $\alpha<\beta$ as $\{((x,\
 \item Suppose TTT(U) is consistent, and so we can assume we are working with a fixed model of TTT(U).  Let $\Sigma$ be a finite set of sentences in the language of TST(U).  Our first aim is to construct a model of TST(U) in which $\phi \leftrightarrow \phi^+$ holds for each sentence $\phi \in \Sigma$.
 
 \item Let $n$ be the smallest type such that no type $n$ variable occurs in any sentence in $\Sigma$.  We define a partition of the $n$-element subsets of $\lambda$.  Each $A \in [\lambda]^n$ is put in a compartment
-determined by the truth values of the sentences $\phi^s$ in our model of TTT(U), where $\phi \in \Sigma$ and ${\tt rng}(s \restriction \{0,\ldots,n-1\}) = A$:  there are no more than $2^{|\Sigma|}$ compartments.  By Ramsey's theorem, there is an infinite homogeneous set $H \subseteq \lambda$ for this partition, which includes the range of a strictly increasing sequence $h$.  
+determined by the truth values of the sentences $\phi^s$ in our model of TTT(U), where $\phi \in \Sigma$ and ${\tt rng}(s \restriction \{0,\ldots,n-1\}) = A$:  there are no more than $2^{|\Sigma|}$ compartments.  By Ramsey's theorem, there is an infinite set $H \subseteq \lambda$ homogeneous for this partition  which includes the range of a strictly increasing sequence $h$.  
 
 \item Any strictly increasing sequence $s$ determines a model of TST(U) in which each type $i$ is implemented as type $s(i)$ of our fixed model of TTT(U)  and membership in the derived model of TST(U) of type $i$ objects in type $i+1$ objects is implemented as membership in the fixed model of TTT(U) of type $s(i)$ objects in type $s(i+1)$ objects.
 
@@ -396,7 +403,7 @@ Of course Jensen did not phrase his argument in terms of tangled type theory.  O
 
 \subsubsection{How internal type representations unfold in TTT}
 
-We have seen above that TST can internally represent TST$_n$.   An attempt to represent types of TTT internally to TTT has stranger results.  The development of the model does not depend on reading this section.
+We have seen above that TST can internally represent TST$_n$ (on page \pageref{tstnmodel}).   An attempt to represent types of TTT internally to TTT has stranger results.  The development of the model does not depend on reading this section.
 
 In TST the strategy for representing type $i$ in type $n\geq i$  is to use the $n-i$-iterated singleton of any type $i$ object $x$ to represent $x$;  then membership of representations of type $i-1$ objects in type
 $i$ objects is represented by the relation on $n-i$-iterated singletons induced by the subset relation and with domain restricted to $n-(i+1)$-fold singletons.  This is described more formally above.
