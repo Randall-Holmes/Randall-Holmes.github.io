@@ -1,0 +1,407 @@
+\documentclass[12pt]{article}
+
+\title{Symmetric set theory}
+
+\author{Randall Holmes}
+
+\usepackage{amssymb}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+This is a naive introduction to symmetric set theory (SST), a theory of sets and classes whose theory of sets turns out to be an extension of New Foundations.
+It is naive in the sense that SST is presented as a free standing approach to the foundations of mathematics.  Remarks about how this system was put together
+and what the motivations are may appear from time to time, or may be added wholesale later.
+
+\section{Classes, sets, relations, and functions}
+
+General objects of SST are called {\em classes\/}.
+
+The primitive relations of SST are equality and membership.
+
+The identity condition for classes is the familiar
+
+\begin{description}
+
+\item[Axiom of extensionality:]  $(\forall xy:x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z \in y))$.  Classes are the same precisely if they have the same elements.
+
+\end{description}
+
+We introduce a primitive constant $V$, a class, called the universe of sets, with the axiom
+
+\begin{description}
+
+\item[Axiom of the universe:]  $(\forall xy:x\in y \rightarrow x \in V)$
+
+\end{description}
+
+We refer to elements of $V$ as {\em sets\/}.
+
+\begin{description}
+
+\item[Definition (set builder notation):]  For each formula $\phi$, we define $$\{x \in V:\phi)$$ as the unique $A$ such that $(\forall x:x \in A \leftrightarrow (x \in V \wedge \phi))$, if this exists.
+
+For any term construction $t(u_1,\ldots,u_n)$ we define $\{t(u_1,\ldots,u_n):\phi\}$ as $\{x \in V:(\exists u_1,\ldots,u_n:x=t(u_1,\ldots,u_n)\wedge \phi\}$, where $x$ does not occur in $\phi$.
+
+\end{description}
+
+We develop a series of axioms and definitions which will support existence of $\{x:\phi\}$ for a large class of formulas $\phi$.
+
+\begin{description}
+
+\item[Axiom of elementary sets (and definitions):]  $\emptyset = \{x:x \neq x\}$ exists as a class and is a set.  For any sets $a$ and $b$, $\{a,b\} = \{x:x=a \vee x=b\}$ exists as a class and is a set.   We abbreviate $\{a,a\}$ as $\{a\}$.  For later use we introduce the notation $\iota(x)=\{x\}, \iota^0(x) = x$, $\iota^{n+1}(x) = \{\iota^n(x)\}$ for each concrete $n$:  it turns out to be able to be useful to iterate the singleton operation.
+
+\end{description}
+
+We have defined a notion of unordered pair $\{a,b\}$, which we now enhance to
+
+\begin{description}
+
+\item[Definition of the ordered pair:]  For any sets $a,b$, we define $(a,b)$, the ordered pair of $a$ and $b$, as $\{\{a\},\{a,b\}\}$.  Note that
+$a$ is the unique object which belongs to all elements of $(a,b)$, and $b$ is the unique object which belongs to exactly one element of $(a,b)$.  This motivates the definition of $\pi_1(p)$ as the unique object which belongs to all elements of $p$ and $\pi_2(p)$ as the unque object which belongs to exactly one element of $p$,
+and define ${\tt pair}(p)$ as the assertion $p= (\pi_1(p),\pi_2(p))$.  This allows us to see easily that if $(a,b) = (c,d)$ it follows that $a=c$ and $b=d$.
+
+\end{description}
+
+The use of ordered pairs is to define relations and functions.
+
+\begin{description}
+
+\item[relations (basic definitions):]  We define ${\tt relation}(R)$ ($R$ is a relation) as $\{\forall x \in R:{\tt pair}(x)\}$:  a relation is a class of ordered pairs.
+We define $x \, R \, y$ as ${\tt relation}(R) \wedge (x,y)\in R$.  We define ${\tt indom}(x,R)$ as $(\exists y:x \, R\, y)$ ($x$ is in the domain of $R$).   We define ${\tt inrng}(x,R)$ ($x$ is in the range of $R$) as $(\exists y:y \, R \, x)$.
+
+\item[functions (basic definitions):]  We define ${\tt function}(f)$ as $${\tt relation}(f) \wedge (\forall xyz:x \, f \, y \wedge x \, f \, z \rightarrow y=z).$$  We define
+$f(x)$ as the unique $y$ such that ${\tt function}(f)$ and $(x,y)\in f$, for each $x$ such that ${\tt indom}(x,f)$.
+\end{description}
+\section{Development of the predicative class comprehension scheme}
+
+We present axioms motivating the ability to construct a wide range of classes $\{x:\phi\}$.
+
+The basic idea is to follow the logical structure of the formula $\phi$.  We say that a formula $\phi(x_1,\ldots,x_n)$ is represented by the class
+$$R_\phi = \{f\in V:\phi(f(v_1),\ldots,f(v_n))\}$$ where the objects $v_i$ may be taken to represent the variables $x_i$:  $v_i =\, $`$x_i$', if this class exists.
+We will be providing axioms allowing systematic determination of existence of a class from the structure of the formula.
+
+\begin{description}
+
+\item[Definition (predicate):]  We define ${\tt predicate}(P)$ as $$(\forall fg \in P:{\tt function}(f) \wedge {\tt function}(g) \wedge (\forall x:{\tt indom}(x,f) \leftrightarrow {\tt indom}(x,g)):$$  a predicate is a set of functions each of which have the same domain.  The functions are intended to represent assignments of values to relevant variables which make the predicate hold.  We define ${\tt inDom}(x,P)$ ($x$ is in the Domain of $P$) as ${\tt predicate}(P) \wedge (\exists f\in P:{\tt indom}(x,f))$.
+
+
+
+\item[Definition:]  We define $-P$ as $$\{f \in V:{\tt predicate}(P) \wedge {\tt function}(f) \wedge (\forall x:{\tt indom}(x,f)\leftrightarrow {\tt inDom}(x,P)),$$ if this exists. We note that if $P = R_\phi$, then $-P = R_{\neg\phi}$, with the qualification that if $P$ holds of everything, $-P$ will have empty Domain...but this will still work.
+
+\item[Axiom of predicate complement:]  If $P$ is a class, $-P$ is a class.
+
+\item[Definition (merger of environments):]  We define $f+g$ as $$\{x \in V:{\tt function}(f) \wedge {\tt function}(g) \wedge $$ $$((x \in f \wedge x \in g) \vee (\neg {\tt indom}(\pi_1(x),g) \wedge x \in f) \vee (\neg {\tt indom}(\pi_1(x),f) \wedge x \in g))\}$$ if this exists.  Notice that this is always a function if it exists.  This is intended to implement a merger of two environments (assignments of values to variables).
+
+\item[Axiom of merger:]  If $f$ and $g$ are sets, $f+g$ is a set.
+
+\item[Definition:]  We define $P \oplus Q$ as $$\{f \in V:{\tt predicate}(P) \wedge {\tt predicate}(Q) $$ $$\wedge (\forall x:{\tt indom}(x,f) \leftrightarrow ({\tt inDom}(x,P) \vee {\tt inDom}(x,Q))) $$ $$\wedge (\exists gh:g \in P \wedge h \in Q \wedge g+h = f)\}$$ if this exists.  Note that if $P = R_\phi$ and $Q = R_{\psi}$ it follows that $P \oplus Q = R_{\phi \vee \psi}$.
+
+\item[Axiom of predicate disjunction:]  If $P$ and $Q$ are classes, $P \oplus Q$ is a class.
+
+\item[Definition:]  We define $D_x(P)$ as $$\{f \in V:{\tt predicate}(P) \wedge {\tt function}(f) $$ $$\wedge (\forall y:{\tt indom}(y,f)\leftrightarrow ({\tt inDom}(y,P) \wedge y \neq x)) $$ $$\wedge (\exists gh:g \in P \wedge (\forall y:{\tt indom}(y,h)\leftrightarrow y=x) \wedge f+h=g+h\}$$ if this exists.  Note that if $P = R_{\phi}$, $D_x(P) = R_{(\exists x \in V:\phi)}$.
+
+\item[Axiom of predicate quantification:]  If $x$ is a set and $P$ is a class, $D_x(P)$ is a class.
+
+\item[Axiom of primitive predicates:]  The classes $$E_{x,y}=\{\{(x,a),(y,b)\}:a \in b \wedge (x=y \rightarrow a=b)\}$$ and $$Q_{x,y}=\{\{(x,a),(y,b)\}:a=b\}$$ exist
+ for any sets $x,y$.  These are $R_{x \in y}$ and $R_{x=y}$.
+
+\item[Axiom of class extraction:]  We define $\Sigma(P)$ as $$\{x \in V:{\tt predicate}(P) \wedge (\exists u:\{(u,x)\}\in P)\}$$ if this exists.  Notice that if $\phi(u)$ is a formula with one free variable $u$, $\Sigma(P) = \{u:\phi\}$.
+
+\end{description}
+
+This axiom set establishes the existence of $\{x \in V:\phi\}$ for any formula $\phi$ in whcih all variables are bounded in $V$.
+There are only a couple of remarks needed to support this.  Note that other logical connectives and quantifiers are defined in terms of the ones given.
+Note that if $\phi$ contains more free variables, they can all be eliminated by the following method.  We can eliminate a set parameter $a$ by
+replacing $\phi(a)$ with $(\exists u\in V:u=a \wedge \phi(a))$ and observing that $R_{u=a}$ can be implemented as
+$\{\{(u,a)\}\}$, which exists by the axiom of elementary sets.  We can eliminate a class parameter $a$ which is not a set by replacing all $u=a$, $a=u$,  and $a \in u$ with the False, and noting that $R_{u \in a}$ is $\{\{(u,y)\}:y\in a\}$, if this exists, for which we provide a final
+
+\begin{description}
+
+\item[Axiom of class parameters:]  For any set $u$ and class $a$, $$\{u\} \times a = \{\{(u,y)\}:y\in a\}$$ exists.
+
+\end{description}
+
+Repeat parameter elimination as needed.  Then construction of the class $\{x \in V:\phi\}$ for any formula $\phi$ in which all quantifiers are restricted to sets and parameters are handled as above follows the structure of $\phi$ exactly.
+
+We will not use the special notations of this section in the sequel, unless we are specifically engaged with the metamathematics, but simply assume the predicative comprehension scheme which we have established on the basis of this set of axioms.
+\begin{description}
+\item[Metatheorem (axiom scheme of predicative class comprehension):]  For any formula $\phi$ in which all quantifiers are restricted to $V$,
+the class $\{x \in V:\phi\}$ exists.
+\end{description}
+
+\section{Development of the symmetric set comprehension axiom}
+
+We can define the inverse of a relation using predicative class comprehension.
+
+\begin{description}
+
+\item[Definition:]  We define $R^{-1}$ as $\{(y,x):x \, R\, y\}$.
+
+\end{description}
+
+We can then define the important notion of permutation (of the universe).
+
+\begin{description}
+
+\item[Definition:]  We define ${\tt permutation}(f)$ as $${\tt function}(f) \wedge {\tt function}(f^{-1}) \wedge (\forall x \in V:{\tt indom}(x,f) \wedge {\tt inrng}(x,f))$$
+
+\end{description}
+
+We define the notion of image of a class under a relation.
+
+\begin{description}
+
+\item[Definition:]  $R``A = \{y:(\exists x \in A:x \, R\, y\}$.    Note that we can conveniently define ${\tt rng}(R)$ as $R``V$
+and ${\tt dom}(R)$ as $R^{-1}``V$.
+
+\end{description}
+
+We define an operation on permutations lifting them to their elementwise action on sets:
+
+\begin{description}
+
+\item[Definition:]  We define $j[f]$ as $\{(x,y):{\tt permutation}(f) \wedge y = f``x\}$.  We define $j^0[f]$ as $f$ for any permutation $f$
+and $j^{n+1}[f]$ as $j[j^n[f]]$ (for each concrete natural number $n$).
+
+\item[Definition:]  We say that a permutation $f$ is {\em setlike\/} just in case we have $(\forall x \in V:f``x \in V)$.  Notice that $j[f]$ is a permutation iff $f$ is setlike.  We say that $f$ is $n$-setlike iff $j^n[f]$ is a permutation.
+
+\end{description}
+
+We define a notion of symmetry of classes.
+
+\begin{description}
+
+\item[Definition:]  We say that a class $A$ is $n$-symmetric iff there is a set $s$ (called an $n$-support of $A$) such
+that for any $n-1$-setlike permutation $f$ such that $j^{n-1}[f](s)=s$, we have $j^{n-1}[f]``A= A$.
+
+\end{description}
+
+And we are able to state our axiom of set comprehension, though the reasons for its exact form may be somewhwat mysterious.
+
+\begin{description}
+
+\item[Axiom of symmetric set comprehension:]  A class $A$ is a set if and only if it is 3-symmetric:  explicitly, for any class $A$, $A$ is a set iff there is a set $s$ such that for any 2-setlike permutation $f$ such that $j^2[f][s]=s$, we also have $j^2[f]``A = A$.  We adopt the convention
+that we abbreviate 3-symmetric to simply symmetric, 2-support to simply support,  and 2-setlike to simply setlike.  We will see that this is strongly justified, as well as clearly convenient given the special role of 3-symmetry in the axiom.
+
+\end{description}
+
+This completes the statement of the theory SST.  It is worth noting that the criterion for sethood contains a quantifier over all setlike permutations:  these are not necessarily sets, and such quantifiers cannot occur in instances of predicative class comprehension.
+
+The surprise which will ensue is that the theory of sets in SST is an extension of Quine's set theory New Foundations, which is reputed to be motivated entirely by a syntactical trick.  We are concerned here to show that NF can in fact be motivated entirely semantically, as a theory of sets and classes in which the criterion for sethood is symmetry rather than the more familiar limitation of size.
+
+The way in which we arrived at this formulation of the theory was circuitous, and we may try to explain in this document eventually how it happened.
+
+NF is reputed to be a very strange theory, and SST is also rather strange.  For example, we will see that impredicative class comprehension
+(the existence of $\{x\in V:\phi\}$ for every formula $\phi$) is in fact refutable in this theory.  The known strangeness of NF that it refutes the axiom of choice may seem less odd in a theory with the stated motivation.
+
+\section{Results about setlikeness and symmetry}
+
+We prove some theorems which will make our restriction to 3-symmetry and 2-setlikeness look less odd.
+
+\begin{description}
+
+\item[Theorem:]  Every 2-setlike permutation is 3-setlike.
+
+\item[Proof:]  Suppose that $f$ is 2-setlike and $A$ is a set.  It suffices to show that $j^2[f]``A$ is in every case a set:  this establishes
+that $j^3[f]$ is a permutation, and so that $f$ is 3-setlike.
+
+Since $A$ is a set, it has a support $s$:  for every 2-setlike permutation $g$, if $j^2[g](s)=s$, then $j^2[g]``A=A$.  
+
+We claim
+that $j^2[f]``A$ has support $j^2[f](s)$.   Suppose that $h$ is 2-setlike and $j^2[h](j^2[f](s)) = j^2[f](s)$.  It follows
+by applying $j^2[f^{-1}]$ to both sides and obvious relationships between $j$ and composition that we have $j^2[f^{-1} \circ h \circ f](s)=s$,
+so  $j^2[f^{-1} \circ h \circ f]``A = A$, so it follows that $j^2[h]``(j^2[f]``A) = j^2[f]``A$, establishing that  $j^2[f](s)$ is a support for
+$j^2[f]``A$, so $j^2[f]``A$ is a set.
+
+Since we have shown this in general, we have shown that $j^3[f]$ is a permutation, so $f$ is 3-setlike.
+
+\item[Corollary:]  For each concrete $n>2$, for each permutation $f$, $f$ is $n$-setlike iff it is 2-setlike.
+
+\item[Proof:]  It is obvious that if $f$ is an $n$-setlike permutation for $n>2$ that it is 2-setlike.
+
+We have just shown that if $f$ is a 2-setlike permutation, tben $f$ is 3-setlike.
+
+Suppose that for a fixed $k>2$ we have already shown that all 2-setlike permutations are $k$-setlike.
+
+Let $f$ be a 2-setlike permutation.  We know by inductive hypothesis that $j^k[f]$ is a permutation, whence $j^{k-2}[f]$ is 2-setlike,
+whence $j^{k-2}[f]$ is 3-setlike, whence $j^{k+1}[f]$ is a permutation, whense $f$ is $k+1$-setlike.
+
+Note that this Theorem entirely justifies our use of the unqualified term ``setlike" for ``2-setlike".
+
+\item[Theorem:]  $E = \{\{\{x\},y\}:x \in y\}$ is a set.  A setlike permutation satisfies  $j^2[f](E)=E$ if and only if
+there is $g$ such that $f=j[g]$.
+
+\item[Proof:]   $j^2[f]``E = E$ for any setlike permutation $f$, so any set at all ($\emptyset$, for example) is a support for $E$.
+
+If $f=j[g]$, then as just observed $j^2[f](E) = j^3[g](E)= j^2[g]``E = E$.
+
+If $j^2[f](E)=E$, we can define $g$ so that $j[f](\{\{\{x\}\}) = \{\{g(x\}\}$, so $f(\{x\}) = \{g(x)\}$ for all $x$.  The reason we can do this is that $j[f](\{\{\{x\}\})$ obviously must be a singleton,
+but this makes it a double singleton, because all singletons belonging to $E$ are double singletons.
+
+It then follows that  $j[f](\{\{x\},y\} = \{f(\{x\}),f(y)\} = \{\{g(x)\},f(y)\}$ and the fact that $E$ is fixed under
+$j^2[f]$ shows us that $x \in y$ if and only if $g(x) \in f(y)$, so $f(y) = g``y$ for any $y$, so $f=j[g]$.
+
+\item[Theorem:]  For any $n \geq 2$ and sets $s,t$ there is a set $u$ such that for any setlike $f$ such that $j^n[f](u) = u$, we also have
+$j^n[f](s)=s$ and $j^n[f](t)=t$.  This allows us to merge $n$-support conditions.
+
+\item[Proof:]  Let $v$ be a support of $\{\{s\},\{s,t\}\}$.  Let $u$ be a support of $v$.  If $j^n[f](u) = u$, then $j^{n+1}[f](v)=v$,
+so $j^{n+2}[f](\{\{s\},\{s,t\}\})= \{\{s\},\{s,t\}\}$, so $j^n[f](s)=s$ and $j^n[f](t)=t$.
+
+\item[Theorem:]  Any  class which is 4-symmetric is 3-symmetric and so a set.
+
+\item[Proof:]  Let $A$ be a class.  Suppose that there is a set $s$ such that for any setlike $f$, if $j^3[f](s)=s$ then $j^3(f)``A=A$.
+
+By the previous theorem there is $t$ such that for any setlike $f$, if $j^2[f](t)=t$, then $j^2[f](s)=s$ and $j^2[f](E)=E$.
+
+Thus by another previous theorem, if $j^2[f](t)=t$, we have $f=j[g]$ for some setlike $g$, whence $j^3[g](s)=s$, whence
+$j^2[f]``A = j^3[g]``A = A$, so $A$ is a set with 2-support $t$.
+
+\item[Theorem:]  Any set which is $n$-symmetric ($n>3$) is  3-symmetric and so a set.
+
+\item[Proof:]  We have just shown that this is true for $n=4$.  Suppose that for some $k$ this has been established.
+Let $A$ be a class and $s$ a set such that for all setlike $f$, $j^{k}[f](s)=s$ implies $j^{k}[f]``A=A$.
+There is $t$ such that $j^{k-1}[f](t)=t$ implies $j^{k-1}[f](s)=s$ and $j^{k-1}[f](\iota^{k-3}(E))=\iota^{k-3}(E)$, whence
+$j^2[f](E)=E$, whence $f$ is of the form $j[g]$, whence $j^{k}[g](t)=t$, whence $j^{k-1}[f]``A = j^{k}[g]``A=A$.
+It follows that $A$ has $k$-support $t$ and so is a set by inductive hypothesis.
+
+\item[Further remarks on indexed symmetry and support notions:]  That any 3-symmetric set is $n$-symmetric $(n>3)$ is immediate.  If every $j^2[f]$ which fixes $s$ also fixes $A$ elementwise,
+then this is also true of any $j^{n-1}[f] = j^2[j^{n-3}[f]]$.   So we have justified our use of the term ``symmetric" without numerical index.   We have just shown that a 3-support is an $n$-support for $n>3$;  there is no reason to expect the converse to be true (in fact it clearly is not), so the notions ``$n$-support" are distinct for distinct $n$.
+
+\item[Remark on supports of unordered pairs:]  An aspect of the development given so far, which we found disturbing in earlier versions, is the interaction between our two set comprehension axioms.  Unordered pairs are sets by the axiom of elementary sets;  thus by the axiom of set comprehension they have supports.
+What do these supports look like?  We present a more explicit construction of 4-supports of ordered pairs, then a more explicit description of a construction of a 3-support for a set with a given 4-support.
+
+\item[Explicit construction of 4-supports for unordered pairs:]  If $a$ and $b$ are sets, we describe a 4-support for $\{a,b\}$.
+
+We observe first that if $s$ is a set, $s \cup \{\emptyset\}$ and $s \setminus \{\emptyset\}$ are sets.  Suppose $t$ is a support for $s$.  If $j^2[f](t)=t$, then $j^3[f](s)=s$, whence $j^2[f]``(s \cup \{\emptyset\}) = j^2[f]``s \cup j^2[f](\emptyset) = s \cup \{\emptyset\}$.  $j^2[f](s \setminus \{\emptyset\}) = s \setminus\{\emptyset\}$ similarly.
+Further, if $s$ and $t$ are sets, let $u = \{x \cup \{\emptyset\}:x \in s\} \cup \{x \setminus \{\emptyset\}:x \in t\}$.  Note that for any setlike $f$, we have $j^3[f](u)=u$ iff we have  $j^3[f](s)=s$ and $j^3[f](t)=t$.  This is because any permutation $j^2[f]$ will map $x$ to $y$ iff it maps $x \cup \{\emptyset\}$ to $y \cup \{\emptyset\}$ and also iff it maps $x \setminus \{\emptyset\}$ to $y \setminus \{\emptyset\}$, because $j[f]$ fixes $\emptyset$.
+This means that if $u$ is a set and $j^3[f](u)=u$ we have $j^3(f)``\{s,t\} = \{s,t\}$.
+
+Establishing that $u$ is a set is not so easy.  But we can verify it by earlier methods of calculation:  if $s$ has support $s'$ and $t$ has support $t'$ and $u'$ is chosen so that if $j^2[f](u') = u'$ it follows that $j^2[f](s') = u'$  and $j^2[f](t') = t'$ [by the method given using supports of supports of ordered pairs], then it follows that $j^3[f](s)=s$ and $j^3[f](t)=t$ whence it follows that $j^2[f]``(u)=u$.
+
+The point of this calculation is not to give an independent proof of the existence of supports of unordered pairs, but to give an idea of what such sets are like.  And of course we only have a 4-support, not a 3-support.
+
+\item[Explicit construction of 4-supports from 3-supports:]  We will carry out the proof that a 4-symmetric set is 3-symmetric in a more concrete way which does not rely on
+the general result about merging supports.  This is entirely explicit and fully provable without the original merger of supports method, but the proof is more elaborate than the one above.
+
+
+Suppose that $A$ is a class and for any setlike $f$, if $j^3[f](s)=s$, then $j^3[f]``A = A$.
+
+Let $s' = s \setminus \{\{x,y\}:x \in V \wedge y \in V\} \cup \{V \setminus \{x,y\}:\{x,y\}\in s\}$.  We claim that $s' \cup E$ is a support for $A$ (if it is a set).
+
+If $j^2[f]$ fixes $s' \cup E$, it must fix $s'$ and it must fix $E$, because $j[f]$ must map unordered pairs to unordered pairs, $E$ is a set of unordered pairs, and $s'$ contains none of them.
+Since $j^2[f]$ fixes $s'$, it also fixes $s$, because the action of $j[f]$ preserves cardinals (simply whether a set is of cardinality 1 or 2, nothing complex) and commutes with complement.  Since $j^2[f]$ fixes $E$, $f$ is of the form $j[g]$,
+and we have $j^3[g]$ fixing $s$, so $j^2[f] = j^3[g]$ fixes $A$ elementwise.
+
+The complement of a set is always a set with the same support.  Thus all elements of $s'$ are verified as sets.  Further, if $t$ is a support of $s$ and $j^2[f](t)=t$, we have $j^3[f](s)=s$ and in fact $j^2[f]``s'=s'$, again because the action of $j^2[f]$ preserves cardinals (just cardinality 1 and 2 are being considered) and commutes with complement.
+Now since any $j^2[h]$ acting elementwise fixes $E$, $j^2[f]$ also fixes $s'+E$ elementwise.
+
+\item[Final note about unordered supports:]  The last two results combined give a rather elaborate but explicit description of a support for an unordered pair.
+
+
+
+
+
+\end{description}
+
+\section{The Stratified Comprehension Metaheorem:  SST is an extension of New Foundations}
+
+We show in this section that the theory of sets in SST is an extension of a well-known (or at least infamous) set theory, Quine's New Foundations.  To be consistent with our naive approach,
+we will try for the most part to prove theorems of NF that we need, rather than appeal to references.
+
+\begin{description}
+
+\item[Definition:]  A formula $\phi$ is {\em stratified\/} if and only there is a function $\sigma$ from variables to integers (called a stratification of $\phi$) such
+that in each atomic subformula $x=y$ in $\phi$, $\sigma(x) = \sigma(y)$, and in each atomic subformula $x \in y$, $\sigma(x) +1 = \sigma(y)$.
+
+\end{description}
+
+Our aim is to prove
+
+\begin{description}
+
+\item[Theorem (stratified comprehension):]  For each stratified formula $\phi$ in which parameters are understood to be sets, $\{x:\phi\}$ exists.
+
+\end{description}
+
+We do this by strengthening the axioms which support the predicative comprehension scheme to make assertions about sethood.
+
+\begin{description}
+
+
+\item[Lemma:] ${\tt function}(f) \leftrightarrow {\tt function}(j^3[\pi](f))$, for any function $f$ which is a set and any setlike permutation $\pi$.
+
+\item[Lemma:] ${\tt predicate}(P) \leftrightarrow {\tt predicate}(j^4[\pi](P))$, for any predicate $P$ which is a set.
+
+\item[Lemma:]  $E_{x,y}$ is a set, for any sets $x,y$.  So is $\subseteq^1_{x,y} = \{\{(u,\{x\}),(v,y)\}:x \in y \wedge u=v \rightarrow y = \{x\}\}$.
+
+\item[Proof:]  $E_{x,y}$ is 4-symmetric with empty support.  $\subseteq^1_{x,y}$ is 5-symmetric with empty support.
+Incidentally, we define $\subseteq^1$ as $\{(\{x\},y):x \in y\}$, the subset relation with its domain restricted to singletons.
+
+\item[Lemma:]  If $P$ is a set, so is $-P$.
+
+\item[Proof:]  $P$ is 4-symmetric with some support because it is a set:  $-P$ will be 4-symmetric with the same support.
+
+\item[Lemma:]  If $P$ and $Q$ are sets, $P \oplus Q$ is a set.
+
+\item[Proof:]  Let $s$ and $t$ be 4-supports of $P$ and $Q$ respectively.  There is $u$ such that any $j^3[\pi]$ which fixes $u$ also fixes $s$ and $t$.  The set $u$ is a 4-support for $P \oplus Q$.
+
+\item[Lemma:]  If $x$ and $P$ are sets, $D_x(P)$ is a set.
+
+\item[Proof:]  Let $s$ and $t$ be 4-supports of $P$ and $\iota^3(x)$ respectively.  There is $u$ such that any $j^3[\pi]$ which fixes $u$ also fixes $s$ and $t$. The set $u$ is a 4-support for $D_x(P)$.
+
+\item[Lemma:]  If $P$ is a set, $\Sigma(P)$ is a set.
+
+\item[Proof:]  Since $P$ is a set, it is 6-symmetric with a certain support.  It is then evident that $\Sigma(P)$ is 3-symmetric with any threefold iterated support of that support.
+
+\end{description}
+
+We have shown that basic functions underlying our representation of predicates as classes take set input to set output.
+
+We then need some more machinery to interact with the stratification criterion.
+
+\begin{description}
+
+\item[type-raising binary predicates:]  We define $P^{\iota+}$ as $$\{  \{(\{x\},\{a\}),(\{y\},\{b\})\}:{\tt predicate}(P) \wedge \{(x,a),(y,b)\} \in P\}$$
+$P^{\iota+}$ is a set if $P$ is a set:  it is 5-symmetric if $P$ is 4-symmetric.  Note that we only define this for predicates of one or two variables (not that we couldn't define it more generally, but we only need it for this case).  We define
+$P^{\iota^0+}$ as $P$ and $P^{\iota^{n+1}+}$ as $(P^{\iota^n}+)^{\iota+}$.
+
+We provide a parallel notation for relations in ordinary set theoretical language, defining $R^{\iota}$ as
+$\{(\{x\},\{y\}):x\, R\, y\}$ and $R^{\iota^n}$ in the obvious way.
+
+\end{description}
+
+Now, let $\phi$ be a stratified formula with stratification $\sigma$.  We perform a change of variables on it,
+replacing each variable $u$ with $u' = \iota^{N-\sigma(u)}(u)$.  Atomic formulas are transformed systematically:
+$u=v$ is equivalent to $u' =^{\iota^{N-\sigma(v)}}v'$ and $u\in v$ is equivalent to $u' \, (\subseteq^1)^{\iota^{N-\sigma(v)}}\,v'$.  We replace quantifiers over $u$ with quantifiers over $u'$ restricted to $\iota^{N-\sigma(u)}``V$ (which is obviously a set: $\iota^k``V$, the set of $k$-fold singletons, is $(k+1)$-symmetric with empty support).
+Refer to the resulting formula as $\phi'$.   $\{x':\phi'\}$ is a set by considerations outlined above:  all of its
+atomic subformulas are represented by predicates which are sets, and the whole construction of the class preserves sethood of predicates at each stage.
+
+It remains to observe that if $A$ is a set, so is $$\bigcup A = \{x:(\exists a:x \in a \wedge a \in A\}.$$  If $A$ is
+4-symmetric with support $s$, $\bigcup A$ is 3-symmetric with support $t$ a support of $s$.
+
+This suffices to establish that $\bigcup^{N-\sigma(x)}(\{x':\phi'\}) = \{x:\phi\}$ is a set.
+
+So we have completed the proof of the stratified comprehension metatheorem.
+
+Two things are established by this result, one about the theory SST and one about the theory NF.  We have established that SST has considerable mathematical effectiveness, because NF is known to have considerable mathematical effectiveness.  Further, we have established that NF can be motivated in a way which does not depend on syntax:  SST is motivated by a criterion for sethood of classes which is stated in the theory of classes without essential reference to syntax.
+
+SST is an extension of New Foundations in that it allows discussion of predicately defined classes of sets which are not
+sets.  But the restriction of SST to the theory of sets alone is not apparently just NF.  SST proves that for every set $A$,
+there is a set $s$ such that for any permutation $f$ which is a set, if $j^2[f](s)=s$, then $j^3[f](A)=A$ (that $j^2[f]$
+and $j^3[f]$ are also set permutations is a straightforward consequence of stratified comprehension).  To our knowledge, this is not a theorem of NF.  
+
+It is amusing to note that the typed version of this theorem is true
+in the typed theory of sets with choice;  this does not help us that much, since NF refutes choice.  If $A$ is a set
+in the typed theory of sets with choice, let $s$ be the set of domains of initial segments of a well-ordering of
+$\bigcup^2 A$:  if $j^2[f]$ fixes $s$, then $j^3[f]$ fixes $A$, for any function $f$ of the appropriate type, since
+if $j^2[f]$ fixes $s$, $f$ must fix every element of $\bigcup^2 A = \bigcup s$.
+
+
+
+\end{document}
