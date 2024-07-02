@@ -27,7 +27,7 @@
 We are presenting an argument for the consistency of Quine's set theory New Foundations (NF) (see \cite{nf}).  The consistency of this theory relative to the usual systems of set theory has been an open question since the theory was proposed in 1937, with added urgency after Specker showed in 1954 that NF disproves the Axiom of Choice (see \cite{notac}).
 Jensen showed in 1969 that NFU (New Foundations with extensionality weakened to allow urelements) is consistent and in fact consistent with Choice (and also with Infinity and with further strong axioms of infinity) (see \cite{nfu}).  
 
-The first author showed the equiconsistency of NF with the quite bizarre system TTT (Tangled Type Theory) in 1995 [see \cite{tangled)}, but this paper is not really recommened; the presentation of its results here is better], which gave a possible approach to a consistency proof.  Since 2010, the first author has been attempting to write out proofs, first of the existence of a tangled web of cardinals in Mac Lane set theory [an indication of this approach is given below] and then directly of the existence of a model of tangled type theory.  These proofs are difficult to read, insanely involved, and involve the sort of elaborate bookkeeping which makes it easy to introduce errors every time a new draft is prepared.  The second author (with the assistance of others initially)
+The first author showed the equiconsistency of NF with the quite bizarre system TTT (Tangled Type Theory) in 1995 [see \cite{tangled)}, but this paper is not really recommdened; the presentation of its results here is better], which gave a possible approach to a consistency proof.  Since 2010, the first author has been attempting to write out proofs, first of the existence of a tangled web of cardinals in Mac Lane set theory [an indication of this approach is given below] and then directly of the existence of a model of tangled type theory.  These proofs are difficult to read, insanely involved, and involve the sort of elaborate bookkeeping which makes it easy to introduce errors every time a new draft is prepared.  The second author (with the assistance of others initially)
 has formally verified the proof of the first author of the existence of a model of TTT (see \cite{wilshaw}), and so of the consistency of New Foundations, in the Lean proof verification system, and in the process has suggested minor corrections and considerable formal improvements to the argument originally proposed by the first author.  The second author reports that the formalized proof is still difficult to read and insanely involved with nasty bookkeeping.  Both authors feel that there ought to be a simpler approach, but the existing argument at least strongly resists attempts at simplification.
 
 All the theories mentioned here are discussed (and referenced) in the next section.
@@ -51,6 +51,14 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should avoid metamathematics, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
+
+\item[7/2/2024:]  Starting a revision effort for the month of July, to support reconciliation of the paper with the formal proof with an eye to submission for publlcation.
+
+Other minor edits.
+
+Some revisions of the discussion of variable typing in TST(U).
+
+Rewrote my discussion of natural models of TST$_n$ and TST.
 
 \item[5/18/2024:]  very slight adjustment in response to a question from Sky about inductive hypotheses about allowable permutations.
 
@@ -208,8 +216,10 @@ We introduce a theory which we call the simple typed theory of sets or TST, a na
 
 TST is a first order multi-sorted theory with sorts (types) indexed by the nonnegative integers.  The primitive predicates of TST are equality and membership.
 
-The type of a variable $x$ is written ${\tt type}($`$x$'$)$:  this will be a nonnegative integer.   A countably infinite supply of variables of each type is supposed.  An atomic equality sentence `$x=y$' is well-formed iff ${\tt type}($`$x$'$)={\tt type}($`$y$'$)$.
-An atomic membership sentence `$x \in y$' is well-formed iff ${\tt type}($`$x$'$)+1 = {\tt type}($`$y$'$)$.
+The type of a variable $x$ is written ${\tt type}($`$x$'$)$:  this will be a nonnegative integer.   A countably infinite supply of variables of each type is supposed.   We provide a bijection $(x \mapsto x^+)$ from variables to variables of positive type satisfying   ${\tt type}(x^+)$ = ${\tt type}(x)+1$.\footnote{We do {\em not\/} furnish our variables with type superscripts.  One could follow the convention that if a variable has the shape $x^i$ that ${\tt type}($`$x^i$'$) = i$ and $($`$x^i$'$)^+ = $`$x^{i+1}$', but we do not presume that variables take such shapes.}
+
+
+ An atomic equality sentence `$x=y$' is well-formed iff ${\tt type}($`$x$'$)={\tt type}($`$y$'$)$. An atomic membership sentence `$x \in y$' is well-formed iff ${\tt type}($`$x$'$)+1 = {\tt type}($`$y$'$)$.
 
 The axioms of TST are extensionality axioms and comprehension axioms.
 
@@ -218,19 +228,19 @@ $x$ and $y$ must be of the same type, one type higher than the type of $z$.
 
 The comprehension axioms are all the well-formed assertions of the shape $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$, where $\phi$ is any formula in which $A$ does not occur free.
 
-The witness to $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$ is unique by extensionality, and we introduce the notation $\{x:\phi\}$ for this object.  Of course, $\{x:\phi\}$  is to be assigned type one higher than that of $x$;  in general, term constructions will have types as variables do.
+The witness to $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$ is unique by extensionality, and we introduce the notation $\{x:\phi\}$ for this object.  Of course, $\{x:\phi\}$  is to be assigned type one higher than that of $x$;  in general, complex terms will have types as variables do.
 
-The modification which gives TSTU (the simple type theory of sets with urelements) replaces the extensionality axioms with the formulas of the shape $$(\forall xyw:w \in x \rightarrow (x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z\in y))),$$  allowing many objects with no elements (called atoms or urelements)  in each positive type.  A technically useful refinement adds a constant $\emptyset^i$ of each positive type $i$ with no elements:  we can then address the problem that $\{x^i:\phi\}$ is not uniquely defined when $\phi$ is uniformly false by defining $\{x^i:\phi\}$ as $\emptyset^{i+1}$ in this case.
+The modification which gives TSTU (the simple type theory of sets with urelements) replaces the extensionality axioms with the formulas of the shape $$(\forall xyw:w \in x \rightarrow (x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z\in y))),$$  allowing many objects with no elements (called atoms or urelements)  in each positive type.  A technically useful refinement adds a constant $\emptyset^i$ of each positive type $i$ with no elements:  we can then address the problem that $\{x^i:\phi\}$ is not necessarily  uniquely defined when $\phi$ is uniformly false by defining $\{x^i:\phi\}$ as $\emptyset^{i+1}$ in this case.
 
 \subsubsection{Typical ambiguity}
 
 TST(U) exhibits a symmetry which is important in the sequel.
 
-Provide a bijection $(x \mapsto x^+)$ from variables to variables of positive type satisfying   ${\tt type}(x^+)$ = ${\tt type}(x)+1$.
+
 
 If $\phi$ is a formula, define $\phi^+$ as the result of replacing every variable $x$ (free and bound) in $\phi$ with $x^+$ (and occurrences of $\emptyset^i$ with $\emptyset^{i+1}$ if this is in use).   It should be evident that if $\phi$ is well-formed, so is $\phi^+$,
 and that if $\phi$ is a theorem, so is $\phi^+$ (the converse is not the case).  Further, if we define a mathematical object as a set abstract $\{x:\phi\}$ we have an analogous
-object $\{x^+:\phi^+\}$ of the next higher type (this process can be iterated).\footnote{We do {\em not\/} furnish our variables with type superscripts.  One could follow the convention that if a variable has the shape $x^i$ that ${\tt type}($`$x^i$'$) = i$ and $($`$x^i$'$)^+ = $`$x^{i+1}$', but we do not presume that variables take such shapes.}
+object $\{x^+:\phi^+\}$ of the next higher type (this process can be iterated).
 
 The axiom scheme asserting $\phi \leftrightarrow \phi^+$ for each closed formula $\phi$ is called the Ambiguity Scheme.   Notice that this is a stronger assertion than is warranted by the symmetry of proofs described above.
 
@@ -277,9 +287,13 @@ Note that the form of Cantor's Theorem in TST is not $|A| < |{\cal P}(A)|$, whic
 $2^{|V|}$ is not defined (where $V=\{x:x=x\}$, an entire type), because there is no $X$ with $|\iota``X|=|{\cal P}(V)|$, because $|\iota``V|<|{\cal P}(V)| \leq |V|$, and of course there is no set larger than $V$ in its type.
 
 For each natural number $n$, the theory TST$_n$ is defined as the subtheory of TST with vocabulary restricted to use variables only of types less than $n$ (TST with $n$ types).
-In ordinary set theory TST and each theory TST$_n$ have natural models, in which type 0 is implemented as a set $X$ and each type $i$ in use is implemented as ${\cal P}^i(X)$.  It should be clear that each TST$_n$ has natural models in bounded Zermelo set theory, and TST has natural models in a modestly stronger fragment of ZFC.
 
-Further, each TST$_n$ has natural models in TST itself, though some care must be exercised in defining them.  Let $X$ be a set.  Implement type $i$ for each $i<n$ as
+We note the existence of models of TST and of each TST$_n$ in ordinary set theory in which the set $X_{i+1}$ implementing
+type $i+1$ is the power set of the set $X_i$ implementing type $i$ and the membership of type $i$ objects in type $i+1$ objects is implemented by the restriction of the membership relation of the metatheory to $X_i \times X_{i+1}$.  We call
+a model of TST or TST$_n$ {\em natural\/} iff it is isomorphic to such a model.  The exact models we describe have the inconvenient feature that the sets implementing the types have some overlap.  Bounded Zermelo set theory implies the existence of natural models of TST$_n$ for each concrete $n$;  a not terribly strong extension of Zermelo set theory implies the existence of natural models of TST.
+
+
+Further, each TST$_n$ has what we may call natural models in TST itself, though some care must be exercised in defining them.  Let $X$ be a set.  Implement type $i$ for each $i<n$ as
 $\iota^{(n-1)-i}``{\cal P}^i(X)$.  If $X$ is in type $j$, each of the types of this interpretation of TST$_n$ is a set in the same type $j+n-1$.  For any relation $R$, define
 $R^{\iota}$ as $\{(\{x\},\{y\}):x R y\}$.  The membership relation of type $i-1$ in type $i$ in the interpretation described is the restriction of $\subseteq^{\iota^{(n-1)-i}}$ to
 the product of the sets implementing type $i-1$ and type $i$.\label{tstnmodel}
@@ -350,6 +364,8 @@ There is now a striking
 
 \item[Proof:]  
 \begin{enumerate}
+
+\item[]
 
 \item Suppose NF(U) is consistent.  Let $(M,E)$ be a model of NF(U) (a set $M$ with a membership relation $E$).  Implement type $\alpha$ as $M \times \{\alpha\}$ for
 each $\alpha<\lambda$.  Define $E_{\alpha,\beta}$ for $\alpha<\beta$ as $\{((x,\alpha),(y,\beta)):xEy\}$.  This gives a model of TTT(U).   Empty sets in TTTU present no essential additional difficulties.
@@ -576,7 +592,7 @@ We define $[\in]$ as $[\subseteq]\cap (1 \times V)$.
 
 \end{description}
 
-This is not our favorite finite axiomatization of NF (or our favorite finite template axiomatization of TST) but it is the one in the formalization and also basically the oldest one, so we present a verification of it in outline at least.
+This is not our favorite finite axiomatization of NF (or our favorite finite template axiomatization of TST) but it is the one verified in the Lean formalization and also basically the oldest one, so we present a verification of it in outline at least.
 
 What we need to do is verify that $\{x:\phi\}$ exists for each formula $\phi$ of the language of TST, to ensure that comprehension holds.  We do this by induction on the structure of formulas.
 
