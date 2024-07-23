@@ -1,0 +1,367 @@
+\documentclass[12pt]{article}
+
+\title{Type Theories with General Variables}
+
+\author{Thomas Forster and Randall Holmes}
+
+\usepackage{amssymb}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\subsection{Version Notes}
+
+\begin{description}
+
+\item[7/4/2024:]  Creating the file.
+
+\item[7/10/2024:]  Some comments by Thomas and my replies.
+
+
+\item[7/18/2024:]  Mathematical constructions and type hierarchy added -- starting to talk about typed language.
+
+\item[7/21/2024:]  Revision of terminology and resolution of the axiom of comprehension into two axioms.  Proved the theorem that set abstracts are equivalent to typed set abstracts, all without introducing type theory.
+
+\item[7/22/2024:]  The equivalence relation is called cohabitation.  Later revisions here and there.
+
+\end{description}
+
+\newpage
+
+\section{Introduction}
+
+The title of the paper refers to a proposal of Quine (in
+\cite{quiettgv}) for a presentation of the typed theory of sets as an
+unsorted theory.  A number of theories of this kind will be presented
+in this paper.  We do not start with Quine's own proposal, for
+rhetorical reasons (we want to make a point).
+
+\subsection{TTGV:  a simple theory of types with general variables}
+
+We present as part of our introduction a specific theory TTGV of this
+kind\footnote{This theory was defined by Holmes as a modification of Forster's proposal which will be discussed later; at that time Holmes had no acquaintance with the earlier work of Quine or Resnik (\cite{resnikttgv}):  it is a slight weakening of Resnik's theory, however, which confirms the naturalness of the approach.  Resnik's original theory has strong extensionality and asserts that all individuals are of the same type.}.  We will be interested in other related theories, and we will
+also be interested in different axiomatizations of this one; but we
+want to present something concrete to illustrate what we are talking
+about.
+
+TTGV is a one-sorted first order theory with equality and membership as primitive relations.  It has some other primitive notions introduced later.
+
+\begin{description}
+
+\item[Definition (nonempty set):]  We say that $x$ is a {\em nonempty set\/} iff $$(\exists y:y \in x).$$ Nonempty sets are objects with elements.
+
+\item[Remark:]  There is a simple identity criterion for nonempty sets expressed in the following axiom.
+
+\item[Axiom of (weak) extensionality:]  $$(\forall xyz:z \in x \rightarrow ((\forall w:w \in x \leftrightarrow w \in y) \rightarrow x=y)).$$  Nonempty sets are the same if and only if they have the same elements.
+
+\item[Remark:]  We prefer the axiom of weak extensionality because we think for full generality one should allow atoms, but in this particular context, as we will see, empty sets of different types will also be distinct.
+
+\item[Remark:]  What follows is the central concept of this development, going right back to Quine.  In an unsorted theory, implementing the typed theory of sets, we do want to express the idea that two objects are of the same type.  The following definition does this neatly.
+
+\item[Definition (cohabitation):]  We say that objects $x$ and $y$ cohabit (written $x \sim y$) iff $(\exists z:x \in z \wedge y \in z)$.  Objects cohabit if and only if there is a set to which both belong.
+
+\item[Axiom of types:]  For each object $x$, there is an object $\tau(x)$ (which we call the type of $x$) such that $x \in \tau(x)$ and $(\forall y:y \in \tau(x) \leftrightarrow y \sim x)$.  The type of $x$ is the collection of things that cohabit with $x$ (and $x$ cohabits with $x$).  Objects of the form $\tau(x)$ are called types.
+
+\item[Theorem:]  $\sim$ is an equivalence relation. 
+
+\item[Proof:]  $x \sim x$ follows from $x \in \tau(x)$, part of the axiom of types.
+
+$x \sim y\rightarrow y \sim x$ is a theorem of first order logic.
+
+Notice that symmetry of $\sim$ implies that $x \in \tau(y)$ is equivalent to $y \in \tau(x)$.  Now suppose that $x \sim y$ and $y \sim z$.  It follows that
+$x \in \tau(y)$ and $z \in \tau(y)$, so $x$ and $z$ are of the same type:  $x \sim z$ as desired.
+
+\item[Remark:]  If when $x$ is an object and $\tau$ is a type, we read $x \in \tau$ as ``$x$ has type $\tau$", note that $x \sim y$ can be read as ``$x$ and $y$ have the same type".
+
+\item[Type hierarchy:]  We define $\tau^1(x)$ as $\tau(x)$ and $\tau^{n+1}(x)$ as $\tau(\tau^n(x))$ for each concrete $n$.  Notice that the variable $n$ here is a variable of the metatheory which we cannot quantify over.
+
+\item[Remark:]  We ought to say something about empty sets.
+
+\item[Primitive notion (empty set):]  We introduce an primitive notion, for every nonempty set $a$ providing an object $\emptyset_{a}$, the empty set cohabiting with $a$.  Our general convention when we provide an object notation as subscript to a set notation is that the set denoted cohabits with the object denoted by the subscript:  the reader should note that such subscripts do not signal any difference of sort, just provide an indication of an equivalence class under $\sim$ which which the object can be found.
+
+\item[Axiom of empty sets:]  For any nonempty sets $a,b$, $\emptyset_a \sim a$ and $a \sim b \leftrightarrow \emptyset_a = \emptyset_b$.  An object which is $\emptyset_a$ for some $a$ is called an empty set.  We further define $\emptyset_x$ for any object $x$ that cohabits with with a nonempty set $a$ as $\emptyset_a$.
+
+\item[Definition (sethood):]  We say that $x$ is a set (written ${\tt set}(x)$) iff $$(\exists y:y \in x) \vee (\exists a:x = \emptyset_{a}), $$  that is, if $x$ is a nonempty set or $x$ is an empty set.
+
+\item[Definition (classification of empty objects):]  An object with no elements which is not an empty set and cohabits with some set is called an {\em atom\/};  an object with no elements which does not cohabit with any set is called an {\em individual\/}.   TTGV does not prove the existence of either atoms or individuals, but they are an interesting possibility.
+
+Asserting that there are no atoms would give the appropriate version of strong extensionality for this theory (there would still be many elementless empty sets, and might be many individuals).  Asserting that there are no individuals would have less familiar effects which we will discuss later.
+
+\item[Definition (subset relation):]  We define $x \subseteq^+ y$ as $$(\exists z \in x) \wedge (\forall z:z \in x \rightarrow z \in y):$$ this is read ``$x$ is a nonempty subset of $y$".   We define $x \subseteq y$ as $$x \subseteq^+ y \vee ({\tt set}(y) \wedge x = \emptyset_y).$$
+
+\item[Remark:]  We now provide the comprehension axiom of this theory, which has the simple motivation that any subcollection of a type ought to be a set, with an auxiliary axiom first.
+
+\item[Axiom (subsets):]  $(\forall xy:x \in y \rightarrow y \sim \tau(x))$.  
+
+This is equivalent to the assertion that sets which meet cohabit, that is, $(\forall xyz:x \in y \wedge x \in z \rightarrow y \sim z)$.  If $x \in y$ and $x \in z$, then by the axiom of subsets, $y \sim \tau(x)$ and $z \sim \tau(x)$, so $y \sim z$.  If sets which meet cohabit, then $x \in y$ implies that $y$ meets $\tau(x)$, so $y \sim \tau(x)$.
+
+The axiom is called the axiom of subsets because it is equivalent to the assertion that a subset of a type must cohabit with that type.
+
+A consequence of this is that $x \in y \rightarrow \emptyset_y = \emptyset_{\tau(x)}$:  subscripts on empty sets can be supposed to be types without loss of generality.
+
+\item[Axiom (separation):]  For each set $B$ and each formula $\phi$ in which $A$ is not free, $(\exists A:A \in B \wedge (\forall x:x \in A \leftrightarrow y \in B\wedge \phi))$.  The object $A$, if it has elements, is unique and may be denoted by $\{x \in B:\phi\}$; if there is no $x$ such that $y \in B$ and $\phi$, we define $\{x \in \tau(y):\phi\}$ as
+$\emptyset_{B}$.
+
+\item[Remark:]  Note that if $\{x \in B:\phi\}$ has elements it cohabits with $B$ by the axiom of subsets; otherwise it cohabits with $B$ because it is $\emptyset_B$:  in either case, $\{x \in B:\phi\} \sim B$.
+
+\item[Corollary (comprehension):]  For any object $y$ and formula $\phi$ in which $A$ does not occur,
+$(\exists A:A \sim \tau(y) \wedge (\forall x:x \in A \leftrightarrow x \sim y \wedge \phi))$.  The object $\{x \in \tau(y):\phi\}$ witnesses this.  \footnote{This was our original formulation, and we provide it to make any surviving subsequent references to ``comprehension" make sense.   Comprehension is equivalent to the axiom of subsets and separation together.}
+
+\item[Remark:]  One more axiom is required for technical reasons.  The exact axiom that is used can vary;  this one is very natural.   The reason that it is needed may not be so evident.
+
+\item[Axiom of binary union:]  If $A \sim B$ are nonempty sets, $$(\exists C:(\forall x:x \in C \leftrightarrow x \in A \vee x \in B)).$$  The object $C$ is uniquely determined and may be denoted by $A \cup B$.  
+
+The definition of union can be extended to empty sets:  $A \cup \emptyset_A = \emptyset_A \cup A = A$.
+
+\end{description}
+
+\subsubsection{Variants of the axiomatization}
+
+\begin{description}
+
+\item[Theorem:]  In the presence of the other axioms, the action of binary union is equivalent to the axiom of set union, which we state as $$(\forall A:\exists U:(\forall x:x \in U \leftrightarrow (\exists y:x \in y \wedge y \in A))).$$  The witness $U$ is uniquely determined if nonempty and can be written $\bigcup A$;  if it is empty and $A \in \tau^2(u)$, we can let $\bigcup A$ denote the empty set of the same type as $\tau(u)$ [a set of individuals is not expected to have a set union].
+
+\item[Proof:]  Suppose binary union holds.  Let $A$ be a set.  If there are no $x,y$ such that $x \in y \in A$, then any elementless object will serve as the set union (strictly speaking, we would want $A \in \tau^2(u)$ for some $u$, and the empty set of the same type as $\tau(u)$ would be the desired set union:  a set of individuals is not expected to have a union).  If $x \in y \in A$ and $z \in w \in A$ then $y \sim w$, so $y \cup w$ exists and contains both $x$ and $z$, so $x \sim z$, so $\{z \in \tau(x):(\exists w:z \in w \wedge w \in A\}$ is the set union of $A$.
+
+Suppose set union holds.  Let $x$ and $y$ be nonempty sets of the same type.  Then $$\{x,y\} = \{z \in \tau(x):z=x \vee z=y\}$$ exists by separation, and its set union is $x \cup y$.
+
+\item[Theorem:]  The axiom of subsets is equivalent in the presence of the other axioms to the assertion that for each $x$, there is a set $B(x)$ such that $$(\forall y:y \in B(x)\leftrightarrow x \in y).$$
+
+\item[Proof:]   Suppose that $B(x)$ exists, and suppose that the axioms other than subsets hold (only part of the axiom of types is used).  Then if $x \in y$, it follows that $y \in B(x)$ and of course
+$\tau(x) \in B(x)$, whence $y \in \tau(x)$.
+
+Existence of $B(x)$ follows from our usual axiom set, because $x \in y$ implies $y \sim \tau(x)$ by subsets,
+so $y \in \tau^2(x)$, so $$B(x) = \{y \in \tau^2(x):x \in y\}.$$
+
+\item[Theorem:]  The axiom of subsets is equivalent in the presence of the other axioms to the assertion that for each set $x$, there is a set ${\cal P}(x)$ (the power set of $x$) such that $$(\forall y:y \in {\cal P}(x)\leftrightarrow y \subseteq x).$$
+
+\item[Proof:]  Suppose that power sets exist and $x \in y$.  Notice that every element of $y$ belongs to $\tau(x)$, so $y \subseteq \tau(x)$, so $y \in {\cal P}(\tau(x))$, and of course $\tau(x) \in {\cal P}(\tau(x))$, so $y \sim \tau(x)$.
+
+The existence of power sets follows from our full axiom set.  Let $x$ be a set.  Suppose $y \subseteq x$.
+If $x$ is an empty set, then $y=x=\emptyset_x$ and ${\cal P}(x) = \{y \in \tau(x):y=x\}$.  Suppose $z \in x$.  Then $x \sim \tau(z)$, so $x \in \tau^2(z)$, by the axiom of subsets.  We claim that ${\cal P}(x) = \{y \in \tau^2(z):y \subseteq x\}$.  To verify this, we need to show that if $y \subseteq x$, $y \in \tau^2(z)$.  If $y$ is empty, then $y = \emptyset_x \sim x$ so $y \in \tau^2(z)$.  If $w \in y$, then $w \in x$ (subset hypothesis) and thus $w \sim z$.  Also $y \sim \tau(w)$ by the axiom of subsets, but $\tau(w)=\tau(z)$, so $y \sim \tau(z)$, so $y \in \tau^2(z)$, completing what we need.
+
+It is easy to adapt this argument to show that the axiom of subsets is equivalent to existence for each set $x$ of ${\cal P}^+(x)$  such that $$(\forall y:y \in {\cal P}(x)\leftrightarrow y \subseteq^+ x).$$
+
+\item[Remark:]  The result just previous depends for its success on defining the subset relation very carefully.  The quite natural definition $$x \subseteq y \equiv_{\tt def} {\tt set}(x) \wedge {\tt set}(y) \wedge x \sim y \wedge (\forall z:z \in x \rightarrow z \in y)$$ would not serve here, though it is an adequate definition of the subset relation in the presence of the full axiom set.
+
+\item[Discussion of strong extensionality:]  The assertion that there are no atoms gives a stronger version of extensionality in this theory which we will see gives the usual extensionality conditions in an interpreted type theory.  An object is an atom if it has no elements, is of the same type as a type, and is not an empty set.   The assertion that there are no atoms implies
+that for any $x,y,u$, if $x$ and $y$ are both of the same type as $\tau(u)$ (and so belong to $\tau^2(u)$) and have the same extension, they are equal (they either have the same nonempty extension or are both equal to the empty set for type $\tau(u)$).  Thus the only failures of extensionality for objects of the same type are for objects which belong to no type $\tau^2(u)$, that is, individuals.  Empty sets of distinct type will still be coextensional with and distinct from individuals and
+empty sets of different types.
+
+\end{description}
+
+\newpage
+
+\subsection{Basic set constructions and type hierarchy in TTGV}
+
+In this section, we work on basic set theory machinery in this context.  We freely use notations defined in the axiomatics section.
+
+\begin{description}
+
+\item[Extending definitions to the empty sets:]  If $B$ is a set and $$(\forall x \in B:\neg \phi),$$ we define $\{x \in B:\phi\}$ as $\emptyset_{B}$.  If $A$ is a set of the same type as  $\emptyset_{\tau(x)}$, we define both $A \cup  \emptyset_{\tau(x)}$ and  $\emptyset_{\tau(x)}\cup A$ as $A$.
+
+
+
+\item[Coercion of types:]  Suppose $x \in y$.   The axiom of subsets tells us that $y \sim \tau(x)$, so $y \in \tau^2(x)$. 
+So $x \in y \rightarrow y \in \tau^2(x)$.
+
+Further, suppose $x \in y$ and $y \in \tau^2(z)$.  It follows that $y \sim \tau(z)$, so  that  $y \cup \tau(z)$ exists, and both $x$ and $z$ belong to this set, so $x \sim z$, that is,
+$x \in \tau(z)$.  We have established $x \in y \wedge y \in \tau^2(z) \rightarrow x \in \tau(z)$.
+
+More generally, if $x \in y$ and $x \in \tau^n(u)$ then $y \in \tau^{n+1}(u)$ and if $x \in y$ and $y \in \tau^{n+1}(u)$ it follows
+that $x \in \tau^n(u)$. 
+
+Notice that it follows from type coercion that $\bigcup(\tau^{n+1}(x)) = \tau^n(x)$.  We adopt the convention that for any concrete integer $i$, we can define $\tau^{i-1}(x)$ as $\bigcup \tau^i(x)$ if this is a type.
+
+We will show that the types $\tau^n(x)$ for a fixed $x$ are distinct (therefore disjoint) for distinct $n$.
+
+
+
+\item[Theorem (following Russell):]  For each $x$, $\tau^2(x) \neq \tau(x)$.
+
+\item[Proof:]  Let $x$ be any object.  Suppose that $\tau^2(x)=\tau(x)$. 
+
+Define $R_{\tau(x)}$ as $\{y \in \tau(x):y \not\in y\}$.  $R_{\tau(x)} \in \tau^2(x)$, so $R_{\tau(x)} \in \tau(x)$ by hypothesis, so $R_{\tau(x)} \in R_{\tau(x)}$ is equivalent to $$R_{\tau(x)} \in \tau(x) \wedge R_{\tau(x)} \not\in R_{\tau(x)},$$ which is equivalent to $R_{\tau(x)} \not\in R_{\tau(x)}$, which is absurd.
+
+The proof by contradiction that $\tau^2(x)\neq \tau(x)$ is complete.
+
+\end{description}
+
+We adapt this proof to show that $\tau^{n+2}(x) \neq \tau(x)$ for any $x$, for each concrete natural number $n$.  Resnik proved this theorem in the same way in his related earlier work (which we will discuss below).
+\begin{description}
+\item[Theorem (following Russell and Resnik):]  For each $x$, $\tau^{n+2}(x) \neq \tau(x)$, for each concrete natural number $n$.
+
+\item[Proof:]  Let $x$ be any object.  Suppose that $\tau^{n+2}(x)=\tau(x)$. 
+
+Define $R_x$ as $\{\iota^n(y)\in \tau^{n+1}(x):\iota^n(y) \not\in y\}$.  It is straightforward to show that $\iota^n(y) \in \tau^{n+1}(y)$ for each $y$ and concrete $n$ (by type coercion) so $R_x \in \tau^{n+2}(x) = \tau(x)$ by hypothesis, so $\iota^n(R_x) \in \tau^{n+1}(x)$.    Now $\iota^n(R_x) \in R_x$ iff $\iota^n(R_x) \in \tau^{n+1}(x) \wedge \iota^n(R_x) \not\in R_x$, which we have seen is equivalent to $\iota^n(R_x) \not\in R_x$, which is absurd.
+
+\item[Remark:]  We remind the reader that distinct types are disjoint, since they are equivalence classes.  The types $\tau(x)$ and $\tau^{n+2}(x)$ are not only distinct, but they have no common  elements.
+
+\item[Constructing finite sets:]  The singleton set of $x$, $\{x\}$, can be defined as $\{y \in \tau(x):y=x\}$.  This exists and has $x$ as its only element by the axioms of types and separation.  It is convenient to define $\iota(x)$ as $\{x\}$, $\iota^0(x)$ as $x$,
+and $\iota^{n+1}(x)$ as $\{\iota^n(x)\}$ for each concrete natural number $n$.
+
+If $x \sim y$, we have $\{x\} \sim \{y\}$ by type coercion so $\{x,y\}$ can be defined
+as $\{z \in \tau(x):z =x \vee z=y\}$ and has exactly $x$ and $y$ as its elements.
+
+We can define $\{x_1,x_2,\ldots,x_n\}$ as $\{x_1\} \cup \{x_2,\ldots,x_n\}$, completing the definition of the list notation for finite sets by metatheoretic recursion.
+
+\item[Definiton (ordered pair, basics of relations):]  For $x \sim y$, we define $(x,y)$ as $\{\{x\},\{x,y\}\}$.  
+
+Notice that $x$ is the unique object which belongs to every element of $(x,y)$, and $y$ is the unique object which belongs to exactly one element of $(x,y)$.  It follows from this that $(x,y)=(z,w)$ implies $x=z$ and $y=w$.  
+
+Notice that by type coercion, $(x,y)$ belongs
+to $\tau^3(x) = \tau^3(y)$.  For $A , B$, both sets and of the same type, we can define $A \times B$, the cartesian product of $A$ and $B$,  as $$\{(a,b)\in \tau^2(A):a \in A \wedge b \in B\}.$$
+
+We define a relation as a set $R$ of ordered pairs (further requiring, in case $R$ is empty, that it belong to some type $\tau^3(u)$).  If $R$ is a relation, we write $x \, R\, y$ for $(x,y) \in R$.  For any relation $R$, we define $R^{-1}$ as \newline $\{(y,x) \in \tau(R):x \, R\, y\}$ and ${\tt dom}(R)$ as $\{x \in \bigcup^2 \tau(R):(\exists y:x \, R\, y)\}$.  Notice that
+$\bigcup^2 \tau(R)$ will be $\tau(x) = \tau(y)$ for any $(x,y)\in R$, by existence of set unions and type coercion. We can then define ${\tt rng}(R)$ as ${\tt dom}(R^{-1})$.
+
+We define $R``A$, for $R$ a relation and $A$ a set with $\tau^2(A) = \tau(R)$, as $\{b \in \bigcup \tau(A):(\exists a:a \in A \wedge a \, R \, b)\}$.
+
+\item[Definition (basics of functions):]  We say that $f$ is a function (written ${\tt function}(f)$) iff it is a relation and for every $x,y,z$, $x \,f\,y \wedge x \,f\,z \rightarrow y=z$.  We say $f:A \rightarrow B$ ($f$ is a function from $A$ to $B$) iff $${\tt function}(f) \wedge f \subseteq A \times B.$$  
+
+We say that $f$ is one to one or an injection iff $f$ and $f^{-1}$ are both functions.
+
+We say that $f:A \rightarrow B$ is onto $B$ or a surjection from $A$ to $B$ iff ${\tt rng}(f)=B$.  
+
+We say for sets $A,B$ of the same type that $A \approx B$ ($A$ and $B$ are of the same cardinality) iff there is $f:A \rightarrow B$ which is an injection and onto $B$ (such a function is called a bijection from $A$ to $B$).  
+
+We define $|A|$, the cardinality of $A$,
+as $\{B \in \tau(A):A \approx B\}$.  Note that $|A| \in \tau^2(A)$.
+
+\item[Lemma:]  For any sets $A\sim B \sim \{x\} \sim \{y\}$ with $x \not\in A$ and $y \not\in B$, $A \approx B \leftrightarrow A \cup \{x\} \approx B \cup\{y\}$
+
+\item[Proof:]  Standard, and omitted for the moment.
+
+\item[Definition:]  We define $\sigma(|A|)$ as $|A \cup \{x\}|$ where $\{x\} \sim A$ and $x \not\in A$.  The previous lemma tells us that this definition works.  Note that $\sigma(|\tau(x)|)$ is not defined, unless there is a set $A \subseteq \tau(x)$ such that $A \approx \tau(x)$, in which case it is straightforward to establish that $\sigma(|A|) = |A| = |\tau(x)|$, so [in this case] $\sigma(|\tau(x)|)$ can safely be defined as $|\tau(x)|$.
+
+\item[Definition:]  We define $0_{\tau^2(x)}$ as $|\emptyset_{\tau(x)}|$.  
+
+For each concrete numeral $n$ for which $n_{\tau^2(x)}$ has been defined,
+we define $(n+1)_{\tau^2(x)}$ as $\sigma(n_{\tau^2(x)})$.
+
+We define ${\mathbb N}_{\tau^3(x)}$ as $$\{n \in \tau^2(x):(\forall I:(0_{\tau^2(x)} \in I \wedge (\forall m:m \in I \rightarrow \sigma(m) \in I)) \rightarrow n \in I)\}.$$
+
+We define ${\mathbb F}_{\tau^2(x)}$ as $\bigcup {\mathbb N}_{\tau^3(x)}$.
+
+Thus we have defined the natural number zero, successor for natural numbers, each concrete natural number for counting elements of each given type,
+the natural numbers for counting elements of each given type, and the set of finite sets of each given type.
+
+\item[Axiom of Infinity:]  $(\forall x:\tau(x) \not\in {\mathbb F}_{\tau^2(x)})$
+
+We will generally assume this axiom.
+
+\item[Remark:]  We have enough machinery to do the standard mathematics of the natural numbers.  It is odd (and reminiscent of what happens in the typed theory of sets not yet mentioned) that the natural numbers used to count elements of different types are different.  It is not the case that arithmetic over different types is necessarily the same, though for any fixed $x$ (and assuming Infinity) arithmetic in each ${\mathbb N}_{\tau^{i+3}(x)}$ will be the same.  The constructions of the real numbers and of the usual spaces constructed from the reals go through with similar remarks about reduplication over different types.
+
+\item[ operations of cardinal arithmetic:]  If $A$ and $B$ are disjoint sets, we define $|A|+|B|$ as $|A \cup B|$.  It is straightforward to show that if $A \approx A'$, $B \approx B'$ and $A'$ and $B'$ are disjoint, it follows that $A \cup B \approx A' \cup B'$, so the definition of addition of cardinals does not depend on the choice of the sets $A$ and $B$ from the cardinals.
+This definition applies to all cardinal numbers, but of course it specializes to the naturals.   The formal possibility is present that some sums of cardinals might not be defined, though this will not happen under reasonable assumptions.
+
+If $A$ is a set, we define $\iota``A$ as $\{\{a\}:a \in A\}$ and $T(|A|) = |\iota``A|$.  It is straightforward to show that the definition of this operation on cardinals does not depend on $A$, and further that $T(|A|) = T(|B|) \rightarrow |A|=|B|$, so the operation $T^{-1}(\kappa)$ makes sense for cardinals $\kappa$, though it may be partial.  The cardinal
+$T(|A|)$ might seem to be the same cardinal but it is of a different type, and so not the same object.
+
+If $A$ and $B$ are sets, we define $|A| \cdot |B|$ as $T^{-2}(A \times B)$.  This operation may seem to be partial, but under reasonable assumptions it is total.  Again, this definition does not depend on the choice of the sets $A$ and $B$, and it specializes to the natural numbers.
+
+If $A$ and $B$ are sets, we define $|B|^{|A|}$ as $T^{-3}(|\{f:(f:A \rightarrow B)\}|)$, the cardinality of the set of functions from $A$ to $B$ shifted downward suitably in type.  This operation is not total, as we will see.
+
+Given the Axiom of Infinity, there are straightforward proofs by induction that the addition, multiplication, and exponentiation operations are total on the natural numbers.
+
+\item[well-orderings and ordinal numbers:]  We define linear orders and well-orderings in the usual way:  a well-ordering for us is reflexive ($\leq$ rather than $<$).  The notion of isomorphism of well-orderings is defined as usual.  If $\leq$ is a well-ordering, the order type of $\leq$, written ${\tt ot}(\leq)$, is the isomorpshim class of $\leq$;  an object is an ordinal number iff it is the order type of some well-ordering.  For any relation $R$, we define $R^{\iota}$ as $\{(\{x\},\{y\}) \in \tau^2(R):x \, R \, y\}$ and for any ordinal $\alpha ={\tt ot}(\leq)$ define $T(\alpha)$ as ${\tt ot}(\leq^\iota)$.  The ordinal $T(\alpha)$ seems in some sense to be the same order type as $\alpha$, but it is a distinct object because it belongs to a different type.
+
+\item[Remark:]  The knowledgeable reader will recognize the mathematical constructions here as the same ones done in New Foundations or NFU (or in the simple typed theory of sets);  the point we are making by exhibiting them here is that they are entirely natural here without any reference to the typed theories or to the notion of stratification.
+
+\item[Remark:]  One of the earlier proposers of a theory of this kind asserted that what Russell called systematic ambiguity, which is more recently called polymorphism or typical ambuity, has no role here.  The construction of the natural numbers indicates that this is false.  The hall of mirrors effect found in the typed theory of sets
+is clearly manifest:  we end up, for example, with a number $3_{\tau(t)}$ that cohabits with $\tau(t)$ for every type $t$.  Stating an ambiguity property of provable statements is a bit trickier because the untyped language of TTGV has more resources.
+
+\end{description}
+
+\subsection{Typed formulas}
+
+We introduce language which is in effect sorted (though not formally so), but is naturally motivated by the type coercion and type hierarchy results of the previous section
+
+\begin{description}
+
+\item[Definition:]  We say that a formula in the language of TTGV is {\em typed\/} if each bound variable $v$ is restricted to a type $\tau^n(x)$ where $x$ is a parameter of the formula.  The values of $n$ and $x$ may be different for different variables.  We refer to $\tau^n(x)$ as the type of $v$, written ${\tt type}(v)$ , in this context.  The type of a parameter $u$ is simply the actual set $\tau(u)$, the type in the usual sense to which it belongs.
+
+\item[Observation and further definition:]  A formula $u=v$ where $u$ and $v$ are both bound can be reduced to the False if ${\tt type}(u) \neq {\tt type}(v)$.  A formula $u \in v$ where $u$ and $v$ are both bound can be reduced to the False if $\tau({\tt type}(u)) \neq {\tt type}(v)$.   We define a well-typed formula as a typed formula in which
+each atomic fomula $u=v$ satisfies ${\tt type}(u) = {\tt type}(v)$ and each atomic formula $u \in v$ satisfies $\tau({\tt type}(u)) = {\tt type}(v)$.  Observe that any typed formula in which we presume that we know the values or at least the types of any parameters is equivalent to a well-typed fomula, because all subformulas which fail these conditions can be eliminated.
+
+\item[Definition:]  A variable $u$ is said to be connected to a variable $v$ in a formula $\phi$ if and only if $v$ belongs to every set of variables appearing in $\phi$ which contains $u$ and is closed under the relation of occurring together in an atomic subformula of $\phi$. 
+
+\item[Observation:]  Notice that in a formula $\phi$, if a variable $x$ has type $\tau(u)$, every variable connected to $x$ has type $\tau^i(u)$ for some integer $i$ (review our definition above of $\tau^i(u)$ for nonpositive $i$).
+
+\item[Segregation Lemma:]  
+In what follows, we may view $(\forall u:\phi \rightarrow \psi)$, where $\phi$ may contain $u$ but nothing else but parameters, as a restricted quantifier over $u$ with scope $\psi$, and we regard each occurrence of a quantifier as having a restriction (or lack of restriction) understood.  In a typed formula, there is an obvious understood restriction of each quantifier.
+
+For any formula $\phi$ and variable $x$, it is possible to present an equivalent formula $\phi^*$ in which any quantifier (possibly restricted) over a variable connected to $x$ has only variables connected to $x$ in its scope,
+and any quantifier (possibly restricted) over a variable not connected to $x$ has only variables not connected to $x$ in its scope.  Such a formula is said to be segregated for $x$.  
+
+\item[Proof:]  We may assume that we use only universal quantifiers, for simplicity.
+
+We indicate how to export any atomic subformula $u \, R \, v$ in which $u$ and $v$ are connected to $x$ from the scope of all quantifiers (unrestricted or restricted) over a variable $w$ not connected to $x$.   We include as
+restricted quantified formulas those of the form $(\forall x:\phi \rightarrow \psi)$ in which $\phi$ may contain $x$ and parameters, as noted above.
+
+Consider a formula $(\forall w:\chi \rightarrow \psi)$, supposing that $\chi$ contains no variables but $w$ and parameters and $\psi$ can be converted to a segregated form $\psi^*$.
+
+Let $\phi$ be the largest proper subformula of $\psi^*$ containing a given instance of $u \, R \, v$ which is either $u\,R\, v$ itself or a quantified formula (restricted or otherwise).  $\phi$ is not in the scope of any quantifier
+not connected to $x$ other than the given quantifier over $w$, nor is it in the scope of any quantifier over a variable connected to $w$ or it would not be largest.  So we can convert  $(\forall w:\chi \rightarrow \psi)$ to the form
+$$(\forall w:\chi \rightarrow (\phi \rightarrow \psi_1^*) \wedge \chi \rightarrow (\neg \phi \rightarrow \psi_2^*)),$$ where $\psi_1^*$ and $\psi_2^*$ are obtained by replacing $\phi$ with truth values in $\psi^*$, which is equivalent to $$\phi \rightarrow (\forall w:\chi \rightarrow \psi^*_1) \wedge \neg\phi \rightarrow (\forall w:\chi \rightarrow \psi^*_2),$$ in which the occurrence of $u \, R\, v$ has beeen moved out of the scope of the quantifier over $w$.  We have shown that this works if the quantifier over $w$ is restricted; clearly it also works for unrestricted quantifiers. 
+
+In the same way, export formulas involving variables not connected to $x$ past quantifiers over variables connected to $x$.   
+
+This process can be iterated until all undesired occurrences of atomic subformulas in scopes of quantifiers with understood restrictions have been removed.
+
+
+\item[Theorem:]  Every set abstract $\{x \in \tau(u):\phi\}$ is equivalent, for each fixed assignment of values to its parameters, to a set abstraction \newline $\{x \in \tau(u):\phi^*\}$ in which $\phi^*$ is a typed formula.
+
+\item[Proof:]  The strategy of the argument is to show that unrestricted universal quantifiers (and so, by duality, unrestricted existential quantifiers) can be eliminated in favor of quantifiers restricted to types.
+
+We describe this process for a subformula $(\forall y:\psi)$ in which $\psi$ is a typed formula.  The variable $y$ is free in $\psi$.  Each subformula in which it appears suggests a type to which it might belong:  a subformula $y = z$ in which $z$ is connected to a parameter in $\psi$ suggests that
+$y \in \tau(u)$, where $\tau(u)$ is the type of $z$, a subfoirmula $y \in z$ suggests that $y \in \tau^2(u)$, and a subformula $z \in y$ suggests that $y \in \tau^0(z) = \bigcup \tau(z)$.  Let $\tau(z_1),\ldots,\tau(z_n)$ be the types conjecturable for $y$ in this way.  $(\forall y:\psi)$ is equivalent to $$(\forall y_1 \in \tau(z_1):\psi[y_1/y]) \wedge \ldots (\forall y_n \in \tau(z_n):\psi[y_n/y]) $$ $$\wedge (\forall y_{n+1}:\tau(y_{n+1}) \neq \tau(z_1) \wedge \ldots \tau(y_{n+1}) \neq \tau(z_n) \rightarrow \psi[y_{n+1}/y]).$$
+
+Each of the conjuncts $(\forall y_1 \in \tau(z_1):\psi[y_1/y])$ is unproblematic because it is a typed formula (and can further be transformed to be well-typed).
+
+The alarming conjunct is the final one, $$(\forall y_{n+1}:\tau(y_{n+1}) \neq \tau(z_1) \wedge \ldots \tau(y_{n+1}) \neq \tau(z_n) \rightarrow \psi[y_{n+1}/y]).$$
+
+We view the hypothesis of the quantified implication as a restriction for purposes of the Segregation Lemma.
+
+The key here is that we know from the hypotheses about the type of $y_{n+1}$ that $\psi[y_{n+1}/y]$ can be converted
+to a form in which $y_{n+1}$ is not connected to any parameter in $\psi$, and in particular it is not connected to the variable
+$x$ which is bound by the set abstract.  Any assertion about variables not connected to $y_{n+1}$, which include parameters in $\psi$ (including $x$),  which is included in
+$\psi[y_{n+1}/y]$ can be pulled out of the scope of the restricted quantifier over $y_{n+1}$ using the Segregation Lemma (and will be typed).  The possibly multiple formulas with quantifiers over $y_{n+1}$ which remain are not necessarily  typed formulas [entirely because of the assertion $\tau(y_{n+1}) \neq \tau(z_1) \wedge \ldots \tau(y_{n+1}) \neq \tau(z_n)$ serving as restriction]  , but  since each of them does not depend on any variable not connected to $y_{n+1}$ other than parameters in the restricting clause, each is closed and equivalent simply to a truth value (note that while $x$ is variable,
+its type [which we do have to be concerned about because it might occur in the hypothesis $$\tau(y_{n+1}) \neq \tau(z_1) \wedge \ldots \tau(y_{n+1}) \neq \tau(z_n)$$ which we are using as a bound to the quantifier] is not:  $\tau(u)$ is its type and $u$ can be taken to be a parameter whose value is fixed).
+
+Thus for any fixed values of parameters in $\{x \in \tau(u):\phi\}$, it is the same collection as $\{x \in \tau(u):\phi^*\}$ for some typed formula $\phi^*$.
+
+\item[Remark:]  One might want to prove the more dramatic statement that every formula $\phi$ in which each parameter is assigned a fixed value is equivalent to a typed formula.  Unfortunately, it appears unlikely that this is the case.  The method of proof above can be attempted:  the problem is the presence of formulas
+which are closed typed formulas asserted for all but a given finite collection of types.  The restricted quantifiers over all types that are involved can be exported all the way to the outside as we work through the construction.  But the restriction to all but a finite collection of types is intractable.
+
+Two incompatible additional schemes allow one to conclude that every formula is equivalent to a partial universal closure of a typed formula.  Both attack the
+issue of the strange restriction on the universal quantifiers over types, in different ways.  If for each type $t$ there is a typed formula $\phi_t(x)$ such that $\phi_t(x) \leftrightarrow x \in t$, then one can convert the restricted universal quantifiers over types to unrestricted universal quantifiers over types\footnote{This is true in a model derived directly from a model of the usual typed theory of sets with a type of individuals.}.  On the other hand,
+if one has a scheme asserting that any formula $\phi(t)$ (with no free variables other than $t$) which holds of all types $t$ but those in a concrete finite list $t_1,\ldots,t_n$ in fact holds of all types,
+then again the restricted quantifiers over types convert directly to unrestricted quantifiers over all types.
+
+We do not see any general method of removing this failure of equivalence to typed formulas without special assumptions.
+
+\item[Remark:]  For any typed sentence $\phi$, define $\phi^+$ as the result of replacing each type bound $\tau(u)$ with $\tau^2(u)$.  If the universal closure of $\phi$ is a theorem,
+so is the universal closure of $\phi^+$;  the converse is not true.  This is a clarification of the polymorphism of this theory.  Now the following scheme strengthens this to $\phi \leftrightarrow \phi^+$:  the Ambiguity Scheme for TTGV asserts for each formula in which only $x$ is free, $(\forall uv:\phi[\tau(u)/x] \leftrightarrow \phi[\tau(v)/x])$.  This asserts
+that all types look the same, in effect.  Consistency with TTGV of the ambiguity scheme for TTGV follows from the consistency of NFU;  we will review this in the next section.
+
+An entertaining variant which seems to have the strength of the Axiom of Counting is, for any formula $\phi$ in which $x,y$ are the only free variables,
+$$(\forall u:(\forall n \in {\mathbb N}_{\tau^3(u)}:\phi[\tau(u)/x;n/y] \leftrightarrow \phi[\tau^2(u);T(n)/y])).$$  This is unsatisfying in that we can't talk about all types at once in the same way as in the other scheme of ambiguity:  the problem is that we have no way to port natural numbers from one type to another if the types  are not connected by iterated applications of $\tau$.  So one would want the unrestricted scheme of ambiguity as well.
+
+Notice that the Ambiguity Scheme implies that every formula is equivalent to the partial universal closure of a typed formula, since it is a strengthening of one of the schemes which we know implies this.
+
+\end{description}
+
+
+
+
+
+\end{document}
+
+
+
+
+
