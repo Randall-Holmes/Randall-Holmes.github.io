@@ -81,6 +81,10 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should avoid metamathematics, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
 
+\item[7/28/2024:]  This contains Sky's complete rewrite of the proof of Freedom of Action, without changes to subsequent text which it entails.  It also includes
+redefinition of the position of function to act on singletons of atoms instead of atoms, to avoid irritating type conflicts between the definition of the position function
+and the definition of support conditions.
+
 \item[7/15/2024:]  Version resolving issues annotated by Sky.  Also removing version comments before July 2024.  There will still be some comments in blue in this version for contemplation or discussion (which can be suppressed for publication on arxiv).  Notably, Sky has added automated theorem and definition numbering and references.
 
 \item[7/5/2024:]  Some editing of the list of hypotheses of the recursion of the main construction.
@@ -755,9 +759,9 @@ of the position function $\iota_*$ which appears below at a convenient point but
 
 \begin{enumerate}
 
-\item $\iota_*(t) < \iota^+_*(x,S)$ if $(\{t\},A)$ or $(t,A)$ is in the range of $S$ {(supports are functions; see definition \ref{def:support})} and $x$ is not a typed near-litter.  \hsuggest{HOLMES:  singleton braces added here as an alternative are a necessary correction}
+\item $\iota_*(t) < \iota^+_*(x,S)$ if $(t,A)$ is in the range of $S$ {(supports are functions; see definition \ref{def:support})} and $x$ is not a typed near-litter.  \hsuggest{HOLMES:  removed singleton braces appearing as alternative in previous version;  changing domain of position function instead.}
 
-\item $\iota_*(t) \leq \iota^+_*(t_\gamma,S)$ \hsuggest{when $t$ is a near-litter} {(which appeared earlier as \ihref{ih:pos_typed_near_litter} for reasons stated there).}
+\item $\iota_*(t) \leq \iota^+_*(t_\gamma,S)$ {(which appeared earlier as \ihref{ih:pos_typed_near_litter} for reasons stated there).}  \hsuggest{HOLMES:  it doesnt seem necessary to restrict this to near-litters.}
 
 \end{enumerate}
 
@@ -801,21 +805,23 @@ We further stipulate \ihref{ih:extensionality} that extensionality holds for eac
 It is interesting to note that the Lean formalisation does not use \ihref{ih:extensionality} until the counting argument; in particular, it is not needed to construct $\tau_\alpha$ at stage $\alpha$.
 \end{annot}
 
-\begin{definition}[position function for atoms and near-litters]\label{def:pos_atom_near_litter}
-We posit a bijection \rk{(or just an injection)} $\iota_*$ from the set of all atoms and near-litters to $\mu$ with the following properties:
+\begin{definition}[position function for near-litters and \hsuggest{singletons of} atoms]\label{def:pos_atom_near_litter}
+We posit a bijection \rk{(or just an injection)} $\iota_*$ from the set of all near-litters and \hsuggest{singletons of} atoms to $\mu$ with the following properties:
 
 \begin{enumerate}
 
-\item $\iota_*(L) < \iota_*(a)$ if $a \in L$ and $L$ is a litter.
+\item $\iota_*(L) < \iota_*(\{a\})$ if $a \in L$ and $L$ is a litter.
 
 \item  $\iota_*(N^\circ)<\iota_*(N)$ if $N$ is a near-litter which is not a litter
 
-\item $\iota_*(a) < \iota_*(N)$ if $a \in N \Delta N^\circ$
+\item $\iota_*\{(a\}) < \iota_*(N)$ if $a \in N \Delta N^\circ$
 
 \end{enumerate}
+
+\hsuggest{HOLMES: addition of singleton braces in the properties is a proposed change}
 \end{definition}
 
-The function may be constructed directly: first choose an ordering of type $\mu$ on litters, then put atoms directly after the litter they are inside (and before all later litters), then put near-litters after the corresponding litter and all atoms in the symmetric difference, then map each atom or near-litter to its position in the resulting order.
+The function may be constructed directly: first choose an ordering of type $\mu$ on litters, then put \suggest{singletons of} atoms directly after the litter they are inside (and before all later litters), then put near-litters after the corresponding litter and all \hsuggest{singletons of} atoms in the symmetric difference, then map each near-litter or \hsuggest{singleton of an} atom to its position in the resulting order.
 We don't run out of room before finishing the construction because $\mu$ has cofinality at least $\kappa$.
 
 An additional property involving $\iota_*$ which is enforced by inductive hypotheses explained later about the maps $\iota_\beta^+$ is that $\iota_*(N) \leq \iota_*^+(N_\delta,S)$ will hold for any near litter $N$ and support $S$ of $N_\delta$ \ihref{ih:pos_typed_near_litter}.  It must be noted here because it is shortly used.
@@ -837,11 +843,13 @@ We define $f_{\beta,\gamma}(x)$ as $L$, where $\iota_*(L)$ is minimal such that
 \begin{enumerate}
 \item $L \in  \{L_{\nu,\beta,\gamma}:\nu < \mu\}$,
 
-\item  $\iota^+_*(x) <\iota_*(L)$ [and so for any $N \sim L$, $\iota^+_*(x) <\iota_*(N)$, and for any $z \in L$, $\iota^+_*(x) < \iota_*(z)$],
+\item  $\iota^+_*(x) <\iota_*(L)$ [and so for any $N \sim L$, $\iota^+_*(x) <\iota_*(N)$, and for any $z \in L$, $\iota^+_*(x) < \iota_*(\{z\})$],
 
 \item and for any $y<_\beta^+ x$, $f_{\beta,\gamma}(y) \neq L$.
 
 \end{enumerate}
+
+\hsuggest{a singleton brace added}
 \end{definition}
 
 Note that the ranges of distinct $f$ maps are disjoint sets. %\rk{This comment is probably no longer needed.}  I prefer to keep it.
@@ -1108,7 +1116,7 @@ For any subset $X$ with cardinality $<\kappa$ of a type $\gamma$ and $\beta>\gam
 \end{remark}
 
 \begin{definition}[position functions]
-$\iota_*^+(x,\emptyset)$ is defined as $\iota_*(x)$.
+$\iota_*^+(x,\emptyset)$ is defined as $\iota_*(\{x\})$. \hsuggest{HOLMES: singleton brace added}
 The well-ordering $\leq_{-1}^+$ is defined by $$(x,\emptyset) \leq_{-1}^+ (y,\emptyset) \leftrightarrow \iota_*(x) \leq \iota_*(y).$$
 
 \begin{comment}
@@ -1117,13 +1125,13 @@ The well-ordering $\leq_\alpha^+$ of $\tau_\alpha^+$ ($\alpha \in \lambda$) must
 
 \end{comment}
 
-The conditions constraining the choice of functions $\iota^+_\beta$ ($-1 < \beta \leq \alpha$) (\suggest{enforcing }\ihref{ih:position}, \ihref{ih:pos_typed_near_litter}, \ihref{ih:position_constraints}) are
+The conditions constraining the choice of functions $\iota^+_\beta$ ($-1 < \beta \leq \alpha$) ({enforcing }\ihref{ih:position}, \ihref{ih:pos_typed_near_litter}, \ihref{ih:position_constraints}) are
 
 \begin{enumerate}
 
-\item $\iota_*(t) < \iota^+_\beta(x,S)$ if $(t,A)$ [$t$ a near-litter] or $(\{t\},A)$ [$t$ an atom] is in the range of $S$ and $x$ is not a singleton of an atom or a near-litter \suggest{\ihref{ih:position_constraints}}.
+\item $\iota_*(t) < \iota^+_\beta(x,S)$ if $(t,A)$ is in the range of $S$ and $x$ is not a near-litter or singleton of an atom {\ihref{ih:position_constraints}}.
 
-\item $\iota_*(t) \leq \iota^+_\beta(t_\gamma,S)$, if $t$ is a near-litter,  and  $\iota_*(t) \leq \iota^+_*(\{t\}_\gamma,S)$, if $t$ is an atom \ihref{ih:pos_typed_near_litter}. \rk{(Sky thinks we don't need the second half of this;  Holmes:  I'm not sure, leaving it for now.)}
+\item $\iota_*(t) \leq \iota^+_\beta(t_\gamma,S)$\hsuggest{suggest that we OMIT: , if $t$ is a near-litter  ,  and  $\iota_*(t) \leq \iota^+_*(\{t\}_\gamma,S)$, if $t$ is an atom} \ihref{ih:pos_typed_near_litter}. \rk{(Sky thinks we don't need the second half of this;  Holmes:  I'm not sure, leaving it for now.  The proposed modification of the definition of the position function actually causes the suppressed assertion to be true, harmlessly whether we use it or not.)}
 
 \end{enumerate}
 
@@ -1331,15 +1339,16 @@ for $-1 \leq \gamma<{\tt min}(A_1)$.
   Suppose that $\delta > -1$.
   We claim that $(\psi_{A_1})_\delta^*[S]$ is defined; this will then give a contradiction by lemma \ref{lem:foa_inflexible}.
   To show this, we must prove that if $(t, B) \in {\tt rng}(S)$, then $\psi_A^+``t$ is defined.
-  By definition \ref{def:f_map}, we have $\iota_*^+(x, S) < \iota_*(L)$, and by \ihref{ih:position_constraints}, $\iota_*(t) \leq \iota_*^+(x, S)$ (or $\iota_*(u) \leq \iota_*^+(x, S)$ if $t = \{u\}$ is a singleton)
+  By definition \ref{def:f_map}, we have $\iota_*^+(x, S) < \iota_*(L)$, and by \ihref{ih:position_constraints}, $\iota_*(t) \leq \iota_*^+(x, S)$ %(or $\iota_*(u) \leq \iota_*^+(x, S)$ if $t = \{u\}$ is a singleton)
+\hsuggest{HOLMES: removed modification here, handled by change in definition of position function}
   \rk{[There might be something strange going on here; isn't $\iota_*$ defined only for atoms not singletons of atoms?]}\hsuggest{Holmes:  indeed there is, and I got it wrong the first time.}
-  If $t$ is a singleton $\{u\}$ and $t \subset M$ for a litter $M$, then by definition \ref{def:pos_atom_near_litter}, we obtain $\iota_*(M) < \iota_*(u)$, and therefore that $\psi_B^+``t$ is defined by minimality of the position of $L$.
+  If $t$ is a near litter or singleton of an atom and $t \subset M$ for a litter $M$, then by definition \ref{def:pos_atom_near_litter}, we obtain $\iota_*(M) < \iota_*(t)$, and therefore that $\psi_B^+``t$ is defined by minimality of the position of $L$.
   Alternatively, if $t$ is a near-litter, then if $M$ is any litter such that $M \cap t \neq \emptyset$, definition \ref{def:pos_atom_near_litter} again implies that $\iota_*(M) < \iota_*(t)$, so $\psi_B^+``M$ is defined.
-  Combining all such litters, we conclude that $\psi_B^+``t$ is defined.  \hsuggest{[Holmes:  changes in this paragraph too, check them.]}
+  Combining all such litters, we conclude that $\psi_B^+``t$ is defined.  \hsuggest{[Holmes:  changes in this paragraph too, check them, and further changes after redefinition of position.  The statements here are true and quite striking.]}
 
   Now suppose that $\delta = -1$.
   To obtain the same contradiction, we must show that $\psi_A^+(x)$ is defined.
-  If $M$ is the litter such that $x \in M$, then $\iota_*(M) < \iota_*(x) = \iota_*^+(x) < \iota_*(N)$, so $M \subseteq {\tt dom}(\psi_A^+)$ as required.
+  If $M$ is the litter such that $x \in M$, then $\iota_*(M) < \iota_*(\{x\}) = \iota_*^+(x) < \iota_*(N)$, so $M \subseteq {\tt dom}(\psi_A^+)$ as required.
 
   Therefore $\chi_A^+$ must be defined on all litters for all $A$.
   By remark \ref{rk:foa_suffices}, this concludes the proof: $\psi$ approximates the allowable permutation $\pi$ given by $\pi_A^+ = \chi_A^+$.
