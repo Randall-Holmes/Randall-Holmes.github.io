@@ -81,6 +81,8 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should avoid metamathematics, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
 
+\item[9/17/2024:]  Further edits for the meeting on this date.
+
 \item[9/10/2024:]  Proofreading by both of us during today's meeting.  Holmes is working a draft explicit description of $\iota_*$.
 
 \item[9/9/2024:]  Further proofreading by Holmes.
@@ -788,7 +790,7 @@ of the position function $\iota_*$ which appears below at a convenient point but
 
 \item $\iota_*(t) < \iota^+_*(x,S)$ if $(t,A)$ is in the range of $S$ {(supports are functions; see definition \ref{def:support})} and $x$ is not a typed near-litter.  %\hsuggest{HOLMES:  removed singleton braces appearing as alternative in previous version;  changing domain of position function instead.}
 
-\item $\iota_*(t) \leq \iota^+_*(t_\gamma,S)$ {(a case of which appeared earlier as \ihref{ih:pos_typed_near_litter} for reasons stated there; the notation $t_\gamma$ is defined in definition \ref{def:typed_objects}).}  %\hsuggest{HOLMES:  it doesnt seem necessary to restrict this to near-litters.}
+\item $\iota_*(N) \leq \iota^+_*(N_\gamma,S)$ for each near-litter $N$ and support $S$ of $N$ {(which appeared earlier as \ihref{ih:pos_typed_near_litter} for reasons stated there; the notation $N_\gamma$ is defined in definition \ref{def:typed_objects}).}  %\hsuggest{HOLMES:  it doesnt seem necessary to restrict this to near-litters.}
 
 \end{enumerate}
 
@@ -852,10 +854,13 @@ $\iota_*$ from the set of all near-litters and {singletons of} atoms to $\mu$ wi
 The function may be constructed directly: first choose an ordering of type $\mu$ on litters, then put {singletons of} atoms directly after the litter they are inside (and before all later litters), then put near-litters after the corresponding litter and all {singletons of} atoms in the symmetric difference, then map each near-litter or {singleton of an} atom to its position in the resulting order.
 We don't run out of room before finishing the construction because $\mu$ has cofinality at least $\kappa$.
 
-\hsuggest{The function $\iota_*$ can be constructed directly by defining a suitable order on singletons of atoms and near-litters.  Choose a well-ordering $\leq_0$ of order type $\mu$ on the set of all near-litters and a well-ordering $\leq_1$ of order type $\mu$ on the set of all atoms.  We define a well-ordering $\leq_2$ of the set of all near-litters and singletons of atoms:  if $L$ and $M$ are litters, $L \leq_2 M$ iff $L \leq_0 M$;  if $a$ is an atom and $L$ is a litter, $\{a\} \leq_2 L$ iff for some litter $M$ containing $a$, $M \leq_0 L$;  if $a$ and $b$ are atoms,
-$\{a\} \leq_2 \{b\}$ iff for some litter $L$, $\{a\} \leq_2 L \leq_2 \{b\}$, or, if there is no such litter $L$, if $a \leq_1 b$;
-if $N$ is a near-litter which is not a litter and $x$ is either a litter or the singleton of an atom, $N \leq_2 x$ iff
-for some $y$ a litter or singleton of an atom, $N^\circ \leq_2 y$ and for each $c \in N \Delta N^\circ$, $\{c\} \leq_2 y$, and $y \leq_2 x$;  if $M$ and $N$ are near-litters which are not litters, then $M \leq_2 N$ holds if either there is an $x$ which is a litter or singleton of an atom such that $M \leq_2 x \leq_2 N$, or there is no such $x$ and $M \leq_0 N$.  $\iota_*(x)$ will for each appropriate $x$ be defined as the order type of the restriction of $\leq_2$ to $\{y:y \leq_2 x\}$.  Before any litter $L$, $<\mu$ singletons of atoms will be inserted, those which are subsets of some litter $M \leq_0 L$, and less than $\mu$ near-litters $N$ will be inserted, those near a litter $N^\circ \leq_0 L$ and having all singletons of elements of $N \Delta N^\circ \leq_2 L$, from which we can see that $\iota_*(L) <\mu$ in every case, and similarly $\iota_*(x)<\mu$ in general, because a litter dominating any item in the range of $\leq_2$ can be identified.  To find a litter dominating a given near-litter $N$ in $\leq_2$, we note that the order $\leq_2$ as defined on litters and singletons of atoms alone  is of order type $\mu$ and so of cofinality at least $\kappa$, so there will be a litter or singleton of an atom (and so a litter) dominating $N^\circ$ and all singletons of elements of the small set $N \Delta N^\circ$ in this order. [HOLMES:  this text is in magenta because it is under construction to replace the vaguer previous paragraph]}
+\hsuggest{We give a detailed description of how to do this. Choose a well-ordering $\leq_0$ of order type $\mu$ on the set of all near-litters.  
+
+We refer to a near-litter which is not a litter as a proper near-litter.  With each litter, singleton of atom, or proper near-litter associate a triple of ordinals.  For a litter, the first ordinal will be its position in the order $\leq_0$, and the next two will be 0.  For a singleton of an atom, the first ordinal will be the position in $\leq_0$ of the  litter $L$ which includes it, the second will be the successor of the position of its element in $\leq_L$, and the third will be zero.   For a proper near-litter $N$, the first ordinal will be the supremum of the position in $\leq_0$ of $N^\circ$ and the positions in $\leq_0$ of the litters in containing each element of $N\Delta N^\circ$ ($<\mu$ by cofinality), the second ordinal will be the supremum of the positions of the elements $x$ of $N \circ N^\circ$ in the respective orders $\leq_{x^\circ}$, where $x^\circ$ is the litter containing $x$ ($<\kappa$ by regularity), and the third will be the successor of the position of $N$ itself in $\leq_0$.
+
+The order on the litters, singletons of atoms, and proper near-litters will be determined by lexicographic order on the associated triples.  This is clearly a well-ordering designed explicitly to have the properties indicated above, and has order type $\mu$ because each item in this order can be seen to have $<\mu$ possible predecessors, on the basis of its first coordinate:  this is obvious for a triple representing a litter;  for a triple representing a singleton of an atom, there are $\kappa$ choices for the second coordinate and one for the third;  for a triple representing a near-litter, there are $\kappa$ choices for the second coordinate, and there are $<\mu$ near litters which are subsets of the union of the litters with position in $\leq_0$ at or before the first coordinate, simply because this union is a set of size $<\mu$ which has $<\mu$ subsets because $\mu$ is strong limit, so there are $<\mu$ possible values for the third coordinate.
+
+[HOLMES:  this text is in magenta because it is under construction to replace or supplement the vaguer previous paragraph]}
 
 
 An additional property involving $\iota_*$ which is enforced by inductive hypotheses explained later about the maps $\iota_\beta^+$ is that $\iota_*(N) \leq \iota_*^+(N_\delta,S)$ will hold for any near litter $N$ and support $S$ of $N_\delta$ \ihref{ih:pos_typed_near_litter}.  It must be noted here because it is shortly used.
@@ -1000,6 +1005,8 @@ The maps $\pi_\gamma$ are referred to as {\em derivatives\/} of $\pi$.  {If $\pi
 
 More generally, for any finite subset $A$ of $\lambda \cup \{-1\}$ with maximum $\alpha$,
 define $\pi_A$ as $(\pi_{A \setminus \{{\tt min}(A)\}})_{{\tt min}(A)}$ {and $\pi_{\{\alpha\}} = \pi$}.  The maps $\pi_A$ may be referred to as iterated derivatives of $\pi$.\footnote{There is a silly notational point here:  we might want to suppose $\pi_A$ and $\pi_\alpha$ to be essentially distinguished in some way we do not actually implement (for example by type face) in order to prevent confusion of $\pi_{\{0\}}$ with $\pi_1$.  A similar problem exists due to the identification of finite ordinals with finite sets of ordinals.  However, it can also be noted that $\pi_{\{0,\ldots,n\}}$ and $\pi_{n+1}$ cannot make sense for the same allowable permutation $\pi$, so we think this is harmless.}  It should be clear that a structural permutation is exactly determined by its iterated derivatives which are $-1$-structural.
+
+Where $\pi$ is a $\beta$-allowable permutation with $\beta>-1$, we define $\pi^+$ as $\pi_{-1}$.  This is occasionally useful to reduce notational clutter.
 \end{definition}
 
 \begin{comment}
@@ -1007,7 +1014,7 @@ define $\pi_A$ as $(\pi_{A \setminus \{{\tt min}(A)\}})_{{\tt min}(A)}$ {and $\p
 \end{comment}
 
 %\marginpar{\hsuggest{Note quite different definition here.}}
-Where $\pi$ is a $\beta$-allowable permutation with $\beta>-1$, we define $\pi^+$ as $\pi_{-1}$.  This is occasionally useful to reduce notational clutter.
+
 
 Structural permutations are defined on the supertype structure generally.  We need a subclass of structural permutations which respects our extensionality requirements.
 
@@ -1190,8 +1197,8 @@ The conditions constraining the choice of functions $\iota^+_\beta$ %\suggest{OM
 
 \item $\iota_*(t) < \iota^+_\beta(x,S)$ if $(t,A)$ is in the range of $S$ and $x$ is not a typed near-litter {\ihref{ih:position_constraints}}.
 
-\item $\iota_*(t) \leq \iota^+_\beta(t_\beta,S)$%\marginpar{\hsuggest{suggest that we OMIT: , if $t$ is a near-litter  ,  and  $\iota_*(t) \leq \iota^+_*(\{t\}_\gamma,S)$, if $t$ is an atom}}
- \ihref{ih:pos_typed_near_litter} [though one may note that this is not restricted to near-litters; it does not appear that this additional latitude is used.]%\rk{[this extra stuff is not used in Lean]}]. %\rk{(Sky thinks we don't need the second half of this;  Holmes:  I'm not sure, leaving it for now.  The proposed modification of the definition of the position function actually causes the suppressed assertion to be true, harmlessly whether we use it or not.)}
+\item $\iota_*(N) \leq \iota^+_\beta(N_\beta,S)$ for any near-litter $N$ and support $S$ of $N$.%\marginpar{\hsuggest{suggest that we OMIT: , if $t$ is a near-litter  ,  and  $\iota_*(t) \leq \iota^+_*(\{t\}_\gamma,S)$, if $t$ is an atom}}
+ \ihref{ih:pos_typed_near_litter} %[though one may note that this is not restricted to near-litters; it does not appear that this additional latitude is used.]%\rk{[this extra stuff is not used in Lean]}]. %\rk{(Sky thinks we don't need the second half of this;  Holmes:  I'm not sure, leaving it for now.  The proposed modification of the definition of the position function actually causes the suppressed assertion to be true, harmlessly whether we use it or not.)}
 
 \end{enumerate}
 
@@ -1772,7 +1779,7 @@ The strategy of our argument for the size of the types is to show that that ther
 We describe all coding functions for type 0.  The orbit of a 0-support in the allowable permutations is determined by the positions in the support  occupied by near-litters, and for each position in the support occupied by a singleton, the positions, if any, of the near-litters in the support  which include it.  %\rk{(I think `near-litter' here should be pluralised; first projections of elements of ranges of supports are no longer disjoint.)}
   There are no more than $2^\kappa$ ways to specify an orbit.  Now for each such equivalence class, there is a natural partition of type $-1$ into near-litters, singletons, and a large complement set.  The partition has $\nu<\kappa$ elements, and there will be $2^\nu\leq 2^\kappa$ coding functions for that orbit in the supports, determined by specifying for each compartment in the partition whether it is to be included or excluded from the set computed from a support in that orbit.  So there are no more than $2^\kappa<\mu$ coding functions over type 0.
 
-Any type $-1$ coding function is associated with a uniquely determined type 0 coding functions of a singleton, so there are no more of the former than of the latter.
+Any type $-1$ coding function is associated with a uniquely determined type 0 coding function of a singleton, so there are no more of the former than of the latter.
 
 \end{proof}
 
