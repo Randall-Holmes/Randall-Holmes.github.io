@@ -356,7 +356,7 @@ then $$f=(A,B,\{(x,y) \in A \times B:y=f(x)\}).$$
 
 A notation for this might be $(x\in A \mapsto f(x)\in B)$.  The sets can be omitted if they are understood from context (it is very odd to explicitly provide $B$ as I do here, but I am making a point).
 
-So the function above could be written as $(x \in \mathbb R \mapsto 2x+5 \in R)$, which could just be written $(x \in \mathbb R \mapsto 2x+5)$ [certainly] or as
+So the function above could be written as $(x \in \mathbb R \mapsto 2x+5 \in \mathbb R)$, which could just be written $(x \in \mathbb R \mapsto 2x+5)$ [certainly] or as
 $(x \mapsto 2x+5)$ if you are confident that the domain is understood [$(x \in \mathbb Z:2x+5)$ is not the same function!]
 
 A weird point which I should mention but not make too much of is that $(x \in {\mathbb R}:x^2 \in \mathbb R)$ and $(x \in {\mathbb R}:x^2 \in \mathbb R^+ \cup \{0\})$ are functions with the same values at the same inputs, but they are not the same function because they have different codomains.  They have the same graph:  on the alternative view identifying functions with their graphs, they would be the same function.
@@ -382,6 +382,9 @@ A function $f$ is an injection, or one-to-one, if for any $x,y \in {\tt dom}(f)$
 A function $f$ is a surjection, or onto, if for any $y \in {\tt cod}(f)$, there is $x$ such that $y = f(x)$.  Notice that in our weird example at the end of the last subsection, the first function is not surjective, and the second is.
 
 A function $f$ is a bijection iff it is one-to-one and onto (i.e., an injection and a surjection).
+
+\item[Sizes of sets:]  We say that two sets $A$, $B$ are of the same cardinality, or the same size, or have the same number of elements, which we write $A \sim B$, iff there is a bijection from $A$ to $B$.  We associate with each set $A$ an object called its cardinality, written $|A|$, in such a way that $|A| = |B|$ if and only if $A \sim B$.  We will usually talk about this only in the case where $A$ is a finite set
+and $|A|$ is a non-negative integer.  It would take us a bit far afield to actually show a definition of $|A|$ which works for all sets.
 
 \item[Inverse relations and functions:]
 
@@ -487,9 +490,81 @@ We discourage this notation, preferring $U - A$.  So for example if $E$ is the s
 
 The first definition of the ordered pair $(x,y)$ given by Norbert Wiener in 1914 (our official one was given by Kuratowski in 1920) was $(x,y) = \{\{\{x\},\emptyset\},\{\{y\}\}\}$.  If you like solving logic puzzles, you might have fun figuring out why it is easier to extract $x$ and $y$ from this ``pair".  Hint:  this set definitely has two elements, and it has one element with one element and one element with two, whether $x=y$ or not.  You are in no way responsible for this.  But it is worth noticing that definitions of this kind of concept can take different forms:  all we need of the ordered pair is that $(x,y)$ exists for any $x$ and $y$, and that given $(x,y)$, we can identify its first projection $x$ and its second projection $y$.
 
+\item[Proof strategies for set notions:]
+
+If $P[x]$ is a sentence of our language including the variable $x$, and $T$ is a possibly complicated expression (it doesn't have to be a variable) we write
+$P[T/x]$ for the result of substituting $T$ for $x$.  We will usually just write $P[T]$ for this but the more explicit form can sometimes be useful.  So if $P[x]$ is the sentence $x>3$, $P[a+b/x]$ or just $P[a+b]$ is $a+b>3$.
+
+To prove $T \in \{x\in A:P[x]\}$ we have the rule of {\em set introduction\/}
+
+$$\begin{array}{c}
+
+T \in A \\
+
+P[T/x] \\ \hline
+
+T \in \{x\in A:P[x]\} \end{array}$$
+
+and to use a statement $T \in \{x\in A:P[x]\}$ which we have assumed or proved, we have the rule of {\em set domain\/}
+
+$$\begin{array}{c}
+
+T \in \{x\in A:P[x]\} \\ \hline
+
+T \in A
+
+
+\end{array}$$
+
+and the rule of {\em set elimination\/}
+
+$$\begin{array}{c}
+
+T \in \{x\in A:P[x]\} \\ \hline
+
+P[T/x]
+
+
+\end{array}$$
+
+These rules simply formally expand what we mean by set builder notation.
+
+Then we have rules for the subset relation.
+
+This we will call simply {\em inclusion\/}, the rule for using a subset statement:
+
+$$\begin{array}{c}
+T \in A \\
+A \subseteq B \\ \hline
+
+T \in B
+
+
+\end{array}$$
+
+The next  rule we will give the more grandiose name {\em subset introduction\/}.  It involves an assumption and a block of statements.
+\begin{description}
+\item[Goal:]  $A \subseteq B$, where $A$ and $B$ are sets (if we were being really really formal we would want lines saying that $A$ and $B$ are sets above in the proof, but we won't clutter our summary with this):
+
+\begin{description}
+\item[Assume (line $m$):]  $x \in A$ [$x$ must be a variable, and must be a new variable which does not appear elsewhere in the proof, except maybe in blocks already closed]
+
+\vdots Proof lines
+
+\item[ (line $n$)] $x \in B$
+
+
+\end{description}
+\item[(line $n+1$):]  $A \subseteq B$ subset introduction $m$-$n$ [and as usual the indented block is closed and one cannot use the lines in it again, since they involve the arbitrary object $x$ and assumption $x \in A$ which were introduced only to prove this subset statement]
+
+\end{description}
+
+Analogous to biconditional introduction in a way is a strategy for proving $A=B$ where $A,B$ are sets:  
+
+
 \item[We could define quantifiers using set builder notation:]
 
-We could define the sentence $(\forall x \in A:P(x))$ as $\{x \in A:P(x)\} = A$.  This is read, for all $x \in A$, $P(x)$.
+We could define the sentence $(\forall x \in A:P(x))$ as $A \subseteq \{x \in A:P(x)\}$.  This is read, for all $x \in A$, $P(x)$.
 
 We could define the sentence $(\exists x \in A:P(x))$ as $\{x \in A:P(x)\} \neq \emptyset$.  This is read, for some $x \in A$, $P(x)$, or there exists $x \in A$ such that $P(x)$.
 
