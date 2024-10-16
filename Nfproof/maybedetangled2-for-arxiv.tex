@@ -92,6 +92,8 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should in our view (at least in the view of the first author) avoid metamathematics as far as possible, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
 
+\item[10/16/2024:]  Attempting to add a version of the proof that there are $\alpha$-models which is needed to support comments in the results and conclusions section.  It is not a terribly accessible result, and it might not be easy to see that Jensen's proof applies in our context.  I note here that while I believe the proof I give for $\alpha$-models is correct, it does need to be written more elegantly, and I think the argument I give is a blunt instrument:  I think the cofinality of $\lambda$ which is needed may be just $|\alpha|$ and I'll consult my sources to see if I can add finesse to achieve that, if possible.
+
 \item[10/8/2024:]  This is exactly the same text as the version submitted to arxiv, unless I made some error in cutting out comments, except that arxiv insisted that I remove the colored remarks.    I have deleted lots of old comments from the source.  I have also set things up so that the remaining colored comments can be turned on or off:  in the web page version, they are turned on.
 
 \item[9/30/2024:]  This version will be posted to arxiv today.  Changes from 9/10 are minor.  A lot of the version notes have been edited out, and all the editorial remarks, as arxiv requested.
@@ -330,7 +332,54 @@ Of course Jensen did not phrase his argument in terms of tangled type theory.  O
 
 \newpage
 
+\subsubsection{There are $\alpha$-models for every $\alpha$}
 
+This section is devoted to adapting a result of Jensen to our context.  Jensen proved in \cite{nfu} that for any infinite ordinal $\alpha$ of the metatheory, there is a model of NFU + Infinity in which there is a well-ordering of type $\alpha$.  This is of particular interest in the case $\alpha=\omega$, which establishes that the natural numbers of a model can correspond precisely to the natural numbers of the metatheory.
+
+Nothing in our construction of a model of TTT below depends on this section:  the fact that an existence of an $\omega$-model of NF follows from our main result is significant for extensions of our results and uses this theorem.
+
+A relation $R$ of one of the theories under discussion is a set of ordered pairs of the theory in question;  note that it corresponds to a set of ordered pairs of the metatheory with the same field.  If this relation corresponding to  $R$ is a well-ordering, we can talk about its order type both in terms of the theory under consideration and in terms of the metatheory, though ordinals of the theory under consideration and the metatheory may not be the same.
+
+In any of the theories under discussion, an ordinal is taken to be an equivalence class of well-orderings under similarity.
+The relations which belong to an ordinal of one of these theories may fail to be well-orderings in terms of the metatheory.
+If $\alpha$ is an ordinal of the metatheory, we say that $\alpha$ is implemented in a type of one of the theories under discussion
+exactly if there is an ordinal in that type (in the sense of the theory) whose elements in fact correspond to well-orderings of order type $\alpha$ in the sense of the metatheory, in the sense outlined in the previous paragraph.  It is straightforward to show that if $\alpha$ is implemented in a type, the ordinal implementing it will contain all well-orderings in the sense of the theory of the appropriate lower type whose order type is $\alpha$ in the sense of the metatheory.
+
+\begin{theorem}
+
+For any infinite ordinal $\alpha$, if there is a model of TTT(U) in which the ordinal $\alpha$ has an implementation $\alpha^s$ for each strictly increasing sequence $s$ of types, an ordinal in type $s_3$ whose elements correspond to well-orderings of order type $\alpha$ of subsets of type $s_0$, using types $s_1$ and $s_2$ for the intermediate pairing machinery, and which is such that the ordinal $\lambda$ indexing the types is a strong limit cardinal of cofinality $>|\alpha|^{|\alpha|}$, then there is a model of NF(U) in which the ordinal $\alpha$ is implemented, which further satisfies [after neglect of types] any sentence in the language of TST(U)  whose translation into terms of each increasing sequence of types in the model of TTT(U) is satisfied in the model of TTT(U).
+
+\end{theorem}
+
+\begin{proof}
+
+The proof is a modified version of the proof given above for consistency of NF(U) using a more powerful partition principle.  We do not claim originality, referring the reader to \cite{nfu}, but our presentation is not the same, and it is adapted to talk of tangled type theory.
+
+We extend the language of TTT(U) to include constant terms $\alpha^s$ and $\beta^s$ for each ordinal $\beta < \alpha$ of the metatheory for each sequence $s$ as described above.   We similarly extend the language of TST(U) (in this case only needing constants $\alpha$ and $\beta<\alpha$ in each type above 2.  and note that the translation of a sentence of TST(U) with language augmented with these ordinal constants into terms of a sequence of types in TTT(U) is straightforward, and we allow use of these constants in the comprehension axiom of TTT(U) as usual.  We further include the Hilbert symbol in our language, with the same restriction stated above that the Hilbert symbol may not appear in instances of comprehension.
+
+We consider partitions of $[\lambda]^n$ determined not by the truth values of a finite set $\Sigma$ of sentences of the language of TST(U) using types $<n$, but  determined by the set $\Sigma_n$ of {\em all\/} Hilbert symbols of the form ``an ordinal $\beta < \alpha$ such that $\phi$"
+in the language of TST(U) augmented with constants for the ordinals $\leq \alpha$ in each type which contains ordinals, using only types less than $n$, with the compartment in the partition containing $A \in [\lambda]^n$ determined by the ordinal values $\leq \alpha$ assigned to each of these terms when types $0-(n-1)$ are replaced by the types in $A$ in increasing order in each of the Hilbert symbols in $\Sigma_n$.
+
+There are no more than $|\alpha|$ such Hilbert symbols, and no more than $|\alpha|^{|\alpha|}$ compartments in each of these partitions.
+
+We claim that we can construct a complete assignment of values to such Hilbert symbols in the extended TST(U) language (which will induce a complete assignment of truth values to sentences of the extended language) which is ambiguous [invariant under displacement of types] and consistent with any statement holding at all sequences of types in the model of TTT(U) (so for example we will get extensionality if the model of TTTU is actually a model of TTT), and in fact for any fixed $n$ all these assignments for Hilbert symbols mentioning only types less than $n$ will be realized at some sequence of types in the model of TTT(U) [verifying that this assignment of values is consistent and in effect a complete description of a model of NF(U)].
+
+Further, it will be clear that the model of NFU will contain no ordinal less than what it calls $\alpha$ other than the ordinals which it calls $\beta$ for $\beta<\alpha$ in the metatheory, and the natural well-ordering on these ordinals is realized in the model of NF(U) and corresponds to a well-ordering of order type $\alpha$ in the metatheory.  The reason for this is that the model of NFU is a term model, and any term denoting an ordinal less than $\alpha$ can be slightly modified to the exact form used in defining the partitions, and the process will assign that term a concrete value less than $\alpha$.
+
+The Erd\"os-Rado partition theorem tells us that for any fixed $n$, there are arbitrarily large homogeneous sets
+for our partition of $[\lambda]^n$ determined by values of Hilbert symbols in $\Sigma_n$.  For any cardinal $\mu<\lambda$,
+the Erd\"os-Rado theorem tells us directly that the partition of $\exp^n(\mu)<\lambda$ defined in the way indicated above
+has a homogeneous set of size $\mu^+$, and $\lambda$ is a limit cardinal, so the choice of $\mu$ is unbounded below $\lambda$.
+
+Further, because the cofinality of $\lambda$ is greater than $|\alpha|^{|\alpha|}$,
+there is a specific assignment of values to the Hilbert symbols in $\Sigma_n$ which is associated with arbitrarily large homogeneous sets.  We can then pass to $\Sigma_{n+1}$ and construct homogeneous sets of arbitrarily large size for
+the partition of $\Sigma_{n+1}$ which are contained in homogenous sets for the partition determined by $\Sigma_{n}$ associated
+with this specific assignment of values to Hilbert symbols using no type greater than $n$, which means we can extend
+this assignment to Hilbert symbols using no type greater than $n+1$, and again choose an assignment associated with homogeneous sets of arbitrarily large size due to cofinality considerations, and this can be repeated through $\omega$ steps to produce a complete assignment of values to the Hilbert symbols under consideration.
+
+\newpage
+
+\end{proof}
 
 \subsubsection{How internal type representations unfold in TTT}
 
