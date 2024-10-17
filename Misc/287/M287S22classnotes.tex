@@ -17,6 +17,8 @@ I'm pulling together the files of class notes that exist.  I note that I perhaps
 
 I am making this file available to my Spring 2023 class:  be aware that I am not always taking exactly the same approach that I took with the earlier class.
 
+And, it is available to my Fall 2024 class and I am adding additional material as needed.
+
 \tableofcontents
 
 \newpage
@@ -725,6 +727,120 @@ $ = F_{k+3}-1$ regrouping and definition of F.
 \end{description}
 
 \newpage
+
+\section{Fall 2024 lectures of Oct 15 and 17}
+
+I promised notes on things I did with strong induction and theorems I proved about prime numbers which are not in the Art of Proof, and here they are.
+
+The principle of strong induction tells us that if $P[x]$ is a sentence about an integer variable $x$, we can prove
+``for all $n \in \mathbb N$, $P[n]$" (in quantifier notation, $(\forall n \in \mathbb N:P[n])$) by proving (basis step) $P[1]$
+and proving (strong induction step) $(\forall k \in \mathbb N:(\forall j \leq k:P[j]) \rightarrow P[k+1])$.
+
+The strategy for proving the strong induction step is, let $k \in \mathbb N$ be chosen arbitrarily:  assume (ind hyp) that for every $j \leq k$, $P[j]$;  then the goal is to prove $P[k+1]$.   It is called {\em strong\/} induction because the inductive hypothesis is a stronger statement (contains more information).
+
+We show that strong induction is valid using ordinary induction.
+
+Suppose that we have (1) $P[1]$ and (2) $(\forall k \in \mathbb N:(\forall j \leq k:P[j]) \rightarrow P[k+1])$.
+
+We have the basis $P[1]$ for a proof of $(\forall n \in \mathbb N:P[n])$ but we do not have the induction step.
+because to prove $P[k+1]$ using the information given we need all of $P[0], P[1],\ldots, P[k-1],P[k]$ not just $P[k]$.
+
+We take a tack which is not unusual in sophisticated induction proofs:  we formulate and prove a stronger statement and the stronger form of the induction hypothesis lets the proof go through.
+
+We use the same information, $P[1]$ and $$(\forall k \in \mathbb N:(\forall j \leq k:P[j]) \rightarrow P[k+1]),$$ to prove
+by ordinary induction that $Q[n]$, defined as $(\forall m \leq n:P[m])$, holds for every $n$.
+
+$Q[1]$ is $(\forall m \leq 1:P[m])$, which is true because the only $m \leq 1$ is 1 and $P[1]$ is true by (1).
+
+Let $k \in \mathbb N$ be chosen arbitrarily and assume $Q[k]$, that is, $(\forall m \leq k:P[m])$, which is equivalent
+to $(\forall j \leq k:P[j])$ (just by changing the dummy variable) which implies $P[k+1]$ by our hypothesis (2).  Now the only $m \leq k+1$ are the $m \leq k$ and $k+1$ itself, so we have shown $(\forall m \leq k+1:P[m])$, that is $Q[k+1]$, by ordinary induction.
+
+Now if $(\forall n \in \mathbb N:(\forall m \leq n:P[m]))$ we clearly have $(\forall n \in \mathbb N:P[n])$.
+
+So we have justified strong induction using ordinary induction.
+
+My favorite example of strong induction is not in the book (or at least not at this point).  So I exhibit the development here, and I prove various ``obvious" components of the result here by extreme care with product notation analogous to the extreme care with summation notation that we have been practicing.
+
+\begin{description}
+
+\item[Definition:]  A {\em prime number\/} is an integer $p>1$ (and so certainly a natural number) with the property
+that for all $m>1$,  if $m|n$ then either $m=1$ or $m=n$.
+
+\item[Definition:]  An integer $n$ is a {\em finite product of primes\/} iff there is a natural number $k$ and a sequence $p_i$ such that for every $i$, $p_i$ is a prime number (we say that $p_i$ is a sequence of primes) and $\prod_{i=1}^k p_i = n$.
+
+\item[Theorem:]  Every integer $n \geq 2$ is a finite product of primes (the way we phrase this depends on the fact that by our definition, a prime $p$ is itself a finite product of primes $\prod_{i=1}^1 p$:  the sequence used may be taken to be the constant sequence all of whose values are $p$).
+
+\item[Proof:]  We prove this by strong induction, adapted to start at 2 rather than 1.
+
+The basis step is to prove that 2 is a finite product of primes.  Define $q_i$ as 2 for every $i$.  $2 = q_1 = \prod_{i=1}^1 q_1$
+
+Let $k \geq 2$ be chosen arbitrarily.  Assume (inductive hypothesis) that for all $m \leq k$, $m$ is a finite product of primes.
+
+Our goal is to show that $k+1$ is a finite product of primes.
+
+There are two cases.  Case 1:  if $k+1$ is prime, it is trivially a finite product of primes (we have already seen how to show this).
+
+Case 2:  suppose $k+1$ is not prime.  Then there is a natural number $m$ other than 1 or $k+1$ such that $m|k+1$.
+Thus there is an integer $n$ such that $mn=k+1$.  Clearly $n$ is positive, since $m$ and $k+1$ are positive.
+$n \neq 1$ since $m1 = m \neq k+1$.  Thus $m<k+1$, because if $m>k+1$ we would certainly have $k+1 = mn >k+1$ which is absurd.  Similarly $n<k+1$.
+
+This means by inductive hypothesis that $m$ and $n$ are finite products of primes.  Common sense suggests that
+the product of two finite products of primes must be a finite product of primes, but we think that in the style of chapter 4 this requires a proof.
+
+\begin{description}
+
+\item[Lemma:]  If $m$ and $n$ are finite products of primes, $mn$ is a finite product of primes.
+
+This can be rephrased as, for any sequences $\{p_i\}$ and $\{q_i\}$ of primes and natural numbers $a,b$,
+$(\prod _{i=1}^a p_i)(\prod_{i=1}^b q_i)$ is a product of primes.  We prove this by induction on $b$.
+
+basis:  $(\prod _{i=1}^a p_i)(\prod_{i=1}^1 q_i) = (\prod _{i=1}^a p_i)q_1 = (\prod _{i=1}^a p_i)p'_1= (\prod _{i=1}^{a+1} p'_i)$, where
+$p'_i$ is defined as $p_i$ if $i\leq a$ and $q_1$ if $i \geq a+1$, and $\prod _{i=1}^{a+1} p'_i$ is by definition a finite product of primes.
+
+\end{description}
+
+Using the lemma, we see that $k+1 = mn$ is a finite product of primes, and the proof of the Theorem by strong induction is complete.
+
+\item[Remark:]  Notice that we have proved that every natural number $n \geq 2$ is a finite product of primes. but we have not proved that each natural number factors into primes in only one way.  We may look later at how to say this precisely and how to prove it.  For any $n \geq 2$, $n = \prod_{i=1}^k p_i$ for some sequence of primes $\{p_i\}$ and some natural number $k$.   We claim that $p_k | \prod_{i=1}^k p_i$, so $p_k |n$, so $n$ has a prime factor.  If $k=1$, then $p_k | \prod_{i=1}^1 p_i$ because $p_k\cdot 1 = p _1 = \prod_{i=1}^1 p_i$.  If $k>1$ then $p_k \cdot \prod_{i=1}^{k-1}p_i = \prod_{i=1}^k p_i$, so again $p_k | \prod_{i=1}^k p_i$.
+
+\item[There are infinitely many prime numbers (Euclid):]
+
+Suppose that there are only finitely many natural numbers, so there is a finite sequence $\{p_i\}_{1 \leq i \leq k}$ such that every prime $q$ is equal to some $p_i$.
+
+Define $P$ as $\prod_{i=1}^k p_i$.
+
+$P+1 \geq 2$ is certainly true, so $P+1$ has a prime factor $q$ as we showed above.  $q=p_j$ for some natural number $j$ between 1 and $k$ inclusive by choice of the sequence $\{p_i\}$.
+
+``Obviously" $q|P$, so $q|(P+1)-P$, so $q|1$.  But this is absurd, because for any integer $r$ such that $qr>0$ (as would be the case if $qr=1$), we have $r>0$, so $r \geq 1$, so $qr \geq q>1$, so $q|1$ is impossible, since it requires $qr=1$ for some integer.
+
+What we think requires another insanely careful Lemma is our claim that $q|P$, which is a consequence of this
+
+\begin{description}
+
+\item[Lemma:]  For any product of integers $\prod_{i=1}^nx_i$, $x_j | \prod_{i=1}^nx_i$ for each $j$ with $1 \leq j \leq n$.
+
+\item[Proof:]  We prove this by induction on $k$.
+
+basis ($n=1$)  The only $j$ with $1 \leq j \leq 1$ is 1, and $x_1 | \prod_{i=1}^1 x_i$ is obvious.
+
+induction step:  Fix $k$ a natural number, arbitrarily.  Assume that $x_j | \prod_{i=1}^kx_i$ for each $j$ with $1 \leq j \leq k$.
+
+Our goal is to show that $x_j | \prod_{i=1}^{k+1}x_i$ for each $j$ with $1 \leq j \leq k+1$
+
+Either $j=k+1$ or $1 \leq j \leq k$.
+
+If $j=k+1$, notice that $\prod_{i=1}^{k+1}x_i = (\prod_{i=1}^kx_i)x_{k+1}$, which is divisible by $x_{k+1} = x_j$.
+
+If $1 \leq j \leq k$, we know that $x_j$ goes into $\prod_{i=1}^kx_i$, so $\prod_{i=1}^kx_i=x_jz$ for some integer $z$,
+so $\prod_{i=1}^{k+1}x_i = (\prod_{i=1}^kx_i)x_{k+1}= (x_jz)x_{k+1} = x_j(zx_{k+1})$, which is evidently divisible by $x_j$.
+
+\end{description}
+
+The Lemma verifies that we have completed the proof that there are infinitely many primes, since the assumption that there are finitely many primes led to a contradiction.
+
+\end{description}
+
+The author's favorite examples of proofs by strong induction are proofs using sequences with recursive definitions where the definition of a term $x_{n}$ depends on the definition of more than one previous term of the sequence, as in the case of the Fibonacci numbers.  I may add more about this to these notes eventually, but there is an extensive example in the Art of Proof (the proof of the validity of the closed form for the Fibonacci sequence).  The previous section of the notes contains some easier examples of proofs about the Fibonacci numbers and similar sequences; I lectured one of these on Oct 17 2024.
 
 \section{Introducing Sets, Feb 22, 2022}
 
