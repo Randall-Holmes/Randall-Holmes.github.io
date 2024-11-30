@@ -2471,7 +2471,7 @@ L("voc <- ((HOI0 Comma2? name)/(HOI Comma2? descpred guea? namesuffix?)/(HOI Com
 
 L("HUE0 <- (sp? &caprule [Hh] [Uu] Juncture? [Ee] Juncture? !Vo1)")
 
-L("invvoc <- ((HUE0 Comma2? name)/(HUE freemod? descpred guea? namesuffix?)/(HUE freemod? statement giuo?)/(HUE freemod? argument1 guu?)/(sp? &([Hh] [Uu] Juncture? [Ee] Juncture?) AlienWord))")
+L("invvoc <- ((HUE0 Comma2? name)/(HUE freemod? descpred guea? namesuffix?)/(HUE freemod? argument1 &(freemod? &subject statement))/(HUE freemod? statement giuo?)/(HUE freemod? argument1 guu?)/(sp? &([Hh] [Uu] Juncture? [Ee] Juncture?) AlienWord))")
 
 L("kiamod <- (Comma2? !(!PRENAME !Predstart k ia) ((PRENAME/LIU/AlienWord/(Cmapua (sp? !(k ia) !PRENAME !Predstart Cmapua)*)/Word) kiamod* Comma2? !PRENAME !Predstart k ia) Comma2?)")
 
@@ -2641,7 +2641,7 @@ L("gasent2 <- ((NOWORD freemod?)* (TENSE freemod? sentpred modifiers? (GATWO fre
 
 L("gasent <- (gasent2/gasent1)")
 
-L("statement <- (gasent/(modifiers freemod? gasent)/(subject freemod? freemod? (GIO freemod? terms1)? predicate))")
+L("statement <- (gasent/(modifiers freemod? gasent)/(subject freemod? freemod? (GIO? freemod? terms1)? predicate))")
 
 L("keksent <- (terms? freemod? (NOWORD freemod?)* (KA freemod? headterms? freemod? sentence freemod? KI freemod? sen1))")
 
