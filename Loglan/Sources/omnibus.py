@@ -1695,7 +1695,7 @@ def grammarbatch(gfile):
         #if not(line1=='' or line1[0]=='#'):  rundef(loglan,line1)
         if not (line1==''): rundef(loglan,line1)
     
-#from loglanpreamble import *
+from loglanpreamble import *
 
 L("sp <- [ ]+")
 
@@ -1843,7 +1843,7 @@ L("NAMEWORD <- (((&caprule MarkedName)/([,] sp !FalseMarked &caprule PRENAME)/(&
 
 L("Namemarker <- ((([Ll] [Aa] Juncture?)/([Hh] [Oo] [Ii] Juncture?)/([Hh] [Uu] Juncture? [Ee] Juncture?)/([Cc] &(Explicitpause/([Ii] Juncture? sp PRENAME)) [Ii] Juncture?)/([Ll] [Ii] Juncture? [Uu] Juncture?)/([Gg] [Aa] [Oo] Juncture?)/([Mm] [Uu] Juncture? [Ee] Juncture?)) !Vo1)")
 
-L("Badnamemarker <- (Namemarker !Vo1 [, ]? sp? BadPreName)")
+L("Badnamemarker <- (Namemarker !Vo1 [, ]? sp? (Syllable &Syllable)* MaybePauseSyllable)")
 
 L("Vthree <- ((Vo2 Juncture?) (Vo2 Juncture?) (Vo2 Juncture?))")
 
