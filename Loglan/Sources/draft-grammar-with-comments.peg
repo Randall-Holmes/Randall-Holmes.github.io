@@ -52,6 +52,8 @@
 
 <p>
 
+<LI> 1/1/2024:  The rule for left boundary defense of names is now that after any name marker the orthography must show exactly where the next actual pause is.  This is supported by addition of ~ (tilde), an allophone of whitespace (so it ends words) which must be followed immediately by a consonant and which is not expressed as a pause:  this makes it easy to indicate blocks of words to be pronounced without a break.  Also cleaned up uses of [,] in favor of named comma classes.  There may be more of this to do.
+
 <LI> 11/30/2024:  refinement of the correction of the 29th.
 
 <LI> 11/29/2024:  Use of <B>gio</B> is now optional, except in statements to be converted by <B>hue</B> into inverse vocatives.
@@ -796,7 +798,15 @@
 
 <p>
 
-sp <- [ ]+
+sp <- ([ ]+/[~] &Co1)
+
+<p>
+
+sp2 <- [ ]+
+
+<p>
+
+Tilde <- [~] &Co1
 
 <H4>Vowels</H4>
 
@@ -954,7 +964,11 @@ Character <- (Letter/Juncture)
 
 <p>
 
-AlienText <- (([,]? sp [\"] (![\"] .)+ [\"])/([,]? sp (![, ] !Terminal .)+ ([,]? sp [Yy] [,]? sp (![, ] !Terminal .)+)*))
+Comma0 <- [,]? sp2
+
+<p>
+
+AlienText <- ((Comma0 [\"] (![\"] .)+ [\"])/(Comma0 (!Comma0 !Terminal .)+ (Comma0 [Yy] Comma0 (!Comma0 !Terminal .)+)*))
 
 <LI> adding wrapper classes for alien text markers
 
@@ -988,7 +1002,7 @@ SUEalien <- ([Ss] [Uu] Juncture? [Ee])
 
 <p>
 
-AlienWord <- (&caprule ((HOIalien Juncture? &([,]? sp [\"]))/(HUEalien Juncture? &([,]? sp [\"]))/(LIEalien Juncture?)/(LAOalien Juncture?)/(LIOalien Juncture?)/(SAOalien Juncture?)/(SUEalien Juncture?)) AlienText)
+AlienWord <- (&caprule ((HOIalien Juncture? &(Comma0 [\"]))/(HUEalien Juncture? &(Comma0 [\"]))/(LIEalien Juncture?)/(LAOalien Juncture?)/(LIOalien Juncture?)/(SAOalien Juncture?)/(SUEalien Juncture?)) AlienText)
 
 <p>
 
@@ -996,7 +1010,7 @@ AlienWord <- (&caprule ((HOIalien Juncture? &([,]? sp [\"]))/(HUEalien Juncture?
 
 <p>
 
-Alienmarker <- ((([Hh] [Oo] [Ii] Juncture? &([,]? sp [\"]))/([Hh] [Uu] Juncture? [Ee] Juncture? &([,]? sp [\"]))/([Ll] [Ii] Juncture? [Ee] Juncture?)/([Ll] [Aa] [Oo] Juncture?)/([Ll] [Ii] Juncture? [Oo] Juncture?)/([Ss] [Aa] [Oo] Juncture?)/([Ss] [Uu] Juncture? [Ee] Juncture?)) !Vo1)
+Alienmarker <- ((([Hh] [Oo] [Ii] Juncture? &( [\"]))/([Hh] [Uu] Juncture? [Ee] Juncture? &(Comma0 [\"]))/([Ll] [Ii] Juncture? [Ee] Juncture?)/([Ll] [Aa] [Oo] Juncture?)/([Ll] [Ii] Juncture? [Oo] Juncture?)/([Ss] [Aa] [Oo] Juncture?)/([Ss] [Uu] Juncture? [Ee] Juncture?)) !Vo1)
 
 <p>
 
@@ -1294,7 +1308,7 @@ StressedSyllable <- ((SyllableA/SyllableB) Stress2)
 
 <p>
 
-NameEndSyllable <- (InitialConsonants? (Syllabic/(Vocalic &FinalConsonant)) FinalConsonant? FinalConsonant? Stress? !Letter)
+NameEndSyllable <- (InitialConsonants? (Syllabic/(Vocalic &FinalConsonant)) FinalConsonant? FinalConsonant? Stress? !Tilde !Letter)
 
 <p>
 
@@ -1308,7 +1322,7 @@ NameEndSyllable <- (InitialConsonants? (Syllabic/(Vocalic &FinalConsonant)) Fina
 
 <p>
 
-Maybepause <- (Vo1 Stress2? sp Co1)
+Maybepause <- (Vo1 Stress2? sp2 Co1)
 
 <p>
 
@@ -1316,7 +1330,7 @@ Maybepause <- (Vo1 Stress2? sp Co1)
 
 <p>
 
-Explicitpause <- ((Co1 Stress2? sp &Letter)/(Letter Stress2? sp &Vo1)/(Letter Stress2? [,] sp &Letter))
+Explicitpause <- ((Co1 Stress2? sp2 &Letter)/(Letter Stress2? sp2 &Vo1)/(Letter Stress2? [,] sp2 &Letter))
 
 <p>
 
@@ -1328,7 +1342,7 @@ Explicitpause <- ((Co1 Stress2? sp &Letter)/(Letter Stress2? sp &Vo1)/(Letter St
 
 <p>
 
-MaybePauseSyllable <- (InitialConsonants? Vocalic Stress2? &(sp &Co1))
+MaybePauseSyllable <- (InitialConsonants? Vocalic Stress2? &(sp2 &Co1))
 
 <p>
 
@@ -1464,7 +1478,11 @@ FalseMarked <- (&PRENAME (!MarkedName Character)* MarkedName)
 
 <p>
 
-NAMEWORD <- (((&caprule MarkedName)/([,] sp !FalseMarked &caprule PRENAME)/(&Vo1 !FalseMarked &caprule PRENAME)/(&caprule (((LAname Juncture?)/(HOIname Juncture?)/(HUEname Juncture?)/(CIname Juncture? &([,]? sp))/(LIUname Juncture?)/(MUEname Juncture?)/(GAOname Juncture?)) !Vo1 [,]? sp? &caprule PRENAME))) (([,]? sp !FalseMarked &caprule PRENAME)/([,]? sp &([Cc] [Ii]) NAMEWORD))* &((sp? [Cc] [Ii] predunit)/(&(([,] sp)/Terminal/[\")]/!.) .)/!.))
+Comma1 <- [,] sp2
+
+<p>
+
+NAMEWORD <- (((&caprule MarkedName)/(Comma1 !FalseMarked &caprule PRENAME)/(&Vo1 !FalseMarked &caprule PRENAME)/(&caprule (((LAname Juncture?)/(HOIname Juncture?)/(HUEname Juncture?)/(CIname Juncture? &(Comma0))/(LIUname Juncture?)/(MUEname Juncture?)/(GAOname Juncture?)) !Vo1 Comma0? &caprule PRENAME))) ((Comma0 !FalseMarked &caprule PRENAME)/(Comma0 &([Cc] [Ii]) NAMEWORD))* &((sp? [Cc] [Ii] predunit)/(&((Comma1)/Terminal/[\")]/!.) .)/!.))
 
 <p>
 
@@ -1509,10 +1527,10 @@ Namemarker <- ((([Ll] [Aa] Juncture?)/([Hh] [Oo] [Ii] Juncture?)/([Hh] [Uu] Junc
 <p>
 
 <LI> changing BadNameMarker to test a mew concept for protection of left boundaries of names which involves less lookahead and no reference to possibly distant name words:  the next whitespace after a name marker but not immediately after it must be an actual pause.
-
+<p>
 # Badnamemarker <- (Namemarker !Vo1 [, ]? sp? BadPreName)
-
-Badnamemarker <- (Namemarker !Vo1 [, ]? sp? (Syllable &Syllable)* MaybePauseSyllable)
+<p>
+Badnamemarker <- (Namemarker !Vo1 Comma0? (Syllable &Syllable)* MaybePauseSyllable)
 
 <LI>we test for the bad name marker condition at the beginning of each stream of cmapua,
 
@@ -1898,7 +1916,7 @@ CcvCv <- (Initial Vo2 Juncture? Co1 Vo2 Dash? !Vo2)
 
 <p>
 
-CcvCvStreased <- (Initial Vo2 Stress2 Co1 Vo2 Dash? !Vo2)
+CcvCvStressed <- (Initial Vo2 Stress2 Co1 Vo2 Dash? !Vo2)
 
 <p>
 
@@ -2088,7 +2106,7 @@ PreBorrowing3 <- (&Predstart !Ccvv !Cmapua !SyllableC (!BorrowingTail3 !Stressed
 
 <p>
 
-RfinalDjifoa <- ((CcvCvBad/CvcCv/CvvNoHyphen/CcvBad/CvcBad) (&wy/!Character))
+RfinalDjifoa <- ((CcvCvBad/CvcCv/CvvNoHyphen/CcvBad) (&wy/!Character))
 
 <p>
 
@@ -2136,7 +2154,7 @@ StressedBorrowing <- (!ResolvedBorrowing &caprule StressedPreBorrowing !(sp? &Vo
 
 <p>
 
-BorrowingDjifoa <- (!ResolvedBorrowing &caprule PreBorrowing2 ((Stress2 wy [,] sp)/(Juncture? wy Dash?)))
+BorrowingDjifoa <- (!ResolvedBorrowing &caprule PreBorrowing2 ((Stress2 wy Comma1)/(Juncture? wy Dash?)))
 
 <p>
 
@@ -2144,7 +2162,7 @@ BorrowingDjifoa <- (!ResolvedBorrowing &caprule PreBorrowing2 ((Stress2 wy [,] s
 
 <p>
 
-StressedBorrowingDjifoa <- (!ResolvedBorrowing &caprule PreBorrowing3 wy Dash? ([,] sp)?)
+StressedBorrowingDjifoa <- (!ResolvedBorrowing &caprule PreBorrowing3 wy Dash? (Comma1)?)
 
 <p>
 
@@ -2254,7 +2272,7 @@ FinalDjifoa <- ((Borrowing/CcvCv/CvcCv/CvvNoHyphen/CcvNoY) !Character)
 
 <p>
 
-MediallyStressed <- (StressedBorrowing/CcvCvStreased/CvcCvStressed/CvvNoYMedialStress)
+MediallyStressed <- (StressedBorrowing/CcvCvStressed/CvcCvStressed/CvvNoYMedialStress)
 
 <p>
 
@@ -2338,7 +2356,7 @@ PhoneticUtterance1 <- (NAMEWORD/(sp? LiQuote)/(sp? NAMEWORD)/(sp? AlienWord)/(sp
 
 <p>
 
-PhoneticUtterance <- (PhoneticUtterance1/([,] sp)/Terminal)+
+PhoneticUtterance <- (PhoneticUtterance1/(Comma1)/Terminal)+
 
 <p>
 
@@ -2654,7 +2672,7 @@ uy <- ([Uu] [Yy] !Badstress Juncture? !Vo1)
 
 <p>
 
-OptPause <- ([,] sp !(Vo1/Connective) &caprule)
+OptPause <- (Comma1 !(Vo1/Connective) &caprule)
 
 <p>
 
@@ -2662,11 +2680,11 @@ OptPause <- ([,] sp !(Vo1/Connective) &caprule)
 
 <p>
 
-Comma <- ([,] sp &caprule)
+Comma <- ([,] sp2 &caprule)
 
 <p>
 
-Comma2 <- ([,]? sp &caprule)
+Comma2 <- ([,]? sp2 &caprule)
 
 <p>
 
