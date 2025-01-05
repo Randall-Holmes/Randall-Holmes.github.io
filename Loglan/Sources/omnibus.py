@@ -1,3 +1,4 @@
+
 #  version of 2/7/2022 2 pm
 
 # 2/7/2022 declutter no longer removes spaces.  This is preparatory
@@ -697,6 +698,7 @@ def printparse(P):
 # though it seems that this version will be slaved to the ML version for now, since I can now export files thence to here.
 
 # more feedback from commands will be useful.
+
 
 # recent updates
 
@@ -1698,13 +1700,13 @@ def grammarbatch(gfile):
         if not (line1==''): rundef(loglan,line1)
     
 
-#from loglanpreamble import *
+# from loglanpreamble import *
 
-L("sp <- ([ ]+/([~] &Co1))")
+L("sp <- ([ ]+/([~`] &Co1))")
 
 L("sp2 <- [ ]+")
 
-L("Tilde <- ([~] &Co1)")
+L("spnopause <- ([~`] &Co1)")
 
 L("Vo1 <- [aeiouyAEIOUY]")
 
@@ -1806,7 +1808,7 @@ L("SyllableY <- (&(InitialConsonants? [Yy]) Syllable)")
 
 L("StressedSyllable <- ((SyllableA/SyllableB) Stress2)")
 
-L("NameEndSyllable <- (InitialConsonants? (Syllabic/(Vocalic &FinalConsonant)) FinalConsonant? FinalConsonant? Stress? !Tilde !Letter)")
+L("NameEndSyllable <- (InitialConsonants? (Syllabic/(Vocalic &FinalConsonant)) FinalConsonant? FinalConsonant? Stress? !spnopause !Letter)")
 
 L("Maybepause <- (Vo1 Stress2? sp2 Co1)")
 
@@ -1850,9 +1852,9 @@ L("FalseMarked <- (&PRENAME (!MarkedName Character)* MarkedName)")
 
 L("Comma1 <- ([,] sp2)")
 
-L("NAMEWORD <- (((&caprule MarkedName)/(Comma1 !FalseMarked &caprule PRENAME)/(&Vo1 !FalseMarked &caprule PRENAME)/(&caprule (((LAname Juncture?)/(HOIname Juncture?)/(HUEname Juncture?)/(CIname Juncture? &Comma0)/(LIUname Juncture?)/(MUEname Juncture?)/(GAOname Juncture?)) !Vo1 Comma0? &caprule PRENAME))) ((Comma0 !FalseMarked &caprule PRENAME)/(Comma0 &([Cc] [Ii]) NAMEWORD))* &((sp? [Cc] [Ii] predunit)/(&(Comma1/Terminal/[\")]/!.) .)/!.))")
+L("NAMEWORD <- (((&caprule MarkedName)/(Comma1 !FalseMarked &caprule PRENAME)/(&Vo1 !FalseMarked &caprule PRENAME)/(&caprule (((LAname Juncture?)/(HOIname Juncture?)/(HUEname Juncture?)/(CIname Juncture? &Comma0)/(LIUname Juncture?)/(MUEname Juncture?)/(GAOname Juncture?)) !Vo1 Comma0? &caprule PRENAME))) ((Comma0 !FalseMarked &caprule PRENAME)/(Comma0 &([Cc] [Ii]) NAMEWORD))* &((sp2? [Cc] [Ii] predunit)/(&(Comma1/Terminal/[\")]/!.) .)/!.))")
 
-L("Namemarker <- ((([Ll] [Aa] Juncture?)/([Hh] [Oo] [Ii] Juncture?)/([Hh] [Uu] Juncture? [Ee] Juncture?)/([Cc] &(Explicitpause/([Ii] Juncture? sp PRENAME)) [Ii] Juncture?)/([Ll] [Ii] Juncture? [Uu] Juncture?)/([Gg] [Aa] [Oo] Juncture?)/([Mm] [Uu] Juncture? [Ee] Juncture?)) !Vo1)")
+L("Namemarker <- ((([Ll] [Aa] Juncture?)/([Hh] [Oo] [Ii] Juncture?)/([Hh] [Uu] Juncture? [Ee] Juncture?)/([Cc] &(Explicitpause/([Ii] Juncture? sp2 PRENAME)) [Ii] Juncture?)/([Ll] [Ii] Juncture? [Uu] Juncture?)/([Gg] [Aa] [Oo] Juncture?)/([Mm] [Uu] Juncture? [Ee] Juncture?)) !Vo1)")
 
 L("Badnamemarker <- (Namemarker !Vo1 Comma0? (Syllable &Syllable)* MaybePauseSyllable)")
 
@@ -2156,9 +2158,9 @@ L("Comma <- ([,] sp2 &caprule)")
 
 L("Comma2 <- ([,]? sp2 &caprule)")
 
-L("End <- ((sp? '#' sp utterance)/(sp !.)/!.)")
+L("End <- ((sp2? '#' sp2 utterance)/(sp2 !.)/!.)")
 
-L("Period <- (([!.:;?] (&End/(sp &caprule))) (invvoc Period?)?)")
+L("Period <- (([!.:;?] (&End/(sp2 &caprule))) (invvoc Period?)?)")
 
 L("TAI0 <- ((Vo1 Juncture? m a)/(Vo1 Juncture? f i)/(Vo1 Juncture? z i)/(!Predstart Co1 ai)/(!Predstart Co1 ei)/(!Predstart Co1 ai2 u)/(!Predstart Co1 ei2 u)/(!Predstart Co1 eo)/(z [Ii] Vo1 !Badstress Juncture? !Vo1 (m a)?))")
 
