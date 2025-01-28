@@ -93,6 +93,8 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should in our view (at least in the view of the first author) avoid metamathematics as far as possible, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
 
+\item[1/27/2025:]  Installed updates done live at the 1/22 meeting.  Intending to read the proof of Freedom of Action again carefully before the 1/29 meeting.
+
 \item[1/22/2025:]  Installed revisions due to Sky proposed at the meeting a week ago.
 
 \item[1/8/2025:]  reviewed and slightly revised the proof of the existence of position functions.   Further input from Sky at the meeting.
@@ -1202,7 +1204,7 @@ $$f_{\gamma,\delta}(\pi_\gamma(x),\pi_{\gamma}[S]) \sim \pi_\delta^+``f_{\gamma,
 The motivation for this is that we need $\beta$-allowable permutations to send extensional elements of supertypes to extensional elements.  Suppose $x \in \tau_\beta$ and
 $x \cap \tau_\gamma = \{b\}$.  If $x$ is extensional, this has to be the distinguished extension of $x$.  For any $\delta \in \beta \setminus \{\gamma\}$,
 it follows that $x \cap \tau_\delta$ is the set of all $N_\delta$ such that $N \sim f_{\gamma,\delta}(b,S)$ for some support $S$ of $b$.  This tells us that a $\beta$-allowable permutation $\pi$, such that $\pi(x)$ has $\gamma$-extension $\{\pi_\gamma(b)\}$, must have the  $\delta$-extension of $\pi(x)$ equal to $$\pi_\delta``\{N_\delta:\exists S:N \sim f_{\gamma,\delta}(b,S)\}$$
-but must also have its $\delta$-extension equal to $$\{N_\delta:\exists S:N \sim f_{\gamma,\delta}(\pi_\gamma(b),S)\}.$$  This tells us that $$\pi_\delta(f_{\gamma,\delta}(b,S)_\delta) \in \{N_\delta:(\exists T:N \sim f_{\gamma,\delta}(\pi_\gamma(b),T))\}$$ for each support $S$ of $b$.  The coherence condition enforces this neatly, showing that it is motivated by considerations required to get extensionality to work: the action of $\pi_\gamma$ conveniently correlates supports of $b$ with supports of $\pi_\gamma(b)$. 
+but must also have its $\delta$-extension equal to $$\{N_\delta:\exists S:N \sim f_{\gamma,\delta}(\pi_\gamma(b),S)\}.$$  This tells us that $$\pi_\delta(f_{\gamma,\delta}(b,S)_\delta) \in \{N_\delta:(\exists T:N \sim f_{\gamma,\delta}(\pi_\gamma(b),T))\}$$ for each support $S$ of $b$.  The coherence condition enforces this neatly, showing that it is motivated by considerations required to get extensionality to work: the action of $\pi_\gamma$ conveniently correlates supports of $b$ with supports of $\pi_\gamma(b)$.
 %\rk{Fixed up some $\beta$s to $\gamma$s in the last clause.}
 
 \end{remark}
@@ -1360,7 +1362,18 @@ At this point we have a complete description of the structure which we claim is 
 
 \section{Verification that the structure defined is a model}\label{s:verification}
 
+{
+As we have stated, we now have a complete description of the structure which we claim is a model of TTT.
+In order for the model construction to succeed, we have one remaining inductive hypothesis to verify, namely that $\tau_\alpha$ is of cardinality $\mu$ \ihref{ih:cardinality}, given that all of the hypotheses listed in subsection \ref{ss:hypotheses} hold about lower types $\tau_\beta$.
+This will be our main goal for subsections \ref{ss:foa} and \ref{ss:counting}, after which we will have a complete proof that the structure as described indeed exists.
+After this, all that remains is to show that the structure is a model of TTT, which we will do in subsections \ref{ss:predicative_ttt} and \ref{ss:impredicativity}.
+}
+
 \subsection{The Freedom of Action theorem}\label{ss:foa}
+
+{
+In order to obtain our desired cardinality bound, we will make use of a technical result called the Freedom of Action theorem, which intuitively states that any locally small partial function that locally resembles an allowable permutation is in fact the restriction of some allowable permutation.
+}
 
 \begin{definition}[$-1$-approximation]\label{def:base_approx}
   A {\em $-1$-approximation\/} is a function $\psi$ such that:
@@ -1379,7 +1392,7 @@ The action of $\psi$ on atoms will agree with the action of $\psi^*$, and the ac
     \item If $a$ is an atom and $a \in {\tt dom}(\psi)$, then $\psi^*(a) = \psi(a)$.
     \item If $a$ is an atom with $a \notin {\tt dom}(\psi)$ but $a \in L$ and $L \in {\tt dom}(\psi)$, then
     $$ \psi^*(a) = \pi_{M, N}(a),\ \mathrm{where}\ M = L \setminus {\tt dom}(\psi) \ \mathrm{and}\ N = \psi(L) \setminus {\tt dom}(\psi) $$
-    where for any co-small subsets of litters $M, N$, the map $\pi_{M,N}$ is the unique map $\rho$ from $M$ to $N$ such that for any $x, y \in M$,
+    where for any co-small subsets of litters $M, N$, the map $\pi_{M,N}$ is the unique map $\rho$ from $M$ {onto} $N$ such that for any $x, y \in M$,
     $$x <_{M^{\circ}} y \leftrightarrow \rho(x) <_{N^\circ} \rho(y):$$
     $\pi_{M,N}$ is the unique map from $M$ onto $N$ which is strictly increasing in the order determined by fourth projections of atoms.  Notice that $ \pi_{M,N} \circ \pi_{L,M} = \pi_{L,N}$ will hold if $L,M,N$ are co-small subsets of litters,
 and $\pi_{L,M} \circ \pi_{M,L} = \pi_{L,L}$ which is the identity map on $L$, under the same conditions.\footnote{The choice of these maps does not need to be so concrete, but the fact that it can be indicates for example that there is no use of choice here.  We like the concreteness of this approach.}
@@ -1443,8 +1456,14 @@ for $-1 \leq \gamma<{\tt min}(A_2)$.
     \item If $A$ is an extended type index with maximum $\beta$ and ${\tt min}(A_1) = \gamma < \beta$, and $\delta < {\tt min}(A_2)$ and $(x, S) \in \tau_\delta^+$ are such that $f_{\delta,\gamma}(x, S) \subseteq {\tt dom}(\psi_A^*)$, then there is some $\delta$-allowable permutation $\pi$ such that
     $$ (\psi_{A_2})_\delta^*[S] = \pi[S] $$
     and additionally that
-    $$ \psi_A^* `` f_{\delta,\gamma}(x, S) \sim f_{\delta,\gamma}(\pi(x), \pi[S]) $$
-    (and hence all $\delta$-allowable permutations $\pi$ satisfying the given hypotheses also satisfy the stated coherence condition).
+    $$ \psi_A^* `` f_{\delta,\gamma}(x, S) \sim f_{\delta,\gamma}(\pi(x), \pi[S]). $$
+    {
+    Note in this case that if $\pi'$ is any other $\delta$-allowable permutation satisfying
+    $$ (\psi_{A_2})_\delta^*[S] = \pi'[S], $$
+    then $\pi[S] = \pi'[S]$, so $\pi'$ also satisfies
+    $$ \psi_A^* `` f_{\delta,\gamma}(x, S) \sim f_{\delta,\gamma}(\pi'(x), \pi'[S]). $$
+    }
+    % (and hence all $\delta$-allowable permutations $\pi$ satisfying the given hypotheses also satisfy the stated coherence condition).
   \end{enumerate}
 \end{definition}
 \begin{remark}\label{rk:power_deriv_coherent}
@@ -1462,8 +1481,13 @@ for $-1 \leq \gamma<{\tt min}(A_2)$.
   We say that {\em freedom of action\/} holds at some type index $\beta$ if every coherent $\beta$-approximation $\psi$ approximates some $\beta$-allowable permutation $\pi$.
 \end{definition}
 \begin{remark}\label{rk:foa_suffices}
-  If $\psi$ is a coherent approximation such that $\psi_A$ is defined on all litters (or equivalently, $\psi_A^*$ is defined on all atoms) for all $A$ containing $-1$, then it is easy to see that $\psi$ approximates a unique allowable permutation $\pi$, and $\pi$ is given by $\pi_A= \psi_A^*$.
-  So to prove that freedom of action holds at level $\beta$, it suffices by remark \ref{rk:preceq_approximates} to show that every coherent $\beta$-approximation has a coherent extension $\chi$ such that $\chi_A$ is defined on all litters for all $A$ containing $-1$.
+  If $\psi$ is a coherent approximation such that $\psi_A$ is defined on all litters (or equivalently, $\psi_A^*$ is defined on all atoms) for all
+  %$A$ containing $-1$,
+  {suitable extended type indices $A$,}
+  then it is easy to see that $\psi$ approximates a unique allowable permutation $\pi$, and $\pi$ is given by $\pi_A= \psi_A^*$.
+  So to prove that freedom of action holds at level $\beta$, it suffices by remark \ref{rk:preceq_approximates} to show that every coherent $\beta$-approximation has a coherent extension $\chi$ such that $\chi_A$ is defined on all litters for all
+  {suitable $A$.}
+  % $A$ containing $-1$.
 \end{remark}
 \begin{lemma}\label{lem:foa_flexible}
   Let $\psi$ be a coherent $\beta$-approximation.
@@ -1518,22 +1542,26 @@ for $-1 \leq \gamma<{\tt min}(A_2)$.
   Suppose that $\chi_A^*$ is not defined on all litters for some $A$.
   Let $L$ be the litter with minimal position $\iota_*(L)$ such that there is
   an extended type index $A$
-  with maximum element $\beta$ such that $L \nsubseteq {\tt dom}(\psi_A^*)$.
+  with maximum element $\beta$ such that $L \nsubseteq {\tt dom}(\chi_A^*)$.
 
   Suppose that $L$ is $A$-flexible.
   By lemma \ref{lem:foa_flexible}, $\chi$ admits a coherent extension $\varphi$ such that $L \subseteq {\tt dom}(\varphi_A^*)$.
   This contradicts maximality of $\chi$.
 
   Now suppose that $L$ is not $A$-flexible.
-  Writing $\gamma$ for the minimum element of $A$, there are $\delta < {\tt min}(A_1)$ and $(x, S) \in \tau_\delta^*$ such that $L = f_{\delta,\gamma}(x, S)$.
+  % Writing $\gamma$ for the minimum element of $A$, there are $\delta < {\tt min}(A_1)$ and $(x, S) \in \tau_\delta^*$ such that $L = f_{\delta,\gamma}(x, S)$.
+  {Defining $\gamma = {\tt min}(A_1)$, there exist $\delta < {\tt min}(A_2)$ and $(x, S) \in \tau_\delta^*$ such that $L = f_{\delta,\gamma}(x, S)$.}
 
 
-  We claim that $(\psi_{A_2})_\delta^*[S]$ is defined; this will then give a contradiction by lemma \ref{lem:foa_inflexible}.
-  To show this, we must prove that if $(t, B) \in {\tt rng}(S)$, then $\psi_A^*``t$ is defined.
+  We claim that $(\chi_{A_2})_\delta^*[S]$ is defined; this will then give a contradiction by lemma \ref{lem:foa_inflexible}.
+  To show this, we must prove that if $(t, B) \in {\tt rng}(S)$, then
+  % $\psi_A^*``t$ is defined.
+  {$\chi_{A_2 \cup B}^*``t$ is defined.}
   By definition \ref{def:f_map}, we have $\iota_*^+(x, S) < \iota_*(L)$, and by \ihref{ih:position_constraints}, $\iota_*(t) \leq \iota_*^+(x, S)$.
-  If $t$ is a near litter or singleton of an atom and $t \subset M$ for a litter $M$, then by definition \ref{def:pos_atom_near_litter}, we obtain $\iota_*(M) < \iota_*(t)$, and therefore that $\psi_B^*``t$ is defined by minimality of the position of $L$.
-  Alternatively, if $t$ is a near-litter, then if $M$ is any litter such that $M \cap t \neq \emptyset$, definition \ref{def:pos_atom_near_litter} again implies that $\iota_*(M) < \iota_*(t)$, so $\psi_B^*``M$ is defined.
-  Combining all such litters, we conclude that $\psi_B^*``t$ is defined.
+  % If $t$ is a near litter or singleton of an atom and $t \subset M$ for a litter $M$, then by definition \ref{def:pos_atom_near_litter}, we obtain $\iota_*(M) < \iota_*(t)$, and therefore that $\psi_B^*``t$ is defined by minimality of the position of $L$.
+  If $t$ is a singleton of an atom with $t \subset M$ for a litter $M$, then by definition \ref{def:pos_atom_near_litter}, we obtain $\iota_*(M) < \iota_*(t)$, and therefore that $\chi_{A_2 \cup B}^*``t$ is defined by minimality of the position of $L$.
+  Alternatively, if $t$ is a near-litter, then if $M$ is any litter such that $M \cap t \neq \emptyset$, definition \ref{def:pos_atom_near_litter} again implies that $\iota_*(M) < \iota_*(t)$, so $\chi_{A_2 \cup B}^*``M$ is defined.
+  Combining all such litters, we conclude that $\chi_{A_2 \cup B}^*``t$ is defined.
 
   Therefore $\chi_A^*$ must be defined on all litters for all $A$.
   By remark \ref{rk:foa_suffices}, this concludes the proof: $\psi$ approximates the allowable permutation $\pi$ given by $\pi_A^* = \chi_A^*$.
@@ -1550,7 +1578,7 @@ for $-1 \leq \gamma<{\tt min}(A_2)$.
 
 
 \newpage
-\subsection{Types are of size $\mu$ (so the construction actually succeeds)}
+\subsection{Types are of size $\mu$ (so the construction actually succeeds)}\label{ss:counting}
 
 Now we argue that (given that everything worked out correctly already at lower types) each type $\alpha$ is of size $\mu$, which ensures
 that the construction actually succeeds at every type (verification of \ihref{ih:cardinality} for subsequent stages of the construction is thus completed).
