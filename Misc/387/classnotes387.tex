@@ -14,7 +14,7 @@
 
 \newpage
 
-\section{Jan 15 2025:}  We did administrative stuff then read problems 1-7 in the Bogart book.
+\section{Jan 15 2025:}  We did administrative stuff then read problems 1-7 in the Bogart book, section 1.2.
 
 I'm going to write out my official definition of what a function is.  We will talk about motivation for this later.
 
@@ -26,5 +26,143 @@ We say that $f$ is a function from $S$ to $T$ (written $f:S \rightarrow T$) just
 $S$ to $T$ and for each $x \in S$ there is exactly one $y$ in $T$ such that $(x,y) \in G$.  We define $f(x)$, for each $x \in S$, aas the unique $y$ such that $(x,y) \in G$.
 
 An alternative approach is to identify relations and functions with their graphs (so they are just subsets of $S \times T$), but this requires care in expression which most undergraduate textbooks don't bother with.  We will discuss in detail what the problems are with the approach the book takes.
+
+\section{Jan 31, 2025}
+
+I gave a lecture on proofs by math induction relevant to our material
+
+\begin{description}
+
+\item[Theorem:]  Im going to use the notation $_nC_r$ instead of $\left(\begin{array}{c} n \\ r \end{array}\right)$ because it is easier to typset.
+
+If $_nC_r$ is recursively defined for $0 \leq r \leq n$ with base cases $_nC_0 = _nC_n = 1$ and recurrence relation
+$_nC_{r+1} = _nC_r + _nC_{r-1}$ when $0<r<n$, then $_nC_r = \frac{n!}{r!(n-r)!}$.
+
+We prove this by induction on $n$.
+
+\begin{description}
+\item[Basis step:]  We need to prove the claim where $n=0$.  The only thing to show is that $_0C_0 = \frac{0!}
+{(0-0)!}$.  The left side is defined as 1, and the right side readily computes to 1, so this is direct.  (recall throughout this proof the recursive definition of the factorial:  0!=1, $(n+1)! = n!(n+1)$.
+
+\item[Induction hypothesis:]  Fix an arbitrary $k$ and assume that for $0 \leq r \leq k$, $_kC_r = \frac{k!}{r!(k-r)!}$.
+
+\item[Induction goal:]  Show that $_{k+1}C_r = \frac{(k+1)!}{r!((k+1)-r)!}$.
+
+\item[Induction step of the proof:]  The cases $r=0$ and $r=k+1$ are direct from the recurive definition of binomial coefficients and direct factorial calculations.
+
+$_{k+1}C_0 = 1 = \frac{(k+1)!}{(k+1)!}=\frac{(k+1)!}{0!((k+1)-0)!}$
+
+$_{k+1}C_{k+1}= \frac{(k+1)!}{(k+1)!}= \frac{(k+1)!}{(k+1)!((k+1)-(k+1))!}$
+
+Now suppose that $0<r<k$.
+
+$_{k+1}C_r = $[rec def]$_kC_r + _kC_{r-1}=$[ind hyp] $ \frac{k!}{r!(k-r)!} + \frac{k!}{(r-1)!(k-(r-1))!}$ [algebra] $ = \frac{k!}{r!(k-r)!} + \frac{k!}{(r-1)!((k-r)+1)!} =$[algebra, aiming for a common denominator]$  \frac{k!(k-r)}{r!(k-r)!(k-r)} + \frac{k!r}{((r-1)!r)(k-(r-1))!}$\newline = [rec def of factorial]$  \frac{k!(k-r)}{r!((k-r)+1)!} + \frac{k!r}{r!(k-(r-1))!}=\frac{k!(k-r)}{r!((k-r)+1)!} + \frac{k!r}{r!)(k-(r-1))!}= \frac{k!(k-r)}{r!((k+1)-r)!} + \frac{k!r}{r!)((k+1)-r))!}=\frac{k!k} {r!((k+1)-r)!}=\frac{(k+1)!} {r!((k+1)-r)!}$
+
+which completes the proof.
+
+
+\end{description}
+
+It is worth noting that this is neither the way we defined $_nC_r$ nor the way we proved this theorem.  The definition and argument above are not combinatorial (they are not about counting).  Nonetheless this definition and proof are useful.
+
+Our official definition is that $_nC_r$ is the number of $r$ element subsets in an $n$ element set.
+
+Our proof of the identity (already familiar but we review it) by combinatorial methods is via the counting of $r$-element ordered lists.  By the general product principle, there are $n(n-1)\cdot(n-(r-1) = \prod{i=0}^{r-1}(n-i) = n_r$ ordered lists of length $r$ of distinct elements taken from an $n$-element set.
+
+Now partition the collection of ordered lists into blocks determined by their range (a list is a function with domain an initial segment of the natural natural numbers, so it has a range...):  the possible ranges are exactly the $r$ elements subsets of the $n$ element set.  So there are $_nC_r$ blocks in the partition by the set based official definition of this notation.
+
+Each of the blocks of the partition has $r!$ elements (the different orders in which the $r$ elements of the range can appear).
+
+The Quotient Principle is a backward version of the product principle:  if we have a set $A$ of size $x$ with a partition $P$ each of whose blocks is of size $y$, then the size of $P$ must be $\frac xy$.
+
+It follows that the partition is of size $\frac{n_r}{r!} = \frac{n!}{r!(n-r)!}$, the same result as above but as the result of a counting argument.
+
+\begin{description}
+
+\item[Theorem (the binomial theorem):]  $(x+y)^n = \sum_{i=0}^n {_nC_i}x^{n-i}y^i$
+
+We prove this by induction on $n$.
+
+\item[Basis step:]  $(x+y)^0 = 1 = (_0C_0)x^{0-0}y^0 = \sum_{i=0}^0(_0C_i)x^{0-i}y^i$
+
+\item[Induction hypothesis:]  For an arbitrary $k$, assume that $(x+y)^k = \sum_{i=0}^k(_kC_i)x^{k-i}y^i$.
+
+\item[Induction goal:]  Prove that $(x+y)^k = \sum_{i=0}^{k+1}(_{k+1}C_i)x^{(k+1)-i}y^i$.
+
+\item[Induction step of the proof:]  $$(x+y)^{k+1} = (x+y)^k(x+y)$$ $$ = (x+y)^k(x+y)= (x+y)^kx + (x+y)^ky$$
+
+Now apply the induction hypothesis
+
+$= x(\sum_{i=0}^k(_kC_i)x^{k-i}y^i) + y(\sum_{i=0}^k(_kC_i)x^{k-i}y^i)$
+
+apply properties of summations which should not be mysterious
+
+$=\sum_{i=0}^k(_kC_i)x^{(k+1)-i}y^i + \sum_{i=0}^k(_kC_i)x^{k-i}y^{i+1}$
+
+Notice that on the left (the term where we added an $x$ factor) we have the powers of $x$ and $y$ that we want in the goal, but on the right we do not.  We start to fix this by renaming the dummy variable in the right hand term to $j$.
+
+$=\sum_{i=0}^k(_kC_i)x^{(k+1)-i}y^i + \sum_{j=0}^k(_kC_j)x^{k-j}y^{j+1}$
+
+We want the power of $y$ in the right term to be $i$.  We can do this by setting $j=i-1$, with the following result.
+
+$=\sum_{i=0}^k(_kC_i)x^{(k+1)-i}y^i + \sum_{i=1}^{k+1}(_kC_{i-1})x^{k-(i-1)}y^{i}$
+
+and further
+
+$=\sum_{i=0}^k(_kC_i)x^{(k+1)-i}y^i + \sum_{i=1}^{k+1}(_kC_{i-1})x^{(k+1)-i}y^{i}$
+
+
+We now have similar terms to add on both sides but we need to pull ou the first term of the left hand sum and the last term of the right hand sum, so that they are summed over the same indices.
+
+$ = (_kC_0)x^{(k+1)-0}y^0 + \sum_{i=1}^k(_kC_i)x^{(k+1)-i}y^i + \sum_{i=1}^{k}(_kC_{i-1})x^{(k+1)-i}y^{i}+ (_kC_{k})x^{(k+1)-(k+1)}y^{k+1}$
+
+further
+
+$=x^{k+1} + \sum_{i=1}^k (_kC_i + _kC_{i-1})x^{(k+1)-i}y^i + y^{k+1}$
+
+
+and by the recurrence relation on binomial coefficients, and the fact that the first and last terms are correct, 
+
+$=x^{k+1} + \sum_{i=1}^k (_{k+1}C_i)x^{(k+1)-i}y^i + y^{k+1} = \sum_{i=0}^{k+1}(_{k+1}C_i)x^{(k+1)-i}y^i$
+
+
+This is not really a combinatorial proof, but it is very relevant to combinatorics (the theorem is useful) and the ability to manipulation indexed sum and product notation is useful in combinatorics (and in other areas of math).
+
+\section{Homework 3}
+
+This will be due on Friday the 7th, unless there are serious protests.  I think you should have time;  I'm sorry that I am only posting it on Monday.
+
+\begin{enumerate}
+
+\item Do problem 49 in Bogart.  Write about your thinking as you work on it;  this is perhaps an example of the proper use of the book for guided discovery (remember that we already talked about lattice paths in the other book).
+
+
+\item Do problem 50 in Bogart.  Write about your thinking as you work on it;  this is perhaps an example of the proper use of the book for guided discovery (remember that we already talked about lattice paths in the other book).
+
+
+\item Do problem 51 in Bogart (you may be saved on this one because we may do it in class:  but I still want you to look at it beforehand, so approach it as an assigned problem).
+
+\item Do problem 55 in Bogart
+
+
+\item Do problem 56 in Bogart
+
+\item Do problem 58 in Bogart
+
+
+\end{enumerate}
+
+
+
+
+
+
+
+
+\end{description}
+
+
+
+\end{description}
 
 \end{document}
