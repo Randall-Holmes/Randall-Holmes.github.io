@@ -1,4 +1,3 @@
-
 #  version of 2/7/2022 2 pm
 
 # 2/7/2022 declutter no longer removes spaces.  This is preparatory
@@ -698,7 +697,6 @@ def printparse(P):
 # though it seems that this version will be slaved to the ML version for now, since I can now export files thence to here.
 
 # more feedback from commands will be useful.
-
 
 # recent updates
 
@@ -2406,7 +2404,9 @@ L("POSHORT <- (sp? POSHORT1)")
 
 L("DIE <- (sp? ((d ie)/(f ie)/(k ae)/(n ue)/(r ie)))")
 
-L("HOI <- (sp? ((h oi)/(l oi)/(l oa)/(s ia)/(s ie)/(s iu)))")
+L("HOI <- (sp? (h oi))")
+
+L("HOIOLD <- (sp? ((h oi)/(l oi)/(l oa)/(s ia)/(s ie)/(s iu)))")
 
 L("JO <- (sp? (NI0/RA0/SA0)? (j o))")
 
@@ -2479,6 +2479,8 @@ L("geu <- GEU")
 L("gap <- (OptPause? GU freemod?)")
 
 L("HOI0 <- ((sp? (([Hh] oi)/([Ll] oi)/([Ll] oa)/([Ss] ia)/([Ss] ie)/([Ss] iu))) Juncture? !Vo1)")
+
+L("HOI1 <- (sp? [Hh] oi Juncture? !Vo1)")
 
 L("voc <- ((HOI0 Comma2? name)/(HOI Comma2? descpred guea? namesuffix?)/(HOI Comma2? argument1 guua?)/(sp? &([Hh] [Oo] [Ii] Juncture?) AlienWord))")
 
