@@ -2,6 +2,8 @@
 
 \usepackage{amssymb}
 
+\usepackage{comment}
+
 \title{Type Theory with General Variables (without the types) -- after a proposal of Quine}
 
 \author{Randall Holmes}
@@ -46,7 +48,7 @@ at least) that we adopt a definition and axioms.
 
 \item[Definition:]  Where $x$ and $y$ are objects, we define $x \sim y$, read, $x$ is of a kind with $y$, as $(\exists z:x \in z \wedge y \in z)$.
 
-\item[Axiom of Kinds:]  For each object $x$ there is an object $\kappa(x)$, which we call {\em the kind of $x$}, such that $x \in \kappa(y)$ and $(\forall y:y \in \kappa(x) \leftrightarrow y \sim x)$.  Note that there is exactly one such object for each $x$ by extensionality.\footnote{We refer to these sets as ``kinds" rather than types, because a type is not really a set, but a syntactical characteristic of a variable.  We do not extend this terminology to the historical systems discussed in section 3.}
+\item[Axiom of Kinds:]  For each object $x$ there is an object $\kappa(x)$, which we call {\em the kind of $x$}, such that $x \in \kappa(x)$ and $(\forall y:y \in \kappa(x) \leftrightarrow y \sim x)$.  Note that there is exactly one such object for each $x$ by extensionality.\footnote{We refer to these sets as ``kinds" rather than types, because a type is not really a set, but a syntactical characteristic of a variable.  We do not extend this terminology to the historical systems discussed in section 3.}
 
 \item[Theorem:]  The relation $\sim$ is symmetric, reflexive\footnote{Forster notes that whether or not $\sim$ is reflexive corresponds to whether we assume that everything belongs to something, that is, whether we are in set theory or class theory}, and transitive [so the kinds are equivalence classes under this relation in some external sense].
 
@@ -343,26 +345,58 @@ We discuss the possibility of imposing a typing convention on our language.
 
 We say that a formula $\phi$ is {\em stratified\/} iff there is a function $\tau$ from variables to natural numbers such that for each subformula  $x=y$ of $\phi$ we have $\tau(x)=\tau(y)$ and for each subformula $x \in y$ of $\phi$ we have $\tau(x)+1 = \tau(y)$.
 
-\item[Meta-Theorem:]  Every kind-bounded formula in which we have an intended assignment of kinds to parameters is equivalent to a stratified formula.
+\item[Meta-Theorem:]  Every kind-bounded formula in which we have an intended assignment of values to parameters is equivalent to a stratified formula.
 
-\item[Proof:]  Begin by defining a map $\tau^*$ from variables to kinds, sending each bound variable to the kind in which it is bound (we can rename variables so that no variable is bounded in two different kinds) and each parameter to its intended kind.  Of course this is a map in the metatheory:  there are no such functions in the theory itself.
+\item[Proof:]  We begin by defining a general procedure for assigning types in formulas which we highlight for future reference.
+\begin{description}
 
-Note that any formula $x=y$ must have
-$\tau^*(x)=\tau^*y$ or it can simply be replaced with $x \neq x$.  Similarly, any formula
-$x \in y$ must have $\tau^*(y) = \kappa(\tau^*(x))$ or is can be replaced with $x \neq x$.  Carry out any such replacements.
+\item [General typing procedure:]  Construct a function $\tau^*$ (in the metatheory, there can be no such function in our world) mapping variables in a formula $\phi$ to kinds.  Each parameter is understood to be assigned a value, and since we know the value of a parameter $v$ we can set $\tau^*(v) = \kappa(v)$.  For each bound variable $u$ which is restricted to $\kappa(u)$ where
+$u$ is a parameter (whose value is understood to be known),  we set $\tau^*(x)=\kappa(u)$.  We can assume without loss of generality that bound variables restricted to different kinds have different names. 
 
-Express each $\tau^*(x)$ in the form $\kappa^n(\tau^*(u))$ where $n$ is chosen as large as possible such that $\kappa(u)$ is the bound of a quantifier or the intended type of a parameter in the modified formula.  Define $\tau^*(x)$
-as the exponent $n$ in this form for $\tau^*(x)$.
+\item[General stratification procedure:]
 
-The modified  formula is equivalent to the original formula under the hypotheses about the kinds of the parameters, and $\tau$ witnesses that it is stratified.
+Now each atomic formula $u=v$ for which $\tau^*(u)\neq \tau^*(v)$ (both being defined) is equivalent to \newline $\neg u=u$ and can be replaced with that, and each atomic formula $u \in v$ for which $\kappa(\tau^*(u)) \neq \tau^*(v)$ (both being defined) can be replaced with the equivalent $\neg u=u$. 
+\end{description}
 
-\item[Convention:]  The convention of {\em typed language\/} which we do not adopt routinely but do consider as a possibility, is one in which every variable $x$ in our language has an associated natural number $n$, and we suppose that each variable $x$ ranges over objects in $\kappa^{\tau(x)+1}(u)$ for some fixed object $u$.  Bound variables are understood to be restricted to the associated kind of the variable; parameters are understood to be chosen from the associated type.
+
+
+In a kind-bounded formula $\phi$, the general procedures above assign a type to every variable and make some modifications to subformulas to facilitate stratification enforcement.
+
+ In the formula
+$\phi^*$ obtained after these modifications, define $\tau(x)$ for each variable $x$ as the largest $n$ such that $\tau^*(x) = \kappa^n(\tau^*(y))$ for some variable $y$ appearing in $\phi$.  This is a stratification.
+
+
+
+\item[Coercion to stratified form:]
+
+Consider an arbitrary formula $\phi$.   We assume that we use only universal quantifiers in $\phi$, for simplicity.  We work on a scheme of assigning kinds as types to variables in $\phi$.  Note that the functions expressing this typing scheme are in the metatheory!
+
+We assume that we know the values of free variables in a formula, or at least their intended kinds, and assign type $\kappa(v)$ to a free variable $v$.  Further, a bound variable which is restricted to a kind $\kappa(u)$ is assigned $\kappa(u)$ as its type.   We say that a formula is pseudo-typed if each variable in it is typed in the sense just outlined
+or appears in a subformula $(\forall x:(\bigwedge_{i=1}^n \kappa(x) \neq \kappa(a_i )) \rightarrow \phi)$ [called an exotic component], where $\phi$ contains no free variable other than $x$ [except possibly in preambles of exotic components] and is itself pseudo-typed.  Note that in any pseudo-typed formula, we can reduce any subformula $u=v$ in which types assigned to $u$ and $v$ are different to $u \neq u$ (and eliminate this using logic) and reduce any formula $u \in v$ in which the type of $u$ is not the kind of the type of $v$ to $u\neq u$ and eliminate it using logic.  Thus a pseudo-typed formula can be supposed stratified, except for the odd restrictions of unbounded universal quantifiers to complements of concrete finite unions of kinds.
+
+We observe that a formula in which each bound variable is bounded in a parameter (a variable free in the formula) is of course pseudo-typed.
+
+We argue that every formula is equivalent to a pseudo-typed formula.  We do this by showing that if $\phi$ is pseudo-typed, $(\forall x:\phi)$ can be converted to pseudo-typed form.   In the formula $\phi$, the variable $x$ is free.  Most atomic contexts in which $x$ occurs suggests a type for $x$:  where $t$ is the type assigned to $u$, $x=u$ suggests $\kappa(t)$ as a type to assign to $x$, $x \in u$ suggests $\kappa^0(t)$ as a type to assign to $x$, and $u \in x$ suggests $\kappa^2(t)$ as a type to assign to $x$;  $\kappa(y)\neq  \kappa(x)$ in the preamble of an exotic component exotically does not make a suggestion.
+Enumerate the types $t_i$ suggested for $x$.  $(\forall x:\phi)$ is equivalent to the conjunction of formulas $(\forall x_i \in t_i:\phi_i)$, where $\phi_i$ is the result of first replacing $x$ with $x_i$ then eliminating atomic subformulas
+which become ill-typed, and an exotic conjunct $$(\forall x^*:\bigwedge_i \kappa(x^*) \neq t_i\rightarrow \phi^*),$$ where $\phi^*$ is the result of first replacing $x$ with $x^*$ then removing ill-typed atomic subformulas, which will be {\em all\/} of the atomic subformulas which suggested types to us, so that $\phi^*$ contains no free variables other than $x^*$ except ones disconnected from $x^*$ or  in the preambles of exotic components:  ones disconnected from $x^*$ can be moved out of the scope of the quantifier.
+
+Now we describe the elimination of exotic components.  What is necessary is to show that if $\phi(x)$ is a stratified formula  then $$(\forall x:(\bigwedge_{i=1}^n \kappa(x) \neq \kappa(t_i))\rightarrow \phi(x)$$ is equivalent to a stratified formula.  This will allow the elimination of all exotic components of a pseudo-typed formula.
+
+The assertion $(\forall x_1,\ldots,x_{n+1}: (\bigwedge_{i=1}^{n+1} \bigwedge_{j=1}^{i-1} x_i \not\sim x_j) \rightarrow \bigvee_{i=1}^{n+1}\phi(x_i))$ is stratified (though somehow it is not stratified in spirit:  the counterintuitive key here is that the assertion that two objects are of different kinds is stratified) and succeeds in asserting that there are no more than $n$ counterexamples $t$ to \newline $(\forall x \in \kappa(t):\phi(x))$.
+
+Now it is straightforward to assert that a list $t_1,\ldots,t_n$ are exactly the $n$ counterexamples by asserting that each is a counterexample and there are no more than $n$ counterexamples:   $$(\forall x_1,\ldots,x_{n+1}: (\bigwedge_{i=1}^{n+1} \bigwedge_{j=1}^{i-1} x_i \not\sim x_j) \rightarrow \bigvee_{i=1}^{n+1}\phi(x_i))\wedge \bigwedge_{i=1}^n \neg(\forall x \in \kappa(t_i):\phi(x))$$
+
+Then the desired assertion is the disjunction of the assertions that each finite subset of $\{t_1,\ldots,t_n\}$ is the exact collection of counterexamples
+
+Thus every formula in the language of this theory is equivalent to a stratified formula:  the ones resulting from the analysis of exotic components do contain unbounded quantifiers.
 
 \end{description}
 
+\begin{comment}
+
 \subsection{Typed formulas [this is from an older layer of text and may require reconciliation or expansion here or above]}
 
-We introduce language which is in effect sorted (though not formally so), but is naturally motivated by the type coercion and type hierarchy results of the previous section
+We introduce language which is in effect sorted (though not formally so), but is naturally motivated by the type coercion and type hierarchy results of the previous section.
 
 \begin{description}
 
@@ -438,6 +472,8 @@ $$(\forall u:(\forall n \in {\mathbb N}_{\kappa^3(u)}:\phi[\kappa(u)/x;n/y] \lef
 Notice that the Ambiguity Scheme implies that every formula is equivalent to the partial universal closure of a typed formula, since it is a strengthening of one of the schemes which we know implies this.
 
 \end{description}
+
+\end{comment}
 
 \newpage
 
