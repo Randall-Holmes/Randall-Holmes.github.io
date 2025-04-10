@@ -93,6 +93,10 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should in our view (at least in the view of the first author) avoid metamathematics as far as possible, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
 
+\item[4/2/2025:]  Some revisions carried out at for before the meeting on this date.
+
+\item[3/31/2025:]  Some revisions carried out:  in the middle of another complete review of the paper before submission.
+
 \item[2/19/2025:]  Cleaning up revisions proposed by Sky on 2/12.
 
 \item[1/22/2025:]  Installed revisions due to Sky proposed at the meeting a week ago.
@@ -206,7 +210,7 @@ Zermelo set theory with separation restricted to bounded formulas.
 
 \newpage
 
-\subsection{Some mathematics in TST} % and some subtheories of interest}
+\subsubsection{Some mathematics in TST} % and some subtheories of interest}
 
 We briefly discuss some mathematics in TST.
 
@@ -258,14 +262,18 @@ $\{x^+:\phi^+\},\{x^{++}:\phi^{++}\},\{x^{+++}:\phi^{+++}\}$, so the picture of 
 The concrete implementation follows.  NF is the first order unsorted theory with equality and membership as primitive with an axiom of extensionality $(\forall xy:x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z\in y))$ and an axiom of comprehension $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$ for each formula $\phi$ in which $A$ is not free which can be obtained from a formula of TST by dropping all distinctions of type.  We give a precise formalization of this idea:  provide a bijective map $(x \mapsto x^*)$ from the countable supply of variables (of all types) of TST onto the countable supply of variables of the language of NF.  Where $\phi$ is a formula of the language of TST, let $\phi^*$ be the formula obtained by replacing every variable $x$, free and bound,
 in $\phi$ with $x^*$. For each formula $\phi$ of the language of TST in which $A$ is not free in $\phi^*$ and each variable $x^*$, an axiom of comprehension of NF asserts $(\exists A:(\forall x^*:x^* \in A \leftrightarrow \phi^*))$.
 
+
+
 In the original paper, this is expressed in a way which avoids explicit dependence on the language of another theory.  We do this in a way which is usual now but not necessarily identical to what is done in the original paper.  Let $\phi$ be a formula of the language of
 NF.    A function $\sigma$ is a stratification of $\phi$ if it is a (possibly partial) map from variables to non-negative integers such that for each atomic subformula
 `$x=y$'  of $\phi$ we have $\sigma($`$x$'$)=\sigma($`$y$'$)$ and for each atomic subformula `$x \in y$' of $\phi$ we have $\sigma($`$x$'$)+1 = \sigma($`$y$'$)$.
 A formula $\phi$ is said to be stratified iff there is a stratification of $\phi$.  Then for each stratified formula $\phi$ of the language of NF and variable $x$ we have an axiom $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$.  The stratified formulas are exactly the formulas $\phi^*$ up to renaming of variables.
 
+For each stratified formula $\phi$, there is a unique witness to $$(\exists A:(\forall x:x \in A \leftrightarrow \phi))$$ (uniqueness follows by extensionality) whch we denote by $\{x:\phi\}$.
+
 NF has been dismissed as a ``syntactical trick" because of the way it is defined.  It might go some way toward dispelling this impression to note that the stratified comprehension scheme is equivalent to a finite collection of its instances, so the theory can be presented in a way which makes no reference to types at all.  This is a result of Hailperin (\cite{hailperin}), refined by others, and discussed in some detail in a subsequent subsection of this section, because it is relevant to the Lean formalization.  One obtains a finite axiomatization of NF by analogy with the method of finitely axiomatizing von Neumann-G\"odel-Bernays predicative class theory.  It should further be noted that the first thing one does with any finite axiomatization is prove stratified comprehension as a meta-theorem, in practice, but it remains significant that the theory can be axiomatized with no reference to types at all.  It is also worth noting that the collection of all typed instances of the Hailperin axioms is an axiomatization of TST, not a finite axiomatization, but an axiomatization with finitely many templates.
 
-For each stratified formula $\phi$, there is a unique witness to $$(\exists A:(\forall x:x \in A \leftrightarrow \phi))$$ (uniqueness follows by extensionality) whch we denote by $\{x:\phi\}$.
+
 
 Jensen in \cite{nfu}, 1969 proposed the theory NFU which replaces the extensionality axiom of NF with $$(\forall xyw:w \in x \rightarrow (x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z\in y))),$$  allowing many atoms or urelements.  One can reasonably add an elementless constant $\emptyset$, and define $\{x:\phi\}$ as $\emptyset$ when $\phi$ is false for all $x$.
 
@@ -349,7 +357,7 @@ containing the Hilbert symbol (use a well-ordering of the set implementing each 
 \begin{proof}
 It is enough to exhibit a model of TTTU.  Suppose $\lambda>\omega$.  Represent type $\alpha$ as $V_{\omega+\alpha} \times \{\alpha\}$ for each $\alpha<\lambda$ ($V_{\omega+\alpha}$ being a rank of the usual cumulative hierarchy).  Define $\in_{\alpha,\beta}$ for
 $\alpha<\beta<\lambda$ as $$\{((x,\alpha),(y,\beta)):x \in V_{\omega+\alpha} \wedge y \in V_{\omega+\alpha+1} \wedge x \in y\}.$$  This gives a model of TTTU in which the membership of
-type $\alpha$ in type $\beta$ is defined in such a way that each $(y,\beta)$ with $y \in V_{\omega+\beta} \setminus V_{\omega+\alpha+1}$ is interpreted as as an urelement.
+type $\alpha$ in type $\beta$ is defined in such a way that each $(y,\beta)$ with $y \in V_{\omega+\beta} \setminus V_{\omega+\alpha+1}$ is interpreted as an urelement.
 
 Our use of $V_{\omega+\alpha}$ enforces Infinity in the resulting models of NFU (note that we did not have to do this:  if we set $\lambda=\omega$ and interpret type $\alpha$ using $V_\alpha$ we prove the consistency of NFU with the negation of Infinity).  It should be clear that Choice holds in the models of NFU eventually obtained if it holds in the ambient set theory.
 
@@ -385,7 +393,7 @@ The proof is a modified version of the proof given above for consistency of NF(U
 
 We extend the language of TTT(U) to include constant terms $\alpha^s$ and $\beta^s$ for each ordinal $\beta < \alpha$ of the metatheory for each sequence $s$ as described above.   We similarly extend the language of TST(U) (in this case only needing constants $\alpha^i$ and $\beta^i$ for $\beta<\alpha$ for each $i\geq4$),  and note that the translation of a sentence of TST(U) with language augmented with these ordinal constants into terms of a strictly increasing sequence of types in TTT(U) is straightforward, and we allow use of these constants in the comprehension axiom of TTT(U) as usual.  We further include the Hilbert symbol in our language, with the same restriction stated above that the Hilbert symbol may not appear in instances of comprehension, noting our intention to construct a term model.
 
-We consider partitions of $[\lambda]^n$ determined not by a finite set $\Sigma$ of sentences of the language of TST(U) using types $<n$ with compartments determined by truth values assigned to the elements of $\Sigma$, but  determined by  the set $\Sigma_n$ of {\em all\/} Hilbert symbols of the form $(\epsilon \beta^i:\beta^i < \alpha^i \wedge \phi)$
+We consider partitions of $[\lambda]^n$  determined by  the set $\Sigma_n$ of {\em all\/} closed Hilbert symbols (``closed" meaning the symbol contains no parameters) of the form $(\epsilon \beta^i:\beta^i < \alpha^i \wedge \phi)$
 in the language of TST(U) augmented with Hilbert symbols and constants for the ordinals $\leq \alpha$ in each type which contains ordinals, using only types less than $n$, with the compartment in the partition containing $A \in [\lambda]^n$ determined by the ordinal values $<\alpha$ assigned to each of these terms in our model of TTT(U) when types $0-(n-1)$ are replaced by the types in $A$ in increasing order in each of the Hilbert symbols in $\Sigma_n$.
 
 There are no more than $|\alpha|$ such Hilbert symbols, and no more than $|\alpha|^{|\alpha|}$ compartments in each of these partitions.
@@ -394,9 +402,9 @@ We claim that we can construct a complete assignment of values to such Hilbert s
 
 Further, it will be clear that the model of NFU will contain no ordinal less than what it calls $\alpha$ other than the ordinals which it calls $\beta$ for $\beta<\alpha$ in the metatheory, and the natural well-ordering on these ordinals is realized in the model of NF(U) and corresponds to a well-ordering of order type $\alpha$ in the metatheory.  The reason for this is that the model of NFU is a term model, and any term denoting an ordinal less than $\alpha$ can be slightly modified to the exact form used in defining the partitions, and the process will assign that term a concrete value less than $\alpha$, an actual ordinal $\beta<\alpha$ of the metatheory, so the order on the ordinals $<\alpha$ in the model of NF(U) has order type $\alpha$ in the metatheory.
 
-The Erd\"os-Rado partition theorem tells us that for any fixed $n$, there are arbitrarily large homogeneous sets
-for our partition of $[\lambda]^n$ determined by values of Hilbert symbols in $\Sigma_n$.  For any cardinal $\mu<\lambda$,
-the Erd\"os-Rado theorem tells us directly that the partition of $\exp^n(\mu)<\lambda$ defined in the way indicated above
+The Erd\H{o}s-Rado partition theorem tells us that for any fixed $n$, there are arbitrarily large homogeneous sets
+for our partition of $[\lambda]^n$.  For any cardinal $\mu<\lambda$,
+the Erd\H{o}s-Rado theorem tells us directly that the partition of $\exp^n(\mu)<\lambda$ defined in the way indicated above
 has a homogeneous set of size $\mu^+$, and $\lambda$ is a limit cardinal, so the choice of $\mu$ is unbounded below $\lambda$.
 
 Further, because the cofinality of $\lambda$ is greater than $|\alpha|^{|\alpha|}$,
@@ -526,7 +534,7 @@ $(x,y,z)$ as $(\{\{x\}\},(y,z))$.   More generally, we define $(x_1,\ldots,x_n)$
 
 
 
-\item[definition:]  For any set $R$, we define $R^{-1}$ as the intersection of $V \times V$ with a set introduced by the previous axiom:  $$(\forall zw:(z,w)\in R^{-1} \leftrightarrow (w,z) \in R) \wedge (\forall u:u \in R^{-1} \leftrightarrow (\exists zw:(z,w)=u)).$$
+\item[definition:]  For any set $R$, we define $R^{-1}$ as the intersection of $V \times V$ with a set introduced by the previous axiom:  $$(\forall zw:(z,w)\in R^{-1} \leftrightarrow (w,z) \in R) \wedge (\forall u:u \in R^{-1} \rightarrow (\exists zw:(z,w)=u)).$$
 
 \item[definition:]  We define $x \times V$ as $(V \times x)^{-1}$ and $x \times y$ as $(x \times V) \cap (V \times y)$.
 
@@ -536,7 +544,7 @@ Note that $\iota^2``V$ is the equality relation.  Define $\iota^{2(n+1)}``x$ as 
 
 We define $x_1 \times x_2 \ldots \times x_n$ as $\iota^{2(n-2)}``x \times (x_2 \times \ldots \times x_n)$.
 
-We define $V^1$ as $V$ and $V^{n+1}$ as $\iota^{2(n-2)}``V\times V^n$, for each concrete $n$.  $V^n$ is the set of all $n$-tuples.
+We define $V^1$ as $V$ and $V^{n+1}$ as $\iota^{2(n-1)}``V\times V^n$, for each concrete $n$.  $V^n$ is the set of all $n$-tuples.
 
 \item[singleton image axiom:]  $(\forall x:(\exists y:(\forall zw:(\{z\},\{w\}) \in y \leftrightarrow (z,w) \in x)))$.
 \item[definition:]  We define $R^{\iota}$ for any set $R$ as the intersection of a set provided by the previous axiom with $1 \times 1$.  $R^{\iota}$ is the set whose members are exactly the ordered pairs $(\{z\},\{w\})$ such that $(z,w)\in R$.  Let $R^{\iota^1}$ be defined as $R^{\iota}$ and $R^{\iota^{n+1}}$ be defined as $(R^{\iota^n})^\iota$.
@@ -557,7 +565,7 @@ We define $I_3(R)$ as the intersection of a set provided by the previous axiom w
 to an $n$-tuple.  Then define $I^1_{1,n}(R)$ as $I_{1,n}(R)$ and define $I^{m+1}_{1,n}(R)$ as $I_{1,n+m}(I^m_{1,n}(R))$:  this takes
 into account the fact that the tuples get longer.   The intention here is that $I^m_{1,n}$ represents the result of applying the insertion one operation to an $n$-ary relation $m$ times, yielding an $(n+m)$-ary relation.
 
-Define $I_{2,n}(R)$ and $I^1_{2,n}(R)$ as $I_2(R) \cap V^{n+1}$ [one effect of the intersection with $V^{n+1}$ is to restrict second projections of tuples in $R$  to appropriately iterated singletons], and define $I^{m+1}_{2,n}(R)$ as $I_{2
+Define $I_{2,n}(R)$ and $I^1_{2,n}(R)$ as $I_2(R) \cap V^{n+1}$ [one effect of the intersection with $V^{n+1}$ is to restrict second projections of tuples in $I_2(R)$  to appropriately iterated singletons], and define $I^{m+1}_{2,n}(R)$ as $I_{2
 ,n+m}(I^m_{2,n}(R))$:   this takes
 into account the fact that the tuples get longer.  The intention here is that $I^m_{2,n}$ represents the result of applying the insertion two operation to an $n$-ary relation $m$ times, yielding an $(n+m)$-ary relation.
 
@@ -714,8 +722,7 @@ It should be clear that as long as $M$ satisfies the condition that an element o
 Some advantages of this framework are that the membership relations in TTT are interpreted as subrelations of the membership relation of the metatheory, while the types are sensibly disjoint.
 
 \begin{remark}
-Notice that if $\alpha>_\tau \beta$ are supertypes
-, and $x \in \tau^*_\alpha$, $x \cap \tau^*_\beta$ is the extension of $x$ over supertype $\beta$.  This will be inherited by a scheme of types $\tau_\gamma$ with each $\tau_\gamma \subseteq \tau^*_\gamma$ if an additional condition holds:  for $\alpha>_\tau\beta$, we will have
+Notice that if $\alpha>_\tau \beta$ are supertypes, and $x \in \tau^*_\alpha$, $x \cap \tau^*_\beta$ is the extension of $x$ over supertype $\beta$.  This will be inherited by a scheme of types $\tau_\gamma$ with each $\tau_\gamma \subseteq \tau^*_\gamma$ if an additional condition holds:  for $\alpha>_\tau\beta$, we will have
 for $x \in \tau_\alpha$ that $x \cap \tau^*_\beta$ is the extension of $x$ over supertype $\beta$ as already noted:  for it to be the extension over type $\beta$ we need the general condition $x \cap \tau^*_\gamma \subseteq \tau_\gamma$ for all $\delta>\gamma$ and $x \in \tau_\delta$.
 \end{remark}
 
@@ -1277,7 +1284,7 @@ If $S$ is a support for $x$, then $S^{\uparrow \alpha}$ satisfies the hypothesis
 
 \begin{corollary}[$\kappa$-completeness of the structure]
 Let $\beta \in \alpha$.
-For any small subset $X$ of type $\alpha$, there is a model element $y \in \tau_\alpha$ such that $y \cap \tau_\beta = \bigcup_{x \in X} x \cap \tau_\beta$.
+For any small subset $X$ of type $\alpha$, there is a model element $y \in \tau_\alpha$ such that $$y \cap \tau_\beta = \bigcup_{x \in X} x \cap \tau_\beta.$$
 \end{corollary}
 \begin{proof}
 Let $S$ be a support whose range is obtained from the unions of ranges of supports for each $x \in X$.
@@ -1447,7 +1454,7 @@ for $-1 \leq \gamma<{\tt min}(A_2)$.
   \end{enumerate}
 \end{definition}
 \begin{remark}\label{rk:power_deriv_coherent}
-  If $\psi$ is coherent, then $\psi^n$ is coherent for any integer $n$, and $\psi_\gamma$ is coherent for any $\gamma < \beta$.
+  If $\psi$ is coherent, then $\psi^n$ is coherent for any integer $n$, and $\psi_\epsilon$ is coherent for any $\epsilon < \beta$.
   Every $-1$-approximation is coherent.
 \end{remark}
 \begin{definition}[approximate]
