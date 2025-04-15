@@ -93,6 +93,8 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should in our view (at least in the view of the first author) avoid metamathematics as far as possible, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
 
+\item[4/15/2025:]  Revisions by Sky for the meeting of this date, reviewed in the meeting and found satisfactory.
+
 \item[4/2/2025:]  Some revisions carried out at for before the meeting on this date.
 
 \item[3/31/2025:]  Some revisions carried out:  in the middle of another complete review of the paper before submission.
@@ -935,7 +937,7 @@ $L$ is the unique litter such that
 $a \in L$, to create
 $\iota_1$.
 
- Finally, use lemma \ref{lem:position_generator} again, with $X$ taken to the collection of all near-litters, setting
+ Finally, use lemma \ref{lem:position_generator} again, with $X$ taken to be the collection of all near-litters, setting
 
  $$f(N) = \{
 \nu :
@@ -1094,7 +1096,7 @@ but also that $\iota_*(N) < \iota_*(M)$, which is absurd.
 We say that an element of a type is {\em extensional\/} iff
 it is pre-extensional and its distinguished extension has an even number of iterated images under $A^{-1}$.
 This implies that each of its other extensions has an odd number of iterated images under $A^{-1}$.\footnote{We do know that we are carefully, explicitly, spelling out a construction which looks very much
-like the construction of the bijection in the Cantor-Schr\"oder-Bernstein theorem.  But the details of the maps involved are used, so everything must be spelled out.}
+like the construction of the bijection in the Cantor--Schr\"oder--Bernstein theorem.  But the details of the maps involved are used, so everything must be spelled out.}
 \end{definition}
 
 \begin{proposition}[extensionality]\label{prop:extensionality}
@@ -1195,7 +1197,7 @@ An element $x$ of $\tau^*_\beta$ {\em has $\beta$-support $S$\/} iff for every $
 It is straightforward to observe that there are $\mu$ $\beta$-supports for $\beta\leq \alpha$:  there are $\mu$ atoms, $\mu$ near-litters, and
 $<\mu$ finite subsets of $\beta +1<\lambda \leq \mu$ (all type indices involved in a $\beta$-support are $\leq \beta$);  thus the set of $\beta$-support conditions (which we will call {\tt SC} for the moment) is of size $\mu$;
 note that the set $\kappa \times {\tt SC}$ is of cardinality $\mu$ and each $\beta$-support is a small subset of  $\kappa \times {\tt SC}$, and so, as we have already seen than sets of size $\mu$ have $\mu$ small subsets, it follows that there are no more than $\mu$ $\beta$-supports.
-Thus $\tau_\beta^+$ is already known to be of size $\mu$ for $\beta<\alpha$.
+Thus $\tau_\beta^+$ is already known to be of size $\mu$ for $\beta< \alpha$.
 
 \end{remark}
 
@@ -1217,7 +1219,7 @@ but must also have its $\delta$-extension equal to $$\{N_\delta:\exists S:N \sim
 Allowable permutations map extensional elements of supertypes to extensional elements.
 \end{proposition}
 \begin{proof}
-{Recall that} we defined $A_\delta(a)$ {in definition \ref{def:a_map}} as $$\{N_\delta:(\exists x \in a:(\exists S:N \sim f_{\gamma,\delta}(a,S)))\}.$$
+{Recall that} for nonempty  $a\subseteq\tau_\gamma$ we defined $A_\delta(a)$ {in definition \ref{def:a_map}} as $$\{N_\delta:(\exists x \in a:(\exists S:N \sim f_{\gamma,\delta}(a,S)))\}.$$
 
 If $\pi$ is allowable of suitable index, $\pi_\delta``A_\delta(a)= A_\delta(\pi_\gamma``a)$ follows from the coherence condition.  Verify this:
 
@@ -1306,7 +1308,7 @@ For any subset $X$ with cardinality $<\kappa$ of a type $\gamma$ and $\beta>\gam
 
 {
 \begin{proposition}[position functions]
-Given that $\tau_\beta^+$ has size $\mu$ \ihref{ih:cardinality}, there exist a choice of functions $\iota^+_\beta$
+Given that $\tau_\beta^+$ has size $\mu$ \ihref{ih:cardinality}, there exist a choice of injections $\iota^+_\beta$
 enforcing \ihref{ih:position}, \ihref{ih:pos_typed_near_litter}, \ihref{ih:position_constraints}.
 More precisely,
 
@@ -1368,6 +1370,11 @@ At this point we have a complete description of the structure which we claim is 
 
 \subsection{The Freedom of Action theorem}\label{ss:foa}
 
+In this section, we will prove a theorem that gives us a way to construct allowable permutations (theorem \ref{thm:foa}).
+To do this, we will define a certain class of objects for each type, called {\em approximations\/}, that behave like partial structural permutations.
+We will say that an approximation is called {\em coherent\/} if it satisfies a particular version of the coherence condition on allowable permutations (definition \ref{def:allowable_permutation}).
+We will then show that every coherent approximation can be identified with the restriction of some allowable permutation.
+
 \begin{definition}[$-1$-approximation]\label{def:base_approx}
   A {\em $-1$-approximation\/} is a function $\psi$ such that:
   \begin{enumerate}
@@ -1409,17 +1416,17 @@ From now on, we avoid using the action of $\psi$ directly where possible, and in
   If $\psi \preceq_{-1} \chi$, we may call $\chi$ an {\em extension\/} of $\psi$.
   Note that if $\psi \preceq_{-1} \chi$, then $\psi^* \subseteq \chi^*$.
 \end{definition}
-\begin{lemma}[adding orbits]\label{lem:add_orbits}
-  Let $\psi$ be a $-1$-approximation, and let $(L_n)_{n \in \mathbb Z}$ be litters such that $$\{ \langle L_n, L_{n+1} \rangle : n \in \mathbb Z \}$$ is a bijection, and $\psi^*$ is not defined at any of the $L_n$.
-  Then $\psi$ has an extension $\chi$ where $\chi^* `` L_n \sim L_{n+1}$ for each $n$, and all near-litters contained  in the domain of  $\chi^*$ but not contained in the domain of $\psi^*$ are near some $L_n$.
-\end{lemma}
-\begin{proof}
-  Define
-  $$ \chi = \psi \cup \{ \langle L_n, L_{n+1} \rangle : n \in \mathbb Z \}; $$
-  it is easy to verify all of the required conditions.
-\end{proof}
-It is not necessary that all of the $L_n$ be distinct.
-This lemma therefore allows us to add single orbits of litters of any order to $-1$-approximations.
+% \begin{lemma}[adding orbits]\label{lem:add_orbits}
+%   Let $\psi$ be a $-1$-approximation, and let $(L_n)_{n \in \mathbb Z}$ be litters such that $$\{ \langle L_n, L_{n+1} \rangle : n \in \mathbb Z \}$$ is a bijection, and $\psi^*$ is not defined at any of the $L_n$.
+%   Then $\psi$ has an extension $\chi$ where $\chi^* `` L_n \sim L_{n+1}$ for each $n$, and all near-litters contained  in the domain of  $\chi^*$ but not contained in the domain of $\psi^*$ are near some $L_n$.
+% \end{lemma}
+% \begin{proof}
+%   Define
+%   $$ \chi = \psi \cup \{ \langle L_n, L_{n+1} \rangle : n \in \mathbb Z \}; $$
+%   it is easy to verify all of the required conditions.
+% \end{proof}
+% It is not necessary that all of the $L_n$ be distinct.
+% This lemma therefore allows us to add single orbits of litters of any order to $-1$-approximations.
 \begin{definition}[approximation, in general]\label{def:approx}
   If $-1 < \beta$, a $\beta$-approximation is defined as a function with $\{-1\} \cup \beta$ as domain such that $\psi(\gamma)$ is a $\gamma$-approximation for each $\gamma$ in the domain.  We write $\psi_\gamma$ instead of $\psi(\gamma)$.
 
@@ -1449,8 +1456,12 @@ for $-1 \leq \gamma<{\tt min}(A_2)$.
     \item If $A$ is an extended type index with maximum $\beta$ and ${\tt min}(A_1) = \gamma < \beta$, and $\delta < {\tt min}(A_2)$ and $(x, S) \in \tau_\delta^+$ are such that $f_{\delta,\gamma}(x, S) \subseteq {\tt dom}(\psi_A^*)$, then there is some $\delta$-allowable permutation $\pi$ such that
     $$ (\psi_{A_2})_\delta^*[S] = \pi[S] $$
     and additionally that
-    $$ \psi_A^* `` f_{\delta,\gamma}(x, S) \sim f_{\delta,\gamma}(\pi(x), \pi[S]) $$
-    (and hence all $\delta$-allowable permutations $\pi$ satisfying the given hypotheses also satisfy the stated coherence condition).
+    $$ \psi_A^* `` f_{\delta,\gamma}(x, S) \sim f_{\delta,\gamma}(\pi(x), \pi[S]). $$
+    Note that in this case, if $\pi'$ is any other $\delta$-allowable permutation satisfying
+    $$ (\psi_{A_2})_\delta^*[S] = \pi'[S] $$
+    then we can conclude
+    $$ \psi_A^* `` f_{\delta,\gamma}(x, S) \sim f_{\delta,\gamma}(\pi'(x), \pi'[S]) $$
+    as $\pi$ and $\pi'$ have actions that coincide on $S$ and therefore at $x$.
   \end{enumerate}
 \end{definition}
 \begin{remark}\label{rk:power_deriv_coherent}
@@ -1509,10 +1520,13 @@ for $-1 \leq \gamma<{\tt min}(A_2)$.
   $$ f_{\delta,\gamma}(x, S) \subseteq {\tt dom}(\psi_A^*).$$
   So we do not need to extend $\psi$; we are already done.
 
-  Otherwise, we can use lemma \ref{lem:add_orbits} to extend $\psi$ to an approximation $\chi$ in which
+  Otherwise, we can extend $\psi$ to an approximation $\chi$ given by
+  \[ \chi_A = \psi_A \cup \{ \langle f_{\delta,\gamma}(\pi^n(x), \pi^n[S]), f_{\delta,\gamma}(\pi^{n+1}(x), \pi^{n+1}[S]) \rangle : n \in \mathbb Z \} \]
+  and \( \chi_B = \psi_B \) for all \( B \neq A \).
+  It is easy to see that \( \chi \) is an extension of \( \psi \), and
   $$ \chi_A^* `` f_{\delta,\gamma}(\pi^n(x), \pi^n[S]) \sim f_{\delta,\gamma}(\pi^{n+1}(x), \pi^{n+1}[S]) $$
   for each integer $n$.
-  It is easy to check that this $\chi$ is coherent.
+  Finally, we must check that this $\chi$ is coherent, but this holds by construction.
 \end{proof}
 \begin{theorem}[Freedom of Action]\label{thm:foa}
   Freedom of action holds at all type indices $\beta \leq \alpha$.\footnote{It should be noted that the second author has entirely reorganized and rewritten this proof, and indeed the entire section on Freedom of Action.  The underlying mathematics is the same but the presentation is much cleaner.}
@@ -1524,7 +1538,7 @@ for $-1 \leq \gamma<{\tt min}(A_2)$.
   Suppose that $\chi_A^*$ is not defined on all litters for some $A$.
   Let $L$ be the litter with minimal position $\iota_*(L)$ such that there is
   an extended type index $A$
-  with maximum element $\beta$ such that $L \nsubseteq {\tt dom}(\psi_A^*)$.
+  with maximum element $\beta$ such that $L \nsubseteq {\tt dom}(\chi_A^*)$.
 
   Suppose that $L$ is $A$-flexible.
   By lemma \ref{lem:foa_flexible}, $\chi$ admits a coherent extension $\varphi$ such that $L \subseteq {\tt dom}(\varphi_A^*)$.
@@ -1534,15 +1548,15 @@ for $-1 \leq \gamma<{\tt min}(A_2)$.
   Writing $\gamma$ for the minimum element of $A$, there are $\delta < {\tt min}(A_1)$ and $(x, S) \in \tau_\delta^*$ such that $L = f_{\delta,\gamma}(x, S)$.
 
 
-  We claim that $(\psi_{A_2})_\delta^*[S]$ is defined; this will then give a contradiction by lemma \ref{lem:foa_inflexible}.
-  To show this, we must prove that if $(t, B) \in {\tt rng}(S)$, then $\psi_A^*``t$ is defined.
+  We claim that $(\chi_{A_2})_\delta^*[S]$ is defined; this will then give a contradiction by lemma \ref{lem:foa_inflexible}.
+  To show this, we must prove that if $(t, B) \in {\tt rng}(S)$, then $\chi_A^*``t$ is defined.
   By definition \ref{def:f_map}, we have $\iota_*^+(x, S) < \iota_*(L)$, and by \ihref{ih:position_constraints}, $\iota_*(t) \leq \iota_*^+(x, S)$.
-  If $t$ is a near litter or singleton of an atom and $t \subset M$ for a litter $M$, then by definition \ref{def:pos_atom_near_litter}, we obtain $\iota_*(M) < \iota_*(t)$, and therefore that $\psi_B^*``t$ is defined by minimality of the position of $L$.
-  Alternatively, if $t$ is a near-litter, then if $M$ is any litter such that $M \cap t \neq \emptyset$, definition \ref{def:pos_atom_near_litter} again implies that $\iota_*(M) < \iota_*(t)$, so $\psi_B^*``M$ is defined.
-  Combining all such litters, we conclude that $\psi_B^*``t$ is defined.
+  If $t$ is a singleton of an atom and $t \subset M$ for a litter $M$, then by definition \ref{def:pos_atom_near_litter}, we obtain $\iota_*(M) < \iota_*(t)$, and therefore that $\chi_B^*``t$ is defined by minimality of the position of $L$.
+  Alternatively, if $t$ is a near-litter, then if $M$ is any litter such that $M \cap t \neq \emptyset$, definition \ref{def:pos_atom_near_litter} again implies that $\iota_*(M) \leq \iota_*(t)$, so $\chi_B^*``M$ is defined.
+  Combining all such litters, we conclude that $\chi_B^*``t$ is defined.
 
   Therefore $\chi_A^*$ must be defined on all litters for all $A$.
-  By remark \ref{rk:foa_suffices}, this concludes the proof: $\psi$ approximates the allowable permutation $\pi$ given by $\pi_A^* = \chi_A^*$.
+  By remark \ref{rk:foa_suffices}, this concludes the proof: $\psi$ approximates the allowable permutation $\pi$ given by $\pi_A = \chi_A^*$.
 \end{proof}
 \begin{remark}
   The use of Zorn's lemma in the previous proof is merely a technical convenience.
