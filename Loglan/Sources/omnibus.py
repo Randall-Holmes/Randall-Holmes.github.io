@@ -1720,17 +1720,17 @@ L("Badvoice <- ((Cvoiced (Cunvoiced/[Hh]))/(Cunvoiced (Cvoiced/[Hh])))")
 
 L("Letter <- (![qwxQWX] [a-zA-Z])")
 
-L("Lowercase <- (![qwx] [a-z])")
-
-L("Uppercase <- (![QWX] [A-Z])")
-
-L("caprule <- ([\"(]? &(([z] Vo1 (!Uppercase/&TAI0))/(Lowercase TAI0 (!Uppercase/&TAI0))/(!(Lowercase Uppercase) .)) Letter (&(([z] Vo1 (!Uppercase/&TAI0))/(Lowercase TAI0 (!Uppercase/&TAI0))/(!(Lowercase Uppercase) .)) (Letter/Juncture))* !(Letter/Juncture))")
-
 L("Stress2 <- [\'*]")
 
 L("Juncture <- ((([-] &Letter)/Stress2) !Juncture)")
 
 L("Stress <- ([\'*] !Juncture)")
+
+L("Lowercase <- (![qwx] [a-z])")
+
+L("Uppercase <- (![QWX] [A-Z])")
+
+L("caprule <- ([\"(]? &(([z] Vo1 (!Uppercase/&TAI0))/(Lowercase TAI0 (!Uppercase/&TAI0))/(!(Lowercase Uppercase) .)) Letter (&(([z] Vo1 (!Uppercase/&TAI0))/(Lowercase TAI0 (!Uppercase/&TAI0))/(!(Lowercase Uppercase) .)) (Letter/Juncture))* !(Letter/Juncture))")
 
 L("Terminal <- [.:?!;#]")
 
@@ -1808,15 +1808,11 @@ L("StressedSyllable <- ((SyllableA/SyllableB) Stress2)")
 
 L("NameEndSyllable <- (InitialConsonants? (Syllabic/(Vocalic &FinalConsonant)) FinalConsonant? FinalConsonant? Stress? !spnopause !Letter)")
 
-L("Maybepause <- (Vo1 Stress2? sp2 Co1)")
-
 L("Explicitpause <- ((Co1 Stress2? sp2 &Letter)/(Letter Stress2? sp2 &Vo1)/(Letter Stress2? [,] sp2 &Letter))")
 
 L("MaybePauseSyllable <- (InitialConsonants? Vocalic Stress2? &(sp2 &Co1))")
 
 L("PRENAME <- ((Syllable &Syllable)* NameEndSyllable)")
-
-L("BadPreName <- (((MaybePauseSyllable sp)/(Syllable &Syllable))* NameEndSyllable)")
 
 L("LAname <- ([Ll] [Aa])")
 
@@ -2404,9 +2400,7 @@ L("POSHORT <- (sp? POSHORT1)")
 
 L("DIE <- (sp? ((d ie)/(f ie)/(k ae)/(n ue)/(r ie)))")
 
-L("HOI <- (sp? (h oi))")
-
-L("HOIOLD <- (sp? ((h oi)/(l oi)/(l oa)/(s ia)/(s ie)/(s iu)))")
+L("HOI <- (sp? h oi)")
 
 L("JO <- (sp? (NI0/RA0/SA0)? (j o))")
 
@@ -2480,9 +2474,7 @@ L("gap <- (OptPause? GU freemod?)")
 
 L("HOI0 <- ((sp? (([Hh] oi)/([Ll] oi)/([Ll] oa)/([Ss] ia)/([Ss] ie)/([Ss] iu))) Juncture? !Vo1)")
 
-L("HOI1 <- (sp? [Hh] oi Juncture? !Vo1)")
-
-L("voc <- ((HOI0 Comma2? name)/(HOI Comma2? descpred guea? namesuffix?)/(HOI Comma2? argument1 guua?)/(sp? &([Hh] [Oo] [Ii] Juncture?) AlienWord))")
+L("voc <- (((HOI/(HOI0 !(sp? FalseMarked))) Comma2? name)/(HOI Comma2? descpred guea? namesuffix?)/(HOI Comma2? argument1 guua?)/(sp? &([Hh] [Oo] [Ii] Juncture?) AlienWord))")
 
 L("HUE0 <- (sp? &caprule [Hh] [Uu] Juncture? [Ee] Juncture? !Vo1)")
 

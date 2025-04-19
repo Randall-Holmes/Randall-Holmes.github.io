@@ -1,0 +1,994 @@
+sp <- ([ ]+/([~`] &Co1))
+
+sp2 <- [ ]+
+
+spnopause <- ([~`] &Co1)
+
+Vo1 <- [aeiouyAEIOUY]
+
+Vo2 <- [aeiouAEIOU]
+
+Co1 <- [bcdfghjklmnprstvzBCDFGHJKLMNPRSTVZ]
+
+Cvoiced <- [bdgjvzBDGJVZ]
+
+Cunvoiced <- [ptkcfsPTKCFS]
+
+Badvoice <- ((Cvoiced (Cunvoiced/[Hh]))/(Cunvoiced (Cvoiced/[Hh])))
+
+Letter <- (![qwxQWX] [a-zA-Z])
+
+Stress2 <- [\'*]
+
+Juncture <- ((([-] &Letter)/Stress2) !Juncture)
+
+Stress <- ([\'*] !Juncture)
+
+Lowercase <- (![qwx] [a-z])
+
+Uppercase <- (![QWX] [A-Z])
+
+caprule <- ([\"(]? &(([z] Vo1 (!Uppercase/&TAI0))/(Lowercase TAI0 (!Uppercase/&TAI0))/(!(Lowercase Uppercase) .)) Letter (&(([z] Vo1 (!Uppercase/&TAI0))/(Lowercase TAI0 (!Uppercase/&TAI0))/(!(Lowercase Uppercase) .)) (Letter/Juncture))* !(Letter/Juncture))
+
+Terminal <- [.:?!;#]
+
+Character <- (Letter/Juncture)
+
+Comma0 <- ([,]? sp2)
+
+AlienText <- ((Comma0 [\"] (![\"] .)+ [\"])/(Comma0 (!Comma0 !Terminal .)+ (Comma0 [Yy] Comma0 (!Comma0 !Terminal .)+)*))
+
+HOIalien <- ([Hh] [Oo] [Ii])
+
+HUEalien <- ([Hh] [Uu] Juncture? [Ee])
+
+LIEalien <- ([Ll] [Ii] Juncture? [Ee])
+
+LAOalien <- ([Ll] [Aa] [Oo])
+
+LIOalien <- ([Ll] [Ii] Juncture? [Oo])
+
+SAOalien <- ([Ss] [Aa] [Oo])
+
+SUEalien <- ([Ss] [Uu] Juncture? [Ee])
+
+AlienWord <- (&caprule ((HOIalien Juncture? &(Comma0 [\"]))/(HUEalien Juncture? &(Comma0 [\"]))/(LIEalien Juncture?)/(LAOalien Juncture?)/(LIOalien Juncture?)/(SAOalien Juncture?)/(SUEalien Juncture?)) AlienText)
+
+Alienmarker <- ((([Hh] [Oo] [Ii] Juncture? &[\"])/([Hh] [Uu] Juncture? [Ee] Juncture? &(Comma0 [\"]))/([Ll] [Ii] Juncture? [Ee] Juncture?)/([Ll] [Aa] [Oo] Juncture?)/([Ll] [Ii] Juncture? [Oo] Juncture?)/([Ss] [Aa] [Oo] Juncture?)/([Ss] [Uu] Juncture? [Ee] Juncture?)) !Vo1)
+
+Continuant <- [mnlrMNLR]
+
+Syllabic <- (([mM] [mM] !(Juncture? [mM]))/([nN] [nN] !(Juncture? [nN]))/([rR] [rR] !(Juncture? [rR]))/([lL] [lL] !(Juncture? [lL])))
+
+MustMono <- (([aeoAEO] [iI] ![iI])/([aA] [oO]))
+
+BrokenMono <- (([aeoAEO] Juncture [iI] ![iI])/([aA] Juncture [oO]))
+
+Mono <- (MustMono/([iI] !([uU] [uU]) Vo2)/([uU] !([iI] [iI]) Vo2))
+
+Vv <- (!(!MustMono Vo2 Juncture? Vo2 Juncture? [Rr] [Rr]) (!BrokenMono Vo2 Juncture? Vo2))
+
+NextVowels <- (MustMono/(Vo2 &MustMono)/Mono/(!([Ii] Juncture [Ii] Vo1) !([Uu] Juncture [Uu] Vo1) Vo2))
+
+DoubleVowel <- (([aA] Juncture? [aA])/([eE] Juncture? [eE])/([oO] Juncture? [oO])/([iI] Juncture [iI])/([uU] Juncture [uU])/([iI] [Ii] &[iI])/([Uu] [uU] &[uU]))
+
+Vocalic <- (NextVowels/Syllabic/[Yy])
+
+Initial <- (([Bb] [Ll])/([Bb] [Rr])/([Cc] [Kk])/([Cc] [Ll])/([Cc] [Mm])/([Cc] [Nn])/([Cc] [Pp])/([Cc] [Rr])/([Cc] [Tt])/([Dd] [Jj])/([Dd] [Rr])/([Dd] [Zz])/([Ff] [Ll])/([Ff] [Rr])/([Gg] [Ll])/([Gg] [Rr])/([Jj] [Mm])/([Kk] [Ll])/([Kk] [Rr])/([Mm] [Rr])/([Pp] [Ll])/([Pp] [Rr])/([Ss] [Kk])/([Ss] [Ll])/([Ss] [Mm])/([Ss] [Nn])/([Ss] [Pp])/([Ss] [Rr])/([Ss] [Tt])/([Ss] [Vv])/([Tt] [Cc])/([Tt] [Rr])/([Tt] [Ss])/([Vv] [Ll])/([Vv] [Rr])/([Zz] [Bb])/([Zz] [Ll])/([Zz] [Vv]))
+
+MaybeInitial <- (([Bb] Juncture? [Ll])/([Bb] Juncture? [Rr])/([Cc] Juncture? [Kk])/([Cc] Juncture? [Ll])/([Cc] Juncture? [Mm])/([Cc] Juncture? [Nn])/([Cc] Juncture? [Pp])/([Cc] Juncture? [Rr])/([Cc] Juncture? [Tt])/([Dd] Juncture? [Jj])/([Dd] Juncture? [Rr])/([Dd] Juncture? [Zz])/([Ff] Juncture? [Ll])/([Ff] Juncture? [Rr])/([Gg] Juncture? [Ll])/([Gg] Juncture? [Rr])/([Jj] Juncture? [Mm])/([Kk] Juncture? [Ll])/([Kk] Juncture? [Rr])/([Mm] Juncture? [Rr])/([Pp] Juncture? [Ll])/([Pp] Juncture? [Rr])/([Ss] Juncture? [Kk])/([Ss] Juncture? [Ll])/([Ss] Juncture? [Mm])/([Ss] Juncture? [Nn])/([Ss] Juncture? [Pp])/([Ss] Juncture? [Rr])/([Ss] Juncture? [Tt])/([Ss] Juncture? [Vv])/([Tt] Juncture? [Cc])/([Tt] Juncture? [Rr])/([Tt] Juncture? [Ss])/([Vv] Juncture? [Ll])/([Vv] Juncture? [Rr])/([Zz] Juncture? [Bb])/([Zz] Juncture? [Ll])/([Zz] Juncture? [Vv]))
+
+InitialConsonants <- ((!Syllabic Co1 &Vocalic)/(!(Co1 Syllabic) Initial &Vocalic)/(&Initial Co1 !(Co1 Syllabic) Initial !Syllabic &Vocalic))
+
+NoMedial2 <- (([Bb] Juncture? [Bb])/([Cc] Juncture? [Cc])/([Dd] Juncture? [Dd])/([Ff] Juncture? [Ff])/([Gg] Juncture? [Gg])/([Hh] Juncture? Co1)/([Jj] Juncture? [Jj])/([Kk] Juncture? [Kk])/([Ll] Juncture? [Ll])/([Mm] Juncture? [Mm])/([Nn] Juncture? [Nn])/([Pp] Juncture? [Pp])/([Rr] Juncture? [Rr])/([Ss] Juncture? [Ss])/([Tt] Juncture? [Tt])/([Vv] Juncture? [Vv])/([Zz] Juncture? [Zz])/([CJSZcjsz] Juncture? [CJSZcjsz])/([Ff] Juncture? [Vv])/([Kk] Juncture? [Gg])/([Pp] Juncture? [Bb])/([Tt] Juncture? [Dd])/([FKPTfkpt] Juncture? [JZjz])/([Bb] Juncture? [Jj])/([Ss] Juncture? [Bb]))
+
+NoMedial3 <- (([Cc] Juncture? [Dd] Juncture? [Zz])/([Cc] Juncture? [Vv] Juncture? [Ll])/([Nn] Juncture? [Dd] Juncture? [Jj])/([Nn] Juncture? [Dd] Juncture? [Zz])/([Dd] Juncture? [Cc] Juncture? [Mm])/([Dd] Juncture? [Cc] Juncture? [Tt])/([Dd] Juncture? [Tt] Juncture? [Ss])/([Pp] Juncture? [Dd] Juncture? [Zz])/([Gg] Juncture? [Tt] Juncture? [Ss])/([Gg] Juncture? [Zz] Juncture? [Bb])/([Ss] Juncture? [Vv] Juncture? [Ll])/([Jj] Juncture? [Dd] Juncture? [Jj])/([Jj] Juncture? [Tt] Juncture? [Cc])/([Jj] Juncture? [Tt] Juncture? [Ss])/([Jj] Juncture? [Vv] Juncture? [Rr])/([Tt] Juncture? [Vv] Juncture? [Ll])/([Kk] Juncture? [Dd] Juncture? [Zz])/([Vv] Juncture? [Tt] Juncture? [Ss])/([Mm] Juncture? [Zz] Juncture? [Bb]))
+
+SyllableA <- (Co1 Vo2 FinalConsonant (!Syllable FinalConsonant)?)
+
+SyllableB <- (InitialConsonants? Vocalic (!Syllable FinalConsonant)? (!Syllable FinalConsonant)?)
+
+Syllable <- ((SyllableA/SyllableB) Juncture?)
+
+FinalConsonant <- (!Syllabic !(&Badvoice Co1 !Syllable) (!(!Continuant Co1 !Syllable Continuant) !NoMedial2 !NoMedial3 Co1 !(Juncture? (Vo2/Syllabic))))
+
+SyllableD <- (&(InitialConsonants? ([Yy]/DoubleVowel/BrokenMono/(&Mono Vo2 DoubleVowel)/(!MustMono &Mono Vo2 BrokenMono))) Syllable)
+
+BorrowingSyllable <- (!Syllabic !SyllableD Syllable)
+
+VowelFinal <- (InitialConsonants? Vocalic Juncture? !Vo2)
+
+SyllableC <- (&(InitialConsonants? Syllabic) Syllable)
+
+SyllableY <- (&(InitialConsonants? [Yy]) Syllable)
+
+StressedSyllable <- ((SyllableA/SyllableB) Stress2)
+
+NameEndSyllable <- (InitialConsonants? (Syllabic/(Vocalic &FinalConsonant)) FinalConsonant? FinalConsonant? Stress? !spnopause !Letter)
+
+Explicitpause <- ((Co1 Stress2? sp2 &Letter)/(Letter Stress2? sp2 &Vo1)/(Letter Stress2? [,] sp2 &Letter))
+
+MaybePauseSyllable <- (InitialConsonants? Vocalic Stress2? &(sp2 &Co1))
+
+PRENAME <- ((Syllable &Syllable)* NameEndSyllable)
+
+LAname <- ([Ll] [Aa])
+
+HOIname <- ([Hh] [Oo] [Ii])
+
+CIname <- ([Cc] [Ii])
+
+LIUname <- ([Ll] [Ii] Juncture? [Uu])
+
+MUEname <- ([Mm] [Uu] Juncture? [Ee])
+
+GAOname <- ([Gg] [Aa] [Oo])
+
+HUEname <- ([Hh] [Uu] Juncture? [Ee])
+
+LAname2 <- ([Ll] !Explicitpause [Aa])
+
+HOIname2 <- ([Hh] [Oo] !Explicitpause [Ii])
+
+LIUname2 <- ([Ll] [Ii] Juncture? !Explicitpause [Uu])
+
+MUEname2 <- ([Mm] [Uu] Juncture? !Explicitpause [Ee])
+
+GAOname2 <- ([Gg] [Aa] !Explicitpause [Oo])
+
+HUEname2 <- ([Hh] [Uu] Juncture? !Explicitpause [Ee])
+
+MarkedName <- (&caprule ((LAname2 Juncture?)/(HOIname2 Juncture?)/(HUEname2 Juncture?)/(LIUname2 Juncture?)/(GAOname2 Juncture?)/(MUEname2 Juncture?)) sp? &Co1 &caprule PRENAME)
+
+FalseMarked <- (&PRENAME (!MarkedName Character)* MarkedName)
+
+Comma1 <- ([,] sp2)
+
+NAMEWORD <- (((&caprule MarkedName)/(Comma1 !FalseMarked &caprule PRENAME)/(&Vo1 !FalseMarked &caprule PRENAME)/(&caprule (((LAname Juncture?)/(HOIname Juncture?)/(HUEname Juncture?)/(CIname Juncture? &Comma0)/(LIUname Juncture?)/(MUEname Juncture?)/(GAOname Juncture?)) !Vo1 Comma0? &caprule PRENAME))) ((Comma0 !FalseMarked &caprule PRENAME)/(Comma0 &([Cc] [Ii]) NAMEWORD))* &((sp2? [Cc] [Ii] predunit)/(&(Comma1/Terminal/[\")]/!.) .)/!.))
+
+Namemarker <- ((([Ll] [Aa] Juncture?)/([Hh] [Oo] [Ii] Juncture?)/([Hh] [Uu] Juncture? [Ee] Juncture?)/([Cc] &(Explicitpause/([Ii] Juncture? sp2 PRENAME)) [Ii] Juncture?)/([Ll] [Ii] Juncture? [Uu] Juncture?)/([Gg] [Aa] [Oo] Juncture?)/([Mm] [Uu] Juncture? [Ee] Juncture?)) !Vo1)
+
+Badnamemarker <- (Namemarker !Vo1 Comma0? (Syllable &Syllable)* MaybePauseSyllable)
+
+Vthree <- ((Vo2 Juncture?) (Vo2 Juncture?) (Vo2 Juncture?))
+
+Vfour <- ((Vo2 Juncture?) (Vo2 Juncture?) (Vo2 Juncture?) (Vo2 Juncture?))
+
+Predstart1 <- (((&MaybeInitial Co1 Juncture? MaybeInitial)/MaybeInitial) &Vo2 !(Vo2 Stress !Mono Vo2) !(Vo2 Juncture? Vo2 !Character) !(Vo2 Juncture? !Character))
+
+Predstart2 <- (Co1 Vo2 Juncture? (Vo2 Juncture?)? !Predstart1 Co1 Juncture? Co1)
+
+Predstart3 <- (Co1 !Vthree (!StressedSyllable Vo2 Juncture?)? &StressedSyllable Vo2 Vo2? Juncture? Co1 Juncture? Co1)
+
+Predstart4 <- (Co1? Vo2 Juncture? (Vo2 Juncture?)? (Vo2 Juncture?)? !Predstart1 !(MaybeInitial Vo2) Co1 Juncture? Co1)
+
+Predstart5 <- (Co1? !Vfour (!StressedSyllable Vo2 Juncture?)? (!StressedSyllable Vo2 Juncture?)? &StressedSyllable Vo2 Vo2? Juncture? !(MaybeInitial Vo2) Co1 Juncture? Co1)
+
+Predstart6 <- (Co1 (Vo2 Juncture?) ((Vo2 Juncture? [Hh]?)/(Co1 Juncture? (Co1 Juncture?)?)) [Yy])
+
+Predstart <- (Predstart1/Predstart2/Predstart3/Predstart4/Predstart5/Predstart6)
+
+a <- ([Aa] !Badstress Juncture? !Vo1)
+
+e <- ([Ee] !Badstress Juncture? !Vo1)
+
+i <- ([Ii] !Badstress Juncture? !Vo1)
+
+o <- ([Oo] !Badstress Juncture? !Vo1)
+
+u <- ([Uu] !Badstress Juncture? !Vo1)
+
+Hearly <- (!Predstart [Hh])
+
+Nearly <- (!Predstart [Nn])
+
+Connective <- (sp? !Predstart ([Nn] [Oo] Juncture? !i)? (a/e/i/o/u/(Hearly a)/(Nearly uu)) Juncture? !Vo2 !(!Predstart [Ff] [Ii]) !(!Predstart [Mm] [Aa]) !(!Predstart [Zz] [Ii]))
+
+CmapuaUnit <- ((Co1 Mono Juncture? Vo2 !(Stress2 sp? &Co1 Predstart) Juncture? !Vo1)/(Co1 (Vv/([Ii] [Yy])/([Uu] [Yy])) !(Stress2 sp? &Co1 Predstart) Juncture? !Vo1)/(Co1 Vo2 !(Stress2 sp? &Co1 Predstart) Juncture? !Vo1))
+
+Likie <- (([Ll] [Ii] Juncture? !Vo1)/([Ki] [Ii] Juncture? [Ee] Juncture? !Vo1))
+
+Cmapua <- (&caprule !Badnamemarker ((!Predstart (Vv/([Ii] [Yy])/([Uu] [Yy])) !(Stress2 sp? &Co1 Predstart) Juncture? NOI0)/(!Predstart [Nn] [Oo] Juncture? !Predstart (Vv/([Ii] [Yy])/([Uu] [Yy])) !(Stress2 sp? &Co1 Predstart) Juncture?)/((!Predstart (Vv/([Ii] [Yy])/([Uu] [Yy])) !(Stress2 sp? &Co1 Predstart) Juncture?)+/(((!Predstart Vo1 !(Stress2 sp? &Co1 Predstart) Juncture?)/(!Predstart CmapuaUnit)) (!Namemarker !Alienmarker !Likie !Predstart CmapuaUnit)*))/(!Predstart Vo2 !(Stress2 sp? &Co1 Predstart) Juncture?)) !Vo1 !(Co1+ Juncture) !(sp? Connective))
+
+wy <- [Yy]
+
+ar <- [Rr]
+
+en <- [Nn]
+
+hh <- [Hh]
+
+Dash <- [-]
+
+Cvv <- (Co1 Vv ((Juncture? hh? wy Dash? &Complex)/(Juncture? ar ar? Juncture? &Co1)/(en Juncture? &ar)/(Juncture? !Vo2)))
+
+CvvNoHyphen <- (Co1 Vv Juncture? !Vo2)
+
+CvvHiddenStress <- (Co1 &DoubleVowel Vo1 Dash? Vo1 ((Dash? hh? wy Dash? &Complex)/(ar Dash? &Co1)/(en Dash? &ar)/(Dash? !Vo2)))
+
+CvvFinalStress <- (Co1 Vv ((Stress2 hh? wy Dash? &Complex)/(ar Stress2 &Co1)/(Stress2 ar ar Juncture? &Co1)/(en Stress2 &ar)/(Stress2 !Vo2)))
+
+CvvNoY <- (Co1 Vv ((Juncture? ar ar? Juncture? &Co1)/(en Juncture? &ar)/(Juncture? !Vo2)))
+
+CvvNoYFinalStress <- (Co1 Vv ((ar Stress2 &Co1)/(Stress2 ar ar Juncture? &Co1)/(en Stress2 &ar)/(Stress2 !Vo2)))
+
+CvvNoYMedialStress <- (Co1 !BrokenMono Vo2 Stress2 Vo2 Dash? !Vo2)
+
+Ccv <- (Initial Vo2 ((Juncture? wy Dash? &Letter)/(Juncture? !Vo2)))
+
+CcvStressed <- (Initial Vo2 ((Stress2 wy Dash? &Letter)/(Stress2 !Vo2)))
+
+CcvNoY <- (Initial Vo2 Juncture? !Vo2)
+
+CcvBad <- (MaybeInitial Vo2 Juncture? !Vo2)
+
+CCVBadStressed <- (MaybeInitial Vo2 Stress2 !Vo2)
+
+Cvc <- ((Co1 Vo2 !NoMedial2 !NoMedial3 Co1 ((Juncture? wy Dash? &Letter)/(Juncture? &Co1)))/(Co1 Vo2 Juncture Co1 wy Dash? &Letter))
+
+CvcStressed <- ((Co1 Vo2 !NoMedial2 !NoMedial3 Co1 ((Stress2 wy Dash? &Letter)/(Stress2 &Letter)))/(Co1 Vo2 Stress2 Co1 wy Dash? &Letter))
+
+CvcNoY <- (Co1 Vo2 !NoMedial2 !NoMedial3 Co1 Juncture? &Co1)
+
+CvcBad <- (Co1 Vo2 !NoMedial2 !NoMedial3 Juncture? Co1 &Co1)
+
+CvcNoYStressed <- (Co1 Vo2 !NoMedial2 !NoMedial3 Co1 Stress2 &Co1)
+
+CvcBadStressed <- (Co1 Vo2 !NoMedial2 !NoMedial3 Stress2 Co1 &Co1)
+
+CcvCv <- (Initial Vo2 Juncture? Co1 Vo2 Dash? !Vo2)
+
+CcvCvStressed <- (Initial Vo2 Stress2 Co1 Vo2 Dash? !Vo2)
+
+CcvCvBad <- (MaybeInitial Vo2 Juncture? Co1 Vo2 Dash? !Vo2)
+
+CcvCvBadStressed <- (MaybeInitial Vo2 Stress2 Co1 Vo2 Dash? !Vo2)
+
+CvcCv <- ((Co1 Vo2 Juncture? Initial Vo2 Dash? !Vo2)/(Co1 Vo2 !NoMedial2 Co1 Juncture? Co1 Vo2 Dash? !Vo2))
+
+CvcCvStressed <- ((Co1 Vo2 Stress2 Initial Vo2 Dash? !Vo2)/(Co1 Vo2 !NoMedial2 Co1 Stress2 Co1 Vo2 Dash? !Vo2))
+
+CcvCy <- (Initial Vo2 Juncture? Co1 wy Dash?)
+
+CvcCy <- ((Co1 Vo2 Juncture? Initial wy Dash?)/(Co1 Vo2 !NoMedial2 Co1 Juncture? Co1 wy Dash?))
+
+CcvCyStressed <- (Initial Vo2 Stress2 Co1 wy Dash?)
+
+CvcCyStressed <- ((Co1 Vo2 Stress2 Initial wy Dash?)/(Co1 Vo2 !NoMedial2 Co1 Stress2 Co1 wy Dash?))
+
+BorrowingTail1 <- (!SyllableC &StressedSyllable BorrowingSyllable (!StressedSyllable &SyllableC BorrowingSyllable)? !StressedSyllable &BorrowingSyllable VowelFinal)
+
+BorrowingTail2 <- (!SyllableC BorrowingSyllable (!StressedSyllable &SyllableC BorrowingSyllable)? !StressedSyllable &BorrowingSyllable VowelFinal (&wy/!Character))
+
+BorrowingTail3 <- (!SyllableC !StressedSyllable BorrowingSyllable (!StressedSyllable &SyllableC BorrowingSyllable)? &BorrowingSyllable InitialConsonants? Vocalic Stress2 &wy)
+
+BorrowingTail <- (BorrowingTail1/BorrowingTail2)
+
+Ccvv <- ((InitialConsonants Vo2 Juncture? Vo2 Juncture? !Character)/(InitialConsonants Vo2 Stress2 !Mono Vo2 Juncture?))
+
+PreBorrowing <- (&Predstart !Ccvv !Cmapua !SyllableC (!BorrowingTail !StressedSyllable !(SyllableC SyllableC) BorrowingSyllable)* BorrowingTail)
+
+StressedPreBorrowing <- (&Predstart !Ccvv !Cmapua !SyllableC (!BorrowingTail !StressedSyllable !(SyllableC SyllableC) BorrowingSyllable)* BorrowingTail1)
+
+PreBorrowing2 <- (&Predstart !Ccvv !Cmapua !SyllableC (!BorrowingTail !StressedSyllable !(SyllableC SyllableC) BorrowingSyllable)* BorrowingTail2)
+
+PreBorrowing3 <- (&Predstart !Ccvv !Cmapua !SyllableC (!BorrowingTail3 !StressedSyllable !(SyllableC SyllableC) BorrowingSyllable)* BorrowingTail3)
+
+RfinalDjifoa <- ((CcvCvBad/CvcCv/CvvNoHyphen/CcvBad) (&wy/!Character))
+
+RmediallyStressed <- (CcvCvBadStressed/CvcCvStressed/CvvNoYMedialStress)
+
+RfinallyStressed <- (CvvNoYFinalStress/CCVBadStressed/CvcBadStressed/CvcNoYStressed)
+
+BorrowingComplexTail <- (RmediallyStressed/(RfinallyStressed ((&(Co1 Mono) CvvNoHyphen)/CcvBad))/RfinalDjifoa)
+
+ResolvedBorrowing <- ((!BorrowingComplexTail (CvvNoY/CcvBad/CvcBad))* BorrowingComplexTail)
+
+Borrowing <- (!ResolvedBorrowing &caprule PreBorrowing !(sp? Connective))
+
+StressedBorrowing <- (!ResolvedBorrowing &caprule StressedPreBorrowing !(sp? &Vo1 Cmapua))
+
+BorrowingDjifoa <- (!ResolvedBorrowing &caprule PreBorrowing2 ((Stress2 wy Comma1)/(Juncture? wy Dash?)))
+
+StressedBorrowingDjifoa <- (!ResolvedBorrowing &caprule PreBorrowing3 wy Dash? Comma1?)
+
+DefaultStressedSyllable <- Syllable
+
+PhoneticComplexTail1 <- (!SyllableC !SyllableY &StressedSyllable DefaultStressedSyllable (!StressedSyllable &(SyllableC/SyllableY) Syllable)? !StressedSyllable !SyllableY VowelFinal !Vo1)
+
+PhoneticComplexTail2 <- (!SyllableC !SyllableY DefaultStressedSyllable (!StressedSyllable &(SyllableC/SyllableY) Syllable)? !StressedSyllable !SyllableY VowelFinal !Character)
+
+PhoneticComplexTail <- (PhoneticComplexTail1/PhoneticComplexTail2)
+
+PhoneticComplex <- (&Predstart !Ccvv !Cmapua !SyllableC ((StressedBorrowingDjifoa &PhoneticComplex)/(!PhoneticComplexTail !StressedSyllable !(SyllableC SyllableC) Syllable))* PhoneticComplexTail)
+
+FinalDjifoa <- ((Borrowing/CcvCv/CvcCv/CvvNoHyphen/CcvNoY) !Character)
+
+MediallyStressed <- (StressedBorrowing/CcvCvStressed/CvcCvStressed/CvvNoYMedialStress)
+
+FinallyStressed <- (StressedBorrowingDjifoa/CcvCyStressed/CvcCyStressed/CvvFinalStress/CcvStressed/CvcStressed)
+
+ComplexTail <- ((CvvHiddenStress ((&(Co1 Mono) CvvNoHyphen)/CcvNoY) !Character)/(FinallyStressed ((&(Co1 Mono) CvvNoHyphen)/CcvNoY))/MediallyStressed/FinalDjifoa)
+
+PreComplex <- ((!CvvHiddenStress !ComplexTail ((StressedBorrowingDjifoa &PhoneticComplex)/BorrowingDjifoa/CvcCy/CcvCy/Cvv/Ccv/Cvc))* ComplexTail)
+
+Complex <- (&caprule &PreComplex PhoneticComplex !(sp? Connective))
+
+LiQuote <- ((&caprule [Ll] [Ii] Juncture? Comma2? [\"] PhoneticUtterance [\"] Comma2? &caprule [Ll] [Uu] Juncture? !(sp? Connective))/(&caprule [Kk] [Ii] Juncture? [Ee] Juncture? Comma2? [(] PhoneticUtterance [)] Comma2? &caprule [Kk] [Ii] Juncture? [Uu] Juncture? !(sp? Connective)))
+
+Word <- (NAMEWORD/Cmapua/Complex/CcvNoY)
+
+SingleWord <- (((Borrowing !.)/(Complex !.)/(Word !.)/(PRENAME !.)/CcvNoY) !.)
+
+PhoneticUtterance1 <- (NAMEWORD/(sp? LiQuote)/(sp? NAMEWORD)/(sp? AlienWord)/(sp? Cmapua)/(sp? '--')/(sp? '...')/(sp? Borrowing !wy)/(sp? Complex)/(sp? CcvNoY))+
+
+PhoneticUtterance <- (PhoneticUtterance1/Comma1/Terminal)+
+
+Badstress <- (Stress2 sp? &Co1 Predstart)
+
+b <- (!Predstart [Bb])
+
+c <- (!Predstart [Cc])
+
+d <- (!Predstart [Dd])
+
+f <- (!Predstart [Ff])
+
+g <- (!Predstart [Gg])
+
+h <- (!Predstart [Hh])
+
+j <- (!Predstart [Jj])
+
+k <- (!Predstart [Kk])
+
+l <- (!Predstart [Ll])
+
+m <- (!Predstart [Mm])
+
+n <- (!Predstart [Nn])
+
+p <- (!Predstart [Pp])
+
+r <- (!Predstart [Rr])
+
+s <- (!Predstart [Ss])
+
+t <- (!Predstart [Tt])
+
+v <- (!Predstart [Vv])
+
+z <- (!Predstart [Zz])
+
+Vo3 <- (Juncture? Vo2 !Badstress)
+
+aa <- ([Aa] Juncture? [Aa] !Badstress Juncture? !Vo1)
+
+ae <- ([Aa] Juncture? [Ee] !Badstress Juncture? !Vo1)
+
+ai <- ([Aa] [Ii] !Badstress Juncture? !Vo1)
+
+ao <- ([Aa] [Oo] !Badstress Juncture? !Vo1)
+
+ai2 <- ([Aa] [Ii] !Badstress Juncture? &(Vo2 Juncture? !Vo1))
+
+ao2 <- ([Aa] [Oo] !Badstress Juncture? &(Vo2 Juncture? !Vo1))
+
+au <- ([Aa] Juncture? [Uu] !Badstress Juncture? !Vo1)
+
+ea <- ([Ee] Juncture? [Aa] !Badstress Juncture? !Vo1)
+
+ee <- ([Ee] Juncture? [Ee] !Badstress Juncture? !Vo1)
+
+ei <- ([Ee] [Ii] !Badstress Juncture? !Vo1)
+
+ei2 <- ([Ee] [Ii] !Badstress Juncture? &(Vo2 Juncture? !Vo1))
+
+eo <- ([Ee] Juncture? [Oo] !Badstress Juncture? !Vo1)
+
+eu <- ([Ee] Juncture? [Uu] !Badstress Juncture? !Vo1)
+
+ia <- ([Ii] Juncture? [Aa] !Badstress Juncture? !Vo1)
+
+ie <- ([Ii] Juncture? [Ee] !Badstress Juncture? !Vo1)
+
+ii <- ([Ii] Juncture? [Ii] !Badstress Juncture? !Vo1)
+
+io <- ([Ii] Juncture? [Oo] !Badstress Juncture? !Vo1)
+
+iu <- ([Ii] Juncture? [Uu] !Badstress Juncture? !Vo1)
+
+ia2 <- ([Ii] Juncture? [Aa] !Badstress Juncture? &(Vo2 Juncture? !Vo1))
+
+ie2 <- ([Ii] Juncture? [Ee] !Badstress Juncture? &(Vo2 Juncture? !Vo1))
+
+ii2 <- ([Ii] Juncture? [Ii] !Badstress Juncture? &(Vo2 Juncture? !Vo1))
+
+io2 <- ([Ii] Juncture? [Oo] !Badstress Juncture? &(Vo2 Juncture? !Vo1))
+
+iu2 <- ([Ii] Juncture? [Uu] !Badstress Juncture? &(Vo2 Juncture? !Vo1))
+
+oa <- ([Oo] Juncture? [Aa] !Badstress Juncture? !Vo1)
+
+oe <- ([Oo] Juncture? [Ee] !Badstress Juncture? !Vo1)
+
+oi <- ([Oo] [Ii] !Badstress Juncture? !Vo1)
+
+oi2 <- ([Oo] [Ii] !Badstress Juncture? &(Vo2 Juncture? !Vo1))
+
+oo <- ([Oo] Juncture? [Oo] !Badstress Juncture? !Vo1)
+
+ou <- ([Oo] Juncture? [Uu] !Badstress Juncture? !Vo1)
+
+ua <- ([Uu] Juncture? [Aa] !Badstress Juncture? !Vo1)
+
+ue <- ([Uu] Juncture? [Ee] !Badstress Juncture? !Vo1)
+
+ui <- ([Uu] Juncture? [Ii] !Badstress Juncture? !Vo1)
+
+uo <- ([Uu] Juncture? [Oo] !Badstress Juncture? !Vo1)
+
+uu <- ([Uu] Juncture? [Uu] !Badstress Juncture? !Vo1)
+
+ua2 <- ([Uu] Juncture? [Aa] !Badstress Juncture? &(Vo2 Juncture? !Vo1))
+
+ue2 <- ([Uu] Juncture? [Ee] !Badstress Juncture? &(Vo2 Juncture? !Vo1))
+
+ui2 <- ([Uu] Juncture? [Ii] !Badstress Juncture? &(Vo2 Juncture? !Vo1))
+
+uo2 <- ([Uu] Juncture? [Oo] !Badstress Juncture? &(Vo2 Juncture? !Vo1))
+
+uu2 <- ([Uu] Juncture? [Uu] !Badstress Juncture? &(Vo2 Juncture? !Vo1))
+
+iy <- ([Ii] [Yy] !Badstress Juncture? !Vo1)
+
+uy <- ([Uu] [Yy] !Badstress Juncture? !Vo1)
+
+OptPause <- (Comma1 !(Vo1/Connective) &caprule)
+
+Comma <- ([,] sp2 &caprule)
+
+Comma2 <- ([,]? sp2 &caprule)
+
+End <- ((sp2? '#' sp2 utterance)/(sp2 !.)/!.)
+
+Period <- (([!.:;?] (&End/(sp2 &caprule))) (invvoc Period?)?)
+
+TAI0 <- ((Vo1 Juncture? m a)/(Vo1 Juncture? f i)/(Vo1 Juncture? z i)/(!Predstart Co1 ai)/(!Predstart Co1 ei)/(!Predstart Co1 ai2 u)/(!Predstart Co1 ei2 u)/(!Predstart Co1 eo)/(z [Ii] Vo1 !Badstress Juncture? !Vo1 (m a)?))
+
+NOI0 <- (n oi)
+
+A0 <- (&Cmapua (a/e/o/u/(h a)/(n uu)))
+
+A <- (sp? !Predstart !TAI0 (n [o])? A0 NOI0? !(sp PAWORD0 OptPause) !(PAWORD0 !OptPause [ ,]) (PAWORD0 ((f i)/&OptPause))?)
+
+ANOFI <- (sp? (!Predstart !TAI0 ((n [o])? A0 NOI0? PAWORD0?)))
+
+AONE <- A
+
+ACI <- (ANOFI c i)
+
+AGE <- (ANOFI g e)
+
+CA0 <- (((n o)? ((c a)/(c e)/(c o)/(c u)/(z e)/(c i h a)/(n u c u))) NOI0?)
+
+CA1 <- (CA0 !(sp PAWORD0 OptPause) !(PAWORD0 !OptPause [ ,]) (PAWORD0 ((f i)/&OptPause))?)
+
+CANOFI1 <- (CA0 PAWORD0?)
+
+CA <- (sp? CA1)
+
+ZE <- (sp? (z e))
+
+I <- (sp? !Predstart !TAI0 i !(sp PAWORD0 OptPause) !(PAWORD0 !OptPause [ ,]) (PAWORD0 ((f i)/&OptPause))?)
+
+ICA <- (sp? i ((h a)/CA1))
+
+ICI <- (sp? i CANOFI1? c i)
+
+IGE <- (sp? i CANOFI1? g e)
+
+KA0 <- ((k a)/(k e)/(k o)/(k u)/(k i h a)/(n u k u))
+
+KOU0 <- ((k ou)/(m oi)/(r au)/(s oa)/(m ou)/(c iu))
+
+KOU1 <- (((n u n o)/(n u)/(n o)) KOU0)
+
+KA <- (sp? (KA0/((KOU1/KOU0) k i)) NOI0?)
+
+KI <- (sp? (k i) NOI0?)
+
+KOU2 <- (KOU1 !KI)
+
+BadNIStress <- ((Co1 Vo2 Vo2? Stress (m a)? (m oa)? NI RA0)/(Co1 Vo2 Stress Vo2 (m a)? (m oa)? NI RA0))
+
+NI0 <- (!BadNIStress ((k ua)/(g ie)/(g iu)/(h ie)/(h iu)/(n ea)/(n io)/(p ea)/(p io)/(s uu)/(s ua)/(t ia)/(z oa)/(z oo)/(h o)/(n i)/(n e)/(t o)/(t e)/(f o)/(f e)/(v o)/(v e)/(p i)/(r e)/(r u)/(s e)/(s o)/(h i)))
+
+SA0 <- (!BadNIStress ((s a)/(s i)/(s u)/(ie (Comma2? !ie SA0)?)) NOI0?)
+
+RA0 <- (!BadNIStress ((r a)/(r i)/(r e)/(r u)/(r o)/(b ao)))
+
+NI1 <- ((NI0 (!BadNIStress m a)? (!BadNIStress m oa NI0*)?) (Comma2 !(NI RA0) &NI)?)
+
+RA1 <- ((RA0 (!BadNIStress m a)? (!BadNIStress m oa NI0*)?) (Comma2 !(NI RA0) &NI)?)
+
+NI2 <- (((SA0? (NI1+/RA1))/SA0) NOI0? (CA0 ((SA0? (NI1+/RA1))/SA0) NOI0?)*)
+
+NI <- (sp? (p i)? NI2 ((&(m ue) ACRONYM (Comma/&End/&Period) !(c u))/(Comma2? m ue Comma2? PRENAME !(c u)))? (c u)?)
+
+mex <- (sp? NI)
+
+CI <- (sp? (c i))
+
+ACRONYM <- (sp? &caprule ((m ue)/TAI0/(z Vo2 !Vo2)) ((Comma &ACRONYM m ue)/NI1/TAI0/(z Vo2 (!Vo2/(z &Vo2))))+)
+
+TAI <- (sp? (TAI0/((g ao) !Vo2 sp? (PRENAME/Predicate/CmapuaUnit))))
+
+DA0 <- ((t ao)/(t io)/(t ua)/(m io)/(m iu)/(m uo)/(m uu)/(t oa)/(t oi)/(t oo)/(t ou)/(t uo)/(t uu)/(s uo)/(h u)/(b a)/(b e)/(b o)/(b u)/(d a)/(d e)/(d i)/(d o)/(d u)/(m i)/(t u)/(m u)/(t i)/(t a)/(m o)/(k oo)/(d ao))
+
+DA1 <- ((TAI0/DA0) (c i ![ ] NI0)?)
+
+DA <- (sp? DA1)
+
+PA00 <- ((g ia)/(g ua)/(p au)/(v au)/(f au)/(p ia)/(p ua)/(n ia)/(n ua)/(b iu)/(f ea)/(f ia)/(f ua)/(v ia)/(v ii)/(v iu)/(c oi)/(d au)/(d ii)/(d uo)/(f oi)/(f ui)/(g au)/(h ea)/(k au)/(k ii)/(k ui)/(l ia)/(l ui)/(m ia)/(n ui)/(p eu)/(r oi)/(r ui)/(s ea)/(s io)/(t ie)/(v ie)/(v a)/(v i)/(v u)/(p a)/(n a)/(f a)/(v a)/(KOU0 !(n oi) !KI))
+
+PA0 <- (NI2? (n u !KOU0)? PA00 (n oi)? ZI?)
+
+PAWORD0 <- ((KOU2/PA0)+ ((Comma2? CA0 Comma2?) (KOU2/PA0)+)*)
+
+PAWORD <- (sp? PAWORD0)
+
+PAPHRASE0 <- (((KOU2/PA0)+ (((Comma2? CA0 Comma2?)/(Comma2 !mod1a)) (KOU2/PA0)+)*) !modifier)
+
+PAPHRASE <- (sp? PAPHRASE0)
+
+GA <- (sp? (g a))
+
+TENSE <- (PAPHRASE/GA)
+
+ZI <- ((z i)/(z a)/(z u))
+
+LE <- (sp? ((l ea)/(l eu)/(l oe)/(l ee)/(l aa)/(l e)/(l o)/(l a)))
+
+LEFORPO <- (sp? ((l e)/(l o)/NI2))
+
+LIO <- (sp? (l io))
+
+LAU <- (sp? (l au))
+
+LOU <- (sp? (l ou))
+
+LUA <- (sp? (l ua))
+
+LUO <- (sp? (l uo))
+
+ZEIA <- (sp? z ei2 a)
+
+ZEIO <- (sp? z ei2 o)
+
+LIWORD <- (l i)
+
+LUWORD <- (l u)
+
+liquote <- ((sp? LIWORD Comma2? utterance0 Comma2? LUWORD)/(sp? LIWORD Comma2? [\"] utterance0 [\"] Comma2? LUWORD))
+
+LAO <- (sp? &(LAOalien Juncture?) AlienWord)
+
+LIE <- (sp? &(LIEalien Juncture?) AlienWord)
+
+LIOALIEN <- (sp? &(LIOalien Juncture?) AlienWord)
+
+Lw <- Cmapua
+
+LIU0 <- ((l iu)/(n iu))
+
+LNIU <- (([Ll]/[Nn]) [iI] Juncture? [Uu])
+
+LIU <- ((sp? LNIU Juncture? !Vo1 Comma2? (PRENAME/Word) &(Comma/Terminal/End))/(sp? (l ii TAI)))
+
+SUE <- (sp? &(([Ss] [Uu] Juncture? [Ee] Juncture?)/([Ss] [Aa] [Oo] Juncture?)) AlienWord)
+
+CUI <- (sp? (c ui))
+
+GATWO <- (sp? (g a))
+
+GE <- (sp? (g e))
+
+GEU <- (sp? ((c ue)/(g eu)))
+
+GI <- (sp? ((g i)/(g oi)))
+
+GO <- (sp? (g o))
+
+GIO <- (sp? (g io))
+
+GU <- (sp? (g u))
+
+GUIZA <- (sp? (g ui) (z a))
+
+GUIZI <- (sp? (g ui) (z i))
+
+GUIZU <- (sp? (g ui) (z u))
+
+GUI <- (!GUIZA !GUIZI !GUIZU (sp? (g ui)))
+
+GUO <- (sp? (g uo))
+
+GUOA <- (sp? ((g uo2 a)/(g uo z a)))
+
+GUOE <- (sp? (g uo2 e))
+
+GUOI <- (sp? ((g uo2 i)/(g uo z i)))
+
+GUOO <- (sp? (g uo2 o))
+
+GUOU <- (sp? ((g uo2 u)/(g uo z u)))
+
+GUU <- (sp? (g uu))
+
+GUUA <- (sp? (g uu2 a))
+
+GIUO <- (sp? (g iu2 o))
+
+GUE <- (sp? (g ue))
+
+GUEA <- (sp? (g ue2 a))
+
+JE <- (sp? (j e))
+
+JUE <- (sp? (j ue))
+
+JIZA <- (sp? ((j ie)/(j ae)/(p e)/(j i)/(j a)) (z a))
+
+JIOZA <- (sp? ((j io)/(j ao)) (z a))
+
+JIZI <- (sp? ((j ie)/(j ae)/(p e)/(j i)/(j a)) (z i))
+
+JIOZI <- (sp? ((j io)/(j ao)) (z i))
+
+JIZU <- (sp? ((j ie)/(j ae)/(p e)/(j i)/(j a)) (z u))
+
+JIOZU <- (sp? ((j io)/(j ao)) (z u))
+
+JI <- (!JIZA !JIZI !JIZU (sp? ((j ie)/(j ae)/(p e)/(j i)/(j a))))
+
+NUJI <- (sp? n u !sp JI)
+
+JIO <- (!JIOZA !JIOZI !JIOZU (sp? ((j io)/(j ao))))
+
+DIO <- ((sp? ((b eu)/(c au)/(d io)/(f oa)/(k ao)/(j ui)/(n eu)/(p ou)/(g oa)/(s au)/(v eu)/(z ua)/(z ue)/(z ui)/(z uo)/(z uu))) ((c i ![ ] NI0)/ZI)?)
+
+LAE <- (sp? ((l ae)/(l ue)))
+
+ME <- (sp? ((m ea)/(m e)))
+
+MEU <- (sp? m eu)
+
+NU0 <- ((n uo)/(f uo)/(j uo)/(n u)/(f u)/(j u)/(k ue))
+
+NU <- (sp? ((((n u)/(n uo)/(k ue)) !(sp (NI0/RA0)) (NI0/RA0)?)/NU0)+ freemod?)
+
+PO1 <- (sp? ((p o)/(p u)/(z o)))
+
+PO1A <- (sp? ((p oi2 a)/(p ui2 a)/(z oi2 a)/(p o z a)/(p u z a)/(z o z a)))
+
+PO1E <- (sp? ((p oi2 e)/(p ui2 e)/(z oi2 e)))
+
+PO1I <- (sp? ((p oi2 i)/(p ui2 i)/(z oi2 i)/(p o z i)/(p u z i)/(z o z i)))
+
+PO1O <- (sp? ((p oi2 o)/(p ui2 o)/(z oi2 o)))
+
+PO1U <- (sp? ((p oi2 u)/(p ui2 u)/(z oi2 u)/(p o z u)/(p u z u)/(z o z u)))
+
+POSHORT1 <- (sp? ((p oi)/(p ui)/(z oi)))
+
+PO <- (sp? PO1)
+
+POA <- (sp? PO1A)
+
+POE <- (sp? PO1E)
+
+POI <- (sp? PO1E)
+
+POO <- (sp? PO1O)
+
+POU <- (sp? PO1U)
+
+POSHORT <- (sp? POSHORT1)
+
+DIE <- (sp? ((d ie)/(f ie)/(k ae)/(n ue)/(r ie)))
+
+HOI <- (sp? h oi)
+
+JO <- (sp? (NI0/RA0/SA0)? (j o))
+
+KIE <- (sp? (k ie))
+
+KIU <- (sp? (k iu))
+
+KIE2 <- (sp? k ie Comma2? [(])
+
+KIU2 <- (sp? [)] Comma2? k iu)
+
+SOI <- (sp? (s oi))
+
+UI0 <- (!Predstart ((!([Ii] Juncture? [Ee]) Vv Juncture?)/(b ea)/(b uo)/(c ea)/(c ia)/(c oa)/(d ou)/(f ae)/(f ao)/(f eu)/(g ea)/(k uo)/(k uu)/(r ea)/(n ao)/(n ie)/(p ae)/(p iu)/(s aa)/(s ui)/(t aa)/(t oe)/(v oi)/(z ou)/(l oi)/(l oa)/(s ia)/(s ii)/(t oe)/(s iu)/(c ao)/(c eu)/(s ie)/(s eu)/(s ie2 i)))
+
+NOUI <- ((sp? UI0 NOI0)/(sp? n [o] Juncture? Comma? sp? UI0))
+
+UI <- (sp? (UI0+/(NI f i)))
+
+HUE <- (sp? (h ue))
+
+NOWORD <- (sp? !KOU1 !NOUI (n o) !(Comma2? z ao Comma2? Predicate) !(sp? KOU0) !(sp? (JIO/JI/JIZA/JIOZA/JIZI/JIOZI/JIZU/JIOZU)))
+
+ACRONYMICNAME <- (ACRONYM &(Comma/Period/End))
+
+DJAN <- (PRENAME/ACRONYMICNAME)
+
+BI <- (sp? (n u)? ((b ia)/(b ie)/(c ie)/(c io)/(b ia)/(b i)/(b ii)))
+
+LWPREDA0 <- ((h e)/(d ua)/(d ui)/(b ua)/(b ui))
+
+Predicate <- ((CmapuaUnit Comma2? z ao Comma2?)* Complex (Comma2? z ao Comma2? Predicate)?)
+
+PREDA <- (sp? &caprule (Predicate/LWPREDA0/(![ ] NI RA0)))
+
+guoa <- (OptPause? (GUOA/GU) freemod?)
+
+guoe <- (OptPause? (GUOE/GU) freemod?)
+
+guoi <- (OptPause? (GUOI/GU) freemod?)
+
+guoo <- (OptPause? (GUOO/GU) freemod?)
+
+guou <- (OptPause? (GUOU/GU) freemod?)
+
+guo <- (!guoa !guoe !guoi !guoo !guou (OptPause? (GUO/GU) freemod?))
+
+guiza <- (OptPause? (GUIZA/GU) freemod?)
+
+guizi <- (OptPause? (GUIZI/GU) freemod?)
+
+guizu <- (OptPause? (GUIZU/GU) freemod?)
+
+gui <- (OptPause? (GUI/GU) freemod?)
+
+gue <- (OptPause? (GUE/GU) freemod?)
+
+guea <- (OptPause? (GUEA/GU) freemod?)
+
+guu <- (OptPause? (GUU/GU) freemod?)
+
+guua <- (OptPause? (GUUA/GU) freemod?)
+
+giuo <- (OptPause? (GIUO/GU) freemod?)
+
+meu <- (OptPause? (MEU/GU) freemod?)
+
+geu <- GEU
+
+gap <- (OptPause? GU freemod?)
+
+HOI0 <- ((sp? (([Hh] oi)/([Ll] oi)/([Ll] oa)/([Ss] ia)/([Ss] ie)/([Ss] iu))) Juncture? !Vo1)
+
+voc <- (((HOI/(HOI0 !(sp? FalseMarked))) Comma2? name)/(HOI Comma2? descpred guea? namesuffix?)/(HOI Comma2? argument1 guua?)/(sp? &([Hh] [Oo] [Ii] Juncture?) AlienWord))
+
+HUE0 <- (sp? &caprule [Hh] [Uu] Juncture? [Ee] Juncture? !Vo1)
+
+invvoc <- ((HUE0 Comma2? name)/(HUE freemod? descpred guea? namesuffix?)/(HUE freemod? argument1 &((freemod? gasent1a)/gasent2/(freemod? &subject statement)))/(HUE freemod? statement giuo?)/(HUE freemod? argument1 guu?)/(sp? &([Hh] [Uu] Juncture? [Ee] Juncture?) AlienWord))
+
+kiamod <- (Comma2? !(!PRENAME !Predstart k ia) ((PRENAME/LIU/AlienWord/(Cmapua (sp? !(k ia) !PRENAME !Predstart Cmapua)*)/Word) kiamod* Comma2? !PRENAME !Predstart k ia) Comma2?)
+
+freemod <- ((kiamod/NOUI/(SOI freemod? descpred guea?)/DIE/(NOWORD DIE)/(KIE Comma? utterance0 Comma? KIU)/(KIE2 Comma? utterance0 Comma? KIU2)/invvoc/voc/(Comma !(!FalseMarked PRENAME))/JO/UI/(sp? '...' (sp? &Letter)?)/(sp? '--' (sp? &Letter)?)) freemod?)
+
+juelink <- (JUE freemod? (term/(PAPHRASE freemod? gap?)))
+
+links1 <- (juelink (freemod? juelink)* gue?)
+
+links <- ((links1/(KA freemod? links freemod? KI freemod? links1)) (freemod? AONE freemod? links1)*)
+
+jelink <- (JE freemod? (term/(PAPHRASE freemod? gap?)))
+
+linkargs1 <- (jelink freemod? (links/gue)?)
+
+linkargs <- ((linkargs1/(KA freemod? linkargs freemod? KI freemod? linkargs1)) (freemod? AONE freemod? linkargs1)*)
+
+abstractpred <- ((POA freemod? uttAxclone guoa?)/(POA freemod? sentenceclone guoa?)/(POE freemod? uttAxclone guoe?)/(POE freemod? sentenceclone guoe?)/(POI freemod? uttAxclone guoi?)/(POI freemod? sentenceclone guoi?)/(POO freemod? uttAxclone guoo?)/(POO freemod? sentenceclone guoo?)/(POU freemod? uttAxclone guou?)/(POU freemod? sentenceclone guou?)/(PO freemod? uttAxclone guo?)/(PO freemod? sentenceclone guo?))
+
+predunit1 <- ((SUE/(NU freemod? GE freemod? despredE (freemod? geu Comma?)?)/(NU freemod? PREDA)/(Comma? GE freemod? descpred (freemod? geu Comma?)?)/abstractpred/(ME freemod? argument1 meu?)/PREDA) freemod?)
+
+predunit2 <- ((NOWORD freemod?)* predunit1)
+
+neg2 <- (!predunit2 NOWORD)
+
+predunit3 <- ((predunit2 freemod? linkargs)/predunit2)
+
+predunit <- ((POSHORT freemod?)? predunit3)
+
+kekpredunit <- ((NOWORD freemod?)* KA freemod? predicate freemod? KI freemod? predicate guu?)
+
+despredA <- ((predunit/kekpredunit) (freemod? CI freemod? (predunit/kekpredunit))*)
+
+despredB <- ((!PREDA CUI freemod? despredC freemod? CA freemod? despredB)/despredA)
+
+despredC <- (despredB (freemod? despredB)*)
+
+despredD <- (despredB (freemod? CA freemod? despredB)*)
+
+despredE <- (despredD (freemod? despredD)*)
+
+descpred <- ((despredE freemod? GO freemod? descpred)/despredE)
+
+sentpred <- ((despredE freemod? GO freemod? barepred)/despredE)
+
+mod1a <- (PAWORD freemod? argument1 guua?)
+
+mod1 <- ((PAWORD freemod? argument1 guua?)/(PAPHRASE freemod? !barepred gap?))
+
+kekmod <- ((NOWORD freemod?)* (KA freemod? modifier freemod? KI freemod? mod))
+
+mod <- (mod1/((NOWORD freemod?)* mod1)/kekmod)
+
+modifier <- (mod (AONE freemod? mod)*)
+
+name <- ((PRENAME/ACRONYMICNAME) ((Comma2? !FalseMarked PRENAME)/(Comma2? &([Cc] [Ii]) NAMEWORD)/(Comma2? CI predunit !(Comma2? (!FalseMarked PRENAME)))/(Comma2? CI ACRONYMICNAME))* freemod?)
+
+LAWORD <- (sp? [Ll] [Aa] Juncture?)
+
+LANAME <- (LAWORD Comma2? name)
+
+descriptn <- (!LANAME ((LAU wordset1)/(LOU wordset2)/(LE freemod? ((!mex arg1a freemod?)? (PAPHRASE freemod?)?)? ((mex freemod? arg1a)/(mex freemod? descpred)/descpred))/(GE freemod? mex freemod? descpred)))
+
+abstractn <- ((LEFORPO freemod? POA freemod? uttAxclone guoa?)/(LEFORPO freemod? POA freemod? sentenceclone guoa?)/(LEFORPO freemod? POE freemod? uttAxclone guoe?)/(LEFORPO freemod? POE freemod? sentenceclone guoe?)/(LEFORPO freemod? POI freemod? uttAxclone guoi?)/(LEFORPO freemod? POI freemod? sentenceclone guoi?)/(LEFORPO freemod? POO freemod? uttAxclone guoo?)/(LEFORPO freemod? POO freemod? sentenceclone guoo?)/(LEFORPO freemod? POU freemod? uttAxclone guou?)/(LEFORPO freemod? POU freemod? sentenceclone guou?)/(LEFORPO freemod? PO freemod? uttAxclone guo?)/(LEFORPO freemod? PO freemod? sentenceclone guo?))
+
+Ciforsuffix <- ([Cc] [Ii])
+
+namesuffix <- (&((Comma2 !FalseMarked PRENAME)/(sp? Ciforsuffix Juncture? Comma2? (PRENAME/ACRONYMICNAME))) ((sp? Ciforsuffix Juncture? Comma2?)/Comma2)? name)
+
+arg1 <- (abstractn/(LIO freemod? descpred guea?)/(LIO freemod? argument1 guua?)/(LIO freemod? mex gap?)/LIOALIEN/LAO/LANAME/(descriptn guua? namesuffix?)/LIU/LIE/liquote)
+
+arg1a <- ((DA/TAI/arg1/(GE freemod? arg1a)) freemod?)
+
+argmod1 <- (((sp? (n o) sp?)? ((JI freemod? predicate)/(JIO freemod? sentence)/(JIO freemod? uttAx)/(JI freemod? modifier)/((JI/NUJI) freemod? argument1)))/((sp? (n o) sp?)? (((JIZA freemod? predicate) guiza?)/((JIOZA freemod? sentence) guiza?)/((JIOZA freemod? uttAx) guiza?)/((JIZA freemod? modifier) guiza?)/(JIZA freemod? argument1 guiza?)))/((sp? (n o) sp?)? ((JIZI freemod? predicate guizi?)/(JIOZI freemod? sentence guizi?)/(JIOZI freemod? uttAx guizi?)/(JIZI freemod? modifier guizi?)/(JIZI freemod? argument1 guizi?)))/((sp? (n o) sp?)? ((JIZU freemod? predicate guizu?)/(JIOZU freemod? sentence guizu?)/(JIOZU freemod? uttAx guizu?)/(JIZU freemod? modifier guizu?)/(JIZU freemod? argument1 guizu?))))
+
+argmod <- (argmod1 (AONE freemod? argmod1)* gui?)
+
+arg2 <- (arg1a freemod? argmod*)
+
+arg3 <- (arg2/(mex freemod? arg2))
+
+indef1 <- (mex freemod? descpred)
+
+indef2 <- (indef1 guua? argmod*)
+
+indefinite <- indef2
+
+arg4 <- ((arg3/indefinite) (ZE freemod? (arg3/indefinite))*)
+
+arg5 <- (arg4/(KA freemod? argument1 freemod? KI freemod? argx))
+
+argx <- ((NOWORD freemod?)* (LAE freemod?)* arg5)
+
+arg7 <- (argx freemod? (ACI freemod? argx)?)
+
+arg8 <- (!GE (arg7 freemod? (AONE freemod? arg7)*))
+
+argument1 <- (((arg8 freemod? AGE freemod? argument1)/arg8) (GUU freemod? argmod)*)
+
+argument <- ((NOWORD freemod?)* (DIO freemod?)* argument1)
+
+argxx <- (&((NOWORD freemod?)* DIO) argument)
+
+term <- (argument/modifier)
+
+modifiers <- (modifier (freemod? modifier)*)
+
+modifiersx <- ((modifier/argxx) (freemod? (modifier/argxx))*)
+
+subject <- ((modifiers freemod?)? ((argxx subject)/(argument (modifiersx freemod?)?)))
+
+argumentA <- argument
+
+argumentB <- argument
+
+argumentC <- argument
+
+argumentD <- argument
+
+argumentA1 <- argument
+
+argumentB1 <- argument
+
+argumentC1 <- argument
+
+argumentD1 <- argument
+
+terms <- ((modifiersx? argumentA (freemod? modifiersx)? argumentB? (freemod? modifiersx)? argumentC? (freemod? modifiersx)? argumentD?)/modifiersx)
+
+terms1 <- ((modifiersx? argumentA1 (freemod? modifiersx)? argumentB1? (freemod? modifiersx)? argumentC1? (freemod? modifiersx)? argumentD1?)/modifiersx)
+
+word <- (arg1a/indef2)
+
+words1 <- (word (ZEIA? word)*)
+
+words2 <- (word (ZEIO? word)*)
+
+wordset1 <- (words1? LUA)
+
+wordset2 <- (words2? LUO)
+
+termset1 <- (terms/(KA freemod? termset2 freemod? guu? KI freemod? termset1))
+
+termset2 <- (termset1 (guu &AONE)? (AONE freemod? termset1 (guu &AONE)?)*)
+
+termset <- ((terms freemod? GO freemod? barepred)/termset2)
+
+barepred <- (sentpred freemod? ((termset guu?)/(guu &termset))?)
+
+markpred <- (TENSE freemod? barepred)
+
+backpred1 <- ((neg2 freemod?)* (barepred/markpred))
+
+backpred <- (((backpred1 (ACI freemod? backpred1)+ freemod? ((termset guu?)/(guu &termset))?) ((ACI freemod? backpred)+ freemod? ((termset guu?)/(guu &termset))?)?)/backpred1)
+
+predicate2 <- (!GE (((backpred (AONE !GE freemod? backpred)+ freemod? ((termset guu?)/(guu &termset))?) ((AONE freemod? predicate2)+ freemod? ((termset guu?)/(guu &termset))?)?)/backpred))
+
+predicate1 <- ((predicate2 AGE freemod? predicate1)/predicate2)
+
+identpred <- ((NOWORD freemod?)* (BI freemod? argument1 guu?))
+
+predicate <- (predicate1/identpred)
+
+gasent1 <- ((NOWORD freemod?)* (freemod? &markpred predicate (GATWO freemod? subject)?))
+
+gasent1a <- ((NOWORD freemod?)* (freemod? &markpred predicate (GATWO freemod? subject)))
+
+gasent2 <- ((NOWORD freemod?)* (TENSE freemod? sentpred modifiers? (GATWO freemod? subject freemod? GIO? freemod? terms?)))
+
+gasent <- (gasent2/gasent1)
+
+statement <- (gasent/(modifiers freemod? gasent)/(subject freemod? freemod? (GIO? freemod? terms1)? predicate))
+
+keksent <- (terms? freemod? (NOWORD freemod?)* (KA freemod? headterms? freemod? sentence freemod? KI freemod? sen1))
+
+keksentclone <- (terms? freemod? (NOWORD freemod?)* (KA freemod? headterms? freemod? sentenceclone freemod? KI freemod? sen1clone))
+
+neghead <- ((NOWORD freemod? gap)/(neg2 OptPause))
+
+imperative <- ((modifiers freemod?)? !gasent predicate)
+
+nosubject <- ((modifiers freemod?)? !gasent predicate)
+
+headterms <- (terms GI freemod?)+
+
+uttAx <- (headterms freemod? sentence giuo?)
+
+uttAxclone <- (headterms freemod? sentenceclone giuo?)
+
+sen1 <- ((neghead freemod?)* (imperative/statement/keksent/uttAx))
+
+sen1clone <- ((neghead freemod?)* (nosubject/statement/keksentclone/uttAxclone))
+
+sentence1 <- (sen1 (ICI freemod? sen1)*)
+
+sentence1clone <- (sen1clone (ICI freemod? sen1clone)*)
+
+sentence <- (sentence1 ([!.:;?]? ICA freemod? sentence1)*)
+
+sentenceclone <- (sentence1clone ([!.:;?]? ICA freemod? sentence1clone)*)
+
+uttA <- ((AONE/mex) freemod?)
+
+uttA1 <- ((links/linkargs/argmod/terms/uttA/NOWORD) freemod? Period?)
+
+uttC <- ((sentence Period?)/(neghead freemod? uttC)/uttA1)
+
+ICAUTT <- ICA
+
+uttF <- (uttC (I freemod? uttC)*)
+
+utterance0 <- (!GE ((ICAUTT freemod? uttF)/(!OptPause freemod Period? utterance0)/(!OptPause freemod Period?)/(uttF IGE utterance0)/uttF/(I freemod? uttF?)/(I freemod? Period?)) (&I utterance0)?)
+
+utterance <- (&(PhoneticUtterance End) (!GE ((ICAUTT freemod? uttF (&I utterance)? End)/(!OptPause freemod Period? utterance)/(!OptPause freemod Period? (&I utterance)? End)/(uttF IGE utterance)/(I freemod? Period? (&I utterance)? End)/(uttF (&I utterance)? End)/(I freemod? uttF (&I utterance)? End))))
+
