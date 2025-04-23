@@ -93,6 +93,8 @@ in the Hailperin axiomatization of NF.  Such a structure is a model of TTT, and 
 {\bf initial note for the previous series:}  This document is probably my best overall version so far.  The immediate occasion for its preparation was to serve students attempting to verify the proof in Lean.  A formal verification should in our view (at least in the view of the first author) avoid metamathematics as far as possible, so it is the fact that the structure defined in section 3 is a model of TTT which should be verified, and further, a finite axiomatization (mod type indexing) of TST and thus TTT should be verified in the model in lieu of the usual statement of the axiom of comprehension of TTT.  {\bf This program has been completed, on the Lean side.}
 \begin{description}
 
+\item[4/23/2015:]   Revisions by Sky for the meeting of this date, reviewed in the meeting and found satisfactory.
+
 \item[4/15/2025:]  Revisions by Sky for the meeting of this date, reviewed in the meeting and found satisfactory.
 
 \item[4/2/2025:]  Some revisions carried out at for before the meeting on this date.
@@ -370,7 +372,7 @@ Of course Jensen did not phrase his argument in terms of tangled type theory.  O
 
 \newpage
 
-\subsubsection{There are $\alpha$-models for every $\alpha$}
+\subsubsection{There are $\alpha$-models for every $\alpha$}\label{subsection:alpha_models}
 
 This section is devoted to adapting a result of Jensen to our context.  Jensen proved in \cite{nfu} that for any infinite ordinal $\alpha$ of the metatheory, there is a model of NFU + Infinity in which there is a well-ordering of type $\alpha$.  This is of particular interest in the case $\alpha=\omega$, which establishes that the natural numbers of a model can correspond precisely to the natural numbers of the metatheory.
 
@@ -1590,9 +1592,9 @@ if it satisfies the additional properties that
 
 \begin{enumerate}
 
-\item if $(x,A)$ and $(y,A)$ are in the range of $S$, then $(\{z\},A) \in S$ for all atoms $z$ in the interference of $x$ and $y$,
+\item if $(x,A)$ and $(y,A)$ are in the range of $S$, then $(\{z\},A)$ is in the range of $S$ for all atoms $z$ in the interference of $x$ and $y$,
 
-\item and if $(x,A)$ is in the range of $S$ and $x^\circ = f_{\gamma,\delta}(y,T)$, then the range of $T^{\uparrow A_2}$ is a subset of the range of $S$:  supports appearing in inverse images under $f$ of litters which are near the first projections of an element of the support have a type-raised copy (mod reindexing) appearing in the support.
+\item and if $(x,A)$ is in the range of $S$, $\delta={\tt min}(A_1)$, $\gamma<{\tt min}(A_2)$, and $x^\circ = f_{\gamma,\delta}(y,T)$, then the range of $T^{\uparrow A_2}$ is a subset of the range of $S$:  supports appearing in inverse images under $f$ of litters which are near the first projections of an element of the support have a type-raised copy (mod reindexing) appearing in the support.
 \end{enumerate}
 \end{definition}
 
@@ -1602,13 +1604,13 @@ It should be evident that if $\pi$ is a $\beta$-allowable permutation and $S$ is
 $\pi[S]$ is also a strong $\beta$-support.
 \end{remark}
 
-\begin{proposition}
+\begin{proposition}\label{prop:extend_to_strong_support}
 Every $\beta$-support $S$ is an initial segment of some strong support.
 \end{proposition}
 \begin{proof}
-First, for each $(x,A)$ in the range of $S$ where $x^\circ = f_{\gamma,\delta}(y,T)$, add the range of $T^{\uparrow A_2}$ to the end of $S$.
+First, for each $(x,A)$ in the range of $S$ where $\delta={\tt min}(A_1)$, $\gamma<{\tt min}(A_2)$ and $x^\circ = f_{\gamma,\delta}(y,T)$, add the range of $T^{\uparrow A_2}$ to the end of $S$.
 Repeating this process $\omega$ times, we obtain a new support $S' \supseteq S$ that satisfies the second property of being a strong support; the domain of $S'$ is still a small ordinal as $\kappa$ is uncountable and regular.
-Finally, we append to $S$ all pairs $(\{z\},A)$ where $z$ is in the interference of near-litters $M,N$ where $(M,A),(N,A)$ is in the range of $S$.
+Finally, we append to $S$ all pairs $(\{z\},A)$ where $z$ is in the interference of near-litters $M,N$ where $(M,A)$, $(N,A)$ are in the range of $S$.
 This produces a support $S'' \supseteq S'$ which is clearly strong.
 \end{proof}
 
@@ -1657,7 +1659,7 @@ Direct, making use of the fact that $\chi_{x,T} = \chi_{y,U}$ if and only if the
 \end{comment}
 
 \begin{remark}
-It should be evident that for any $\beta$-allowable permutation $\pi$ and $\beta$-support $S$, $(\pi[S])^* = S^*$.  What is less evident and our first target result here is that if $S$ is a strong support then any $T$ with $T^* = S^*$ is the image of $S$ under the action of an allowable permutation:  the specifications precisely code the orbits in the strong supports under the allowable permutations.
+It should be evident that for any $\beta$-allowable permutation $\pi$ and $\beta$-support $S$, $(\pi[S])^* = S^*$.  What is less evident and our first target result here is that if $S$ is a strong support then any strong $T$ with $T^* = S^*$ is the image of $S$ under the action of an allowable permutation:  the specifications precisely code the orbits in the strong supports under the allowable permutations.
 \end{remark}
 
 \begin{lemma}\label{lem:specification_determines_orbit}
@@ -1693,7 +1695,7 @@ $$ \chi_{x,U} = \chi_{y,V};\quad \{ \langle \zeta, \eta \rangle : S_\zeta = (U^{
 Since $\chi_{x,U} = \chi_{y,V}$, there is a $\delta$-allowable permutation $\pi$ such that $\pi(x) = y$ and $\pi[U] = V$.
 So for any $(t,B)$ in the range of $U$, we have $S_\zeta = (t,B)$ if and only if $T_\zeta = (\pi_B(t),B)$.
 Therefore, as $S$ and $T$ are strong, we may conclude that $(\psi_{A_2})_\delta^*[U] = \pi[U]$, and that
-$$ \psi^*_A `` f_{\delta,\gamma}(x,U) \sim \psi_A(f_{\delta,\gamma}(x,U)) \sim f_{\delta,\gamma}(y,V) = f_{\delta,\gamma}(\pi(x),\pi[U]) $$
+$$ \psi^*_A `` f_{\delta,\gamma}(x,U) \sim \psi_A(f_{\delta,\gamma}(x,U)) =  f_{\delta,\gamma}(y,V) = f_{\delta,\gamma}(\pi(x),\pi[U]) $$
 as required for coherence.
 
 Finally, by the Freedom of Action Theorem (\ref{thm:foa}), $\psi$ approximates some $\beta$-allowable permutation $\pi$, and in particular, $\pi$ satisfies $\pi[S] = T$, as required.
@@ -1736,7 +1738,7 @@ In particular, this bound will depend on the existence of some ordinal $\gamma <
 There are less than $\mu$ coding functions for type 0 and for type $-1$.
 \end{lemma}
 \begin{proof}
-We describe all coding functions for type 0.  The orbit of a strong 0-support in the allowable permutations is determined by the positions in the support  occupied by near-litters, and for each position in the support occupied by a singleton, the positions, if any, of the near-litters in the support  which include it.
+We describe all coding functions for type 0.  The orbit of a strong 0-support in the allowable permutations is determined by the positions in the support  occupied by near-litters, and for each position in the support occupied by a singleton, the positions, if any, of the near-litters in the support  which include it, and for each position in the support occupied by a near-litter, the positions, if any, occupied by near-litters which are near it (this is exactly the information contained in the 0-specification of the support).
 There are no more than $2^\kappa$ ways to specify an orbit.  Now for each such support, there is a natural partition of type $-1$ into near-litters, singletons, and a large complement set.
 The partition has $\nu<\kappa$ elements, and there are $2^\nu\leq 2^\kappa$ objects of type 0 with this support, each determined by specifying for each compartment in the partition whether it is to be included or excluded from the set.
 So there are $2^\nu\leq 2^\kappa$ coding functions for that orbit in the supports, and so for any support (that need not be strong), there are at most $2^\kappa$ coding functions for its orbit, by first extending it to a strong support.   So there are no more than $2^\kappa<\mu$ coding functions over type 0.
@@ -1767,11 +1769,11 @@ but this follows from the fact that for any $\beta$-allowable $\pi$,
 The same calculation shows that for any orbit of $\beta$-supports $o$ under the action of allowable permutations, the restriction $C_{s,\gamma} \restriction o$ is a coding function.
 \end{definition}
 
-Our claim is that every $\beta$-coding function can be written in this form, where the elements of the set $s$ are particular coding functions of singletons of objects of type $\gamma$.
+Our claim is that every $\beta$-coding function can be written in this form, where the elements of the set $s$ are particular coding functions of singletons of objects of type $\gamma$.  We will make the reference of ``particular" here more precise.
 
 \begin{definition}[raised singleton]\label{def:raised_singleton}
   Let $\gamma < \beta$.
-  A $\beta$-coding function $\chi$ is called a {\em raised $\gamma$-singleton\/} if there is a $\beta$-support $S$ and an object $x \in \tau_\gamma$ with $\gamma$-support $U$, such that $\chi = \chi_{\{x\}_\beta,S + U^{\uparrow \beta}}$.
+  A $\beta$-coding function $\chi$ is called a {\em raised $\gamma$-singleton\/} if there is a $\beta$-support $S$ and $(x,U) \in \tau_{\gamma}^+$ such that $\chi = \chi_{\{x\}_\beta,S + U^{\uparrow \beta}}$.
 \end{definition}
 \begin{lemma}\label{lem:eq_combine}
   Let $\gamma < \beta$ be ordinals at most $\alpha$, and let $\chi$ be a $\beta$-coding function.
@@ -1862,7 +1864,7 @@ $$=\bigcup(\{(\pi_0)_\beta(b)\}_{\alpha} \cap \tau_\beta) = (\pi_0)_\beta(b).$$
 {Each type $\tau_\alpha$ has exactly $\mu$ elements.}
 \end{theorem}
 \begin{proof}
-Any element of a type is determined by a support (of which there are $\mu$ {by Remark \ref{rk:counting_supports}}) and a coding function (there are $<\mu$ of these {by lemma \ref{lem:count_coding_function}}), so a type has no more than $\mu$ elements (and obviously has at least $\mu$ elements).
+Any element of a type is determined by a support (of which there are $\mu$ {by remark \ref{rk:counting_supports}}) and a coding function (there are $<\mu$ of these {by lemma \ref{lem:count_coding_function}}), so a type has no more than $\mu$ elements (and obviously has at least $\mu$ elements).
 \end{proof}
 
 \newpage
@@ -1877,7 +1879,7 @@ Any element of a type is determined by a support (of which there are $\mu$ {by R
 Use $E$ for the membership relation $\in_{TTT}$ of the structure defined above (in which the membership of type $\beta$ objects in type $\alpha$ objects is actually a subrelation of the membership relation of the metatheory, a fact inherited from the scheme of supertypes).  It should be evident that $x E y \leftrightarrow \pi_\beta(x) E \pi(y)$,
 where $x$ is of type $\beta$, $y$ is of type $\alpha$, and $\pi$ is an $\alpha$-allowable permutation.
 
-Suppose that we are considering the existence of $\{x : \phi^s\}$, where $\phi$ is a formula of the language of TST with $\in$ translated as $E$, and $s$ is a strictly increasing sequence of types.  The truth value of each subformula of $\phi$ will be preserved if we replace each $u$ of type $s(i)$ with $\pi_{A_{s,i}}(u)$, where  $A_{s,i}$ is the set of all $s_k$ for $i \leq k \leq j+1$ [$x$ being of type $s(j)$, and there being no variables of type higher than $s(j+1)$]:  $\pi_{A_{s,i}}(x) E  \pi_{A_{s,i+1}}(y)$ is equivalent to $(\pi_{A_{s,i+1}})_{s(i)}(x) E \pi_{A_{s,i+1}}(y)$, which is equivalent to $xEy$ by the observation above. The formula $\phi$ will contain various parameters $a_i$ of types $s(n_i)$ and it is then evident that the set $\{x : \phi^s\}$ will be fixed by any $s(j+1)$-allowable permutation $\pi$ such that $\pi_{A_{s,n_i}}$ fixes $a_i$ for each $i$.  But this means that
+Suppose that we are considering the existence of $\{x : \phi^s\}$, where $\phi$ is a formula of the language of TST with $\in$ translated as $E$, and $s$ is a strictly increasing sequence of types.  Note that the TTT type of $x$ is some $s(j)$ and the TTT type of $\{x : \phi^s\}$ is $s(j+1)$.  The truth value of each subformula of $\phi$ will be preserved if we replace each $u$ of type $s(i)$ with $\pi_{A_{s,i}}(u)$, where  $A_{s,i}$ is the set of all $s_k$ for $i \leq k \leq j+1$ [there being no variables of type higher than $s(j+1)$]:  $\pi_{A_{s,i}}(x) E  \pi_{A_{s,i+1}}(y)$ is equivalent to $(\pi_{A_{s,i+1}})_{s(i)}(x) E \pi_{A_{s,i+1}}(y)$, which is equivalent to $xEy$ by the observation above. The formula $\phi$ will contain various parameters $a_i$ of types $s(n_i)$ and it is then evident that the set $\{x : \phi^s\}$ will be fixed by any $s(j+1)$-allowable permutation $\pi$ such that $\pi_{A_{s,n_i}}$ fixes $a_i$ for each $i$.  But this means that
  $\{x : \phi^s\}_{s(j+1)}$ is symmetric and belongs to type $s(j+1)$:
  we can merge the supports of the $a_i$'s (with suitable raising of indices) into a single $s(j+1)$-support.  Notice that we assumed the predicativity condition that no variable more than one type higher than $x$ appears (in the sense of TST).
 
@@ -1915,15 +1917,15 @@ Our plan is to use Freedom of Action technology to construct an $\alpha$-allowab
 and whose action on $T^{\uparrow\{\alpha,\beta\}}$ precisely parallels the action of $\pi$ on $T^{\uparrow\beta}$.
 
 If this is accomplished, then the action of $\pi^*$ fixes $S$ and so fixes $$\{\{g\}_\beta:g \in G\}_\alpha,$$ while at the same
-time $(\pi^*_\beta)_\gamma$ agrees with $\pi_\gamma$ on $G$.  This implies that $\pi_\gamma(g) \in G$ (and the same argument applies to $\pi^{-1}$)
-so $\pi$ fixes $G_\beta$'.
+time $(\pi^*_\beta)_\gamma$ agrees with $\pi_\gamma$ on $G$.  This implies that $\pi_\gamma(g) \in G$.  The same construction can be done for $\pi^{-1}$ in place of $\pi$ (for each $g$), 
+so $\pi$ fixes $G_\beta$.
 
 We construct the allowable permutation $\pi^*$ by the Freedom of Action Theorem (\ref{thm:foa}), by defining the following $\alpha$-approximation $\psi$.
 
 For every $(\{x\},A) \in {\tt rng}(S)$, we define $\psi_A(x) = x$, and for every $(N,A) \in {\tt rng}(S)$ for $N$ a near-litter, we define $\psi_A(N^\circ) = N^\circ$.
-Extend $T^{\uparrow\beta}$ its canonical strong $\beta$-support $T^*$ {(remark \ref{rk:canonical_strong_support})}, then if $(\{x\},A) \in {\tt rng}(T^*)$, we define $(\psi_\beta)_A(\pi^n_A(x)) = \pi^{n+1}_A(x)$ for every integer $n$, and if $(N,A) \in {\tt rng}(T^*)$ for $N$ a near-litter, we similarly define $(\psi_\beta)_A(\pi^n_A(N)^\circ) = \pi^{n+1}_A(N)^\circ$.
+Extend $T^{\uparrow\beta}$ to a strong $\beta$-support $T^*$ {(as in proposition \ref{prop:extend_to_strong_support})}, then if $(\{x\},A) \in {\tt rng}(T^*)$, we define $(\psi_\beta)_A(\pi^n_A(x)) = \pi^{n+1}_A(x)$ for every integer $n$, and if $(N,A) \in {\tt rng}(T^*)$ for $N$ a near-litter, we similarly define $(\psi_\beta)_A(\pi^n_A(N)^\circ) = \pi^{n+1}_A(N)^\circ$.
 
-We then complete orbits of atoms similarly to the proof of lemma \ref{lem:specification_determines_orbit} to ensure that $\psi_A(N) = N$ for $(N,A) \in {\tt rng}(S)$ and $(\psi_\beta)_A(\pi^n_A(N)) = \pi^{n+1}_A(N)$ for $(N,A) \in {\tt rng}(T^*)$, and then arrange extra orbits if needed such that the interference condition in definition \ref{def:base_approx} is satisfied.
+We then complete orbits of atoms similarly to the proof of lemma \ref{lem:specification_determines_orbit} to ensure that $\psi_A^*``N = N$ for $(N,A) \in {\tt rng}(S)$ and $(\psi_\beta)_A^*``(\pi^n_A(N)) = \pi^{n+1}_A(N)$ for $(N,A) \in {\tt rng}(T^*)$, and then arrange extra orbits if needed such that the interference condition in definition \ref{def:base_approx} is satisfied.
 \rk{[Sky:  Are extra details needed?]}
 
 {
@@ -1931,7 +1933,7 @@ It now suffices to check that this approximation is coherent.
 If $\psi_A^*``L \sim L'$, we have two cases: either $(N,A)$ appears in $S$ with $N^\circ = L = L'$, or $B = A\setminus\{\alpha\}$ has maximum element $\beta$ and $(N,B)$ occurs in $T^*$ with $\pi_B^n(N)^\circ = L$ and $\pi_B^{n+1}(N)^\circ = L'$.
 Note that if both of these cases are true at the same time, then as $\pi$ fixes $S_{(\beta)}$, the two defined images of $L$ coincide.
 
-In the first case, if $L$ is $A$-flexible then $L' = L$ is $A$-flexible as required, and if $L = f_{\delta,{\tt min}(A_1)}(x,T)$ with $\delta < {\tt min}(A_2)$, then as $S$ is a strong support, the range of $T^{\uparrow A_2 \cup \{\delta\}}$ is a subset of the range of $S$, as required.
+In the first case, if $L$ is $A$-flexible then $L' = L$ is $A$-flexible as required, and if $L = f_{\delta,{\tt min}(A_1)}(x,U)$ with $\delta < {\tt min}(A_2)$, then as $S$ is a strong support, the range of $U^{\uparrow A_2 \cup \{\delta\}}$ is a subset of the range of $S$, as required.
 
 For the second case, we first show that $L$ is $A$-flexible if and only if $L$ is $B$-flexible.
 The forward direction is trivial.
@@ -1946,7 +1948,7 @@ Hence $(T^*)^{\uparrow\alpha}$ is a strong $\alpha$-support, and we are done by 
 \end{proof}
 
 This completes the proof.  In the formal proof in Lean, what is actually done is a proof that each of the assertions in the finite axiomatization of Hailperin in the version discussed in {subsection \ref{ss:hailperin}}  holds in all typed versions in our structure for the language of TTT, so it is in fact a model of TTT.  The axioms in Hailperin other than the axiom of type lowering are predicative comprehension axioms and
-admit demonstration by the methods of {proposition \ref{prop:predicative_ttt} [or] section \ref{ss:predicative_ttt}}, done explicitly without metamathematics.  In the formalization, the axiom of type lowering, which contains rather more content than the axiom of set union restricted to sets of singletons which is proved here, is proved by first proving the existence of an iterated image under elementwise application of the singleton operation of the desired set, whose definition is predicative, then repeatedly applying the result of this section that sets of singletons have unions.
+admit demonstration by the methods of section \ref{ss:predicative_ttt}, done explicitly without metamathematics.  In the formalization, the axiom of type lowering, which contains rather more content than the axiom of set union restricted to sets of singletons which is proved here, is proved by first proving the existence of an iterated image under elementwise application of the singleton operation of the desired set, whose definition is predicative, then repeatedly applying the result of this section that sets of singletons have unions.
 
 
 
@@ -1979,7 +1981,7 @@ That the continuum can be well-ordered or that the axiom of dependent choices ca
 
 \subsection{Questions and a result about global choice-like statements}
 
-Questions of consistency with NF of global choice-like statements such as ``the universe is linearly ordered"  or the prime ideal theorem cannot be resolved by the method used here (at least, not without major changes).  Our models falsify the existence of a global linear order at the outset:  a litter cannot be well-ordered.  We see no reason to believe that the universe cannot be linearly ordered in NF or that the prime ideal theorem cannot hold, but we do not know how to model these situations.
+Questions of consistency with NF of global choice-like statements such as ``the universe is linearly ordered"  or the prime ideal theorem cannot be resolved by the method used here (at least, not without major changes).  Our models falsify the existence of a global linear order at the outset:  a litter cannot be linearly ordered.  We see no reason to believe that the universe cannot be linearly ordered in NF or that the prime ideal theorem cannot hold, but we do not know how to model these situations.
 
 We do have one quite interesting theorem which appears to show that most practical applications of the axiom of choice are supported in our models of TTT and so with care in the resulting models of NF.
 
@@ -2012,17 +2014,17 @@ Applying the same technique to sets with well-founded extensional relations on t
 NF with strong axioms such as the Axiom of Counting (introduced by Rosser in \cite{rosser}, an admirable textbook based on NF), the Axiom of Cantorian Sets (introduced in \cite{henson})\footnote{Getting Cantorian Sets or Large Ordinals to hold is very sensitive to the relationship between $\kappa$ and $\lambda$, and the first author is not yet entirely certain of the details.  It requires the hypothesis that $\kappa<\lambda=\mu$ to avoid outright refutability of this axiom in resulting models of NF, and then a large cardinal hypothesis.  We note that for the moment we need to use Henson's original formulation of the Axiom of Cantorian Sets, that any {\em well-orderable\/} cantorian set is strongly cantorian;  the situation for non-well-orderable sets is less clear.} or my axioms of Small Ordinals and Large Ordinals (introduced in  my \cite{mybook}, which pretends to be a set theory textbook based on NFU) can be obtained by choosing $\lambda$ large enough to have strong partition properties, more or less exactly as I report in my paper \cite{strongaxioms} on strong axioms of infinity in NFU:  the results in that paper are not all mine, and I owe a good deal to Robert Solovay in that connection (unpublished conversations and \cite{nfub}).
 
 
-That NF has $\alpha$-models for each standard ordinal $\alpha$ follows by the same methods Jensen used for NFU in his original paper \cite{nfu}:  the proof we give above for the existence of $\alpha$-models is essentially the same as Jensen's, and a model of TTT constructed by our method will implement each ordinal $\alpha$ of the metatheory which is less than $\kappa$ (and we can choose $\kappa$ larger than any fixed $\alpha$ and $\lambda$ with cofinality greater than $|\alpha|^{|\alpha|}$).
+That NF has $\alpha$-models for each standard ordinal $\alpha$ follows by the same methods Jensen used for NFU in his original paper \cite{nfu}:  the proof we give in subsection \ref{subsection:alpha_models} for the existence of $\alpha$-models is essentially the same as Jensen's, and a model of TTT constructed by our method will implement each ordinal $\alpha$ of the metatheory which is less than $\kappa$ (and we can choose $\kappa$ larger than any fixed $\alpha$ and $\lambda$ with cofinality greater than $|\alpha|^{|\alpha|}$).
 
   No model of NF can contain all countable subsets of its domain;  all well-typed combinatorial consequences
 of closure of a model of TST under taking subsets of size $<\kappa$ will hold in our models, but the application of compactness which gets us from TST + Ambiguity to NF forces the existence of externally countable proper classes, a result which has long been known and which also holds in NFU.
 
 \subsection{Some esoteric questions answered}
 
-We mention some esoteric problems which our approach solves.  The Theory of Negative Types of Hao Wang (TST with all integers as types, proposed in \cite{tnt})  has $\omega$-models;  an $\omega$-model of NF gives an $\omega$-model of the theory of negative types  immediately.  The question of existence of $\omega$ models of the theory of negative types was open.
+We mention some esoteric problems which our approach solves.  The Theory of Negative Types of Hao Wang (TST with all integers as types, proposed in \cite{tnt})  has $\omega$-models;  an $\omega$-model of NF gives an $\omega$-model of the theory of negative types  immediately.  The question of existence of $\omega$-models of the theory of negative types was open.
 
 In ordinary set theory, the Specker tree of a cardinal is the tree in which the top is the given cardinal, the children of the top node  are the preimages of the top under the map $(\kappa \mapsto 2^{\kappa})$, and the part of the tree
-below each child is the Specker tree of the child.  Forster proved using a result of Sierpinski that the Specker tree of a cardinal must be well-founded (a result which applies in ordinary set theory or in NF(U), with some finesse in the definition of the exponential map in NF(U)).  Given Choice, there is a finite bound on the lengths of the branches in any given Specker tree.  Of course by the Sierpinski result a Specker tree can be assigned an ordinal rank.  The question which was open
+below each child is the Specker tree of the child.  Forster proved using a result of Sierpi\'nski that the Specker tree of a cardinal must be well-founded (a result which applies in ordinary set theory or in NF(U), with some finesse in the definition of the exponential map in NF(U)).  Given Choice, there is a finite bound on the lengths of the branches in any given Specker tree.  Of course by the Sierpi\'nski result a Specker tree can be assigned an ordinal rank.  The question which was open
 was whether existence of a Specker tree of infinite rank is consistent.  It is known that in NF with the Axiom of Counting the Specker tree of the cardinality of the universe is of infinite rank.   Our methods show the existence of a model of NF with the Axiom of Counting.  This gives us a model of TST in which the Specker tree of some cardinal is of infinite rank.  It is straightforward to produce a model of bounded Zermelo set theory either with atoms or with extensionality and failure of foundation from a model of TST, which will satisfy the same stratified sentences:  identify the elements of type 0 either as atoms or with their own singletons, then implement elements of each type $i+1$ as subsets of type $i$ as guided by the original model of TST, identifying type $i+1$ objects with elements of lower types which have been assigned the same extension.  This shows that we can get a model of bounded Zermelo set theory with atoms or without foundation in which there is a cardinal with Specker tree of infinite rank.  It is straightforward with our methods to get a model of TTT with the Axiom of Counting with inaccessibles cofinal in $\lambda$, and in this model we will have an inaccessible greater than a cardinal with Specker tree of infinite rank,
 and so a model of ZFA in which there is a cardinal with Specker tree of infinite rank.  It's actually a bit easier than this:  the existence of a cardinal with Specker tree of infinite rank holds in any model built by our method in which $\lambda>\omega$, but referring back to the result about NF + Counting makes it easier to give a brief account here.
 
