@@ -698,6 +698,7 @@ def printparse(P):
 
 # more feedback from commands will be useful.
 
+
 # recent updates
 
 #try out the new interface.   It does basically everything that
@@ -1138,7 +1139,7 @@ def printparse(P):
 
 # Loglan grammar workspace
 
-# from peg import *
+#from peg import *
 
 loglan={}
 
@@ -1698,7 +1699,8 @@ def grammarbatch(gfile):
         if not (line1==''): rundef(loglan,line1)
     
 
-# from loglanpreamble import *
+
+#from loglanpreamble import *
 
 L("sp <- ([ ]+/([~`] &Co1))")
 
@@ -2360,7 +2362,7 @@ L("JIO <- (!JIOZA !JIOZI !JIOZU (sp? ((j io)/(j ao))))")
 
 L("DIO <- ((sp? ((b eu)/(c au)/(d io)/(f oa)/(k ao)/(j ui)/(n eu)/(p ou)/(g oa)/(s au)/(v eu)/(z ua)/(z ue)/(z ui)/(z uo)/(z uu))) ((c i ![ ] NI0)/ZI)?)")
 
-L("LAE <- (sp? ((l ae)/(l ue)))")
+L("LAE <- (sp? ((l ae)/(l ue)/(d ue)))")
 
 L("ME <- (sp? ((m ea)/(m e)))")
 
