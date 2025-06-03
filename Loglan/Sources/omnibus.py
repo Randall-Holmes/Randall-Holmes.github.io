@@ -1,3 +1,4 @@
+
 #  version of 2/7/2022 2 pm
 
 # 2/7/2022 declutter no longer removes spaces.  This is preparatory
@@ -1139,7 +1140,7 @@ def printparse(P):
 
 # Loglan grammar workspace
 
-#from peg import *
+# from peg import *
 
 loglan={}
 
@@ -1700,7 +1701,7 @@ def grammarbatch(gfile):
     
 
 
-#from loglanpreamble import *
+# from loglanpreamble import *
 
 L("sp <- ([ ]+/([~`] &Co1))")
 
@@ -2416,7 +2417,7 @@ L("KIU2 <- (sp? [)] Comma2? k iu)")
 
 L("SOI <- (sp? (s oi))")
 
-L("UI0 <- (!Predstart ((!([Ii] Juncture? [Ee]) Vv Juncture?)/(b ea)/(b uo)/(c ea)/(c ia)/(c oa)/(d ou)/(f ae)/(f ao)/(f eu)/(g ea)/(k uo)/(k uu)/(r ea)/(n ao)/(n ie)/(p ae)/(p iu)/(s aa)/(s ui)/(t aa)/(t oe)/(v oi)/(z ou)/(l oi)/(l oa)/(s ia)/(s ii)/(t oe)/(s iu)/(c ao)/(c eu)/(s ie)/(s eu)/(s ie2 i)))")
+L("UI0 <- (!Predstart ((!([Ii] Juncture? [Ee]) Vv Juncture?)/(b ea)/(b uo)/(c ea)/(c ia)/(c oa)/(d ou)/(f ae)/(f ao)/(f eu)/(g ea)/(k uo)/(k uu)/(r ea)/(n ao)/(n ie)/(p ae)/(p iu)/(s aa)/(s ui)/(t aa)/(t au)/(t oe)/(v oi)/(z ou)/(l oi)/(l oa)/(s ia)/(s ii)/(t oe)/(s iu)/(c ao)/(c eu)/(s ie)/(s eu)/(s ie2 i)))")
 
 L("NOUI <- ((sp? UI0 NOI0)/(sp? n [o] Juncture? Comma? sp? UI0))")
 
