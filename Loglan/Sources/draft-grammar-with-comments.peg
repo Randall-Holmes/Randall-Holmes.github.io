@@ -50,6 +50,8 @@
 
 <p>
 
+<LI> 6/8/2025:  trying to make it so that the literal hyphen - can be used as interverbal hyphen between predicate words in which there are no internal syllable breaks.  This isn't the precise condition for it to work, it checks that particular breaks are not there.
+
 <LI> 5/31/2025:  added "due" to class LAE, see discussion in recent transcripts.
 
 <LI> 4/17/2025:  fixed a bug with use of social lubricants with bare names in vocatives.
@@ -1315,6 +1317,8 @@ Syllable <- ((SyllableA/SyllableB) Juncture?)
 
 <p>
 
+
+
 <LI>The final consonant in a syllable.  There may be one or two final consonants.  A pair of final
 
 <LI>consonants may not be a non-continuant followed by a continuant.  A final consonant may not
@@ -1408,6 +1412,12 @@ SyllableY <- (&(InitialConsonants? [Yy]) Syllable)
 <p>
 
 StressedSyllable <- ((SyllableA/SyllableB) Stress2)
+
+<LI> a syllable not fullowed by a juncture, useful for making the regular hyphen work as interverbal hyphen
+
+<p>
+
+SyllableX <- ((SyllableA/SyllableB) !Juncture)
 
 <p>
 
@@ -1935,6 +1945,10 @@ CvvNoY <- (Co1 Vv ((Juncture? ar ar? Juncture? &Co1)/(en Juncture? &ar)/(Junctur
 
 <p>
 
+CvvNoYx <- (Co1 Vv ( (ar ar? &Co1)/(en &ar)/(!Juncture !Vo2)))
+
+<p>
+
 CvvNoYFinalStress <- (Co1 Vv ((ar Stress2 &Co1)/(Stress2 ar ar Juncture? &Co1)/(en Stress2 &ar)/(Stress2 !Vo2)))
 
 <p>
@@ -2037,7 +2051,15 @@ CcvCy <- (Initial Vo2 Juncture? Co1 wy Dash?)
 
 <p>
 
+CcvCyx <- (Initial Vo2 Juncture? Co1 wy !Juncture)
+
+<p>
+
 CvcCy <- ((Co1 Vo2 Juncture? Initial wy Dash?)/(Co1 Vo2 !NoMedial2 Co1 Juncture? Co1 wy Dash?))
+
+<p>
+
+CvcCyx <- ((Co1 Vo2 Juncture? Initial wy !Juncture)/(Co1 Vo2 !NoMedial2 Co1 Juncture? Co1 wy !Juncture))
 
 <p>
 
@@ -2093,6 +2115,14 @@ BorrowingTail2 <- (!SyllableC BorrowingSyllable (!StressedSyllable &SyllableC Bo
 
 <p>
 
+<LI>tail of a borrowing or borrowing djifoa with no internal junctures, used to allow hyphen to be the interverbal hyphen under certain conditions.
+
+<p>
+
+BorrowingTail2x <- (!SyllableC &SyllableX BorrowingSyllable (!StressedSyllable &SyllableC &SyllableX BorrowingSyllable)? !StressedSyllable &BorrowingSyllable VowelFinal (&wy/&[-] Juncture/!Character))
+
+<p>
+
 <LI>tail of a stressed borrowing djifoa, different because stress is shifted to the end
 
 <p>
@@ -2101,7 +2131,7 @@ BorrowingTail3 <- (!SyllableC !StressedSyllable BorrowingSyllable (!StressedSyll
 
 <p>
 
-BorrowingTail <- (BorrowingTail1/BorrowingTail2)
+BorrowingTail <- (BorrowingTail1/BorrowingTail2/BorrowingTail2x)
 
 <p>
 
@@ -2203,6 +2233,10 @@ RfinalDjifoa <- ((CcvCvBad/CvcCv/CvvNoHyphen/CcvBad) (&wy/!Character))
 
 <p>
 
+RfinalDjifoax <- ((&(SyllableX) CcvCvBad/&(SyllableX) CvcCv/(CvvNoYx/&SyllableX CcvBad/&SyllableX CvcBad)CvvNoHyphen/(CvvNoYx/&SyllableX CcvBad/&SyllableX CvcBad) CcvBad) (&wy/&[-] Juncture/!Character))
+
+<p>
+
 RmediallyStressed <- (CcvCvBadStressed/CvcCvStressed/CvvNoYMedialStress)
 
 <p>
@@ -2211,7 +2245,7 @@ RfinallyStressed <- (CvvNoYFinalStress/CCVBadStressed/CvcBadStressed/CvcNoYStres
 
 <p>
 
-BorrowingComplexTail <- (RmediallyStressed/(RfinallyStressed ((&(Co1 Mono) CvvNoHyphen)/CcvBad))/RfinalDjifoa)
+BorrowingComplexTail <- (RmediallyStressed/(RfinallyStressed ((&(Co1 Mono) CvvNoHyphen)/CcvBad))/RfinalDjifoa/RfinalDjifoax)
 
 <p>
 
@@ -2248,6 +2282,10 @@ StressedBorrowing <- (!ResolvedBorrowing &caprule StressedPreBorrowing !(sp? &Vo
 <p>
 
 BorrowingDjifoa <- (!ResolvedBorrowing &caprule PreBorrowing2 ((Stress2 wy Comma1)/(Juncture? wy Dash?)))
+
+<p>
+
+BorrowingDjifoax <- (!ResolvedBorrowing &caprule PreBorrowing2 ((Stress2 wy Comma1)/(wy Dash?)))
 
 <p>
 
@@ -2297,7 +2335,11 @@ PhoneticComplexTail2 <- (!SyllableC !SyllableY DefaultStressedSyllable (!Stresse
 
 <p>
 
-PhoneticComplexTail <- (PhoneticComplexTail1/PhoneticComplexTail2)
+PhoneticComplexTail2x <- (!SyllableC !SyllableY !SyllableX DefaultStressedSyllable (!StressedSyllable &SyllableX &(SyllableC/SyllableY) Syllable)? !StressedSyllable !SyllableY VowelFinal (&[-] Juncture/ !Character))
+
+<p>
+
+PhoneticComplexTail <- (PhoneticComplexTail1/PhoneticComplexTail2/PhoneticComplexTail2x)
 
 <p>
 
@@ -2365,6 +2407,10 @@ FinalDjifoa <- ((Borrowing/CcvCv/CvcCv/CvvNoHyphen/CcvNoY) !Character)
 
 <p>
 
+FinalDjifoax <- ((Borrowing/&SyllableX CcvCv/&SyllableX CvcCv/((BorrowingDjifoax/CvcCyx/CcvCyx/CvvNoYx/&SyllableX Ccv/&SyllableX Cvc)CvvNoHyphen)/((BorrowingDjifoax/CvcCyx/CcvCyx/CvvNoYx/&SyllableX Ccv/&SyllableX Cvc)CcvNoY)) (&[-] Juncture/!Character))
+
+<p>
+
 MediallyStressed <- (StressedBorrowing/CcvCvStressed/CvcCvStressed/CvvNoYMedialStress)
 
 <p>
@@ -2373,7 +2419,7 @@ FinallyStressed <- (StressedBorrowingDjifoa/CcvCyStressed/CvcCyStressed/CvvFinal
 
 <p>
 
-ComplexTail <- ((CvvHiddenStress ((&(Co1 Mono) CvvNoHyphen)/CcvNoY) !Character)/(FinallyStressed ((&(Co1 Mono) CvvNoHyphen)/CcvNoY))/MediallyStressed/FinalDjifoa)
+ComplexTail <- ((CvvHiddenStress ((&(Co1 Mono) CvvNoHyphen)/CcvNoY) !Character)/(FinallyStressed ((&(Co1 Mono) CvvNoHyphen)/CcvNoY))/MediallyStressed/FinalDjifoa/FinalDjifoax)
 
 <p>
 

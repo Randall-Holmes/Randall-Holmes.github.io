@@ -1,5 +1,10 @@
+#  version of 6/14/2025
 
-#  version of 2/7/2022 2 pm
+# version notes below had not been updated for a long time.
+
+# this version implements the double hyphen version of the interverbal hyphen.
+
+# it still supports the backquote and tilde.
 
 # 2/7/2022 declutter no longer removes spaces.  This is preparatory
 # to making sure comments are included in grammar and developing a tool
@@ -1701,7 +1706,7 @@ def grammarbatch(gfile):
     
 
 
-# from loglanpreamble import *
+#from loglanpreamble import *
 
 L("sp <- ([ ]+/([~`] &Co1))")
 
@@ -1853,7 +1858,7 @@ L("NAMEWORD <- (((&caprule MarkedName)/(Comma1 !FalseMarked &caprule PRENAME)/(&
 
 L("Namemarker <- ((([Ll] [Aa] Juncture?)/([Hh] [Oo] [Ii] Juncture?)/([Hh] [Uu] Juncture? [Ee] Juncture?)/([Cc] &(Explicitpause/([Ii] Juncture? sp2 PRENAME)) [Ii] Juncture?)/([Ll] [Ii] Juncture? [Uu] Juncture?)/([Gg] [Aa] [Oo] Juncture?)/([Mm] [Uu] Juncture? [Ee] Juncture?)) !Vo1)")
 
-L("Badnamemarker <- (Namemarker !Vo1 Comma0? (Syllable &Syllable)* MaybePauseSyllable)")
+L("Badnamemarker <- (Namemarker !Vo1 Comma0? ((Syllable/('--' &Syllable)) &(Syllable/('--' &Syllable)))* MaybePauseSyllable)")
 
 L("Vthree <- ((Vo2 Juncture?) (Vo2 Juncture?) (Vo2 Juncture?))")
 

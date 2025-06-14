@@ -6,7 +6,7 @@
 
 \author{M. Randall Holmes}
 
-\date{5/17/2025}
+\date{6/14/2025}
 
 \begin{document}
 
@@ -44,6 +44,8 @@ We do not object to the borrowing and use of our materials in other constructed 
 \subsection{Version notes}
 
 \begin{description}
+
+\item[6/24/2025:]  Adding the double hyphen version of the interverbal hyphen and an improved discussion of rules for pausing.
 
 \item[5/17/2025:]  Being more precise about the permission to omit a comma under the previous entry, which is actually quite limited.  One is actually only allowed to omit a comma in that situation between a name marker and following name.
 
@@ -417,12 +419,16 @@ and ``borrowed predicate", or even ``complex" and ``borrowing".  We comment on t
 
 \subsection{Pauses and word boundaries}
 
-Words (in the phonetic sense) end at whitespace, at a comma or mark of terminal punctuation (periods and some other punctuation marks), or sometimes without any explicit indication at all (where phonetics are sufficient to recognize where one word ends and another begins).\footnote{The marks of terminal punctuation are {\bf .:;?!}.  
-The silence or change of voice marker {\tt \#} used by JCB is supported.   This may not appear in quoted or parenthesized Loglan text; it is not really fully privileged punctuation.  It does allow multiple utterances in different voices (including the same voice stopping and starting again) on the same line of parsed text.  Words can end at double quotes or close parentheses, which appear in certain special contexts.  The dash {\bf --} and ellipses $\ldots$ are supported as ``free modifiers" and may be used fairly freely.}
 
-A comma in Loglan marks an explicit pause (and is followed by whitespace;  the close comma used to indicate unusual syllable breaks between vowels in earlier versions of Loglan is replaced by the hyphen which we use to represent syllable breaks in general).
+There is a later section discussing situations in which Loglan requires explicit indication of a pause.
 
-The special characters \verb|`| (called ``backquote") and \verb|~| (called ``tilde") act as an alternative word break.  It must be followed by a consonant, it cannot be expressed as a pause, and it does have the effect of ending a word.  We also call this the interverbal hyphen.  The backquote is the preferred shape;  but we processed and parsed a lot of old text with the tilde, so it is still supported.  A group of ``words" linked by the interverbal hyphen must be followed by an actual pause (or end of utterance) whether this is expressed by a comma or not (one is only actually allowed to omit a comma in this way after a name marker).  This fixes a minor parser issue discovered 5/10/2025 without need for a change to the parser.  For example, there is a pause at the whitespace in {\bf hoi`la Bekli}.
+
+Words (in the phonetic sense) end at whitespace, at a comma, {\bf \verb|--|}, {\bf...}, or mark of terminal punctuation (periods and some other punctuation marks), or sometimes without any explicit indication at all (where phonetics are sufficient to recognize where one word ends and another begins).\footnote{The marks of terminal punctuation are {\bf .:;?!}.  
+The silence or change of voice marker {\tt \#} used by JCB is supported.   This may not appear in quoted or parenthesized Loglan text; it is not really fully privileged punctuation.  It does allow multiple utterances in different voices (including the same voice stopping and starting again) on the same line of parsed text.  Words can end at double quotes or close parentheses, which appear in certain special contexts.  The dash {\tt --} and ellipses $\ldots$ are supported as ``free modifiers" and may be used fairly freely.}
+
+A comma in Loglan marks an explicit pause (and is followed by whitespace;  the close comma used to indicate unusual syllable breaks between vowels in earlier versions of Loglan is replaced by the hyphen which we use to represent syllable breaks in general).  An explicit pause is also said to exist where whitespace is followed by a vowel, preceded by a consonant, or (very special case) occurs between the particle {\bf ci} and a name word.  When whitespace occurs next to the dash {\bf \verb|--|} on either side or both, it signals a pause.  {\bf ...} signals a pause.
+
+A special device called the ``interverbal hyphen'' is implemented either as {\tt --} with no adjacent spaces (preferred) or as backquote \verb |`|  or tilde \verb|~|  (the latter two being less preferred and implemented in a less economical way;  they may eventually be removed).  One does not pause at an interverbal hyphen but it does force a word break.  A block of words linked with interverbal hyphens must be followed by an explicit pause or end of utterance whether this is explicitly indicated or not.
 
 Whitespace is sometimes an explicit pause and sometimes a word boundary which is not marked by any actual phonetic feature.  Where whitespace does not appear, one should not pause.  Where a pause is allowed at whitespace, a comma should always be permitted (The old parser LIP does not always support this, but we regard this as debugging, not a novelty).   There are situations where whitespace is allowed due to a word break but an actual comma pause would change the parse (and so in speech such a whitespace is not expressible as a pause).\footnote{There are such instances of whitespace which are permitted to be written but cannot represent a pause, in connection with the handling of the legacy forms of the APA connectives.  I should look into whether the interverbal hyphen can be used in these contexts;  it would make more sense.}
 
@@ -435,7 +441,7 @@ We note the subtle point that the end of a predicate word may have to be indicat
 There are special conventions associated with the cmapua {\bf ci}:  whitespace following it should not be expressed as a pause unless the following word is vowel-initial (in which case phonetics demands a pause) or the following word is a Loglan name word (in which case a pause is required, though it is permitted to write simple whitespace).  This has to do with the fact that {\bf ci} is a name marker, but only when it is followed by a pause; this stipulation guards many occurrences of {\bf ci} which have nothing to do with names from having to follow the phonetic rules for name markers.  Note that
 {\bf ci} followed by a vowel initial predicate does look to the parser like a name marker, so the parser will want a pause after the predicate (which can be delayed with an interverbal hyphen).
 
-It is possible to resolve a stream of Loglan phonemes into words unambiguously, with the qualification that the resolution of streams of Loglan grammatical particles is actually done by the grammar proper.  We indicate how to do this.
+It is possible to resolve a stream of Loglan phonemes into words unambiguously, with the qualification that the resolution of streams of Loglan grammatical particles is actually done by the grammar proper.  We indicate how to do this in the course of the following discussion.
 
 \subsection{Structure words (cmapua)}
 
@@ -488,12 +494,12 @@ Where a false name marker occurs and it was the actual intention of the speaker 
 
 The parser will raise an error if it finds a name marker word followed possibly by an explicit pause (comma or situation around whitespace which forces a pause), followed by text including whitespace but no explicit pause, followed by a name word (recognizable by its right boundary at a consonant). The problem with this is that because of the intervening whitespace, it cannot be  the intention of the writer that the name marker sets the left boundary of the name word, but if the utterance were read without pause, the name marker would indeed set the left boundary of the name word.\footnote{A reader requested an example.  {\bf La Farfu ga cluva la Djan} would trigger this problem, and needs to be corrected to {\bf La Farfu, ga cluva la Djan}.  Without the explicit pause, it could be read phonetically as {\bf lafar'fuclu'valadjan}, which parses as {\bf La Farfugacluvaladjan}, a single name.}  
 
-There are uses of name markers in which they are not followed immediately by name words:  the rule governing these (which also applies to the normal uses of name marker words) is that the first whitespace after, but not immediately after, a name marker word must be a phonetically mandatory pause: comma marked, or following a consonant, or preceding a vowel.
+There are uses of name markers in which they are not followed immediately by name words:  the rule governing these (which also applies to the normal uses of name marker words) is that the first whitespace after, but not immediately after, a name marker word must be a phonetically mandatory pause: comma marked, or following a consonant, or preceding a vowel.  This rule applies in the absence of a distant name which triggers the problem indicated above:  it is better for parser rules to be local as far as possible.
 
 An example:  in {\bf hoi le farfu je la Rabrrt}, which is bad, it is legal but odd to amend it to {\bf hoi le, farfu je la Rabbrt}, most natural to amend it to {\bf hoi le-farfu, je la Rabrrt} [the whitespace after {\bf le} is here replaced with a syllable break to make it clear that one does not pause], and a sign of last minute panic to amend it to {\bf hoi le farfu je la, Rabrrt}, which in fact would not parse as written and would have to be written
-{\bf hoi le-far'fu-je-la, Rabrrt}, explicitly showing that the pause is delayed.  It is worth noting that {\bf hoi la, Djan} and {\bf hue la, Djan} actually unavoidably require the pauses shown to avoid the risk of referring to {\bf Ladjan}.   Some speakers have noted that this rule may encourage a style in writing which would not usually be followed in speech:  {\bf hoi le, farfu je la Rabbrt} might be preferred in writing because it is orthographically simpler.  In compound predicate names, this might encourage use of stresses:  {\bf Mi vizka la Caslo Monca vu} is bad, could be amended to {\bf Mi vizka le Caslo, Monca vu} or {\bf Mi vizka le Caslo, Monca, vu} for orthographic ease, but in speech would probably be {\bf Mi vizka le Cas'lo-Monca, vu}.    A less laborious style for writing these sentences is made possible by the interverbal hyphen [which was introduced exactly for this purpose]:  {\bf hoi le\verb|`|farfu\verb|`|je\verb|`|la, Rabrrt} and {\bf Mi vizka la Caslo\verb|`|Monca, vu}.  In the text of the Visit, I have followed the last style.
+{\bf hoi le-far'fu-je-la, Rabrrt}, explicitly showing that the pause is delayed.  It is worth noting that {\bf hoi la, Djan} and {\bf hue la, Djan} actually unavoidably require the pauses shown to avoid the risk of referring to {\bf Ladjan}.   Some speakers have noted that this rule may encourage a style in writing which would not usually be followed in speech:  {\bf hoi le, farfu je la Rabbrt} might be preferred in writing because it is orthographically simpler.  In compound predicate names, this might encourage use of stresses:  {\bf Mi vizka la Caslo Monca vu} is bad, could be amended to {\bf Mi vizka le Caslo, Monca vu} or {\bf Mi vizka le Caslo, Monca, vu} for orthographic ease, but in speech would probably be {\bf Mi vizka le Cas'lo-Monca, vu}.    A less laborious style for writing these sentences is made possible by the interverbal hyphen [which was introduced exactly for this purpose]:  {\bf hoi le--farfu--je--la, Rabrrt} and {\bf Mi vizka la Caslo--Monca, vu}.  In the text of the Visit, I have followed the last style.\footnote{We note (as examplified here) that typesetting software might replace {\tt --} with --.  We regard this as harmless, as {\tt --} is actually intended to represent --, and if necessary we could set up the parser to read literal dashes --.}
 
-The rule that false name markers cannot occur in names was long ago abandoned (in the 1990s) by TLI Loglan.  Precise definition of what you do with false name markers was hard to think about before phonetic parsing was available.  The requirement that names resolve into syllables is new since 2013 (I seem to recall that Lojban does something like this), and interacts with the definition of a false name marker as indicated above.    This set of rules manages the left boundary of names problem adequately;  in Lojban I believe this is managed by requiring that name words be bounded on the left by a pause;  it is nice to see that JCB's original concept
+The rule that false name markers cannot occur in names was long ago abandoned (in the 1990s) by TLI Loglan.  Precise definition of what you do with false name markers was hard to think about before phonetic parsing was available.  The requirement that names resolve into syllables is new since 2013 (I believe that some Lojbanists have advocated this), and interacts with the definition of a false name marker as indicated above.    This set of rules manages the left boundary of names problem adequately;  in Lojban I believe this is managed by requiring that name words be bounded on the left by a pause;  it is nice to see that JCB's original concept
 has a fairly simple implementation (which has arrived at its present form (2024) only after considerable reflection).
 
 It might be thought that imposing additional restrictions on the formation of Loglan names would damage the corpus.  In fact, there are only two difficulties which arise.  Continuants must be doubled (as in {\bf Rrl}, ``Earl") and this happens not unseldom;  but JCB {\em did\/} actually suggest that this might be a good idea in Loglan 1.  The other problem is that our definition of the syllable does not allow final consonant clusters of more than two consonants.  Usually one of the consonants in such a cluster is a continuant, so this can be fixed, as in {\bf Hollmz}, {\bf Marrks}.  One should remember that this is not a strictly orthographic correction:  a Loglander will actually pronounce these names with the indicated continuant in syllabic form, at least if she is being careful.
@@ -1704,7 +1710,9 @@ Additional words with the same grammar are
 \item[bea:] (for example), 
 \item[buo:] (however, on the contrary, but), 
 \item[cea:] (in other words, namely), 
-\item[cia :](similarly), coa (in short, briefly), 
+\item[cia :](similarly), 
+
+\item [coa:]   (in short, briefly), 
 \item[dou:] (given, by hypothesis), 
 \item[fae :](and vice versa), 
 \item[fao :](finally, in conclusion), 
@@ -1733,7 +1741,7 @@ The word {\bf cao} emphasizes the next word.   The grammar will not show this, a
 to indicate stress in writing.\footnote{The word {\bf kia} is listed as having the effect of cancelling the previous word.  It is now implemented.  The units it eliminates are not precisely words, and at present it does not work very well.  An essay is owed to the gentle reader.}
 
 The word {\bf seu} (a proposal) has a semantic effect, though it is grammatically an attitudinal.  It marks an {\em answer\/}.  This
-is {\bf significantly useful}\footnote{serving to compensate for the fact that Loglan, unlike Lojban, does not have an explicit marker for the imperative; we further compensate for this by insisting that tense-marked gasents are observatives, not imperatives.} for indicating that a predicate word given as an answer to a question is not intended as an imperative or observative; it may have other uses.
+is {\bf significantly useful}\footnote{serving to compensate for the fact that Loglan, unlike Lojban, does not have an explicit marker for the imperative; we further compensate for this by insisting that tense-marked gasents are observatives, not imperatives.} for indicating that a predicate word given as an answer to a question is not intended as an imperative or observative; it may have other uses.  We advocate the rule that use of {\bf seu} is {\bf required\/} when a bare predicate word is used as an answer, to avoid the speaker issuing unintended commands.
 
 Finally, we have words of social lubrication, 
 
@@ -1762,7 +1770,7 @@ In addition, there are discursive operators firstly, secondly, lastly formed by 
 
 The word {\bf no} is the logical negation operator.   Initial {\bf no} in attitudinal forms, KOU words, and subordinate clauses (as well as occurrences internal to some compound structure words) must be excluded from this grammatical class.  Pauses after {\bf no} may be semantically significant, because they cause word breaks, and also because of the possible use of {\bf no} to negate an entire utterance rather than its first argument (which usually does not affect meaning, though it affects the parse of a sentence).
 
-\section{Essays on word-making, and on what a word is exactly}
+\section{Essays on word-making, and on what a word is exactly, and on the mandatory expression of pauses.}
 
 \subsection{Borrowing predicates}
 
@@ -1839,7 +1847,7 @@ Name words are reasonably easy to recognize phonetically (pause free sequences o
 unmistakably with a pause after a consonant).  They certainly meet JCB's criterion; pausing in the middle of a name breaks it.   We also view the name marker word as a word.
 
 Predicate words are fairly easily recognized phonetically, starting with a characteristic (CV$^n$)CC phonetic configuration and ending with a penultimate stress.  They do not break into separate breathgroups except for JCB's exception of allowing pauses after borrowing affixes.  Of course, one might heretically view a predicate with a borrowing affix as a kind of phrase, but I think it is really still a word.   Similar remarks apply to 
-John Cowan's {\bf zao} construction, another way to build a complex predicate which actually allows internal pauses\footnote{The {\bf zao} construction is not currently described in this document (it vanished when I installed the Phonetics section in the old Report document), but it is my intention to restore it to the grammar as soon as I have reinstalled it in the parser.}.
+John Cowan's {\bf zao} construction, another way to build a complex predicate which actually allows internal pauses.
 
 More headaches about what a word is arise with cmapua.   The Lojbanists have apparently arranged things so that one can pause anywhere in a stream of cmapua syllables without affecting meaning, so that the unit ``words" are just unit cmapua.  This is not true in TLI Loglan.   JCB certainly thought that compound cmapua words existed in the language.  I regard the members of certain large cmapua classes as words, and in most cases
 I have enforced the rule that one cannot pause inside them.  
@@ -1879,7 +1887,7 @@ The sentence {\bf le mi hasfa} is now an instance of the same grammatical constr
 
 \item[UI:]  NI F i discursives are words.  Negative attitudinals such as {\bf noia} might be viewed as words:  {\bf liu noia} (with following pause) should parse under the Phonetics Proposal.
 
-\item[BI:]  I allow forms like {\bf nubi}, which are treated as words ({\bf La Djan, nubi da} is parseable, but {\bf La Djan, nu bi da} is not:  {\bf nubi} is semantically but not grammatically parallel to {\bf nu blanu}.)
+\item[BI:]  I allow forms like {\bf nubi}, which are treated as words ({\bf La Djan, nubi da} is parseable, but {\bf La Djan, nu bi da} is not:  {\bf nubi} is semantically but not grammatically parallel to {\bf nu blanu}.
 
 \end{description}
 
@@ -1888,6 +1896,34 @@ Other cmapua classes define words inhabited by one-unit cmapua (not necessarily 
 This is actually not a terribly long list.  Familiarity with the phonetics of names and predicates (admittedly quite nasty in its finer technical details, but usually quite manageable in normal situations) and the grammar of a few word classes will allow you to recognize the Loglan word.   
 
 It is important to notice, though, that while the recognition of name and predicate words is a matter of phonetics, recognition of the cmapua words is a matter of understanding the grammar.  They do have a common phonetic property (most of them), in not admitting internal pauses, but they are not resolved using phonetic criteria.
+
+\newpage
+
+\subsection{A survey of mandates to pause}
+
+In this section, I attempt to give an account of all circumstances under which we pause, and all circumstances under which we are required to express our pauses explicitly.
+
+It is always necessary to pause after a name word.  We follow original Loglan usage in requiring
+an explicit comma pause after a name word, unless the name word is utterance-final or a non-final component of a serial name.  In any case such pauses must be expressed in speech.
+
+Rice thought that this rule could be relaxed.  We think it could be in principle, but we find it useful to remind readers and writers of the mandatory pauses in speech, which give Loglan some of its unique character.
+
+We generalize this pause rule in a way which has taken time to settle down.  Whenever a name marker is used, it must be followed by a block of text not containing whitespace which is followed by an explicit pause.  This is not intended to constrain where one may reasonably pause.  \newline {\bf La Blabi--Lepsu, ga fundi la Djan} is the most natural way to articulate this phrase, arguably, and the use of the interverbal hyphen allows one to form longer uninterrupted blocks of text to be articulated without pause.  Merely omitting whitespace or using syllable breaks often also works, but it does not work for whitespace after a predicate, which signals placement of a stress, so cannot be omitted or replaced with a hyphen as a rule.
+
+It is worth noting that the change between the previous rule (which triggered a parse failure just in case there was a remote name word which might eat more of the utterance than intended in pause free enunciation of the utterance) and this version is entirely lexicographic:  exactly the same utterances in speech are allowed.  The merit of this version is that it is entirely local, and encourage good habits which one should follow in any case:  when you use a name marker without a following name word, you may not know that a name word will pop up later in the utterance:  pausing is just a good idea.
+
+Comma pauses before names are required where names occur unmarked as name suffixes to descriptions as in {\bf le Blanu, Ailin}.  This example is interesting in that it indicates that a comma pause is mandated in this kind of construction even when the name is vowel initial.
+
+It is always necessary to pause before a vowel initial word in speech.  We do not require that such pauses be expressed by commas.  We note for our own reasons that we do not allow such pauses to be mere glottal stops, as was the case in Loglan 1989, because we do allow disyllabic VV's to be separated by glottal stop instead of glide.
+
+Where we do require explicit indication of the pause before a vowel initial word to be expressed as a comma is before a logical connective.  This was the case in Loglan 1989 as well.  Moreover, pauses are mandated and must be indicated by commas before logical connectives beginning with consonants (compounds beginning with {\bf no-} or {\bf nu-} and the connective {\bf ha}).  We do not apologize for these pauses at all:  they express phrasing in Loglan speech which can profitably be explicitly marked.  It should be noted that the most tightly binding logical connectives, those in the CA series, do not require pauses:  this is as in 1989 and indeed as in 1975.
+
+We require explicit pauses after the APA and IPA connectives.  We advocate for instead closing these connectives with {\bf -fi}, in which case one does not need to pause.  We note that JCB in old text often did pause after IPA words, and may have been aware of the serious problem of ambiguity which these words created, which was invisible to the old parser because the structure of compound words was invisible to the old parser.  We have preserved the ability to use these words in their original form because IPA words are ubiquitous in all inherited text, and APA words are used often in the Visit.
+
+We require explicit comma pauses after all words quoted with {\bf liu} or {\bf niu}.  The reason for this is that we have multisyllable cmapua words in Loglan, and so we must mark where a quoted such word ends.  It then seems best to pause after any quoted word.
+
+
+\newpage
 
 \chapter{Grammar}
 
