@@ -1708,6 +1708,8 @@ def grammarbatch(gfile):
 
 #from loglanpreamble import *
 
+
+
 L("sp <- ([ ]+/([~`] &Co1))")
 
 L("sp2 <- [ ]+")
@@ -1814,6 +1816,8 @@ L("SyllableY <- (&(InitialConsonants? [Yy]) Syllable)")
 
 L("StressedSyllable <- ((SyllableA/SyllableB) Stress2)")
 
+L("SyllableX <- ((SyllableA/SyllableB) !Juncture)")
+
 L("NameEndSyllable <- (InitialConsonants? (Syllabic/(Vocalic &FinalConsonant)) FinalConsonant? FinalConsonant? Stress? !spnopause !Letter)")
 
 L("Explicitpause <- ((Co1 Stress2? sp2 &Letter)/(Letter Stress2? sp2 &Vo1)/(Letter Stress2? [,] sp2 &Letter))")
@@ -1858,7 +1862,7 @@ L("NAMEWORD <- (((&caprule MarkedName)/(Comma1 !FalseMarked &caprule PRENAME)/(&
 
 L("Namemarker <- ((([Ll] [Aa] Juncture?)/([Hh] [Oo] [Ii] Juncture?)/([Hh] [Uu] Juncture? [Ee] Juncture?)/([Cc] &(Explicitpause/([Ii] Juncture? sp2 PRENAME)) [Ii] Juncture?)/([Ll] [Ii] Juncture? [Uu] Juncture?)/([Gg] [Aa] [Oo] Juncture?)/([Mm] [Uu] Juncture? [Ee] Juncture?)) !Vo1)")
 
-L("Badnamemarker <- (Namemarker !Vo1 Comma0? ((Syllable/('--' &Syllable)) &(Syllable/('--' &Syllable)))* MaybePauseSyllable)")
+L("Badnamemarker <- (Namemarker !Vo1 Comma0? (Syllable &Syllable)* MaybePauseSyllable)")
 
 L("Vthree <- ((Vo2 Juncture?) (Vo2 Juncture?) (Vo2 Juncture?))")
 
@@ -1920,6 +1924,8 @@ L("CvvFinalStress <- (Co1 Vv ((Stress2 hh? wy Dash? &Complex)/(ar Stress2 &Co1)/
 
 L("CvvNoY <- (Co1 Vv ((Juncture? ar ar? Juncture? &Co1)/(en Juncture? &ar)/(Juncture? !Vo2)))")
 
+L("CvvNoYx <- (Co1 Vv ((ar ar? &Co1)/(en &ar)/(!Juncture !Vo2)))")
+
 L("CvvNoYFinalStress <- (Co1 Vv ((ar Stress2 &Co1)/(Stress2 ar ar Juncture? &Co1)/(en Stress2 &ar)/(Stress2 !Vo2)))")
 
 L("CvvNoYMedialStress <- (Co1 !BrokenMono Vo2 Stress2 Vo2 Dash? !Vo2)")
@@ -1960,7 +1966,11 @@ L("CvcCvStressed <- ((Co1 Vo2 Stress2 Initial Vo2 Dash? !Vo2)/(Co1 Vo2 !NoMedial
 
 L("CcvCy <- (Initial Vo2 Juncture? Co1 wy Dash?)")
 
+L("CcvCyx <- (Initial Vo2 Juncture? Co1 wy !Juncture)")
+
 L("CvcCy <- ((Co1 Vo2 Juncture? Initial wy Dash?)/(Co1 Vo2 !NoMedial2 Co1 Juncture? Co1 wy Dash?))")
+
+L("CvcCyx <- ((Co1 Vo2 Juncture? Initial wy !Juncture)/(Co1 Vo2 !NoMedial2 Co1 Juncture? Co1 wy !Juncture))")
 
 L("CcvCyStressed <- (Initial Vo2 Stress2 Co1 wy Dash?)")
 
@@ -1970,9 +1980,11 @@ L("BorrowingTail1 <- (!SyllableC &StressedSyllable BorrowingSyllable (!StressedS
 
 L("BorrowingTail2 <- (!SyllableC BorrowingSyllable (!StressedSyllable &SyllableC BorrowingSyllable)? !StressedSyllable &BorrowingSyllable VowelFinal (&wy/!Character))")
 
+L("BorrowingTail2x <- (!SyllableC &SyllableX BorrowingSyllable (!StressedSyllable &SyllableC &SyllableX BorrowingSyllable)? !StressedSyllable &BorrowingSyllable VowelFinal (&wy/(&[-] Juncture)/!Character))")
+
 L("BorrowingTail3 <- (!SyllableC !StressedSyllable BorrowingSyllable (!StressedSyllable &SyllableC BorrowingSyllable)? &BorrowingSyllable InitialConsonants? Vocalic Stress2 &wy)")
 
-L("BorrowingTail <- (BorrowingTail1/BorrowingTail2)")
+L("BorrowingTail <- (BorrowingTail1/BorrowingTail2/BorrowingTail2x)")
 
 L("Ccvv <- ((InitialConsonants Vo2 Juncture? Vo2 Juncture? !Character)/(InitialConsonants Vo2 Stress2 !Mono Vo2 Juncture?))")
 
@@ -1986,11 +1998,13 @@ L("PreBorrowing3 <- (&Predstart !Ccvv !Cmapua !SyllableC (!BorrowingTail3 !Stres
 
 L("RfinalDjifoa <- ((CcvCvBad/CvcCv/CvvNoHyphen/CcvBad) (&wy/!Character))")
 
+L("RfinalDjifoax <- (((&SyllableX CcvCvBad)/(&SyllableX CvcCv)/((CvvNoYx/(&SyllableX CcvBad)/(&SyllableX CvcBad)) CvvNoHyphen)/((CvvNoYx/(&SyllableX CcvBad)/(&SyllableX CvcBad)) CcvBad)) (&wy/(&[-] Juncture)/!Character))")
+
 L("RmediallyStressed <- (CcvCvBadStressed/CvcCvStressed/CvvNoYMedialStress)")
 
 L("RfinallyStressed <- (CvvNoYFinalStress/CCVBadStressed/CvcBadStressed/CvcNoYStressed)")
 
-L("BorrowingComplexTail <- (RmediallyStressed/(RfinallyStressed ((&(Co1 Mono) CvvNoHyphen)/CcvBad))/RfinalDjifoa)")
+L("BorrowingComplexTail <- (RmediallyStressed/(RfinallyStressed ((&(Co1 Mono) CvvNoHyphen)/CcvBad))/RfinalDjifoa/RfinalDjifoax)")
 
 L("ResolvedBorrowing <- ((!BorrowingComplexTail (CvvNoY/CcvBad/CvcBad))* BorrowingComplexTail)")
 
@@ -2000,6 +2014,8 @@ L("StressedBorrowing <- (!ResolvedBorrowing &caprule StressedPreBorrowing !(sp? 
 
 L("BorrowingDjifoa <- (!ResolvedBorrowing &caprule PreBorrowing2 ((Stress2 wy Comma1)/(Juncture? wy Dash?)))")
 
+L("BorrowingDjifoax <- (!ResolvedBorrowing &caprule PreBorrowing2 ((Stress2 wy Comma1)/(wy Dash?)))")
+
 L("StressedBorrowingDjifoa <- (!ResolvedBorrowing &caprule PreBorrowing3 wy Dash? Comma1?)")
 
 L("DefaultStressedSyllable <- Syllable")
@@ -2008,17 +2024,21 @@ L("PhoneticComplexTail1 <- (!SyllableC !SyllableY &StressedSyllable DefaultStres
 
 L("PhoneticComplexTail2 <- (!SyllableC !SyllableY DefaultStressedSyllable (!StressedSyllable &(SyllableC/SyllableY) Syllable)? !StressedSyllable !SyllableY VowelFinal !Character)")
 
-L("PhoneticComplexTail <- (PhoneticComplexTail1/PhoneticComplexTail2)")
+L("PhoneticComplexTail2x <- (!SyllableC !SyllableY !SyllableX DefaultStressedSyllable (!StressedSyllable &SyllableX &(SyllableC/SyllableY) Syllable)? !StressedSyllable !SyllableY VowelFinal ((&[-] Juncture)/!Character))")
+
+L("PhoneticComplexTail <- (PhoneticComplexTail1/PhoneticComplexTail2/PhoneticComplexTail2x)")
 
 L("PhoneticComplex <- (&Predstart !Ccvv !Cmapua !SyllableC ((StressedBorrowingDjifoa &PhoneticComplex)/(!PhoneticComplexTail !StressedSyllable !(SyllableC SyllableC) Syllable))* PhoneticComplexTail)")
 
 L("FinalDjifoa <- ((Borrowing/CcvCv/CvcCv/CvvNoHyphen/CcvNoY) !Character)")
 
+L("FinalDjifoax <- ((Borrowing/(&SyllableX CcvCv)/(&SyllableX CvcCv)/((BorrowingDjifoax/CvcCyx/CcvCyx/CvvNoYx/(&SyllableX Ccv)/(&SyllableX Cvc)) CvvNoHyphen)/((BorrowingDjifoax/CvcCyx/CcvCyx/CvvNoYx/(&SyllableX Ccv)/(&SyllableX Cvc)) CcvNoY)) ((&[-] Juncture)/!Character))")
+
 L("MediallyStressed <- (StressedBorrowing/CcvCvStressed/CvcCvStressed/CvvNoYMedialStress)")
 
 L("FinallyStressed <- (StressedBorrowingDjifoa/CcvCyStressed/CvcCyStressed/CvvFinalStress/CcvStressed/CvcStressed)")
 
-L("ComplexTail <- ((CvvHiddenStress ((&(Co1 Mono) CvvNoHyphen)/CcvNoY) !Character)/(FinallyStressed ((&(Co1 Mono) CvvNoHyphen)/CcvNoY))/MediallyStressed/FinalDjifoa)")
+L("ComplexTail <- ((CvvHiddenStress ((&(Co1 Mono) CvvNoHyphen)/CcvNoY) !Character)/(FinallyStressed ((&(Co1 Mono) CvvNoHyphen)/CcvNoY))/MediallyStressed/FinalDjifoa/FinalDjifoax)")
 
 L("PreComplex <- ((!CvvHiddenStress !ComplexTail ((StressedBorrowingDjifoa &PhoneticComplex)/BorrowingDjifoa/CvcCy/CcvCy/Cvv/Ccv/Cvc))* ComplexTail)")
 
@@ -2530,7 +2550,13 @@ L("despredE <- (despredD (freemod? despredD)*)")
 
 L("descpred <- ((despredE freemod? GO freemod? descpred)/despredE)")
 
-L("sentpred <- ((despredE freemod? GO freemod? barepred)/despredE)")
+L("gophrase1 <- (GO freemod? barepred)")
+
+L("gophrase2 <- (gophrase1/(KA freemod? gophrase freemod? KI freemod? gophrase2))")
+
+L("gophrase <- (gophrase2 (AONE freemod? gophrase2)*)")
+
+L("sentpred <- ((despredE freemod? gophrase)/despredE)")
 
 L("mod1a <- (PAWORD freemod? argument1 guua?)")
 
@@ -2632,7 +2658,7 @@ L("termset1 <- (terms/(KA freemod? termset2 freemod? guu? KI freemod? termset1))
 
 L("termset2 <- (termset1 (guu &AONE)? (AONE freemod? termset1 (guu &AONE)?)*)")
 
-L("termset <- ((terms freemod? GO freemod? barepred)/termset2)")
+L("termset <- ((terms freemod? gophrase)/termset2)")
 
 L("barepred <- (sentpred freemod? ((termset guu?)/(guu &termset))?)")
 
