@@ -1,0 +1,2216 @@
+\documentclass[12pt]{article}
+%\usepackage{arevmath}
+\usepackage{amssymb}
+ \usepackage{amsbsy}
+ \usepackage{amsmath}
+ \usepackage[english]{babel}
+ %\usepackage{bussproofs}
+ %\usepackage{boxedminipage}
+ \usepackage{latexsym}
+ \usepackage{graphicx}
+ \usepackage{makeidx}
+ \usepackage{lscape}
+ \usepackage{color}
+ \usepackage{hyperref}
+%\usepackage{wasysym}
+\usepackage{pifont}
+\usepackage{latexsym}
+\usepackage{graphicx}
+%\usepackage[colorlinks= true,citecolor=blue,linkcolor=blue]{hyperref}
+%\usepackage{pgf}
+%\usepackage{txfonts}%for \leftsquigarrow
+%\usepackage{tikz}
+%\usetikzlibrary{arrows,automata}
+%\usepackage[latin1]{inputenc}
+%\usepackage{dingbat}
+%\usepackage{lipsum}
+
+\usepackage{lineno}
+\usepackage{setspace}
+%\DeclareSymbolFont{symbolsC}{U}{txsyc}{m}{n}
+%\DeclareMathSymbol{\strictif}{\mathrel}{symbolsC}{74}
+\usepackage{amssymb}
+\input{newlogicmacr}
+\renewcommand{\smallpara}[1]{\begin{footnotesize}\begin{spacing}{0.8}\begin{quote} #1  \end{quote}\end{spacing}\end{footnotesize}}
+\usepackage{comment}
+
+\title{{\em Trains de Tr\`es Grand Vitesse} -- a study of Type Theory with General Variables (without the types) -- after a proposal of Quine -- by}
+
+\author{Randall Holmes \\ \includegraphics[width=75mm]{TTGVimage.jpg}\\ and\\
+  Thomas Forster \\ \includegraphics[width=50mm]{thomasTTGV.png}}
+
+
+
+\begin{document}
+ 
+
+\maketitle
+\newpage
+\commentblock{
+\subsection{Version Notes}
+
+\begin{description}
+
+\item[1/19/2026, morning in Boise:]  I've made various changes, major ones commented in the margin.  Handing you the baton if you want it.
+
+\item[1/15/2026:]  Lots of revisions underway.  Notably, Thomas has installed sensible numbering of theorems, definitions and lemmas, while Holmes has been working on content in section 2.  Dialogue between authors underway...
+
+\item[1/11/2026 (first version):]  This incorporates considerable ongoing revisions by Holmes to sections 1 and 2 and a revision of section 4 by Forster.
+
+\item[1/8/2026, final release:]   This version corrects a major oversight.  The ``Axiom'' of Power Set is a theorem!
+Section \ref{selfcontained} is rewritten to reflect this.  The comparison with Resnik's system is also considerably revised and expanded.
+
+\item[1/8/2026:]  This is a version using a more Zermelo-like axiomatization in section \ref{selfcontained}.  It is an experiment.
+
+\item[1/1/2026:]  I edited the statement that Quine doesn't give details of the proposal to remove the types from the theory of types:  his discussion is quite detailed but not very satisfactory.
+
+I'm checking with you that your understanding of separation ``$\{x\in A:\phi \}$ exists'' also includes the important condition $\{x\in A:\phi\} \sim A$:  I'm quite sure it does, but my account of your views didn't include this...  I added a little language to that section along these lines.
+
+I would like to see section 4 tidied into a single narrative about the various alternatives:  the structure it has is accidental, caused by the fact that I put stuff there from your file by cutting and pasting.  Please feel free to put any additional stuff from your notes that you want there.
+
+\item[New Year's Eve: baton passed to tf, temporarily]   Notec change of filename to baton31xii.tex
+  changes flagged by notes in the margin
+  
+\item[12/29/2025:]  Keeping control, working on inserting some of Forster's draft language.
+
+I inserted some language of Forster into the opening of section 3 (where it works very well) and extracted
+some other language as section 4, which needs a lot of cleanup to cohere with the rest of the document, but which does some useful things in my opinion.  I'm showing this to you (Thomas) but not relinquishing editing control at this moment:  I want to do an editing pass or at least add comments through the new section 4, first.
+
+\item[12/26/2025:]  Various corrections.  I'm proposing this as the starting text for the Quinean Mind anthology joint paper.  My suggestion is that I actually have here almost everything that should go into a paper for this anthology, on my current conception...maybe too much.  I want to hand it to you to edit and comment.
+
+\item[3/9/2025:]  The proof that all formulas of TTGV are equivalent to stratified formulas is now I think fully written out, mod typos.  Thomas, please read this carefully (pp 15-17 currently).
+
+\item[3/9/2025 7 pm:]  Some further revisions and corrections.  Added the theorem about set abstracts.
+
+\item[3/9/2025:]  Some further editing, and reconciliation of section 3 material with the new treatment of coercion to stratified form in section \ref{selfcontained}.
+
+\end{description}
+
+\newpage
+}
+\tableofcontents
+
+This is the long version of this essay.  It is being mercilessly cut for its intended publication market, but we are making this version available.  This version may itself be further edited.  The date of this draft of the long version (the first one) is 153 pm Boise time 3/20/2026.
+
+
+\newpage
+
+\section{Introduction}
+
+It is a fact universally acknowledged that any many-sorted theory can
+be reinvented as a one-sorted theory - to which it is probably
+synonymous.  It will suffice to expand the language with a one-place
+predicate for each sort and to restrict each sorted variable to the
+extension of the corresponding predicate.  If there are only finitely
+many sorts this process is completely unproblematic, and the two
+theories are synonymous.  If there are infinitely many sorts life is
+slightly more complicated (there is no way of saying in the new
+language that every object has a sort), but it is still clear what is
+going on.  So clear, in fact, that normally nobody bothers to spell
+out the details. Quine in \cite{ST&iL} attempts the task of
+reconceptualising typed set theory (TST, \TZT \ldots) as a one-sorted
+theory but doesn't execute it perfectly.  Resnik \cite{resnikttgv}
+took up the baton - in work that we did not know of until Allen Hazen
+drew our attention to it. Thank you, Allen.  It turns out - on
+inspection - that the situation is more complex and interesting than
+one might have expected. It's not just that TST/\TZT\ have infinitely
+many sorts, one also uncovers connections between TST/\TZT\ and NF (on
+the one hand) and frankly untyped set theories (Zermelo, ZF) on the
+other.
+
+Make yourself comfortable in this very high speed train: we promise you an interesting ride!
+
+\bigskip
+
+This essay works on a proposal of Quine \cite{ST&iL} that type theory
+(the simple typed theory of sets, the precursor of New Foundations)
+can be presented as an unsorted theory.
+
+In section \ref{selfcontained}, we give a self contained and
+na\"{\i}ve presentation of a system of this kind\footnote{This theory
+was defined by Holmes as a modification of Forster's proposal which
+will be discussed later; at that time Holmes did not recall the
+treatment of Quine \cite{ST&iL} and was not familiar with the work of
+Resnik (\cite{resnikttgv}): Holmes's theory is a slight(?) weakening
+of Resnik's theory, however, which confirms the naturalness of the
+approach.\textcolor{red}{Delete this footnote \ldots?}} from first principles.  We call the system presented there
+TTGV (for ``type theory with general variables", which is what Quine
+called his attempt at such a theory).
+
+In section \ref{earlier} we review earlier proposals along these lines.
+
+\newpage
+
+\section{A Self Contained Development}\label{selfcontained}
+
+We introduce the theory TTGV (Type Theory with General variables {\sl aka} Trains de Tr\`es Grand Vitesse).
+\subsection{Basic Axioms}
+
+
+
+The theory we introduce is a first order unsorted theory with membership and equality as primitive relations.
+
+Some objects have elements and some do not.  Objects that have elements are called {\em nonempty sets\/} (for the moment this is an unanalyzed phrase) and we state a natural identity criterion for nonempty sets.
+
+\begin{dfn}\mbox{\negthinspace}\\
+ An object is a nonempty set if and only if it has an element:  $${\tt Set}(x) \equiv_{\tt def} (\exists y:y \in x)$$\end{dfn}
+
+We refer to objects which are not nonempty sets as empty or elementless objects.  Empty sets are a more specific kind of object introduced later.
+
+\begin{itemize}
+  
+\item {\bf Axiom of Extensionality:}  Nonempty sets with the same elements are equal:  $$(\forall xy:{\tt Set}(x) \wedge(\forall z:z \in x \leftrightarrow z \in y) \rightarrow x=y)$$
+
+
+
+\begin{footnotesize}The axiom looks asymmetric between $x$ and $y$ but it isn't:  the hypotheses obviously imply ${\tt Set}(y)$.\end{footnotesize}
+
+\end{itemize}
+
+Next we state axioms providing basic set theoretical constructions.
+
+\begin{itemize}
+
+\item {\bf Axiom of Singletons:}  $$(\forall x:(\exists y:(\forall z:y \in z \leftrightarrow y = x)))$$  For each $x$, the witness $y$, unique by extensionality, is denoted by $\{x\}$, called the {\em singleton} 
+  of $x$.  We also use the notation $\iota(x)$ with the same meaning.
+We introduce the notation $\delta(\{x\})$, denoting $x$;  $\delta(A)$ is undefined for the present for other nonempty sets $A$ [a definition is given at the end of the section].\marginpar{\textcolor{red}{this definition should be referenced}}
+
+\item {\bf Axiom of Union:}  $$(\forall A:(\exists U:(\forall x:x \in U \leftrightarrow (\forall x:x \in U \leftrightarrow (\exists a:x \in a \wedge a \in A)))))$$   For each nonempty set $A$ with a nonempty set as element, the witness $U$, unique by extensionality, is denoted by $\bigcup A$.
+
+
+
+
+\item {\bf Axiom of Principal Ultrafilters:}
+  $$(\forall x:(\exists B:(\forall A:A \in B \leftrightarrow x \in A)))$$
+  For each object $x$, the witness $B$ is denoted by the notation $B(x)$:  this is the collection of all sets containing $x$.   Note that $\{x\} \in B(x)$, so $B(x)$ is a nonempty set\footnote{The letter `B' recalls Maurice Boffa, who was the first to emphasise the importance of this function (in the context of Quine's New Foundations) -- specifically the fact that it's an injective $\in$-homomorphism.  This function was known also to Whitehead -- who apparently called $B(x)$ the {\sl essence} of $x$.  An axiom giving the existence of $B(x)$ looms large in the study of fragments of NF.}.
+\end{itemize}
+
+%\textcolor{red}{\bf You haven't defined `kind' yet; you don't do it until dfn \ref{dfn:kind}\ldots  RH:  I do not need to:  here it is simply a philosophical term:  this paragraph is setup for defining the philosophical term mathematically for our purposes}
+The use of sets is to represent properties of objects: where $P$ is a
+property of objects of {kind} $\kappa$, $P$ is represented by the set of
+objects of kind $\kappa$ which have property $P$, and we suppose that
+such a set exists for any kind and any property.  We further suggest
+that objects belonging to the same set are of the same kind.  Thus,
+objects are of the same kind if and only if there is a set which
+contains both of them.  We view this as so important (for the sake of
+argument at least) that we adopt relevant definitions, which turn out
+to be supported by our axioms.   These definitions have the effect of giving the arguably vague philosophical term ``kind'' a precise meaning for us.
+
+\begin{dfn}\label{dfn:kind}
+Where $x$ and $y$ are objects\footnote{We use the word {\em object\/} for general things in the domain of the theory, where we are indifferent to whether they are sets or not.}, we define $x \sim y$, read: $x$ {\rm is of a
+  kind with} $y$, as $(\exists z:x \in z \wedge y \in z)$.\end{dfn}
+
+%\marginpar{RH:  I use the word object for things which are not necessarily sets.  It could often be dropped.}
+This relation can also reasonably be called {\em cohabitation\/}.
+Readers may find themselves reminded of the compatibility relation that
+looms so large in river-crossing problems.
+
+\begin{dfn} For any object $x$, we define $\kappa(x)$, the {\bf kind}\footnote{We prefer the word `kind' to `type', because a type is not really a set, but a syntactical characteristic of a variable.  We do not extend this terminology to the historical systems discussed in section \ref{earlier}.  The second author likes to refer to kinds as {\em cohabitations\/}, and this terminology might appear.} of $x$, is $\bigcup B(x)$.\end{dfn}
+
+\begin{prop}  $x \sim y$ if and only if $y \in \kappa(x)$.\end{prop}
+
+\Proof
+
+If $x \sim y$, then there is a set $A$ such that $x \in A$ and $y \in A$, so $y \in A$ and $A \in B(x)$, so $y \in \bigcup B(x) = \kappa(x)$.
+
+If $y \in \bigcup B(x)$, then there is $A$ such that $y \in A$ and $A \in B(x)$, so $x \in A$ and $y \in A$, so $x \sim y$.
+
+\endproof
+
+
+\begin{thm}\mbox{\negthinspace}\\
+  The relation $\sim$ is (i) reflexive,\footnote{We note that whether or not $\sim$ is reflexive corresponds to whether we assume that everything belongs to something, that is, whether we are in set theory or class theory.}, (ii) symmetric, and (iii)
+  transitive.\end{thm}
+
+\Proof
+
+(i) $x \in \{x\}$ and $x \in \{x\}$, so $x \sim x$.
+
+(ii) Logic tells us that if $x \sim y$, there is $z$ such that $x \in z$ and $y \in z$, so\\ \mbox{\, \, \, \, \, } $y \in z$ and $x \in z$, so $y \sim x$.
+
+(iii)
+Suppose $x \sim y$ and $y \sim z$.  Then $x \sim y$ and $z \sim y$, so
+$x \in \kappa(y)$ and\\ \mbox{\, \, \, \, \, } $z \in \kappa(y)$, whence $x \sim z$.
+
+\endproof
+
+So the kinds are equivalence classes under this relation.
+
+This theorem allows us to read $x \sim y$ as ``$x$ and $y$ are of the same kind":  they share a specific uniquely determined kind, they do not merely share {\sl some} kind.
+
+
+Now we talk about the construction of sets of objects of particular kinds with particular properties.
+
+\smallskip
+
+{\bf Axiom of Separation:}
+
+\smallskip
+
+For any property $P(x)$ of objects $x$ (expressed as a formula of our
+language in which $S$ is not mentioned) $$(\forall A:{\tt Set}(A)
+\rightarrow (\exists S:(\forall x:x \in S \leftrightarrow (x \in A
+\wedge P(x)))))$$
+
+If the witness $S$ for a particular $A$ and $P(x)$ is nonempty and so unique
+by extensionality, we denote it by the notation $\{x \in A:P(x)\}$.
+
+
+
+
+
+Of course, this is an axiom scheme, with an instance for each formula $P(x)$ of our language defining a property.
+
+\begin{lem}\label{meetinglemma} Meeting Lemma
+\mbox{\negthinspace}\\
+  If $x \in y$ and $x \in z$, then $y \sim z$.\\
+  ``Nonempty sets which meet are of the same kind''.\end{lem}
+
+\Proof
+
+If $x \in y$ and $x \in z$, then $y \in B(x)$ and $z \in B(x)$, so $y \sim z$.
+
+\endproof
+
+It is worth noting that if $\{x \in A:P(x)\}$ is defined and so is a nonempty set, $A \sim \{x \in A:P(x)\}$ by the Meeting Lemma (lemma \ref{meetinglemma}).
+
+\commentblock{  I thought of adding this, and it can be put back in if wanted
+
+\begin{dfn}  For any $a$ and any $A \sim \kappa(a)$ with $a \not\in A$, we define $A^c$ as
+$\{x \in \kappa(a):x \not\in A\}$.   Nonempty sets which are not kinds have nonempty complements.\end{dfn}}
+
+\begin{dfn}  For any nonempty set $A$ with $x \in \bigcup A$, we define  %\marginpar{definition of $\bigcap$ is new--RH}
+$\bigcap A$ as $\{y \in \kappa(x):(\forall a \in A:y \in a)\}$, if this is defined.\end{dfn}
+
+\begin{dfn}  $x \subseteq^+ y$ is defined as ${\tt Set}(x) \wedge (\forall z:z \in x \rightarrow z \in y)$.\end{dfn}  This is the subset relation on nonempty sets.
+
+\begin{thm} Power Set Theorem   $$(\forall A:{\tt Set}(A) \rightarrow (\exists! P:(\forall B:B \in P \leftrightarrow B \subseteq^+ A)))$$  
+\end{thm}
+  
+
+\Proof
+
+Let $A$ be a nonempty set.  Suppose $B \subseteq^+ A$.  Let $x \in B$.
+Then we have $x \in B$ and $x \in A$, so $A \sim B$ by the Meeting
+Lemma, lemma \ref{meetinglemma}.  It follows that a witness $P$ can
+be explicitly presented as $\{B \in \kappa(A):B \subseteq^+ A\}$.  There
+can be only one witness, because any two witnesses would have the same
+extension and contain $A$ as an element, so they would be equal by extensionality. \endproof
+
+We define ${\cal P}^+(A)$ as $\{B \in \kappa(A):B \subseteq^+ A\}$:  this is the collection of nonempty subsets of the nonempty set $A$. 
+
+\medskip
+
+
+We introduce the usual notation for concrete finite sets.
+
+\begin{dfn}
+  We define $\{x,y\}$ as the unique nonempty set which has $x$ and $y$
+  as its sole elements; if it exists then by extensionality it is
+  unique.
+\end{dfn}
+
+\begin{thm}  For any objects $x,y$, $\{x,y\}$ exists iff $x \sim y$.\end{thm}
+
+\Proof
+
+If $\{x,y\}$ exists, then it witnesses $x \sim y$, being a set which contains both.
+
+If $x \sim y$, then $\{z \in \kappa(x):z=x \vee z=y\}$ is $\{x,y\}$.
+
+\endproof
+
+It is worth noting that this equivalence will hold in any theory with Separation.
+
+It is important to notice that we do not have an unrestricted axiom of pairing.  The pair $\{x,y\}$ exists iff $x$ and $y$ are of the same kind.\footnote{Notice that this is a restriction on applicability of the pairing operation, and TTGV falls in the more general category of Zermelo-like theories in which pairing fails.{\bf  \textcolor{red}{Track down Bolzano's discussion of attributes of the notion of set which includes formation of sets from objects of different species, which is not permitted here, and is permitted in Zermelo.}}}  The same is true of ordered pairs, and this restricts the formation of relations and functions.
+
+\begin{dfn}  We define $A \cup B$, where $A$ and $B$ are nonempty sets, as the set which contains all elements of $A$, all elements of $B$, and nothing else.\end{dfn}
+  If this set exists then it is unique by extensionality.
+
+\begin{thm}  If $A,B$ are nonempty sets, then $A \cup B$ exists iff $A \sim B$.\end{thm}
+
+\Proof
+
+Suppose that $A$ and $B$ are nonempty sets.
+
+If $A \sim B$, then $\bigcup \{A,B\} = A \cup B$.
+
+If $A \cup B$ exists then $A$ and $B$ both belong to ${\cal P}^+(A
+\cup B)$, so $A \sim B$.
+
+\endproof
+
+
+\begin{dfn}\mbox{\negthinspace}
+  
+(i)   We define $\{x_1,\ldots,x_n\}$, where $n>2$, as $\{x_1,\ldots,x_{n-1}\} \cup \{x_n\}$.\\  \mbox{\, \, \, \, \, \, }It should be clear by induction in the metatheory that this exists\\  \mbox{\, \,  \, \, \, } if and only if all the $x_i$'s are of the same kind.
+
+(ii) We define the ordered pair $\tuple{x,y}$ of $x$ and $y$ as $\{\{x\},\{x,y\}\}$.  
+\end{dfn}
+Clearly $\tuple{x,y}$ exists iff $x \sim y$,
+
+\begin{thm} \mbox{\negthinspace}\\ If $x,y,z,w$ are all of the same kind, $\tuple{x,y}=\tuple{z,w}$ iff $x=z$ and $y=w$.\end{thm}
+
+\Proof
+%\marginpar{I preserve my rhetorical account, but add notation to write out definitions of the projection operators.  Definitions for operations used have been added above --RH}
+The first component of a pair $p = \tuple{x,y} = \{\{x\},\{x,y\}\}$ can be identified as the only object which belongs to every element of $p$:  clearly $x$ belongs to both $\{x,y\}$  and $\{x\}$; if $z$ belongs to both $\{x,y\}$ and $\{x\}$ then it belongs to $\{x\}$ and so is equal to $x$.    The first projection can be expressed as $\pi_1(p) = \delta(\bigcap p)$, and we have shown $\pi_1(x,y)=x$.
+
+The second component of a pair $p = \tuple{x,y} =\{\{x\},\{x,y\}\}$ is the only object which belongs to exactly one of the elements of $p$.  $y$ belongs to $\{x,y\}$:  if it belongs to $\{x\}$ as well, then $y=x$ and $\{x,y\}=\{x\}$;  if $z$ belongs to exactly one element of $p$ then certainly either $z=x$ or $z=y$.  If $z=x$, then $z \in \{x\}$ and $z \in \{x,y\}$, so $\{x\} = \{x,y\}$ so $x=y$, so $z=y$, so in both cases $z=y$.   The second projection can be expressed as $$\delta(\{z\in \bigcup p:B(z) \cap p\, \in\, 1_{\kappa(p)}\}),$$ where
+$1_A$ denotes the largest set of singletons which is of the same kind as $A$. This is a special case of notation for cardinals
+%  introduced below in definition \ref{dfn:card}] which we have deleted from the five-minute argument
+, and we have shown $\pi_2(x,y)=y$.
+
+It follows that if $\tuple{x,y} = \tuple{z,w}$ then $x = \pi_1(x,y) = \pi_1(z,w) = z$ and $y = \pi_2(x,y) = \pi_2(z,w) = w$.
+
+%A point of interest about this argument is that it can be made constructive.
+
+
+\commentblock{The first component of a pair $p$ is $\bigcap\bigcap p$ [RH:  this is plain wrong, it doesnt work for atoms]; $y$ is the second
+component of $p$ iff $(\forall z,w \in p)(y \in z \wedge y \in w. \to z = w)$.
+(This works  constructively).}
+
+\commentblock{Thus if $(x,y)=(z,w)$, $x$ is the only object belonging to all elements of $(x,y)$.   Thus $x$ is the only element belonging to all elements of $(z,w)$, but also $z$ is the only element belonging to all elements of $(z,w)$, so $x=z$.
+
+Further, if $(x,y)=(z,w)$, $y$ is the only object belonging to exactly one element of $(x,y)$.   Thus $y$ is the only element belonging to exactly one element of $(z,w)$, but also $w$ is the only element belonging to exactly  one element of $(z,w)$, so $y=w$.}
+
+\endproof
+
+
+It is useful in the sequel to have an iterable form of the singleton operation.
+
+We defined $\iota(x)$ as $\{x\}$ above; for higher powers \ldots \begin{dfn}\mbox{\negthinspace}\\
+  We define $\iota^0(x)$ as $x$ and $\iota^{n+1}(x)$ as $\{\iota^n(x)\}$ for each concrete $n$.\end{dfn} \begin{small}The exponent must be a numeral constant:  no quantification is possible here.\end{small}
+
+\medskip
+
+
+So far we have so far used the term ``set'' only in the unanalyzed phrase ``nonempty set''.  We explain what an empty set  is and so what a set is in general.
+
+\begin{description}
+
+\item[Construction:]  For each nonempty set $A$, we postulate an object $\emptyset_A$ (the empty set of the same kind as $A$) governed by the following
+
+\item[Axiom of Empty Sets:]  For each nonempty set $A$, the following hold:
+
+\begin{enumerate}
+
+\item $(\forall x:x \not\in \emptyset_A)$:  empty sets are empty.
+
+\item  ${\cal P}^+(A) \cup \{\emptyset_A\}$ exists [this is equivalent to $A \sim \emptyset_A$].
+
+\item   $A \subseteq^+ B \rightarrow \emptyset_A = \emptyset_B$  [this implies that if $x \in A$, we have $\emptyset_A = \emptyset_{\kappa(x)}$.  Thus, if $A \sim B$, $x \in A$ and $y \in B$, $x \sim y$ is witnessed by $A \cup B$,
+so $\emptyset_A = \emptyset_{\kappa(x)} = \emptyset_{\kappa(y)} = \emptyset_B$;  we are choosing one empty set from each kind containing a nonempty set].
+
+\end{enumerate}
+
+It is important for rhetorical reasons in our presentation that we avoid explicit mention of kinds or the relation of being the same kind in our axiomatics.  This is easy everywhere except in this axiom.
+\end{description}
+
+\begin{dfn}\mbox{\negthinspace}\\
+
+  We extend the definition of $\{x \in A:\phi\}$ so that, if $(\forall
+  x \in A :\neg \phi)$, then\\ \mbox{\, \, \, \, } $\{x \in A:\phi\}$ is $\emptyset_A$.
+
+We define ${\tt set}(A)$ (``$A$ is a set'') as $(\exists x:x \in A \vee A = \emptyset_{\kappa(x)})$.  
+
+We define $A \cup \emptyset_A$ and $\emptyset_A \cup A$ as $A$, and
+$\emptyset_A \cup \emptyset_A$ as $\emptyset_A$.
+
+We define ${\cal P}(A)$ as ${\cal P}^+(A) \cup \{\emptyset_A\}$.
+
+We define ${\cal P}(\emptyset_A)$ as $\{\emptyset_A\}$.
+
+For sets $A$ and $B$, we define $A \subseteq B$ as $A \in {\cal P}(B)$. 
+
+We define $\bigcup A$, where $A$ is a nonempty set and all elements of $A$ are\\ \mbox{\, \, \, \, } empty,  as $\emptyset_B$, where $B$ is a nonempty set of the same kind as an element\\ \mbox{\, \, \, \, } of $A$ (there is not always such an object).
+
+For any nonempty set $A$, we define $\bigcup \emptyset_A$ as $\emptyset_B$, where $B$ is a nonempty set of the same kind as an element of $A$ (there is not always such an object). %\marginpar{The definitions of $\bigcap$ and $\delta$ also get extended here --RH}
+
+For any set $A$, we define $\delta(\emptyset_A)$ as $\emptyset_B$ and $\delta(A)$ as $\emptyset_B$ if $A$ is not a singleton, where $B$ is a nonempty set of the same kind as an element of $A$ (there is not always such an object). 
+
+\end{dfn}
+
+The definition of $\bigcap A$ as an instance of Separation,  $$\{y \in \kappa(x):(\forall a \in A:y \in a)\},$$ can now be taken to succeed for any set $A$ and $x \in \bigcup\bigcup \kappa(A)$.  $A$ might be empty, or the elements of $A$ might not all have a common element, but it will still succeed.
+
+This completes the presentation of the basic axiomatics of the theory we are investigating.  Unfolding the consequences will take a bit of time, since this is in fact a system which could be used as the foundation for mathematics.\footnote{The theory of Resnik, which we were not aware of when we defined this theory, differs from ours only in two additional assumptions which we can state at this point in terms of concepts we have explained:  strong extensionality is assumed (objects with the same extension which cohabit with a nonempty set are equal), and an axiom provides that there are individuals (there is an object which does not cohabit with any nonempty set).  Resnik apparently believed that he could prove that all individuals are of the same type, so this may be taken to be his intention, but it does not follow from his axioms.}  Further, its possible role as a foundation for mathematics suggests that we can expect that other candidate axioms will present themselves.
+
+We observe that the central place of kinds in the development of this
+theory suggests that we might want an Axiom of Kinds asserting that
+for each $x$, there is a set $\kappa(x)$ whose elements are exactly
+the objects $y$ such that $y \sim x$, and which further includes $x$
+as an element: $$(\forall x:(\exists y:(x \in y \wedge (\forall z:z
+\in y \leftrightarrow z \sim x)))).$$ We have shown above that our
+axioms establish the existence of $\kappa(x) = \bigcup B(x)$.  If we
+assume the Axiom of Kinds, assume the Meeting Lemma (lemma
+\ref{meetinglemma}) as an axiom, and omit the Axioms of Singletons and
+Principal Ultrafilters, notice that
+
+$\{x\} = \{y \in \kappa(x):y=x\}$ and
+
+$B(x) = \{A \in \kappa^2(x):x \in A\}$
+
+(every set containing $x$ would be of the same kind as $\kappa(x)$ by
+the Meeting Lemma, lemma \ref{meetinglemma}).  We find the presentation
+above to be preferable because it is simpler, but also for reasons suggested in
+the next paragraphs.
+ 
+ If one wanted the notions of kind and being-of-the-same-kind to take center stage in the axiomatics, one could axiomatize the theory thus:
+ 
+ \begin{description}
+ 
+ \item[Extensionality:]  just as in the current theory
+ 
+ \item[Axiom of Kinds:]  as stated above.  With Separation, it gives Singletons.
+ 
+ \item[Diversity Lemma:] (lemma \ref{lem:diversity} described in the next subsection):  Kinds, Diversity and Separation give Union.
+ 
+ \item[Meeting Lemma:]  Kinds, Meeting, and Separation give Principal Ultrafilters.
+ 
+ \item[Separation:]  just as in the current theory
+ 
+ \item[Empty Sets:]  which can be stated explicitly as providing for a distinguished empty object in each kind containing a nonempty set.
+ 
+ \end{description}
+ 
+ This would look more like the system of Resnik described below.  We prefer to make the theory look as much like Zermelo set theory as possible, for rhetorical reasons which will become clearer later; we have in fact stated the axiomatics in a way which does not mention the notion of kind or the equivalence relation of being of the same kind at all.
+ 
+ The theory of this section as formulated initially is Zermelo-like in an exact sense:  its axioms are extensionality, separation, and a collection of set existence principles [not quite the ones expected, and Empty Sets is an odd fish].  The formulation just above has Extensionality, Separation, Kinds, which is certainly a set existence principle, and various properties of the cohabitation relation [Empty Sets being again an odd fish].
+
+
+
+\subsection{Indexed kinds; sets, atoms and individuals; discussion of the axiom of empty sets: some taxonomy}
+
+  Being of the same kind as a kind occurs often, and motivates a convenient definition.
+
+
+
+\begin{dfn} We define $\kappa^1(x)$ as $\kappa(x)$ and define $\kappa^{n+1}(x)$ as $\kappa(\kappa^n(x))$ for each concrete numeral $n$ representing a positive integer (the $n$ here is not a variable over which we can quantify).\end{dfn}
+Notice that $\iota^n(x) \in \kappa^{n+1}(x)$ will hold for each concrete natural number $n$.
+
+\begin{lem}\label{lem:diversity}
+  Diversity Lemma
+
+  If $\kappa(x) \sim \kappa(y)$ then $\kappa(x)=\kappa(y)$.
+
+  No two distinct kinds are of the same kind.
+
+  This is equivalent to the assertion that $\kappa^2(x) = \kappa^2(y) \rightarrow \kappa(x)=\kappa(y)$.
+
+  In the presence of the other axioms it is also equivalent 
+  to the assertion\\ \mbox{\, \, \, \, } that for all $x,y,z,u,v$, if $y \in z \in x$ and $u \in v \in x$ then  $y \sim u$.\end{lem}
+
+\Proof
+
+Suppose $\kappa(x) \sim \kappa(y)$.  Then there is a set $A$ such
+that $\kappa(x) \in A$ and $\kappa(y) \in A$, and both $x$ and $y$ belong to $\bigcup A$, so $x \sim y$, so $\kappa(x) = \kappa(y)$.   \endproof
+
+\begin{lem}\label{typing} Typing Lemma
+
+  If $x \in y$ then $y \in \kappa^2(x)$.  \end{lem} \Proof
+
+This is immediate:  $x \in y$, $x \in \kappa(x)$, so $y  \sim \kappa(x)$, so $y \in \kappa^2(x)$.
+
+\endproof
+
+
+
+  \smallskip
+
+ \begin{lem}
+
+  In the presence of the other axioms, the Diversity Lemma\\ implies the Axiom of Union.  \end{lem}
+  
+  (We of course already know that the other axioms with Union imply the Diversity Lemma, lemma \ref{lem:diversity}).
+
+\Proof  We show that for any $x$, all elements of elements of $x$ are of the same type.  If $u \in y \in x$ and $v \in w \in x$,  then $\kappa(y)=\kappa(w)$ is immediate;  $y \in \kappa^2(u)$
+and $w \in \kappa^2(v)$ by the Typing Lemma (lemma \ref{typing}) (which does not depend on Union) so $\kappa^2(u) = \kappa(y) = \kappa(w) = \kappa^2(v)$, so $\kappa(u) = \kappa(v)$ and $u\sim v$ are true by the Diversity lemma (lemma \ref{lem:diversity})
+
+Then $\bigcup A$ exists as $\{p \in \kappa(u):(\exists q \in A:p \in q \wedge q \in A)\}$ if $u$ is an element of an element of $A$.  If there are no elements of elements of $A$ there are lots of witnesses to the Axiom of Union for this value of $A$.  \endproof
+
+
+\medskip
+
+\begin{dfn}  (Integer iteration of $\kappa$)
+
+For each nonpositive integer $n$, we define $\kappa^{n}(x)$ as the kind belonging to $\kappa^{n+1}(x)$ if there is one [if there is one it is unique by the Diversity lemma (lemma \ref{lem:diversity})]. \end{dfn} Note that it is obvious from the definition that $\kappa(\kappa^n(x)) = \kappa^{n+1}(x)$ for nonpositive integers just as for positive integers.  It should also be evident -- when $n\geq 2$ -- that $\kappa^{n-1}(x)$ [if it exists] is the sole kind belonging to $\kappa^n(x)$.
+
+\begin{lem} Strong Typing Lemma \label{Strong Typing Lemma}
+
+  
+  For any integer $n$, if $x \in y$ and $x \in \kappa^n(u)$, it follows that $y \in \kappa^{n+1}(u)$.
+
+  Further, if $x \in y$ and $y \in \kappa^n(u)$, then $x \in \kappa^{n-1}(u)$.\end{lem}
+
+  \Proof
+
+  If $x \in y$ and $x \in \kappa^n(u)$, then, by the first typing lemma (lemma \ref{typing}) $$\kappa(y)\, =\, \kappa^2(x)\, =\, \kappa(\kappa(x))\, =\, \kappa(\kappa^n(u))\, =\, \kappa^{n+1}(u).$$
+
+If $x \in y$ and $y \in \kappa^n(u)$ then $y \in \kappa^2(x) = \kappa^n(u)$, so $\kappa(x) \in \kappa^2(x) = \kappa^n(u)$ so $\kappa(x) = \kappa^{n-1}(u)$.\endproof
+
+\begin{lem}  Every set belongs to a type $\kappa^2(y)$.\end{lem}
+
+\Proof
+
+Let $A$ be a set.
+
+Then there is $x$ such that either (i) $x \in A$ or (ii) $A = \emptyset_{\kappa(x)}$.
+
+\smallskip
+
+(i) Suppose $x \in A$.  We have shown $A \in \kappa^2(x)$ above (lemma \ref{typing}).
+
+(ii) If $A = \emptyset_{\kappa(x)}$ then we have $A \sim \kappa(x)$, and again $A \in \kappa^2(x)$.
+
+\endproof
+
+
+\begin{dfn}If for no $y$ is $\kappa(x)=\kappa^2(y)$ we call $x$ an {\em individual\/}.\end{dfn}
+
+Notice that no 
+individual can have an element:  if $u \in x$ then $x \in \kappa^2(u)$ by the typing lemma.
+
+Note further that there is nothing in our formalization which provides that two distinct individuals are necessarily of the same type, or even that there are any individuals at all.
+
+It is worth noting just as an aside that when $A$ is a set of individuals, $\bigcup A$ remains undefined even after the introduction of empty sets.
+
+
+
+Sets of the same kind with the same elements are equal:  this is true because two sets of the same kind are either nonempty sets and so equal by extensionality if they have the same elements, or empty sets, and there is at most one empty set in each kind.
+
+Nothing establishes that two elementless objects of the same kind are equal:  this motivates the following definition.
+
+\begin{dfn} An {\em atom\/} is an empty object which is not an individual (and so belongs to a kind which contains sets) but also not a set.\end{dfn}
+
+The theory does not prove the existence of either atoms or individuals but these remain important formal possibilities.
+
+\medskip
+
+We discuss the Axiom of Empty Sets, which might be viewed as peculiar.
+
+We state -- but do not adopt -- an axiom which would simplify assertion of Empty Sets.
+
+\begin{description}
+
+\item[$^*$Axiom (strong extensionality):]  $$(\forall ABx:A \in \kappa^2(x) \wedge B \in \kappa^2(x) \wedge (\forall y:y \in A \leftrightarrow y \in B) \rightarrow A = B)$$
+
+  \smallpara{\textcolor{red}{What is the asterisk for? -- tf   The star indicates that this is not really an axiom -- I believe it is a convention adopted from linguistics.  I've seen it used in math, and I've used it for ages myself --LRH.  OK but then explain it. Not many linguists reading this paper. -- tf}}
+
+\item[Remarks:]\mbox{}  \\
+
+  $\bullet$
+  The strong extensionality axiom provides that there are no atoms.\\ $\bullet$   Distinct objects of the one kind with the same extension can only be distinct individuals.\\
+  $\bullet$ The axiom of strong extensionality allows us to restate the Axiom of Empty Sets in a simpler form:  one can simply assert that there is an empty object in each type $\kappa^2(x)$ [which will be unique by strong extensionality, so no primitive construction $\emptyset_A$ is required].
+
+We are unwilling to do this because we regard the preference for extensionality in the typed theory of sets -- and so by extension in our present context -- as actually having a rather doubtful basis.  From a na\"ive standpoint, we can cite a quite natural philosophical doubt that everything in the world is a set.  \footnote{Our principal reason not to assume extensionality is the profound difference between NF (Quine's New Foundations) and Jensen's variant NFU which allows atoms.  But this goes beyond the na\"ive viewpoint of this section.  In the course of a complete development of Mathematics in the Typed Theory of Sets with Urelements, we found other reasons to doubt the advisability of assuming extensionality.}
+\end{description}
+\commentblock{Duly deleted
+
+The Axiom of Empty Sets might be regarded as doubtful in the way that the axiom of choice is doubtful:  we do not have a way to uniformly choose a distinguished empty object from each kind.\marginpar{My current feeling is that this sentce should be amplified or deleted}}
+
+\textcolor{green}{We briefly indicate how to interpret our theory with Empty Sets in a
+version of our theory without Empty Sets.  The interpretation does not
+involve any kind of choice principle.  An object $x$ is an {\em
+  equivalence class under coextensionality\/} iff it is a set of
+individuals or if for each $y \in x$, $x$ is the collection of all
+objects of the same kind as $y$ with the same elements as $y$.  We
+define $x \, E \, y$ as holding iff $y$ is an equivalence class under
+coextensionality and each element of $y$ contains $x$.  The resulting
+structure satisfies all the axioms of our theory if $E$ instead of
+$\in$ is used as membership, though in a rather strange way, since $y
+\in \kappa^2(x)$ holds if $x \, E\, y$: each indexed sequence of kinds
+is unravelled into its even terms and its odd terms as separate
+indexed sequences of kinds in the interpreted theory.  Then, in each
+kind containing sets, there is a distinguished empty object -- namely
+the equivalence class under coextensionality of empty objects in the
+original theory, and we take this to be the empty set in this kind,
+while the atoms are those elements of the kind which are not
+equivalence classes under coextensionality at all in the original
+theory.}
+
+{We note very briefly a simpler interpretation of our theory with Empty Sets in the context of our theory without\marginpar{Thomas, notice this --RH} Empty Sets, which requires the additional assumption that there are at least two objects in each kind:  define $x \in_{new} y$ as $$x \neq \kappa^0(x)\,  \wedge\,  x \neq\{\kappa^{-1}(x)\}\,  \wedge\,  \kappa^0(x) \not\in y\,  \wedge\,  \{\kappa^{-1}(x)\} \in y\, \wedge\,  x \in y$$}
+
+{The domain of the interpreted theory is the collection of all $x$ for which $\{\kappa^{-1}(x)\}$ is defined (that is, $x$ which belong to some kind $\kappa^3(u)$) which are not kinds or singletons of kinds in the sense of the original theory, and a set in the interpreted theory is constructed by collecting objects of the interpreted theory then adding the appropriate singleton of a kind of the original theory as a label.  Objects of the interpreted theory not containing the label in the sense of the original theory are interpreted as atoms;  the singleton of the label in the sense of the original theory is interpreted as an empty set.}
+
+
+
+%\textcolor{green}{Sadly, I propose to delete the entire section on standard mathematical constructions which follows [in a comment in the source].  I cannot color it green and leave it there because textcolor only works on single paragraphs.}
+
+%\begin{comment}
+
+\subsection{Relations, functions, and numbers}
+
+We proceed to define relations and functions in a standard way, then define cardinal number in a way which is unusual nowadays but has precedent.
+
+
+\begin{lem} If $x \sim y$, then $\{x,y\} \in \kappa^2(x) = \kappa^2(y)$.  \end{lem} \Proof
+
+This is immediate from the Typing Lemma, lemma \ref{typing}). \endproof
+
+
+  Notice that if $(a,b)$ exists, we must have $a,b$  of the same kind and $(a,b) \in \kappa^3(a) = \kappa^3(b)$.  Thus --
+  \begin{dfn}\mbox{\negthinspace}\\
+    \mbox{For any sets $A \sim B$ we can define $A \times B$ as
+    $\{u \in \kappa^2(A):(\exists ab:u=(a,b))\}$,} and this set will contain exactly the pairs with first projection in $A$ and second projection in $B$.\end{dfn}
+
+  As usual, this set is called the {\sl cartesian product} of $A$ and $B$.  
+
+  \begin{dfn}\mbox{\negthinspace}\\
+
+    We call a set a {\em relation\/} if all of its elements are ordered pairs.
+
+    If $R$ is a relation, we define $x \, R \, y$ as $(x,y)\in R$.
+
+    If $R$ is a relation, we define ${\tt dom}(R)$, the {\em  domain\/} of $R$ as $$\{x \in \kappa^{-2}(R):(\exists y:(x,y)\in R)\}.$$
+
+    We define $R^{-1}$ (the {\em converse\/} of $R$) as $$\{u \in \kappa^0(R):(\exists xy: x\, R \, y \wedge u = (y,x))\}.$$
+
+    We define ${\tt rng}(R)$, the {\em range\/} of $R$, as ${\tt dom}(R^{-1})$.
+
+    We define $R``A$ as ${\tt rng}(R \cap (A \times \kappa^0(A)))$, for any set $A$ and any relation $R \in \kappa^3(A)$.\end{dfn}
+
+  \begin{dfn}\label{dfn:card}\mbox{\negthinspace}
+    
+    A relation $F$ a {\em function\/} iff $F``\{a\}$ is a singleton for each $a \in {\tt dom}(F)$,
+  
+We define $F(x)$ implicitly by $F``\{a\} = \{F(a)\}$ for all $a \in {\tt dom}(F)$.
+
+We define $F:A \rightarrow B$ as ``$F$ is a
+function, ${\tt dom}(F)=A$, and\\ \mbox{\, \, \, \,  \, } ${\tt rng}(F) \subseteq B$", and read
+this ``$F$ is a function from $A$ into $B$".
+
+We say that a function $F$ is an {\em injection\/} iff $F^{-1}$ is a
+function: if $F^{-1}$ is a function, we call it the {\em inverse\/} of
+$F$.
+
+We say that a function is {\em onto $B$} iff ${\tt rng}(F)=B$, and we
+say that a function is from $A$ onto $B$ if its domain is $A$ and its
+range is $B$.
+
+We say that a function is a {\em bijection\/} from $A$ to $B$ if
+it is an injection with domain $A$ and range $B$.
+
+We define $|A|$ as the set of all $B$ such that there is a bijection
+from $A$ to $B$, and call this the cardinality of $A$.  The condition
+$|A|=|B|$ expresses for us the idea that two sets are of the same kind
+and the same size.
+  \end{dfn}
+
+  There are obvious examples of sets which are of the same size but of
+different kinds: if $x \not\sim y$, then $\{x\}$ and $\{y\}$ are of
+the same size, but their cardinals are not the same, being of
+different kinds.
+
+
+\begin{dfn}\mbox{\negthinspace}
+
+  We define for any set $A$ the set $\iota``A$ as $$\{u \in \kappa(A):(\exists a \in A:u=\{a\})\}.$$  This is the elementwise image of $A$ under the singleton operation.\\  Notice that $\kappa(\iota``A)) = \kappa^2(A)$.
+
+  We define $\iota^n``A$ analogously.
+
+  We define $T(|A|)$ as $|\iota``A|$.
+
+  (It should be clear that this does not depend on the choice of $A$ from $|A|$.)
+
+  We define $T^n(|A|)$ as $|\iota^n``A|$.\end{dfn}
+An element of $|A|$ and an element of $T^n(|A|)$ are clearly of the same size, and this captures the relation of being the same size between sets of different kinds, but only under particular concrete circumstances.  The $T$ operation on cardinals is injective, so there are natural partial operations $T^{-1}$ and $T^{-n}$.
+
+\begin{dfn}  \mbox{\negthinspace}
+  
+  We say that $|A| \leq |B|$ iff there is an injection from $A$ to $B$ (again, this clearly does not depend on the choice of representative sets from the cardinals).
+
+  We define $|A| < |B|$ as holding iff $|A| \leq |B|$ and $|A| \neq |B|$.\end{dfn}
+
+\begin{dfn}  \mbox{\negthinspace}
+
+  We define $|A|+|B|$ as $|A \cup B|$ where
+  $A$ and $B$ are disjoint.  The sum of two cardinals will be undefined if they do not have disjoint representatives.
+
+  We define
+  $|A| \times |B|$ as $T^{-2}|A \times B|$.
+
+  If $A$ and $B$ are sets, we define $|B|^{|A|}$ as $T^{-3}(|\{f:(f:A \rightarrow B)\}|)$, the cardinality of the set of functions from $A$ to $B$ shifted downward suitably in type. \end{dfn}
+
+Exponentiation cannot be total, because in some circumstances the
+collection of functions from $A$ to $B$ is provably larger than the
+common type of $A$ and $B$.  The other operations may fail to be
+total.  However, if the axiom of infinity is assumed, addition and
+multiplication of cardinals are total.
+
+\begin{dfn}  \mbox{\negthinspace}
+
+  We define $0_{\kappa^2(x)}$ as $|\emptyset_{\kappa(x)}|$ and $1_{\kappa^2(x)}$ as $|\{x\}|$.
+
+  We say that a set of cardinals which belong to $\kappa^3(x)$  is {\em inductive\/} if it\\ \mbox{\, \, \, \, \, } contains  $0_{\kappa^2(x)}$ and contains $\lambda + 1_{\kappa^2(x)}$ whenever it contains $\lambda$.
+
+
+We define $\mathbb N_{\kappa^3(x)}$ as the intersection of all inductive sets with elements in\\ \mbox{\, \, \, \, } $\kappa^3(x)$ [kinds containing sets of sets].\end{dfn}
+
+
+The subscripting convention here is to subscript with a kind of the same kind as the subscripted object;  the subscripts may be omitted where they can be understood from the context.  We  have succeeded in defining natural numbers belonging to each kind $\kappa^3(x)$.  Natural numbers of different kinds are not the same objects, but the $T^n$ operation provides an injective external map from natural numbers in $\kappa^3(x)$ to natural numbers in $\kappa^{3+n}(x)$, which is also onto if the axiom of infinity is assumed.
+
+  \begin{dfn}\mbox{\negthinspace}
+    
+    We define a sequence as a function with domain some ${\mathbb N}_{\kappa^3(x)}$.
+
+    We demonstrate the ability to define sequences by iteration such that\\ \mbox{\, \, \, \, \, }
+    $x_0 = a$ and $x_{i+1} = F(x_i)$.    In this case we can write $x_i$ as $F^i(a)$.
+
+    We define the sequence $x$ as the intersection of all sets which contain \\ \mbox{\, \, \, \, \, }$(0,a)$ and contain $(u+1,F(v))$ whenever they contain  $(u,v)$.\end{dfn}
+
+  It is a straightforward exercise to prove that this last set is a function with the desired properties.  This can be used to justify more complicated recursive definitions.  What it cannot do, except by analogy, is cast light on the meaning of notations $\kappa^n(x)$ or $\iota^n(x)$, because all elements of the domain of a sequence (or any function) must be of the same kind, and operations like $\kappa$ and $\iota$ send objects to objects of different kinds.
+
+  \medskip
+
+
+  We rearticulate and prove Cantor's Theorem on sizes of power sets.  We have to rearticulate it because in its original form it is false:  $|A| < |{\cal P}(A)|$ is false because the cardinals are of different kinds.  The correct theorem is\begin{thm} (Cantor's Theorem)\,  $|\iota``A|<|{\cal P}(A)|$.
+\end{thm}
+  \Proof
+
+  Clearly $|\iota``A| \leq |{\cal P}(A)|$:  the identity map is the desired injection. 
+
+Suppose  $|\iota``A| = |{\cal P}(A)|$.  Then there is a bijection $F$ from the singletons of elements of $A$ to the subsets of $A$.
+All that we use about it here is that it is an injection.
+
+Define $R$ as the set of all $a \in A$ such that $a \not\in F(\{a\})$.  Then consider $F^{-1}(R) = \{r\}$ and consider the proposition $r \in R$:  this holds exactly if $r \not\in F(\{r\})  = F(F^{-1}(R)) = R$, which is a contradiction.
+
+\endproof
+
+
+The Mathematics here is the same as in the usual treatment, though the treatment using kinds makes it a little less familiar.
+
+\medskip
+
+Notice that for any $x$, $|\iota``\kappa(x)| < |{\cal P}(\kappa(x))|$:  this indicates that there are more elements in $\kappa^2(x)$, which includes ${\cal P}(\kappa(x))$ as a subset, than there are (singletons of) elements of $\kappa(x)$.  The cardinal $|{\cal P}(\kappa(x))|$ over $\kappa^2(x)$ is in an external sense larger than any cardinal over $\kappa(x)$.  There is a proof here that $\kappa(x) \neq \kappa^2(x)$, though we do not address this issue until the next section.  This is the treatment of the Cantor Paradox of the largest cardinal in this theory:  there is a largest cardinal
+over each kind, but there are cardinals larger than this cardinal over the ``next" kind.
+
+\begin{thm} Cantor-Bernstein Theorem:
+
+  If $|A| \leq |B|$ and $|B| \leq |A|$ then $|A|=|B|$.\end{thm}
+
+\Proof
+
+The proof of this here is quite standard, we merely record that we have it.
+
+\endproof
+
+We can define transfinite ordinal numbers as isomorphism classes of well-orderings under similarity.  The usual definition due to von Neumann does not work here, because the successor step $x \cup \{x\}$ of the construction of the usual ordinals always fails:  there is no such set.
+
+ We define linear orders and well-orderings in the usual way:  a well-ordering for us is reflexive ($\leq$ rather than $<$).  The notion of isomorphism of well-orderings is defined as usual.  If $\leq$ is a well-ordering, the order type of $\leq$, written ${\tt ot}(\leq)$, is the isomorphism class of $\leq$;  an object is an ordinal number iff it is the order type of some well-ordering.  For any relation $R$, we define $R^{\iota}$ as $\{(\{x\},\{y\}) \in \tau^2(R):x \, R \, y\}$ and for any ordinal $\alpha ={\tt ot}(\leq)$ define $T(\alpha)$ as ${\tt ot}(\leq^\iota)$.
+
+Notice that if $x$ is in the domain of a well-ordering $\leq$ belonging to $\alpha$, then $\leq$ belongs to $\kappa^4(x)$ and $\alpha$ belongs to $\kappa^5(x)$.  The well-ordering of the ordinals up to $\alpha$, which we might think from the outside is the same order type as $\alpha$, is actually in $\kappa^9(x)$, four types higher, and can be shown to be $T^4(\alpha)$.  The Burali-Forti paradox does not afflict us: if $\Omega$ is the order type of the ordinals over $\kappa(x)$,  the ordinal $\Omega+1$ contains well-orderings longer (in an intuitive sense) than any over $\kappa(x)$, but it is a well-ordering over $\kappa^5(x)$ (the type where ordinals $\alpha$ over $\kappa(x)$ live) and we have here a proof
+that $\kappa^5(x)$ is not the same type as $\kappa(x)$, though we will not chase down the details (a simpler proof appears in the next section).
+
+We can formulate axioms of infinity and choice very naturally.  A simple form of the axiom of infinity is the assertion that for any natural number $n$ (in any type) $n+1$ is nonempty.  The axiom of choice can be formalized exactly as usual as asserting that partitions have choice sets.  The well-ordering theorem can be proved.
+
+
+%\end{comment}
+
+\subsection{There are many kinds, but the apparent hierarchy of kinds is hard to talk about}
+
+We have a Diversity Lemma (lemma \ref{lem:diversity}) which asserts
+that there cannot be two distinct kinds that belong to the same kind.
+How do we know that there is more than one kind?
+
+
+
+\begin{thm} For any $x$, $\kappa^2(x) \neq \kappa(x)$.\end{thm}
+
+\Proof
+
+Suppose that we have an $x$ such that $\kappa(x) = \kappa^2(x)$.
+
+Define $R$ as $\{y \in \kappa(x):y \not\in y\}$.  $R \sim \kappa(x)$ so $R \in \kappa^2(x) = \kappa(x)$.
+
+So $R \in R$ iff $R \in \kappa(x)$ [just shown to be true] and $R \not\in R$.
+
+This is a contradiction.
+
+\endproof
+
+
+
+\begin{thm}\label{thm:diff}
+  For each concrete $n>1$, $\kappa^n(x) \neq \kappa(x)$.\end{thm}
+
+\Proof
+
+The argument is very similar to the argument above but with some devious use of iteration of the singleton operation.  Suppose $\kappa^n(x)=\kappa(x)$.
+
+Let $R_{n,x} = \{\iota^{n-2}(y)\in \kappa^{n-1}(x):\iota^{n-2}(y) \not\in y\}$.
+To make it entirely clear that the existence of this set follows from Separation, rewrite it as $\{u\in \kappa^{n-1}(x):(\exists y:u = \iota^{n-2}(y) \wedge \iota^{n-2}(y) \not\in y)\}$. Notice that
+for any $y \in \kappa(x)$, $\iota^{n-2}(y)\in \kappa^{n-1}(x)$.  Notice that $R_{n,x} \in \kappa^n(x) = \kappa(x)$.  It follows that $\iota^{n-2}(R_{n,x})\in \kappa^{n-1}(R_{n,x})$.  It then follows that $\iota^{n-2}(R_{n,x})\in R_{n,x}$ if and only if $\iota^{n-2}(R_{n,x}) \not\in R_{n,x}$, which is impossible.
+
+\endproof
+
+%\smallpara{\textcolor{red}{If i read you right, this proof uses
+%    separation for formul{\ae} that are stratifiable-mod-$n$.  You
+ %   don't talk much about TC$_n$T but it is mentioned in passing.  Do
+%    we want to say more about it?  Or to avoid it since we can?  RH:  I am trying to be na\"ive here:  mention of %cyclical type theory in connection with this proof could occur in a later section.}  }
+
+We give another proof of these results, due to the second author, with a somewhat different flavour.
+
+\begin{dfn}\mbox{\negthinspace}\\
+  We define $x \in ^1 y$ as $x \in y$;\\
+  For each concrete $n$ we define $x \in ^{n+1}y$ as $(\exists z:x \in^n z \wedge z \in y)$.  \end{dfn}
+
+
+\begin{thm} (Vicious Circle Principle)
+
+  There are no $n$-loops of circumference $n$:
+
+  that is, for no $x$ is $x \in^n x$.  For each $n\geq 1$, $\kappa^{n+1}(x) \neq \kappa(x)$  \end{thm}
+
+\Proof
+
+Reflect that the (metatheoretic) function $\kappa:x \mapsto$ {\em the unique   %\marginpar{I fiddled with presentation of this result --  RH   I did not move it to section 2;  for one thing, I think it is a bit more metatheoretical than the (actually very similar) proof that I give.  I need to check how Resnik proves it.} 
+kind to which $x$ belongs} is an $\in$-homomorphism.  Not an
+{\em iso}morphism but at least a homomorphism.  Now suppose there is an
+$\in$-loop, of circumference $n$, say (note that this $n$ is a natural number
+of the {\sl metatheory}, as is the `$i$' in` $\kappa^i$' below):  notice that if
+$\kappa^{n+1}(x)=\kappa(x)$, then we have such a loop consisting of the
+$\kappa^i(x)$'s for $1 \leq i \leq n$.  The elementwise image under
+$\kappa$ of any such loop is an $\in$-loop of circumference $n$ consisting
+exclusively of kinds.  (There is no suggestion that this loop of kinds is a
+set -- it doesn't need to be, it isn't, and it can't be.) Let $\kappa(u)$ be
+one of those kinds:  we introduce the notation $C_i$ for $\kappa^i(u)$. For
+each of the kinds $C_i$ we can form $\{x \in C_i: x \not\in^n x\}$ -- call
+it $d_i$.  For each $i$ we argue that $d_i \in d_{i+1}$. For suppose not;
+then $d_i$ belongs to an $\in$-loop of circumference $n$ whose penultimate
+member $x$ is a member of $d_i$.  But then $x$ belongs to an $\in$-loop of
+circumference $n$, contradicting $x\in d_i$. So the $d_i$ constitute an
+$\in$-cycle of circumference $n$. But then (for $i>0$) $d_{i-1} \in d_i$ and so cannot
+belong to such a loop.  But we have just shown that it does.
+
+
+So there is no $\in$-loop of kinds of circumference $n$, and so for no
+$x$ and $n>1$ does $\kappa^{n+1}(x) = \kappa(x)$.  But then there are
+no $\in$-cycles of circumference $n$ at all.  This works for any $n$.
+
+\endproof
+
+\noindent\mbox{{\sl Cognoscenti} will see the parallel with the proof that $\{x: x \not\in x\}$ is not a set.}
+
+\label{C+}
+\smallpara{Incidentally this fact that the function $\kappa$ is a $\in$-homomorphism (evident from the development in section 2)
+shows that there cannot be any nontrivial transitive
+sets.  Suppose $x \in y \in z \wedge x \in z$.  Then $\kappa(x) \in \kappa(y) \in
+\kappa(z) \wedge \kappa(x) \in \kappa(z)$. Since $x, y$ both in $z$ we have $\kappa(x) =
+\kappa(y)$.  So $\kappa(x)= \kappa(y)$ is a member of itself, and cohabitations
+cannot be self-membered because of Russell's paradox.
+%\textcolor{green}{I suggest omitting this smallpara from the five-minute argument}
+}
+
+%\textcolor{green}{Commented out proof of this result using Cantor's Theorem because we no longer talk about Cantor's Theorem.}
+
+\commentblock{
+Another -- considerably more complicated -- proof of this has already
+been given, perhaps to be disfavoured because it is complex.  Cantor's
+Theorem as stated and proved above, and the obvious fact that
+$\iota``A$ and $\iota``B$ are the same size iff $A$ and $B$ are the
+same size, together imply that, for any $n$,
+\begin{small}$$|\iota^n``(\kappa(x)| < |\iota^{n-1}``{\cal P}(\kappa(x))| < \ldots <|\iota^{n-i}``{\cal P}^i(\kappa(x))| < \ldots < |{\cal P}^n(\kappa(x))|\leq |\kappa^{n+1}(x)|.$$\end{small}
+
+Now if $\kappa(x) = \kappa^{n+1}(x)$ then there would be an obvious
+bijection from $\kappa(x)$ to $\iota^n``(\kappa(x))$ (the iterated
+singleton map $\iota^n$, which would under this hypothesis be an
+actual function) and an obvious bijection from $\kappa(x)$ to
+$\kappa^{n+1}(x)$ (the identity map), contradicting this.
+}
+
+
+We can now see -- for any $x$ --  that $\kappa(x)$, $\kappa^2(x)$, $\kappa^3(x)$ and so forth are distinct kinds, as far out as we can count.  But notice that we cannot really talk about this very much.  We cannot define a sequence of kinds in this way because, if we are to define a sequence, all of its terms have to be of the same kind. Nor can we express the thought that this apparent sequence of kinds includes all the kinds there are.  We just do not have the language to say it.
+
+
+Now we can hint at another thing we cannot actually {\sl
+  say}\footnote{In section \ref{whistle} we will give an actual proof
+that this cannot be said.}.  It seems very implausible that there
+should be a kind $\kappa(x)$ such that $\kappa^i(x)$ is defined for
+every integer $i$.  But we cannot rule this out, as we will see.  We
+may even be tempted to adopt an axiom which seems to imply that {\sl
+  all} kinds are like this.
+\begin{comment}
+We now prove a theorem with a famous name
+
+\begin{thm}\label{vicious} Vicious Circle Principle
+  
+  For each concrete $n$, there cannot be any sequence
+  $x_1,x_2,\ldots,x_n$ such that each $x_i \in x_{i+1}$ and $x_n \in
+  x_1$.  That is, there are no loops (of a given concrete length) in
+  the membership relation.\end{thm}
+
+\Proof
+
+Suppose there were such a sequence. Clearly $x_i \in \kappa^i(x_1)$ for each concrete index $i$.  Since $x_n \in x_1$, we have $x_1 \in \kappa^{n+1}(x_1)$.  But by theorem \ref{thm:diff}, $\kappa^{n+1}(x_1)$ is distinct from $\kappa(x_1)$, which is also purported to contain $x_1$, and so disjoint from it (since kinds are equivalence classes under $\sim$) which is a contradiction.
+
+\endproof
+\end{comment}
+
+
+
+
+\subsection{Coercing formulas into typed or typable form}
+
+We first introduce a useful logical notion.   
+
+
+
+\begin{dfn} \mbox{\negthinspace}
+
+  We say that two variables $v,w$ are {\em connected\/} in a formula $\phi$ iff there is a sequence $\{u_i\}_{i \in \mathbb N}$ such that  $u_1=v$, $u_n = w$ and, for each relevant $i$, $u_i$ and $u_{i+1}$ occur together in an atomic subformula of $\phi$.
+
+  We say that a formula $\phi$ is {\em connected\/} iff any two
+  variables occurring in it are connected.\end{dfn} \smallpara{There
+  is quite a lot that can be said about this notion of {\sl connected
+    formula}.  It looms large in later sections of this paper.  It has
+  an interesting history.  It is defined and explained in \cite{Dz},
+  but that is surely not its first appearance.  It is significant that
+  lemma \ref{lem:QCL} which follows is not valid constructively, and a
+  lot of manipulations in constructive logic rely on its failure:
+  e.g. $\{x: x = 0 \wedge p\}$ cannot be relied upon to be equal to
+  one of $\{0\}$ and $\emptyset$.  Douglas Bridges calls such objects
+  {\sl fishy sets} -- an expression apparently originating with Ian
+  Stewart. }
+
+\begin{lem}\label{lem:QCL}
+  Quantifier Connection Lemma
+
+  Any formula is equivalent to a formula in which every quantified subformula is connected.\end{lem}
+%\marginpar{RH:  I do  not want to give the general result here:  the theorem is important and so is the algorithm I describe, which emphasizes quantification.}
+
+\Proof 
+
+Any formula is equivalent to a formula in which all quantifiers are universal:  we assume that all quantifiers are universal in all formulas in this proof.
+
+Let $\psi$ be a formula.  Let $(\forall x:\phi)$ be a minimal non-connected quantified subformula of $\psi$ of greatest typographical length:  $\phi$ contains no quantified proper subformula which is not connected.
+
+Let $\alpha$ be a maximal subformula of the given formula which does not contain any variable connected to $x$.  The smallest quantified formula properly containing $\alpha$ must be $(\forall x:\phi)$ itself:  if $(\forall y:\psi)$, a subformula of $\phi$, properly contained
+$\alpha$, then it could not contain $x$ or any variable connected to $x$ because $(\forall y:\psi)$ would be connected, and $\alpha$ would not be maximal.   So $(\forall x:\phi)$ is equivalent to
+$$(\alpha \wedge (\forall x:\phi[x=x/\alpha])\,  \vee\,  (\neg \alpha \wedge (\forall x:\phi[\neg x=x/\alpha])).$$
+Notice that the quantified subformulas introduced here are of shorter typographical length than $(\forall x:\phi)$ [they may contain further subformulas disconnected from $x$ yet to be processed].
+
+Iterate this process as necessary to obtain an equivalent formula to $(\forall x:\phi)$  in which all quantified subformulas are connected, reducing each maximal subformula not connected to $x$, then do the same for $\psi$,
+applying the process to each minimal non-connected quantified subformula of $\psi$ until none remain.
+
+
+
+\endproof
+
+%\marginpar{I need to think very hard about this.  I still haven't got my head round it.  Holmes:  I need to edit and clarify this, so I am with you.}
+\subsubsection*{Can we impose a Typing Convention on our Language?}
+
+\begin{dfn} \mbox{}\\
+  $\bullet$ \mbox{\, }
+  We say that a formula is {\em kind-bounded\/} iff each quantifier in the formula is restricted to a kind $\kappa(u)$, where `$u$' is free in the formula.
+  
+$\bullet$ \mbox{\, }  We say that a formula $\phi$ is {\em stratified\/} iff there is a function $\tau$ from variables to natural numbers such that for each subformula  $x=y$ of $\phi$ we have $\tau(x)=\tau(y)$ and for each subformula $x \in y$ of $\phi$ we have $\tau(x)+1 = \tau(y)$.\end{dfn}
+
+\begin{thm} Every kind-bounded formula equipped with an intended assignment of kinds to parameters is equivalent to a stratified formula. \end{thm}
+
+\Proof
+
+We begin by defining a general procedure for assigning kinds as types of variables in formulas which we highlight for future reference.
+
+\begin{description}
+
+\item [General typing procedure:]  Construct a function $\tau^*$ (in the metatheory, there can be no such function in our world) mapping variables in a formula $\phi$ to kinds.  Since we know the kind of each parameter $v$, we can set $\tau^*(v) = \kappa(v)$.  For each bound variable $u$ which is restricted to $\kappa(u)$ where
+$u$ is a parameter (where the kind of $u$ and so the exact value of $\kappa(u)$ is understood to be known),  we set $\tau^*(x)=\kappa(u)$.  We can assume without loss of generality that bound variables restricted to different kinds have different names. 
+
+\item[General stratification procedure:]
+
+Now each atomic formula $u=v$ for which $\tau^*(u)\neq \tau^*(v)$ (both being defined) is equivalent to $\neg u=u$ and can be replaced with that, and each atomic formula $u \in v$ for which $\kappa(\tau^*(u)) \neq \tau^*(v)$ (both being defined) can be replaced with the equivalent $\neg u=u$. 
+\end{description}
+
+
+
+In a kind-bounded formula $\phi$, the general procedures above assign a type to every variable and make some modifications to subformulas to facilitate stratification enforcement.
+
+ In the formula
+$\phi^*$ obtained after these modifications, define $\tau(x)$ for each variable $x$ as the largest $n$ such that $\tau^*(x) = \kappa^n(\tau^*(y))$ for some variable $y$ appearing in $\phi$.  This is a stratification.  \endproof
+
+
+
+\begin{thm}   Every formula of our language is equivalent to a stratified formula, given an assignment of kinds to parameters in the formula.\end{thm}
+
+\Proof
+
+We begin with partial assignment of kinds as types to variables in a general formula:  a parameter $v$ will be 
+assigned type $\kappa(v)$ [an assignment of kinds to variables is postulated] and a bound variable $x$ which is bounded in a kind $\kappa(u)$ will be assigned type $\kappa(u)$.  Variables governed by unbounded quantifiers will also be assigned types in the course of the process described below.  At any given point in the process, some variables will be typed and some will not:  ones which are not typed are always governed by unbounded quantifiers.
+
+Notice that if each of $u$ and $v$ is typed because they are parameters or kind-bounded quantified variables and $u=v$ appears in the formula and the types assigned to $u$ and $v$ are different, then $u=v$ can be replaced with $u \neq u$, since it is simply false (and this can at our discretion be eliminated by logic).  If $u \in v$ appears and $u$ and $v$ are both assigned types and the type assigned to $v$ is not the kind of the type assigned to $u$, then $u \in v$ can be replaced with $u \neq u$ since it is false (and thus can at our discretion be eliminated using logic).  Thus we can assume that these typing conditions hold on atomic subformulas in which both variables have been assigned types:  for any atomic subformula $u \, R\, v$ where $u$  is assigned type $s$ and $v$ is assigned
+type $t$, $s \, R \, t$ holds, where $R$ is either = or $\in$.  We are able to assume these conditions for variables governed by unbounded quantifiers as well, because, as we will see, at the point where such a variable is assigned a type, it simply does not occur in any atomic formula with a variable assigned type previously.
+
+Notice that if we express each kind used as a type in the form $\kappa^n(u)$ where $u$ is used as a type and is not the kind of any kind used as a type, then assigning $n$ as type to each variable originally assigned $\kappa^n(u)$ will give a stratification, if all variables are typed, subject to enforcement of the conditions on atomic subformulas described in the previous paragraph.
+
+In a formula $\psi$ in which each parameter and each variable bounded in the kind of a parameter are typed as discussed (and possibly some unbounded quantified variables have been assigned type in ways not yet disclosed, but in any case not violating the conditions on typing in atomic formulas motivated by stratification) consider
+a maximal subformula $(\forall x:\phi)$ of $\psi$ where $x$ has not been assigned a type (and so is quantified over without a kind as bound).  Without loss of generality, we assume that we use only universal quantifiers, and that
+bound variables are systematically renamed so that different quantified subformulas always have different binding variables.  Note that all variables free in $(\forall x:\phi)$ are typed, or it would not be a maximal subformula with the indicated property.
+
+In the formula $\phi$, the variable $x$ is free.
+Enumerate the types $\kappa(t_i)$ of the form $\kappa^m(u)$ where $u$ is a type already used and $m$ is an integer with absolute value less than or equal to the number of variables in $\psi$.  Notice that this will include all types which could be deduced for $x$ by its occurrence with a variable already assigned a type in an atomic formula, but it also includes any type which could be deduced for $x$ at any time in the future due to future type assignments to variables.  $(\forall x:\phi)$ is equivalent to the conjunction of formulas $(\forall x_i \in \kappa(t_i):\phi_i)$, where $\phi_i$ is the result of first replacing $x$ with $x_i$ then eliminating atomic subformulas
+which become ill-typed, and an exotic conjunct $$(\forall x^*:(\bigwedge_i \kappa(x^*) \neq \kappa(t_i))\rightarrow \phi^*),$$ where $\phi^*$ is the result of first replacing $x$ with $x^*$, assigning it a type distinct from all $\kappa^m(t_i)$'s where $m$ as above is an integer with absolute value greater than or equal to the number of variables in $\psi$ [the resulting formula $\phi^*$ will be the same for any such choice of type], then extending the type assignment and removing ill-typed atomic subformulas, which will include  {\em all\/} of the atomic subformulas containing $x$ and a variable already assigned a type, so that $\phi^*$ contains no typed variables other than $x^*$ which are connected to $x^*$'s via typed variables, and supports a type assignment to $x^*$, as well as the variables already typed [the only ones which occur are ones not connected to $x^*$, or at least not via variables assigned types].  Retain the type assignment to $x^*$ for further use though we do not bound $x^*$ in the formula.  If $x^*$ is connected to a variable $y$ which was already typed, there must be a variable $z$ on the path from $x^*$ to $y$ which is untyped so far, which means it must be bound by an unrestricted quantifier, which must be inside $\phi^*$ since any quantifier in $\psi$ whose scope includes $(\forall x:\phi)$ is restricted to a kind or has had a type assigned to its binding variable earlier in the process.   Further progress toward assigning a type to $z$ will take place at the later stage where we process the formula quantified over $z$; it is impossible for $z$ to be assigned a type used before the type of $x^*$ was determined and remain connected to $x^*$ when all variables on the path are typed, because the path cannot be long enough: some atomic subformula would be eliminated:   $z$, when types have been assigned to all variables on the paths to $x^*$ and to $y$, may remain connected to $x^*$, or to $y$, but not to both.
+
+Now we describe the elimination of the exotic conjuncts, whose strange boundedness to complements of concrete finite unions of kinds represents a stratification violation. [we write $\phi^*(x^*)$ instead of $\phi^*$ to facilitate writing many substitutions]  
+
+The assertion
+$$(\forall x_1,\ldots,x_{n+1}: (\bigwedge_{i=1}^{n+1} \bigwedge_{j=1}^{i-1} x_i \not\sim x_j) \rightarrow \bigvee_{i=1}^{n+1}\phi^*(x_i))$$   succeeds in asserting that there are no more than $n$ counterexamples $\kappa(t)$ to $(\forall x^* \in \kappa(t):\phi^*(x^*))$ \smallpara{In this transformation, note that a type assigned to $x^*$ continues to be assigned to the variables $x_i$; this is counterintuitive because the formula {\em says\/} that any  two distinct $x_i$'s have different types, but formally it works, because we never subsequently do any type reasoning in contexts involving more than one of them, and in the formulas $x_i \not\sim x_j$, the two variables have the same relative type for purposes of stratification, weirdly enough.}
+Now it is straightforward to assert that listed items $\kappa(t'_1),\ldots,\kappa(t'_m)$ are exactly the $m$ counterexamples by asserting that each is a counterexample and there are no more than $m$ counterexamples:   $$(\forall x_1,\ldots,x_{m+1}: (\bigwedge_{i=1}^{m+1} \bigwedge_{j=1}^{i-1} x_i \not\sim x_j) \rightarrow \bigvee_{i=1}^{m+1}\phi^*(x_i))\wedge \bigwedge_{i=1}^m \neg(\forall x'_i \in \kappa(t'_i):\phi^*(x'_i))$$
+
+Then the desired assertion equivalent to $$(\forall x^*:(\bigwedge_i \kappa(x^*) \neq \kappa(t_i))\rightarrow \phi^*(x^*))$$  is the disjunction of the assertions that each finite subset of $\{\kappa(t_1),\ldots,\kappa(t_n)\}$ is the exact collection of counterexamples $\kappa(t)$  to $(\forall x^* \in \kappa(t):\phi^*(x^*))$.
+
+Now observe that this procedure produces a formula respecting all type assignments already made (preserving types assigned to unrestricted bound variables of which copies are made, as noted above).
+
+We then iterate the procedure on the outermost quantifiers for which type assignments have not been made to the (unrestricted) binding variable, and we arrive ultimately at a completely typed formula [by which we do not mean kind-bounded:  some bound variables remain unrestricted, but are assigned types to support the process, as described], which can then be stratified as described above [reiterating  the observation 
+that subformulas $x_i \not\sim x_j$ produced in the elimination of exotic conjuncts are unproblematically stratified with $x_i$ and $x_j$ assigned the same type, as is easy to check by expanding them, though their semantics makes this rather unexpected.]
+
+\endproof
+
+
+\begin{thm}\label{thm:kindsep}  Each instance of separation ``$\{x \in \kappa(u):\phi(x)\}$ exists", equipped with an assignment of types to parameters,  is implied by  a conjunction of  instances  ``$\{x \in \kappa(u):\phi^*(x)\}$ exists" which are kind-bounded (and so easily stratified) and use no kinds as bounds other than types $\kappa^i(u)$ where $i$ is an integer (so the stratification is uniquely determined by its value at $x$).\end{thm}
+
+
+\Proof
+
+Start with an instance $(\exists A \in \kappa^2(u)(\exists x \in \kappa(u):x\in A \leftrightarrow \phi))$ of separation.  Conversion of this to a stratified formula by the procedure described in the previous theorem will give a stratified instance of separation (since all manipulations are inside $\phi$).
+
+Conversion of this using the procedure in the Quantifier Connection Lemma (lemma \ref{lem:QCL}) will still yield a stratified formula, a disjunction of instances of separation each of which is connected, with formulas defining cases in which different instances of separation are to be used which are logically exhaustive (and which involve no variable connected to $x$).
+
+A stratified connected instance of separation admits exactly one typing of variables, with each type being of the form $\kappa^i(u)$.  Any path from $x$ to a variable determines a candidate type of this form, and there is such a path because the formula is connected.  All paths determine the same candidate type, because the formula is
+stratified.  Moreoever, all variables appearing in such instances of separation are actually bounded in types $\kappa^i(u)$, because variables over which unbounded quantification takes place which survive the stratification process described in the proof of the previous theorem are not connected to previously typed variables (and so not connected to $x$) at the end of the process.
+
+\endproof
+
+\medskip  It should be noted that all statements of equivalence in this subsection hinge on
+the infinite collection of instances of the separation axiom which prove $\kappa^n(x) \neq \kappa(x)$ for $n>1$:  these are used to justify elimination of ill-typed atomic subformulas.  It should also be clear that the equivalences shown do not depend on the entire framework of TTGV:  all that is needed is the strong typing lemma (lemma \ref{Strong Typing Lemma}) the fact that distinct kinds are disjoint, and the fact that $\kappa^n(x) \neq \kappa(x)$ for $n>1$.
+
+
+
+
+
+\section{Typed theories of sets introduced;  older proposals for type theory with general variables}\label{earlier}
+
+We presented TTGV in the previous section as if it were an independent
+proposal for the foundation of mathematics.  The knowledgeable reader
+should be able to divine a lot about its provenance from what we have
+said so far; in this section we will make the historical background of
+this proposal explicit.  Our aim in presenting things in this way is
+to make it clear that a theory of this kind can be presented without
+explicitly or implicitly assuming knowledge of the typed theories at all.
+
+It  has been known as long there have been model theorists that a
+many-sorted theory can be captured in a one-sorted language -- as long
+as the number of sorts is finite.  There is generally a good reason
+for a topic to be set up in a many-sorted language; for one thing, the
+sorts typically are well-motivated entities with a previous life of
+their own.  For another, the many-sorted language tends to be
+computationally more tractable than the one-sorted, in that many
+falsehoods expressible in the one-sorted language are -- in the
+many-sorted setting -- nipped in the bud by typecheckers and simply
+cannot be expressed. (``Suffer us not to mock ourselves with
+falsehood''). So people tend not to bother with turning many-sorted
+theories into one-sorted form. Who in their right mind would try to
+express vector spaces in a one-sorted language?  What would be the
+point?  Nobody -- as far as we are aware -- has ever tried to
+capture Church's or Martin-L\"of's type theory in a one-sorted
+language.  To make such an attempt would be to miss the point.
+
+However there are examples of typed (many-sorted) theories that one
+might want to capture in a one-sorted language.  A swathe of examples
+is provided by typed set theories.  There is no point in trying to
+capture vector spaces in a one-sorted language with a sort predicate
+because there is no sensible theory related to vector spaces waiting to
+be expressed in that language.  In contrast we {\sl are} interested in
+expressing typed theories in a one-sorted language because there are
+interesting theories a-plenty queueing up to be expressed in that
+one-sorted language -- namely all the set theories.
+
+Some remarks on the number of sorts: If there are only finitely many
+then everything is tickety-boo. You invent a one-place predicate
+letter for each sort, and adopt an axiom to say that every object
+bears precisely one of these predicates.  However if there are
+infinitely many sorts this can't be done. You can say that nothing has
+more than one type, but there is no way of saying that every object
+bears one of the sort predicates.
+
+\commentblock{There is a complication in the infinitely-many-sorts setting, which is\marginpar{I think the point is that the theorems about ultrapowers just do not apply to theories with infinitely many sorts.  Surely this is already said somewhere?}
+not much discussed \ldots so perhaps it isn't a huge problem.
+Consider for example TST expressed in the many-sorted language, and
+think about what an ultrapower of a model must look like.  It will
+have nonstandard levels.  This is something to think about because (as
+any fule kno) a class of structures is axiomatised by a first-order
+theory iff it is closed under isomorphism and ultraproducts.  Since an
+ultrapower of a model of TST is liable to have nonstandard levels the
+class of models of TST isn't closed under ultrapowers and therefore
+TST is not a first-order theory.  Except that of course it is.
+
+I don't know what to say about this.  I understand it, in some sense,
+but i don't feel that i have found the right thing to say about it.
+There may be a connection with the Omitting Types Theorem but i am not
+going to pursue it -- not least because of the overloading of the word
+`type'(!)  It {\sl may} be worth mentioning at this point that, late
+last century, Andr\'e P\'etry (one of the original Belgian NFistes)
+had a project to systematise the porting to many-sorted languages of
+all the results of one-sorted first order logic\ldots Completeness,
+compactness etc.  He had a JSL article \cite{petry2} on this stuff.
+I remember him saying that it's all pretty
+straightforward except Omitting Types. (And i don't remember him
+saying anything about interpolation either \ldots probably something
+to think about there!)  }
+
+
+
+\subsection{Typed theories of sets:  TST and variants}
+
+The original theory of this kind, which appears to have been implicitly proposed by Norbert Wiener in 1914 and explicitly described by Tarski in the 1930s, has been called TST by the Belgian school of logicians who studied NF, and this is what we will call it.  We note for historical accuracy that this is {\em not\/} the theory of types of Russell and Whitehead's {\em Principia\/};  it is considerably simpler, and Russell and Whitehead did not have mathematical knowledge required to simplify their system to this form.
+
+TST is a multi-sorted first order theory with equality and membership.  The sort of a variable $v$ will be written ${\tt type}(v)$.  We provide a countable supply of variables of each sort.  Using ++ to denote concatenation of strings, the formation rules for atomic formulas are that $v{\tt ++}\verb|`|=\verb|'|{\tt ++}w$ is a well formed atomic formula iff ${\tt type}(v)={\tt type}(w)$, and 
+$v{\tt ++}\verb|`|\in\verb|'|{\tt ++}w$ is a well-formed atomic formula iff ${\tt type}(v)+1 ={\tt type}(w)$.  All atomic formulas are formed in this way.  Writing this out in a way which manages use and mention correctly is a technical challenge!
+
+We do not follow the convention of equipping variables with type superscripts in TST, which makes for very cluttered notation, though if we do provide a variable with a numeral superscript, one may expect that the type of that variable is as indicated.
+
+The axioms of TST are a scheme of extensionality and a scheme of comprehension.  The scheme of extensionality provides that each well-formed formula of the shape $$(\forall xy:x=y \leftrightarrow (\forall z:z\in x \leftrightarrow z \in y))$$ is an axiom.  This asserts that objects of type $n+1$ with the same extension (consisting of type $n$ objects) are the same.  The scheme of comprehension provides that for each well-formed formula $\phi$ in which the variable $A$ is not free, 
+$(\exists A:\forall x:(x \in A \leftrightarrow \phi))$ is an axiom if it is well-formed (the only additional requirement being that the type of $A$ is the successor of the type of $x$).
+
+It is usual to adjoin an axiom of infinity (whose form can be deduced from the development of mathematics in TTGV in the previous section) and often the axiom of choice to this theory, but they are not part of the formal definition of the theory we give here.
+
+Some variants of this theory are worth noticing.  Hao Wang \cite{wang}
+proposed the variant \TZT\ which indexes the sorts by {\sl all} integers
+instead of just the nonnegative integers.  As he points out, the consistency of \TZT\
+follows from the consistency of TST by a simple compactness argument.
+\smallpara{Wang himself called his theory `TNT'
+  for ``theory of negative types"; We prefer to call it `\TZT' because
+  it has {\sl all} integer types, not just negative types, and we reserve
+  `TNT' to denote the theory of negative types -- types organised in
+  order type $\omega^*$. `\TZT' has become the standard notation for
+  the theory of \cite{wang}.  It is far from clear that every model of
+  TNT has an end-extension that is a model of \TZT -- so the two
+  theories are importantly distinct. }
+
+The variant TSTU differs from TST in allowing urelements.  Its extensionality scheme is $$(\forall xyz:z\in x \rightarrow(x=y \leftrightarrow (\forall z:z\in x \leftrightarrow z \in y)))$$ (providing that nonempty sets with the same extension are equal) and it is convenient to supply a primitive constant $\emptyset^{i+1}$ of each type $i$ with the axiom scheme consisting of $(\forall x:x \not\in \emptyset^{i+1})$ for each concrete natural number $i$.  An object of type $i+1$ is a set if it has elements or is equal to $\emptyset^{i+1}$.
+
+In any of these theories, one can provide a term construction $\{x^i:\phi\}$ of a term of type $i+1$ representing the unique set $A$ such that $(\forall x:(x \in A \leftrightarrow \phi))$. The type rules for term constructions are straightforward to adapt from those for variables.
+
+It is straightforward to show that TST is interpretable in the usual set theory ZFC.  Let $X_0$ be an arbitrarily chosen set. Define $X_{n+1}$ as ${\cal P}(X_n)$ for each $n$.  In any formula of the language of TST, assign each parameter
+of type $i$ a value in $X_i$ and interpret each quantifier over type $i$ as a quantifier restricted to $X_i$.  It is straightforward to check that each interpretation of an axiom of TST is true.   The fact that the sets representing the types are not disjoint is harmless.\footnote{
+
+This is one of a couple of places in the paper where we are reminded that we need to track down Boffa's discussion of typed properties.   See P\'etry \cite{petry1} and Boffa \cite{boffatyped}.  \textcolor{red}{\bf Please action this footnote.  RH:  I think that is for you -- you are the one that knows about this?}
+Yes, but you were the one who brought it up!}.
+
+We further note that TSTU is interpretable in TTGV, the theory we defined in the first section.  Let $\kappa(x)$ be a kind.  Interpret each parameter of type $i$ as an element of $\kappa^{i+1}(x)$.  Interpret each quantifier over type $i$ as a quantifier restricted to $\kappa^{i+1}(x)$.  That the axioms of TSTU hold is immediate from the axioms of TTGV:  the weak extensionality of TSTU has the same form as the extensionality of TST, and the interpreted comprehension axiom of TSTU follows from
+the separation axiom of TTGV.  Of course TST is interpretable in TTGV with the additional assumption of strong extensionality.
+
+We further observe that \ldots
+\begin{thm}
+  Any model of TSTU gives us a model of TTGV.\end{thm}
+
+\Proof
+
+Take a model of TSTU, ensure that the types are disjoint,
+and assign the truth value {\tt False} to all ill-typed atomic formulas.  %\marginpar{RH:  I add a discussion of this fact, which occurs in a later section which may need to be edited in reaction, because having this result is useful in discussing the Quine system.}
+The theory of the resulting structure satisfies the axioms of extensionality [for nonempty sets], singletons, unions, principal ultrafilters and empty sets by inspection.  It satisfies every kind-bounded stratified instance of separation [because these are exactly the translations of the instances of TSTU comprehension], and it satisfies the conditions $\kappa^{n}(u) \neq \kappa(u)$ for $n>1$ since we have arranged for the types to be disjoint.  It follows that general instances of separation hold by the argument of Theorem \ref{thm:kindsep}, and we have a model of TTGV.
+
+\endproof
+
+
+Our reasons for preferring to frame our flagship theory of types with general variables with weak extensionality will become evident shortly.
+
+
+
+\subsection{Quine's original proposal of type theory with general variables}
+
+
+The central text here is \cite{ST&iL}, where Quine (starting at ch XII p. 266) suggests that typed variables of each type $n$ could be
+reinterpreted as variables restricted to objects satisfying a
+predicate $T_n$.  Each quantified sentence $(\forall x^n:\phi)$ can be
+reconstrued as $(\forall x:T_n(x) \rightarrow \phi)$ where all
+variables are unsorted and all quantifiers are unbounded.
+
+He further argued that each predicate $T_n$ can be defined in terms of $\in$.  He notes that on the mental picture we already have of the world of type theory, $(\exists z:x \in z \wedge y \in z)$ is equivalent to the assertion that $x$ and $y$ are of the same type.  Now if $y\in z$, we expect on the basis of our mental picture of the world of type theory that the type of $y$ immediately precedes the type of $z$.  Combining these two thoughts, we can say
+that the type of $x$ immediately precedes the type of $y$ (written $x \, {\tt PT} \, y$) if and only if $x \in z$ for some $z$ of the same type as $y$, that is, $(\exists zw:x \in z \wedge z \in w \wedge y \in w)$.   Then an object $x$ is of type 0 iff nothing is of type immediately preceding that of $x$:  $T_0(x)$ is defined as $(\forall y: \neg y \,{\tt PT}\, x)$.
+And then $T_{n+1}(y)$ can be defined (for each concrete $n$) as $(\forall y:T_n(y) \rightarrow y \, {\tt PT} \, x)$.
+
+
+
+The following definitions make all this precise.
+
+\begin{dfn}\mbox{\negthinspace}
+
+  [definition of ``being of the previous type"]
+
+  $x\, {\tt PT}\, y$ is defined as $(\exists zw: x \in w \wedge w \in z \wedge y \in z).$
+
+  [definition of type 0]
+
+  $T_0(x)$ is defined as $(\forall y: \neg y\, {\tt PT}\, x)$.
+
+  [definition of next type]
+\mbox{\negthinspace}\\
+\mbox{For each concrete natural number $n$, $T_{n+1}(x)$ is
+defined as $(\forall y:  T_n(y) \rightarrow y\, {\tt PT}\, x)$}
+
+\end{dfn}
+
+He then stated his axioms schematically.  The axioms are exactly the extensionality and comprehension axioms of TST with typed quantifiers translated to restricted quantifiers as suggested initially: or so he thought.  There is a technical issue to be raised later.
+
+
+\begin{description}
+
+\item[Quine's comprehension axiom:]  For any formula $\phi$, $$(\exists A:  T_{n+1}(A) \wedge (\forall x:T_n(x) \rightarrow (x \in A \leftrightarrow \phi))).$$
+
+\item[Quine's extensionality axiom:]  {\small $$(\forall xyz:T_{n+1}(x) \wedge  T_{n+1}(y) \wedge (\forall w:T_n(w) \rightarrow (w \in x \leftrightarrow w \in y)) \wedge x \in z \rightarrow y \in z).$$}  %\marginpar{I'm going to find a way of fitting this fmla into one line}
+We preserve the form of this axiom, which reflects defining equality in terms of membership, but it could be phrased differently.
+
+\end{description}
+This theory does prove that there are individuals, and, in fact, that each type is nonempty.   If $(\forall x: \neg T_n(x))$,
+it follows that $(\forall y:T_n(y) \rightarrow y\, {\tt PT}\, x),$ vacuously, that is $(\forall x:T_{n+1}(x))$ whence it follows by comprehension that $$(\exists A:T_{n+2}(A) \wedge (\forall x:x \in A \rightarrow (T_{n+1}(x) \rightarrow x \not\in x))),$$ which, since $T_{n+1}$ holds of every $x$, gives Russell's paradox.
+
+This axiomatization has some alarming features that Quine was aware of, and some he was not aware of.
+
+It does not seem that this theory proves that the relation of being the same type (which is not prominent in the\marginpar{On disjointness of types, I want to do some actual maths \textcolor{red}{Okay!  Let's be having it!}}  exposition) is an equivalence relation, because it is not clear that the types are disjoint. 
+
+There is no way to even express the idea that $(\forall x:(\exists n:T_n(x)))$:  nothing precludes the presence of objects which are not of any of the enumerated types, and the theory says very little about such objects and cannot even express the idea that there are or are not such objects.  Quine knows this.
+
+The axioms as expressed above do not ensure that $$(\forall xy:x \in y \wedge T_{n+1}(y) \rightarrow T_n(x)).$$  It appears that type $n+1$ objects may have elements which are not type $n$ objects, though the extensionality axiom does say that the identity of a type $n+1$ object is precisely determined by its type $n$ elements.   Quine is aware of this issue.
+
+
+
+He discusses three candidate axioms in connection with this issue, which are statements familiar to us.
+
+\begin{description}
+
+\item[Typing lemma:]  $(\forall xy:  x \in y \rightarrow (T_n(x) \leftrightarrow T_{n+1}(y)))$
+
+\item[Separation:]  $(\exists x:(\forall y:y \in x \leftrightarrow y \in z \wedge \phi))$
+
+\item[Union:]  $(\exists x:(\forall y:y \in x \leftrightarrow y \in ^2 z))$
+
+\end{description}
+
+He points out that if one assumes the typing lemma, one can simplify comprehension to
+$$(\exists x:T_{n+1}(x) \wedge (\forall y:y \in x \leftrightarrow T_n(x) \wedge \phi))$$  and one can get separation
+in the form $(\exists x:(\forall y:y \in x \leftrightarrow T^n(x) \wedge y \in z \wedge \phi))$, but to get general separation we would need to know that everything belongs to a type, which we cannot even say and similarly approximate union by  $(\exists x:(\forall y:y \in x \leftrightarrow T^n(x) \wedge y \in ^2 z))$  In both cases
+(existence of $\{y \in z:\phi\}$ and existence of $\bigcup z$), $T_{n+1}(z)$ would establish the existence of the sets in the presence of the typing lemma.  Of course all three of the assertions above hold in our already formed mental picture of type theory, and they could be adopted as axioms [they all hold in TTGV].
+
+The typing lemma also appears to ensure that empty sets of distinct types are distinct. [\textcolor{red}{this needs to be written up}].  This important issue is not one which Quine raises.
+
+We indicate an alarming feature, which Quine appears not to notice.  Examination of the text shows that Quine overlooks the complications which arise from the fact that the comprehension axiom of his theory is formally stronger than the comprehension axiom of TST, in that the formulas quantified over are not required to be translations of formulas of TST.  This turns out to be no obstruction to what is being done (it does not make the theory any stronger than TST), but this has to be demonstrated.
+
+From a model of this theory, one obtains a model of TST by dropping from the model all objects $x$ which do not satisfy one of the predicates $T_n(x)$, and dropping from the extension of each $y$ such that $T_{n+1}(y)$ all $x$ which do not satisfy $T_n(x)$.  [One should note that this procedure for cutting down the model is {\em not\/} describable in the language of the theory].   If one further modifies this model to ensure that the empty sets in different types are distinct, one can then (as discussed above) convert this model of TST to a model of TTGV. This model of TTGV will further be a model of Quine's theory [it should be evident that any model of TTGV satisfying strong extensionality is a model of Quine's theory] satisfying the additional propositions (the typing lemma, separation and union) discussed above.  Further, any model of TST with disjoint types converts to a model of TTGV with strong extensionality, and so a model of Quine's theory with the additional propositions.  Our theorem \ref{thm:kindsep} is thus seen to justify the strong form of Quine's comprehension axiom and the natural further axioms he wants to consider based on the intuitive picture of TST that we already have.
+
+
+
+
+
+This theory is not quite the same as ours.  To begin with, it has what we regard as a formal defect:  there is no need to axiomatize the theory with schemata with concrete natural numbers as indices, as we have demonstrated with our axiomatization (and as Resnik did prior to our work and very similarly).  Quine does observe that he cannot prove and actually cannot even {\sl say} that every object belongs to some type.  Further, his theory says nothing at all about objects which do not belong to a type. In our theory and Resnik's, it is immediate that every object belongs to a type [which we call a ``kind" in section \ref{selfcontained}], but the types may not be restricted to the familiar ones.
+
+We would suggest enhancing the definition of $T_{n+1}(x)$ to include the assertion that $T_n(y)$ holds for each $y \in x$.  This is just as much justified by the mental picture of the world of type theory that we start with, and pre\"emptively removes one of the alarming features of the theory.
+
+Quine says more about individuals than we do; he asserts that all individuals belong to the same type.  Resnik also thought that he had asserted this (see below, section \ref{resnik})).  We have not felt the need to say it, but we could.  We also want to be free to explore the possibility of there being no individuals at all.
+
+We think that our presentation is superior to Quine's for a number of reasons.  Our presentation does not allude to the simple typed theory of sets at all in its formulation (it is a set theory in the style of Zermelo, differing in the details of what constructions are provided):  the fact that it is actually a presentation of the simple typed theory of sets unfolds in the development, as the reader should see in section \ref{selfcontained}.  
+
+
+
+We dispute something that Quine says:   he denies that systematic ambiguity as in Russell or in the development of New Foundations has a place here:  in fact  there is a strong place for systematic ambiguity in this theory; we do not escape this phenomenon when we transition to a one-sorted theory.  This comes out clearly in the development in section \ref{selfcontained}:  the fact that we get different systems of natural numbers for counting objects of different kinds is an example of this.
+
+
+
+The fundamental point here is that Quine's theory is not intellectually independent from TST:  Resnik's theory and ours are independent of TST(U) in their formulation (though of course not in their historical origin), though related notions naturally develop as these theories unfold.
+
+Our theory of section \ref{selfcontained} is presented in such a way that kinds and the equivalence relation of being of the same kind are not actually mentioned in the axiomatics, which are tailored to look like those of Zermelo set theory, which makes the point of intellectual independence from TST very strongly.
+
+Finally, our theory differs from Quine's quite deliberately in allowing atoms as well as empty sets, for reasons to be discussed soon.
+
+
+
+
+\subsection{The system of Resnik}\label{resnik}
+
+What Quine did was a kludge.  The presence of meta theoretic natural number parameters corresponding exactly to the types
+reveals that he is not really describing an autonomously motivated system.%\smallpara{\textcolor{red}{I think it cld be helpful to name Resnik's axioms with a letter `R' to make cross-referencing easier for the reader.}}
+
+Resnik gives a genuine one-sorted theory with one-sorted motivation from which type theory falls out neatly,  and his theory is very close to ours.
+
+We list his seven axioms, staying closer to our own notation.
+
+
+
+\begin{dfn} $x \sim y$ means $(\exists z:x \in z \wedge y \in z)$.\end{dfn}
+Resnik defines $x=y$ as $(\forall z:x \in z \leftrightarrow y \in z)$.
+So does Quine; for us equality is a logical primitive, but the
+comprehension axiom of any of these theories should make this
+definition harmless.
+
+\begin{itemize}
+\item[R1:]
+
+$(\forall x:(\exists y:(\forall z:z \in y \leftrightarrow z \sim x)))$.  This is almost the same as the Axiom of Kinds which we proposed above as part of an alternative approach:  ours has the extra clause $x \in y$ to ensure that $\sim$ is reflexive.  We use the notation $\tau(x)$ for the witness to the existential quantifier $y$.  Strangely, the axiom of comprehension has to be used to fill in this detail in Resnik's system.
+
+\item[R2:]
+
+  $(\forall xyw:y \in x \wedge y \in w \rightarrow x \sim w)$.
+
+  Sets which meet have the same type.   In our system, if $x$ and $y$ have nonempty intersection, we have $z \in x$ and $z \in y$, so both $x$ and $y$ belong to $B(z)$, so $x \sim y$.  The existence of $B(x)$ in Resnik's system follows easily from axioms 2 and 7.
+
+\item[R3:]
+
+  $(\forall uvwxy:  y \in x \wedge u \in x \wedge y \in w \wedge v \in w \rightarrow (\exists t:y \in t \wedge u \in t \wedge v \in t))$.
+
+  This axiom is used to support transitivity of $\sim$.  We believe that it is redundant.  If $y \in x \wedge u \in x$ then we have $y \in \tau(u)$, where $\tau(u)$ witnesses Ax 1 with $x := u$.  Similarly we have $v \in \tau(u)$.  $u \in \tau(u)$ is not a consequence of Ax 1 (as it is in our formulation) but it does hold here because $u$ belongs to some set by the hypotheses.  So we can choose $\tau(u)$ as $t$.
+
+\item[R4:]  $(\forall vwxyz:y \in x \wedge v \in w \wedge x \in z \wedge w \in z \rightarrow y \sim v)$
+
+  We say that in our development that, because $x$ and $w$ have the same type, they both belong to a set $p$, and of course $\bigcup p$ will contain $y$ and $v$.  Our diversity lemma, which is equivalent to union in the presence of our other axioms, also readily implies this statement.
+
+
+
+\begin{dfn}  $x \, {\tt PT} \, y$ is defined (following Quine) as $$(\exists zw:x \in w \wedge w \in z \wedge y \in z).$$  We define $T_0(x)$ (``$x$ is an individual'') as meaning $\neg(\exists y:y \, {\tt PT} \, x)$:  nothing belonging to the same type as $x$ has elements.\end{dfn}
+
+\item[R5:] $(\exists x:T_0(x))$
+
+  We do not commit ourselves to the existence of any individuals.\\
+  However it is natural to do so given the historical origin of this theory.
+
+\item[R6:] $(\neg T_0(x) \wedge x \sim y \wedge (\forall z:z \in x \leftrightarrow z \in y) \wedge x \in w) \rightarrow y \in w$.
+
+  This looks odd to us because Resnik treats equality as a defined notion, but it is nothing more than the axiom of extensionality.  It is a bit different from ours:  it is weaker in that it does not immediately force equality of nonempty sets with the same extension (R2 assists with this);  it allows individuals with the same empty extension to be distinct but any empty object in a type containing a set is the only empty object in that type.  This is natural;  we are more liberal in allowing many atoms in each type.
+
+\item[R7:] For any formula $\phi$, $$(\forall z:(\exists y:w \sim z \wedge (\forall x:x \in y \leftrightarrow (\phi \wedge x \in z)))).$$
+
+  This is Zermelo's axiom scheme of separation, with the extra proviso that the  object defined is of the same type as the bounding object, which is a consequence of axiom 2 in case the set constructed is nonempty, but ensures that there is an empty object of the same type as the bounding object if the object defined is empty (which is ensured by the Axiom of Empty Sets in our theory).
+\end{itemize}
+
+The man{\oe}uvre for showing that a general object belongs to a set is\marginpar{also check how he proves disjointness of iterated types}
+rather strange here, and we want to be sure that Resnik actually
+realizes that he has to do it.  For an arbitrary $x$, there is $w \sim
+x$ with empty extension, by axiom R7\ldots and incidentally, some set
+contains both $x$ and $w$, so $x$ belongs to a set.
+
+That said, this theory is the same as ours with stronger extensionality and the positive assertion that there are individuals.  We think that our axiomatics are cleaner, and that there are really good reasons to consider the possibility of atoms in addition to empty sets.
+
+
+
+\subsubsection*{We review the proofs of our axioms from Resnik's axioms}
+
+
+Our extensionality axiom follows from Resnik's extensionality axiom R6
+combined with axiom R2: two nonempty sets with the same extension have
+a common element, so they are of the same type, and they are not
+individuals, so Resnik's axiom R6 establishes that they are equal.
+
+Our axiom of singletons follows from the argument given above that every object belongs to another object, and Separation (R7).
+
+If a set $A$ has an element $x$ with an element $y$, and an element $z$ with an element $w$, then $y$ and $w$ are of the same type by axiom 4, and the fact that \mbox{$\bigcup A = \{u \in \kappa(y):(\exists v:u \in v \wedge v \in x\}$.}  The existence of empty objects in every type (by R7) handles the other case of the axiom of union.
+
+By axiom R2, all objects containing a fixed $x$ (including $\tau(x)$) are of the same type, so $B(x)= \{A \in \tau^2(x):x \in A\}$.
+
+Our Separation Axiom follows from Resnik's slightly stronger Separation Axiom, R7.
+
+Our axiom of Empty Sets follows from the consequence of axiom R7 that every type contains an empty object combined with the stronger form of extensionality which ensures that each type containing nonempty sets contains just one empty object (so the empty set construction is definable and is not needed as a primitive).
+
+There is an error in Resnik.  He claims that he can prove that all individuals are of the same type.  This does not follow from his axioms.  We think tat part of the problem is that he defines {\tt ST} (the relation of being the same type, which we denote by $\sim$) in two different ways and does not seem to realize that they are not equivalent.  Given his evident intention it wouldn't be unreasonable to strengthen  his axiom asserting the existence of individuals to assert additionally that all individuals are of the same type.
+
+We acknowledge this system as prior to ours, and as doing basically the same work:  we were not aware of this work when we framed our first versions of the system of  section \ref{selfcontained}.   We do think that there are formal advantages to our slightly (but inessentially) weaker system, and they will emerge with further discussion.  Proofs of useful results from  section \ref{selfcontained} port easily to this system.  
+
+
+
+\subsection{Ambiguity and Stratification:  NF and NFU}
+
+TST exhibits a stronger form of a symmetry that Russell noted in the more complicated system of
+{\sl Principia Mathematica} \cite{RW} and called ``systematic ambiguity".  This symmetry led to
+another proposal by Quine of an untyped version of TST, which we describe because it is relevant to our project here.
+
+In TST, provide a map $(x \mapsto x^+)$ on variables which is an injection and raises type by one.
+For any formula $\phi$, define $\phi^+$ as the formula which results if each variable $x$ is replaced with $x^+$.
+
+It is straightforward to see that if $\phi$ is provable, so is $\phi^+$.  The converse is not true.
+
+One could then reasonably conjecture the consistency of the Ambiguity Scheme, which asserts
+$\phi \leftrightarrow \phi^+$ for each closed formula $\phi$.
+
+Quine made the {\sl prima facie} stronger proposal that the types can simply be identified.  The resulting theory is called NF (New Foundations) after the name of the paper in which it appeared.
+
+NF is a one-sorted first order theory with equality and membership with the axiom of strong extensionality
+(objects with the same extension are equal) and the axiom scheme of stratified comprehension:  $\{x:\phi\}$ exists if there is a function $\sigma$ from variables to natural numbers such that each atomic subformula
+$v++\verb|`|=\verb|'|++w$ appearing in $\phi$ has $\sigma(v)=\sigma(w)$ and each atomic subformula
+$v++\verb|`|\in\verb|'|++w$ appearing in $\phi$ has $\sigma(v)+1=\sigma(w)$: such a formula is said to be {\em stratified} and the function $\sigma$ is called a {\em stratification}.  Clearly it is equivalent to say that we are asserting that $\{x:\phi\}$ exists if $\phi$ could be turned into a well formed formula of TST by an appropriate assignment of sorts to variables.
+
+NF presents difficulties:  it was shown in 1953 to disprove Choice, and its consistency remained an open question until very recently.
+\marginpar{Should probably cite sources}
+Specker showed in 1962 that NF is equiconsistent with TST + Ambiguity, and with the existence of a model of TST in which there is a type raising endomorphism.  This justifies Quine's jump from the temptation of the Ambiguity Scheme to the temptation of simply identifying the types.
+
+Jensen showed in 1969 that NFU -- the system with weak extensionality and stratified comprehension -- is consistent and not even very strong.  It is consistent with (but does not prove) Infinity, and it is consistent with Choice.  This formal advantage of NFU over NF is the main reason that we choose to use weak extensionality in the definition of TTGV.  It is now known that NF is consistent, but this is much harder to show, and the character of general models of NF remains poorly understood.
+
+
+
+\subsection{The proposals of Forster}
+
+The second author  (writing in ignorance of Resnik's work) proposed the following type theory with general variables, which was the first one that the first author encountered. 
+
+This is a first order one sorted theory with equality and membership
+
+
+
+\begin{dfn} $x \sim y$ is defined as $(\exists z:x \in z \wedge y \in z)$.\end{dfn}
+
+  It has the following axioms\begin{itemize}
+\item Axiom of weak extensionality:  Objects with elements are equal if they have the same extension.
+
+\item $\sim$ is an equivalence relation\footnote{It's obvious that it is a {\sl PER} -- a partial equivalence relation.  The extra clause is reflexivity which compels every object to belong to {\sl something} \ldots this means we are in a theory without proper classes -- a {\sl set} theory.}:  $\sim$ is an equivalence relation in which the equivalence classes are sets:  the equivalence class containing $x$ is denoted by $\tau(x)$.
+
+\item set union:  The usual axiom of set union is asserted:  for every $A$, $\bigcup A$ exists where $x \in \bigcup A \leftrightarrow (\exists y:x \in y \wedge y \in A)$
+
+\item comprehension:  $\{x \in \tau^n(u):\phi\}$ exists and belongs to $\tau^{n+1}(x)$, under the condition that each variable appearing in $\phi$ is typed in the sense that (if it is a parameter) it belongs to some $\tau^m(u)$ and if it is bound, it is bound by a quantifier restricted to a $\tau^m(u)$, $x$ is assigned type $n$ of course, and further that in each subformula $u=v$ the types of $u$ and $v$ are the same and in each subformula $u \in v$, the type of $v$ is the image under $\tau$ of the type of $u$.
+\marginpar{\tiny I trust that it is part of your concept of unrestriction separation that $\{x \in A:\phi\} \sim A$:  this is essential for power set to hold!  I added a little language about this to the section for your approval}
+%\marginpar{That's not my comprehension: my comprehension is full, unrestricted, separation.  I think that is consistent, and it evades your stricture that it assumes a familiarity on the reader's part with TST}
+This asserts in the language of section \ref{selfcontained} that all kind-bounded stratified set abstracts exist.
+\marginpar{I show below that this is incompatible with loops, so one has to weaken it if one is to extend a welcome to TC$_n$T \ldots}
+\end{itemize}
+
+
+This proposal is not without its drawbacks, though it does have
+substantial interest.  Like the proposal of Quine, it appears to
+depend philosophically on prior awareness of TST.  It does have the
+interesting feature that it does not prove that the types are
+disjoint: if NF is consistent, a model of NF is a model of this theory
+in which there is only one type.  Forster is also interested in the
+possibility of cycles in the types, in which $\tau^n(x)$ might be
+equal to $\tau(x)$ for some $n>2$.  These would correspond to type
+theories with loops in the types, and we notate them `TC$_n$T'.  It has been known since the 1970's that these\label{TCT}
+theories refute AC in very much the way that NF does.
+
+Hereinafter we refer to the above 
+as the {\sl initial} proposal of the second author, because he subsequently decided to follow Quine in adopting unrestricted separation (For each formula $\phi$, $\{x \in A:\phi\}$ exists and $\{x \in A:\phi\}\sim A)$ as the comprehension axiom.  This theory with unrestricted separation is actually essentially the same as the first author's theory of section \ref{selfcontained}.  Each of the axioms of Forster's later theory holds in the theory of section \ref{selfcontained}.  Each of the axioms of Holmes's theory holds in Forster's theory if $\{x \in A:\phi\}$ is taken to be a primitive notation:  otherwise there are quibbles about the fact that Holmes's theory picks out a unique empty set from each equivalence class which contains a set, but this issue does not really affect strength of the theory.   
+
+%\smallpara{\textcolor{red}{I'm not happy\marginpar{Point taken! --RH} with Forster being referred to in the third person when he's one of the authors.  The material here should probably be expressed differently}   }
+
+
+\subsection{Interpretation of the theories with general variables in the typed theories}
+
+We now argue that a model of TST provides an interpretation of TTGV.  These results will extend
+to the other theories, possibly under special assumptions.
+
+Given a model of TSTU in which the sets implementing the types are disjoint (a model not satisfying this condition is readily modifiable to one which does), extend its language to a one-sorted language with the same variables
+by the device of assigning the value {\tt False} to each ill typed atomic formula and interpreting complex formulas in the natural way.
+
+All of the axioms of TTGV are obviously true in this structure for the language of TTGV except the axiom of separation.  The problem with separation is that it asserts the existence of $\{x \in A:\phi\}$ for formulas
+which do not correspond to formulas for which this set is provided by the comprehension of TST.
+
+We have presciently provided for this by proving above (Theorem \ref{thm:kindsep}) that every set $\{x \in \tau(u):\phi\}$ with fixed values for its parameters is provably equal to a set $\{x \in \tau(u):\phi^*\}$ in which $\phi^*$ is well-typed (a kind-bounded formula in which each type is of the form $\kappa^i(x)$ for some integer $i$), and in this context a well-typed formula is exactly equivalent to a well-formed formula of the underlying TSTU. 
+
+
+The system of Resnik is interpretable if the model of TSTU is a model of TST.  This is direct, as Resnik's system differs very little from ours.
+
+The system of Quine is close to TST in allowing only the types that TST itself has.  Some application of a theorem similar to our Theorem \ref{thm:kindsep} will be needed, because the comprehension axiom of Quine's system is not restricted to well-typed formulas.
+
+The initial proposal of Forster shines here, because its comprehension axiom provides for exactly the sets which the comprehension scheme of TST provides for, and also there is no need for the condition that the types are disjoint which is important in our proof above.
+
+Quine's system is in some sense exactly equivalent to TST if type $n$ is interpreted as the objects satisfying $T_n$, and if objects not satisfying any of these predicates (about which the theory has nothing to say) are ignored and elements not satisfying $T_n$ of objects satisfying $T_{n+1}$ are ignored.
+
+The other theories cannot be said to be exactly equivalent to TST, because they do not restrict themselves to the hierarchy of types indexed by the natural numbers which TST supports, and in fact their language cannot even express such a restriction.
+
+
+\subsubsection{What you can't say you can't say, and you can't whistle it either}\label{whistle}
+This is a good point to pause and prove the claim made in section \ref{selfcontained} that the condition ``$\kappa^i(x)$ exists for each integer $i$'' is inexpressible in the language of TTGV.  Consider a model of TST and convert it to a model of TTGV as described above.  Notice that this model will contain no object satisfying the condition alluded to above.  Take an ultrapower of this model of TTGV using a nonprincipal ultrafilter over the natural numbers.  This model will contain objects $x$ with the property that $\kappa^i(x)$ exists for each integer $i$, namely, objects of nonstandard natural number type.  If the interesting property were definable in the language of TTGV then we see that the ultrapower would contain objects which (in its terms) had this property.  But then the original model obtained from the model of TST would contain objects which in its terms had this property, and this is impossible.
+
+
+\subsubsection{TSTG}
+
+We now describe a theory which we call TSTG; it is typed and in some
+sense exactly equivalent to TTGV.
+
+TSTG is a first order multisorted theory (or family of theories) with sorts of two kinds, $\tau^+(l,n)$ where $l$ is a label and $n$ is a natural number, and $\tau(l,i)$ where $l$ is a label and $i$ is an integer (a version of the theory might have only one of these kinds of type).  For any type $t$ we define $t^+$ as $\tau^+(l,n+1)$ if $t=\tau^+(i,n)$ and as $\tau(l,i+1)$ if $t=\tau(l,i)$.  
+
+An atomic subformula $u=v$ is well-formed ff the types of $u$ and $v$ are the same; $u \in v$ in which $u$ is of type $t$ is well-formed if and only if the type of $v$ is $t^+$.
+
+The extensionality and comprehension axioms of TSTG are the complete schemes of formulas of the same shapes given for TSTU, with the additional latitude afforded by having more types.
+
+In effect, we are providing for an arbitrary large collection of models of TST and an arbitrarily large collection of models of \TZT.  This is a family of theories because we have not stipulated how many labels there are for types of each kind.
+
+Now there is a direct translation between models of TTGV and models of TSTG.  From a model of TTGV obtain a model of TSTG in which the sets implementing the types of TTGV are the extensions of the kinds $\kappa(x)$ in the model of TTGV, and the $(t \mapsto t^+)$ operation on type labels parallels the $\kappa$ operation on types in the sense of TTGV (to realize the type labels, one needs to make a choice of ``base type" in each orbit in $\kappa$ without a minimal element;  this is not an essential use of choice because we could also allow many interconvertible notations for each type in a sequence of types indexed by all integers).  This is readily seen to be a model of TSTG.
+
+A model of TSTG is converted to a model of TTGV by assigning values to all ill-typed atomic formulas of {\tt False} (ensuring first that the sets implementing the types are pairwise disjoint) and extending the definition of truth values of general formulas appropriately.  Again, the only axiom of TTGV whose verification in the resulting structure requires care is separation, and its validity follows from the fact
+that general set abstracts in TTGV are equivalent to well-typed set abstracts.
+
+This result adapts to the theory of Resnik which has the added assumptions of strong extensionality and existence of individuals.
+
+Consideration of the theory TSTG can be useful in thinking out things about TTGV.  Notice that
+an arbitrary set of models of TSTG can easily be made a pairwise disjoint set, and the union of a pairwise disjoint collection of models of TSTG is a model of TSTG.  TTGV has similar properties.
+
+One can get the condition that any well-typed formula $\phi[\kappa(y)/x]$
+in which $x$ is the only free variable in $\phi$
+will hold for all values of $\kappa(y)$ if it holds for all but a concrete finite collection of values of $\kappa(y)$, which greatly simplifies the proof that every formula is equivalent to a stratified formula, by replacing  the model of TTGV in which one works with a countable union of pairwise disjoint copies of the model one starts with.
+
+Another observation is that we cannot (verifying a claim we made above) establish that arithmetic is the same everywhere in a model of TTGV, because we can take unions of models of TST with different arithm\'etic facts and convert them to a model of TTGV.  Another interesting feature of such a model of TTGV is that it contains types $\kappa(u)$, $\kappa(v)$ for which it can be proved that $\kappa^n(u)$ is not $\kappa(v)$ for any integer $n$, since arithm\'etic facts over $\kappa(u)$ are the same as those over $\kappa^n(u)$ in all cases.
+
+Note that consistency of NFU (and of NF) implies consistency of TTGV (even with strong extensionality) with the Ambiguity Scheme which asserts that for any  formula $\phi$ in which $x$ is the only free variable, $$(\forall uv:\phi[\kappa(u)/x]\leftrightarrow \phi[\kappa(v)/x]).$$  A model of TSTU with a type shifting endomorphism, which exists by the results of Jensen and Specker, converts to a model of TTGV in which this is true.
+
+%\textcolor{green}{I comment out some text of yours which I implemented differently right after the next theorem.}
+
+\begin{comment}
+\medskip
+
+
+
+\medskip
+  
+\textcolor{red}{One can use the fact that AC is refutable in TC$_n$T (see p. \pageref{TCT}) to show that the theory TC$_n$T $\sqcup$ \TZT + AC is finitely axiomatisable.}By 'TC$_n$T $\sqcup$ \TZT' we mean the theory like TTGV whose models are precisely disjoint unions of models of TC$_n$T and models of \TZT.  If we add AC then it has no models with loops (which is o/w not finitisable).  It's finitisable because stratified delta-0 separation is finitisable.  This means that TC$_n$T is finitely axiomatisable for any $n$, which is sort-of nice. 
+
+\medskip
+
+Let me be a bit clearer.  Consider the theory that is like TTGV --  \marginpar{You mean you have a finite axiomatization of the theory whose models are disjoint unions of models of TZT+AC.  Still interesting.}
+existence of kinds etc, and has a scheme of stratified $\Delta^P_0$
+separation.  We want to say that every kind has another kind as a
+member.  The models of this theory are models of TC$_n$T for any $n$
+and also models of \TZT -- and arbitrary unions of such models.  This
+theory is finitely axiomatisable, because stratified $\Delta^P_0$
+separation is finitely axiomatisable.  I will now produce a fact from
+my hat.  TC$_n$T proves $\neg$AC. So if we add AC to this theory
+we erase all the circular models and there remain only the models of
+\TZT.  That means that we have a finite axiomatisation of \TZT + AC!!
+This may not be a big deal, but it is very striking.  However it might
+be a big deal, since -- thanks to work of Enayat and
+Friedman -- there are theorems about synonymy of theories that exploit
+finite axiomatisability.  We should find something to say about this.
+
+\end{comment}
+
+\begin{thm}\label{thm:TTGVnotfinax}
+  TTGV is not finitely axiomatisable\end{thm}
+  
+\Proof  The separation scheme for kind-bounded stratified formulas is finitely axiomatizable:  this can be done for example by converting the axioms of Hailperin's finite axiomatization of NF to this form.  The equivalence of separation over general formulas to separation over kind-bounded  formulas shown in Theorem {\ref{thm:kindsep} depends also on the disjointness of the types, which depends on a countable collection
+  of unstratified instances of TTGV separation (those defining the sets $R_{n,x}$ in the proof of disjointness).  Suppose that TTGV were finitely axiomatizable.  Each of the axioms in this finite axiomatization would be provable using the axioms implementing kind-bounded separation and finitely many of the axioms providing for $R_{n,x}$'s (and the other axioms of TTGV).  Thus there would be a finite axiomatization consisting of the finite axiomatization of kind-bounded stratified separation, the other axioms of TTGV and finitely many of the separation axioms providing $R_{n,x}$'s.  But translations of all of these axioms hold in a model of TC$_n$T with weak extensionality:  because NFU is consistent, this theory is consistent.  And this theory does not cover TTGV because it does not prove existence of one of the $R_{n,x}$'s.
+
+  \endproof
+
+But there is a contrasting result which is rather interesting.   TTGV with separation restricted to stratified formulas (which eliminates the ability to prove distinctness of the types in the usual way) plus strong extensionality plus the Axiom of Choice {\em is\/} finitely axiomatizable and proves all theorems of TTGV [it is an inessentially stronger theory].  We state the reasons briefly.  The stratified (equivalently, kind-bounded) axiom of separation is finitizable in standard ways as mentioned in the previous proof. Then the fact that Choice can be disproved in NF, and in essentially the same way in the theories $TC_nT$ which result if we identify types in TST whose indices are congruent mod $n$ means that Choice (with strong extensionality) is enough to prove (rather nastily) the results that the types are distinct, from which it follows that this theory proves everything in TTGV.  It proves somewhat more because TTGV does not prove Choice.
+
+
+
+
+\section{Consequences of very strong extensionality}
+
+\medskip
+In this section we explore the consequences of a very strong form of extensionality (each equivalence class under cohabitation contains at most one empty object).
+The usual strong extensionality for TTGV asserts that each equivalence class which contains a set contains at most one empty object:  this allows for multiple individuals in base types, as it were.
+
+\begin{rem}\label{rem:minimal}  Under very strong extensionality,
+  if $E$ is an 
+  equivalence class $\in$-minimal under cohabitation then $E$ has only one element.\end{rem}
+
+  \smallpara{By an extension of our notation for empty sets we may denote that unique object by $\emptyset_E$ and may occasionally write it just as $\emptyset$ when context allows us to deduce the kind of the object.}
+
+
+\Proof
+
+Suppose $x \in E$ is nonempty, so that there is $y \in x$. Think about
+$\kappa(y)$.  We have $y \in x$ and $y \in \kappa(y)$, whence $x \sim \kappa(y)$ 
+and $\kappa(y) \in E$. So $E$ has an equivalence class as a member, 
+contradicting the assumption that $E$ was $\in$-minimal.  So: if $E$ is 
+$\in$-minimal it cannot contain any nonempty sets.   All elements of $E$ are empty, it has an element because it is an equivalence class, and very strong extensionality shows that it has only one element.\endproof
+
+\subsubsection*{The Digraph of Equivalence Classes}
+
+
+Let us now think of the proper class of the equivalence classes and
+equip it with the binary relation $y = \kappa(x)$ to obtain a digraph.
+Actually this is the same as equipping it with $\in$.   We comment without proof \ldots
+\begin{quote}
+Every vertex has outdegree precisely one;\\
+Every vertex has indegree at most one. (That was lemma \ref{lem:diversity})
+\end{quote}
+So the graph consists of disjoint unions of copies of \Nn, of $\ZZ$,
+and finite cycles.
+
+
+\medskip
+
+Let us call this the {\bf Digraph of Equivalence Classes}.
+
+\medskip
+
+Nothing we have seen so far prevents there being an equivalence class under cohabitation (a kind)
+that contains no such equivalence classes as elements.  (See remark \ref{rem:minimal}).
+Indeed it seems there may be lots of such equivalence classes.  Each
+one contains only an empty set \ldots in other words it looks like $V_1$, and, under the assumption of very strong extensionality.
+This sets off a sequence of equivalence classes looking like the $V_n$ (the $n$th level of the usual cumulative hierarchy)
+for $n \in \Nn$. But these are all finite!  It is time to consider the
+axiom of infinity.  Again under the assumption of very strong extensionality, the kind of an infinite set
+cannot belong to a sequence of kinds inaugurated by
+a kind containing no kinds; it must belong to a $\ZZ$-sequence (or a loop, under weakenings of our hypotheses which allow loops). 
+
+It is important to note here that we are talking about infinity in the sense of the metatheory:  it is straightforward to construct  a model of the theory, with very strong extensionality, whose sorts make up a $\ZZ$-sequence and every set in which is finite in the internal sense of TTGV.
+
+We might at this point minute an observation foreshadowed on page \pageref{lookahead}.\marginpar{Well, where did we foreshadow it?}
+
+\begin{dfn} (Versions of hereditarily finite sets)
+
+  A set $x$ in a model of TTGV is called a {\em version} of a hereditarily finite set $X$ of the metatheory [or indeed of any well-founded set of the metatheory] if $x$ has as its elements exactly one {\em version} of each of the elements of $X$. \end{dfn}
+
+  This is an adequate definition by recursion on the structure of hereditarily finite sets in the metatheory.  Under very strong extensionality, it is easy to see that any hereditarily finite set -- indeed any well-founded set -- has at most one version in any equivalence class under cohabitation.
+
+\begin{rem}\label{rem:infinite}
+If $E$ is an infinite equivalence class under cohabitation then it contains versions of all (wellfounded) hereditarily finite sets.\end{rem}
+
+\Proof
+
+This relies on the fact that if $E$ is a (metatheoretically) infinite kind then, for each   %\marginpar{Please make the assumptions in the background clear.  This isn't true without strong assumptions}
+concrete $n$, it is ${\cal P}^n(F)$ for some (metatheoretically) infinite kind $F$.  The proof (in the
+metatheory!) procedes by induction on the hereditarily finite sets.
+We claim that if $x$ is hereditarily finite then $x$ has a version in  all
+infinite kinds.  Clearly $\emptyset$ has a version in each infinite kind.  Suppose that $x,y$ each have a version in each infinite kind.
+Let $E$ be an infinite kind.  Then $E = {\cal P}(F)$ where $F$ is an infinite kind, there is a version of $y$ in $F$, whence there is a version of $\{y\}$ in $E$, whence there is a version of $x \cup \{y\}$ in $E$.  We have shown that every hereditarily finite set of the metatheory has a version in each metatheoretically infinite kind.
+
+[Readers at home only in ZF can tell themselves that remark
+  \ref{rem:infinite} is merely that fact that---as one can prove by induction on $n$---$(\forall n)(\forall x)(V_n \subseteq {\cal P}^n(x))$.]
+
+\endproof \marginpar{more details needed here.}
+
+Notice that we cannot analogously prove that an $E$ contains
+versions of wellfounded sets of infinite rank.  [Note that this is a strictly metatheoretic notion:  TTGV cannot even express the idea that a set is of infinite rank].   It is known that there can be no $\omega$-model of TZT + Choice:  this means that if any $E$ contained a version of $\omega$, or any infinite ordinal, choice would fail.  \smallpara{\textcolor{red}{LRH:  existence of a version of a set of infinite rank does not imply that the tree of equivalence classes is of infinite rank, or that it branches:  I think this incorrect conclusion was driven by improper identification of versions of the same sets.  I believe in fact that from an $\omega$-model of NF in the usual sense one can get a model of NF in which there is a version of $\omega$ by permutation methods.}}\marginpar{Need a decision {\sl re} this \textcolor{red}{red para}}
+ It is not immediately clear that choice rules out the presence of versions of any infinite well-founded set whatsoever, but this seems likely.  If our cohabitations are organised into
+a loop [which entails failure of choice and would require a weaker version of separation in our theory to avoid contradiction:  stratified separation would work] it would seem possible that each kind contains sets of
+infinite rank.  In fact when $\M\models TC_nT$ (for some $n$) 
+we can show that the least (external) ordinal that is not the rank of an
+inhabitant of $\M$ is limit.  Nothing to say that $\alpha = \omega$ --
+or that $\alpha \not= \omega$.   But it is easy to show that there are models of $NF$ -- or of any of these theories -- which do not contain versions of {\sl any} infinite Von Neumann ordinal, and so probably do not contain versions of any infinite well-founded set, since a model containing a version of an infinite Von Neumann ordinal is an $\omega$-model in the sense that its set of natural numbers is isomorphic to the set of natural numbers of the metatheory \ldots and this is known to be a nontrivial strengthening of any of these theories.
+
+
+
+We seem to be moving towards a theory which is like ZF except that we
+have replaced pairing with axioms saying that 
+\begin{tabbing}
+\ \ \ \ \= (i)\ \ \ \=  $\sim$ (cohabitation) is an equivalence relation; and that \\
+        \>(ii) \> the equivalence classes under cohabitation are sets; and\\
+        \>(iii)\> if $x \sim y$ then $\{x,y\}$ exists. \end{tabbing}
+
+We are retaining the axiom of sumset and a [slightly modified version
+  of] the axiom of power set.
+
+\bigskip
+
+
+What about separation?   Do we need to restrict it in any way?
+
+
+Suppose there is only one equivalence class.   Separation will immediately 
+give us the Russell class.  If there are precisely $n$ equivalence classes, 
+then they form a loop, and in each equivalence class $E$ we can form the 
+subset $\{x \in E: x \not\in^n x\}$, and the non-existence of this object 
+is a theorem of constructive first-order logic (no set theory required!)
+
+So clearly we need to restrict the axiom of separation in some way.
+The obvious thing to do is to require that, in every instance of the
+separation scheme, every bound variable that appears in that instance is 
+restricted to range over some equivalence class.   But, as we can see 
+from these higher-degree versions of the Russell paradox, that isn't enough.
+
+What we need is a slightly more restrictive notion of {\sl
+  stratifiable formula}.  We then assert separation for stratifiable
+formul{\ae}.
+
+\smallskip
+
+We are now in a position to consider axioms that control how many
+equivalence classes there are and to add axioms to control what the
+digraph of equivalence classes looks like.  We've decided to disregard
+models that contain $\in$-minimal equivalence classes since they can contain
+nothing but hereditarily finite sets.  We are left with finite loops and
+copies of $\ZZ$.
+
+
+Can we have models of this theory in which the digraph of equivalence
+classes looks like $\ZZ$?  Yes: we can obtain such models by a
+compactness argument.
+
+In contrast, models whose digraph-of-equivalence-classes are loops are
+much more problematic.  Naturally we can, for any concrete $n \in\Nn$,
+write down an axiom to say that there are precisely $n$ equivalence
+classes and that they form a loop, or two loops or whatever.  But
+finding models for these axioms is another matter
+
+  It's fairly standard that there is no first-order way of controlling
+  the number of $\ZZ$-cycles.
+
+
+  
+%I now think (21/x/20) that I am making some progress.  I have rediscovered Coret's proof that every stratified instance of replacement is a theorem of Zermelo.  I now think
+
+The key theory has
+\begin{quote}
+$\bullet$ \mbox{\, \,} Extensionality for nonempty or cohabiting sets;\\ \marginpar{I think we need the assertion that nonempty sets with the same elements are equal independently of cohabitation}
+$\bullet$ \mbox{\, \,} Power set;\\
+$\bullet$ \mbox{\, \,} Sumset;\\
+$\bullet$ \mbox{\, \,} A stratified version of infinity and\\
+$\bullet$ \mbox{\, \,} Stratified separation %(which will subsume connected
+stratifiable replacement).
+\end{quote}
+  Then
+\begin{quote}
+%$\bullet$ \mbox{\, \,} To get str(ZF) we add disconnected stratifiable replacement;
+
+$\bullet$ \mbox{\, \,} To get \TZT/TC$_n$T we add an axiom that all equivalence classes are sets, then to avoid minimal kinds we add the proviso that each equivalence class contains an equivalence class as an element.
+\end{quote}
+
+\textcolor{green}{I firmly omit the discussion of replacement and collection.  It is really a considerable extra amount of business in the paper, and the paper must be cut not expanded.  I added it back for the long version, but I leave the green language in to remind myself it needs to be licked into shape.}
+
+{\bf That's true, but it's Good Stuff, and it ought to go somewhere.  Isn't this the best place?  How far over the limit are we?}
+%\commentblock{
+
+\section{Chopping up Replacement and Collection in odd ways}
+\begin{quote}
+stratifiable {\sl vs} not stratifiable;\\
+connected {\sl vs} disconnected;\\
+parameter-free {\sl vs} with-parameters\end{quote}
+
+There now follows a minor cuteness\ldots 
+
+Express TC$\TZT$ as a theory in ${\cal L}(\in,=)$.  Reflect that
+str(ZF) (as in \cite{baltimore}) is also a theory in this language.
+What is the relation between these two theories?  Let $T$ be \TZT\,
+$\cap$ str$(ZF)$.\marginpar{Is this theory Trevor?  Or Thomas?}  The
+thought is that it might be the case that str$(ZF)$ is $T$ + pairing,
+and \TZT\ is $T$ plus some fancy formulation about equivalence
+relations about compatibility.  The effect of entertaining this tho'rt
+will be close attention to how one formulates replacement, separation
+and collection.  (Isn't stratified collection stronger than stratified
+replacement?  Stratified replacement is provable in Zermelo but
+stratified collection ain't - the Mathias formula)
+
+
+\begin{itemize}
+\item Global pairing is a consequence of {\sl disconnected} stratifiable
+replacement, so it's {\sl connected} stratifiable replacement that \TZT\ and and TC$_n$T prove.
+
+\item Stratified {\sl dis}connected replacement implies global pairing
+whereas \TZT\ and TC$_n$T only have local pairing;
+
+\item Local (``connected'') pairing is a consequence of sumset + separation + power set.
+\end{itemize}
+
+So do we have:
+
+Connected stratifiable replacement plus pairing\, =\, stratifiable replacement?
+
+don't I write about cohabitable replacement somewhere\ldots?
+
+The Mathias formula (``$x$ is a set of $n$ infinite sets all of
+different sizes'') isn't {\sl literally} disconnected, but morally it
+is because, for each concrete $k$, it is equivalent modulo KF to a
+stratifiable formula where the difference in levels between the two
+free variables is $k$. This is perhaps related to the fact that, in
+the branching quantifier language, `$|x| = |y|$' can be expressed by a
+formula that is genuinely disconnected.  {\bf I suspect this fact is
+  highly significant but i can't put my finger on why}.
+
+
+What is the intersection of TC$\ZZ$ and str(ZF)?  You want to have
+pairing for cohabitable elements, but you get that from separation. How
+about we have connected stratifiable replacement with all variables
+restricted to equivalence classes?  We have to be careful because we
+don't want to rely on the equivalence classes being sets.  The hard
+part is to show that stratifiable replacement is equivalent to its
+relativisation to a hierarchy of equivalence classes.  I think we do
+that as follows: restrict every variable to an equivalence class, $A$,
+$B$ \ldots.  Then replace `$x \in A$' by `$x \sim a$' and then bind all
+these $a$ variables with $\forall$. 
+
+\bigskip
+
+Relevant axioms:
+
+\smallskip
+
+Every equivalence class is a set.
+
+\smallskip
+
+There is only one equivalence class (= pairing)
+
+\smallskip
+
+Need to find something to say about collection.  Disconnected
+collection can be strong: the Mathias formula.
+
+\smallskip
+
+OK, how do we formulate stratified replacement, collection and
+separation?  I think the idea is to take a stratified formula with
+stratification $\sigma$, and a variable `$A$', and replace every
+quantifier $Qx^i$ (where $i$ is $\sigma($`$x$'$)$) by
+$Qx \in {\cal P}^i(A)$.
+
+\smallskip
+
+Observe that the usual derivation of pairing from replacement uses
+stratified replacement.  Indeed a formula $F(x,y)$ with no epsilons at all:
+
+\smallskip
+
+
+To capture $f_{x,y}$ (the function we use to prove the existence of
+$\{x,y\}$ by replacement) we want to find $F$ such that $(\forall
+x)(\exists!y)F(x,y)$, and such that the pair $\{c,d\}$ is obtained
+from $t$ (the cohabitation of $a$ and $b$) as \mbox{$\{y:(\exists x
+  \in t)F(x,y)\}$.} I think we want: $F(x,y)$ to be $$(x=a \wedge y
+=c)\vee (x =b \wedge y = d) \vee (x\not= a \wedge x\not=b \wedge y
+=x)$$
+
+\smallskip
+
+Careful!  That is not disconnected!  We want $F(x,y)$ to be
+$$(x=a \wedge y =c)\vee (x \not= a \wedge y = d).$$
+
+\smallskip
+
+
+
+Observe that this $F$ isn't constructive, nor is it symmetrical in
+  `$x$' and `$y$'.  But that tho'rt is for another day.
+
+It may also be worth noting that this can be neatly captured with an
+if-then-else
+
+\mbox{$y$\,  $=$\,  }{\tt if}\mbox{$\, \, x  = a\, \, $}{\tt then}\mbox{$\, \, c\, \, \, $}{\tt else}$\, \, d$
+
+
+
+Perhaps $(x=a \bic y =c) \wedge (x \not= a \bic y = d)$.
+
+So the question is: is the restriction to {\sl connected}
+formul{\ae} for stratifiable replacement a real weakening?
+
+The general idea is that disconnected instances of replacement don't
+do anything much for you. One class of instances is: things of the
+form $\lambda x.t$ for $t$ some term with `$x$' not free.  Come to
+think of it, aren't all disconnected instances of replacement of this
+form\ldots??  And of course if replacement is applied to disconnected
+$F(x,y)$ then the corresponding function takes only finitely many
+values---a concrete number in fact.  This doesn't seem to make any use
+of stratification.
+
+write `$S_n(x)$' for $\{\pi: j^n(\pi)(x) = x\}$.   Observe that
+$j``S_{n+1}(x) \subseteq S_n(x)$.
+
+The ability to slide things up and down means that if `$x$' and `$y$' are
+disconnected in `$F(x,y)$' then, if $F(a,b)$, we have
+
+$(\forall^\infty n, m)(S_n(a) \subseteq S_m(b))$
+
+We need to think very hard about what stabilisers look like to see why
+this is impossible unless $b$ is symmetric. Or something.  Actually we
+need to think about the parameters inside $F$ too \ldots.
+
+\begin{lem}\mbox{\negthinspace}\\
+  The scheme of stratifiable replacement is equivalent to the scheme
+  of replacement for stratifiable connected formul{\ae}.\end{lem}
+
+In fact we even have
+
+\begin{lem}\mbox{\negthinspace}\\
+In any system that has existence of concrete finite sets the scheme of
+replacement is equivalent to the scheme of replacement for connected
+formul{\ae}.\end{lem}
+Or: (another way to put it)
+\begin{lem}\mbox{\negthinspace}\\
+  The scheme of disconnected replacement is equivalent to the scheme of
+  existence of finite unordered $n$-tuples.\end{lem}
+
+It would help to have a normal form theorem for disconnected formul{\ae}
+of FOL.  Isn't it a metatheorem of FOL that every FOL formula is
+classically equivalent to a boolean combination of connected formul{\ae}?
+It is, and we prove it by structural induction on the language.  No
+problem for the propositional connectives.  Suppose $\Phi$ and $\Psi$
+are compliant.  Assume them in the form of a boolean combination of
+connected formulae.  Take (for example) conjunction. If $\Phi$ and $\Psi$
+have some variables in common then we might have to amalgamate components
+in the final result, but it's pretty straightforward.
+
+The quantifiers are pretty easy.  Suppose $\Phi$ is compliant, and it
+has a free variable `$x$' which we are going to bind with a quantifier.
+So we now have $(\exists x)\Phi$ where $\Phi$ can be taken to be in DNF
+(we would assume $\Phi$ to be in CNF if the quantifier were a `$\forall$').
+So we push the `$\exists x$' down onto each of the disjuncts.
+
+(This is lemma \ref{lem:QCL})
+
+\marginpar{Isn't this proved earlier in this document?}
+The moral seems to be that if $\forall x \exists! yF(x,y)$ is to have a
+prayer of being true then $F$ had better be a connected formula.  Here
+is how to argue for it.  If `$x$' and `$y$' are disconnected in $F$
+then $\forall x\exists!yF(x,y)$ is going to be equivalent to a boolean
+combination of $\forall x A(x)$ and $\exists !yB(y)$ for some $A$ and
+$B$.  And then it's clear that if $\forall x\exists!yF(x,y)$ is true
+then there is a unique $y$ anyway, whether or not $\forall x A(x)$.
+However i don't know whether or not the $\exists!$ quantifier is
+preserved in the way required.  But perhaps it is.  $F(x,y)$ is going
+to be equivalent to a boolean combination of two distinct kinds of
+formul{\ae}: those containing `$x$' and those containing `$y$'. Let's
+assume this boolean combination is in DNF.  Can we push $\exists!$ inwards?
+I think
+$$\exists! y(F(y) \vee G(y)) \vdash \exists! y(F(y) \vee \exists! yG(y))$$
+but the inference in the other direction is not good.  After all let
+$F$ and $G$ be the two properties of being equal to Tweedledum and
+being equal to Tweedledee.
+
+\bigskip
+
+A key observation.
+
+Stratified instances of replacement.
+\begin{rem}\mbox{\negthinspace}
+  
+  Suppose $F$ is  stratified, and that $\vdash (\forall x)(\exists!y)F(x,y)$.
+
+  Then the variables `$x$' and `$y$' are connected.\end{rem}
+
+\Proof
+
+Suppose not, and that $(\forall x)(\exists!y)F(x,y)$ holds but `$x$'
+and `$y$' are not connected. Key fact: `$F(x,y)$' can be given
+stratifications in which the (absolute value of the) difference in
+levels given to the two variables can be as big as you please.
+Suppose the value given to the variable `$x$' has to be at least $m$
+and the value given to the variable `$y$' has to be at least $n$, fix
+on $m$ as the value to be given to `$x$' in a stratification.  Now
+suppose there are $a$ and $b$ such that $F(a,b)$.  Then, by Coret's
+lemma, $F((j^m\sigma)(a),\, (j^n\sigma)(b))$ holds for any $\sigma$
+and infinitely many $n$.  Now let $a$ be something like the $m$-fold
+singleton of $\emptyset$, so that $(j^m\sigma)(a) = a$ for all
+$\sigma$.  By uniqueness of $b$ we must have $(j^n\sigma)(b) = b$ for
+all $\sigma$, and that is straining credulity too far.
+\endproof \marginpar{But this doesn't seem to be needed}
+
+\medskip
+
+Now to show that stratified replacement is a consequence of stratified
+separation.
+
+
+Suppose $\forall x \exists!y F(x,y)$ is a theorem of something basic
+like KF, where `$F$' is stratifiable with `$x$' of level $n$ and `$y$'
+of level $m$.  We want to show that we can restrict the variables in $F$
+to live inside equivalence classes so that $F$ becomes an expression of
+${\cal L}(\TZT)$.  Stratified replacement is a scheme of conditionals,
+and the antecedent is $\forall x \exists! y F(x,y)$.  We want to show
+that if the antecedent holds, then we can restrict the variables to
+equivalence classes.
+
+Suppose we have $F(a,b)$ for some $a$ and $b$.  Think about $\bigcup^na$
+and $\bigcup^m b$.  The thought is that if $\bigcup^n a \not= \bigcup^m b$
+then it should be possible to find a permutation of $\bigcup^n a\cup\bigcup^m b$
+that moves $b$ but not $a$. Of course we can't do this, because
+$\forall x \exists!y F(x,y)$. So we cannot disentangle $a$ and $b$, and this
+means that we can painlessly restrict all the variables in $F$ to live inside
+the equivalence classes on top of $\bigcup^n a\cup\bigcup^m b$.
+
+That's the idea. Suppose $\bigcup^m b \setminus \bigcup^n a$ is nonempty.
+Then let $\pi$ be any permutation that fixes $\bigcup^n a$ pointwise and
+moves at least one thing in $\bigcup^m b$ to something not in $\bigcup^m b$.
+Then $j^n\pi$ fixes $a$ and moves $b$, giving $F(x,j^m\pi(b))$. So $b$ is
+not unique.  But $b$ {\sl is} unique, so $\bigcup^m b \subseteq \bigcup^na$.
+So this is telling us that if $\forall x\exists!y F(x,y)$ then the $y$ can
+be found inside ${\cal P}^m(\bigcup^n x)$ (which sounds like the KF bounding
+lemma \ldots except that this time we have more quantifiers) and sounds like
+the kind of thing we want.   Let's minute it.  We'll have to be careful how
+we state it\ldots
+
+\begin{rem}\mbox{\negthinspace}
+  
+  Let F$(x,y)$ be stratifiable with `$x$' of level $n$ and `$y$' of level $m$.
+
+  Suppose $\M \models KF + (\forall x)(\exists!y)F(x,y)$.
+
+  Then    $$\M \models KF + (\forall x)((\exists!y)(F(x,y)) \wedge (\forall z)(F(x , y) \to  z \in {\cal P}^m(\bigcup^n x)))$$\end{rem}
+    
+    I think there is a finitely axiomatisable theory whose models are
+disjoint unions of models of \TZT\ and TC$_n$T for all $n$.  What was
+that about mutual interpretability and finite axiomatisability?
+
+I think there is a finitely axiomatisable theory whose models are
+disjoint unions of models of \TZT\ and TC$_n$T for all $n$.  What was
+that about mutual interpretability and finite axiomatisability?
+
+
+
+(tho' that is actually weaker than what I have proved...)
+
+\Proof
+
+Suppose $\M \models KF$. We will show that stratified (connected)
+replacement holds in $\M$.  Reason in $\M$. Suppose
+$(\forall x)(\exists!y)F(x,y)$.  Let $X$ be an aribtrary set.  Then
+$(\forall x\in X)(\exists!y)F(x,y)$, and this $y$ can be assumed to be
+in ${\cal P}^m(\bigcup^n x)$.  So all the witnesses for all the
+$x \in X$ can be found in the union of all these, so they can all be
+found in ${\cal P}^m(\bigcup^{n+1} X)$, which is a set, and we can use
+separation to peel off the stuff we don't need. \endproof
+
+
+Actually it's slightly more complicated than that, because we need to
+consider the parameters.  The $\pi$ that we dream up has to fix the
+parameters as well.   Suppose we have parameters $z_1 \ldots z_k$, of
+levels $l_1 \ldots l_k$ then we know that for each $x$ we can find the
+witness $y$ inside
+\begin{center}
+  ${\cal P}^m(\bigcup x \cup \bigcup^{l_1} z_1 \cup \ldots \bigcup^{l_k} z_k)
+  $\end{center}
+
+Now!   Why is that a set?   {\bf We need the parameters to be cohabitable.}
+
+That is annoying, but it doesn't completely trivialise the result
+
+
+
+%17/viii/2015 Dunedin
+
+Either way it seems that the conjecture requires yet more tweaking.
+\bigskip
+
+Observe that [the deductive closure of Trevor +] Amb$^{nm}$ is\marginpar{I've forgotten what the theory Trevor is.  It's not another train, that's for sure}
+included in [the deductive closure of Trevor +] Amb$^n$.  Also 
+Amb$^n$ $\cup$ Amb$^m$ implies Amb$^{HCF(m,n)}$
+
+\bigskip
+
+\bigskip
+
+One can make a connection here with str(ZF) and the axiom of pairing.
+In the presence of the axiom of pairing my weakened extensionality is
+equivalent to full extensionality.  Observe that AxPair implies that 
+\begin{tabbing}
+(i)\ \ \= $\sim$ is an equivalence relation.  \\
+(ii) \>There is only one equivalence class\\
+(iii) \>Equivalence classes are not sets.
+\end{tabbing}
+
+(iii) follows in ZF but not in str(ZF).
+
+Thus one could chance one's arm and say that the ``meaning'' of AxPair
+is that the universe is one-sorted.
+
+\bigskip
+
+Perhaps one will find that str(ZF) and \TZT\ are mutually interpretable.
+Perhaps this will tell us something about why replacement is provable in \TZT.
+
+Hmmm\ldots str(ZF) is going to be stronger isn't it \ldots?
+
+\bigskip
+
+OK, backtrack a bit.  Consider the theory $T$ with the following axiom (schemes)
+
+$(\forall xyz)(x\in z\wedge y\in z\to. x=y\bic(\forall w)(w\in x\bic w\in y))$ (new extensionality)\\
+Power set\\
+stratified infinity\\
+sumset\\
+stratified replacement\\
+$(\forall x y z u v)(\exists w)((x \in u \wedge y \in u \wedge y \in v \wedge z \in v \to (x \in w \wedge z \in w)))$ pair-equivalence\\
+
+
+We write $x \sim y$ for $(\exists z)(x \in z \wedge y \in z)$
+
+Then str(ZF) is $T$ + ``there is precisely one $\sim$-equivalence class''
+
+Type theory is T + ``every equivalence class contains at most one equivalence class''
+
+Similarly \TZT\ and TC$_n$T.
+
+\label{finax}
+
+
+Stratified Replacement + power set implies pairing.  So how do we 
+have to formulate stratified replacement to forestall this?  Answer: 
+{\bf you assert stratified replacement only for those functions for which
+$\sim$ is a congruence relation.  }
+
+This is because we want $f``x$ to be a set.  All the members of $x$ are
+equivalent so, as long as $f$ sends equivalent things to equivalent
+things, all the things that should be in $f``x$ will be equivalent, so
+we can collect them.  The existence of the equivalence classes as sets
+is a kind of collection axiom:
+
+\begin{rem}\mbox{\negthinspace}\\
+(i) ``$\sim$-equivalence classes are sets'' proves collection for
+  compliant relations;\\
+(ii) ``$\sim$-equivalence classes are sets'' plus separation for compliant
+  relations\\ \mbox{\, \, \, \, } proves replacement for compliant functions.
+\end{rem}
+
+\Proof
+
+For (i) (collection) we argue as follows:
+
+Suppose $(\forall x \in X)(\exists y)R(x,y)$ where $R$ is compliant. All
+the $x \in X$ are equivalent, so all the $y$ s.t. $(\exists x \in x)R(x,y)$
+are equivalent by compliance of $R$. So if their equivalence class is a set
+we have right there a set that collects things $R$-related to members of $X$.
+
+\medskip
+For (ii) (replacement) suppose $f$ is compliant, and let $X$ be any
+set. Then all members of $f``X$ are equivalent, so $f``X$ is a subset
+of their equivalence class and exists by separation for compliant
+properties, since ``$(\exists x \in X)(y = f(x))$'' is a compliant
+$1$-place property.
+
+\marginpar{I don't now believe this\ldots}
+
+\endproof
+
+There might be something to say about IO in this connection.
+
+\bigskip
+
+Oh, and by the way, notice that you can extract a model in such a way
+as to get a genuine reduct -- i.e., the same domain -- that is a
+disjoint union of two structures\ldots extract odd levels and even
+levels!  We need to think about this...
+%}
+
+\begin{thebibliography}{}
+\bibitem{boffatyped} Boffa, M.     
+``Sets equipollent to their power sets in NF''. {\sl Journal of Symbolic Logic}
+{\bf 40} (1975) pp. 149$-$50.
+
+
+\bibitem{Dz} Daniel Dzierzgowski ``Equivalence \'el\'ementaire de
+  structures stratifie\'es'' Cahiers du Centre de Logique {\bf 6} (``Logique et Informatique'') (1988) pp 47--62.
+
+  
+%\bibitem{marel}  Crabb\'e, M. [2000]``The Rise and Fall of typed Sentences'' Journal of Symbolic Logic, {\bf 65}, no. 4, pp. 1858-1862. 
+%This article is not cited in the text so i've commented it out	
+
+\bibitem{petry1}
+  P\'etry, A. [1979]  ``On the typed properties in Quine's NF''
+  Zeitschrift f\"ur Mathematische Logik und Grundlagen der
+	Mathematik {\bf 25}, pp. 99-102. 
+
+
+\bibitem{petry2} P\'etry, A   ``Stratified languages' 
+  Journal of Symbolic Logic {\bf 57}, pp. 1366-1376. 
+
+\bibitem{ST&iL} Quine, W. V. ``Set theory and its Logic''.  Belknap Press,  Harvard, revised edition 1967 
+
+\bibitem{resnikttgv} Michael D Resnik ``A Set Theoretic Approach to the
+Simple Theory of Types'' Theoria 1969 pp 238-258.
+
+\bibitem{RW}  B. A. W Russell and A.N. Whitehead ``Principia Mathematica'' Cambridge University Press
+
+\bibitem{wang}  Hao Wang ``Negative Types'' MIND {\bf 61}, pp. 366-368.
+
+
+\end{thebibliography}
+
+\textcolor{red}{We may end up deleting from the five-minute argument the allusions to \cite{petry1} and \cite{boffatyped} in which case we should remove them from the bibliography}
+
+\end{document}
+
+\begin{comment}
+    Full separation implies no loops%\marginpar{Some dicta which I don't know what to do with --MRH}
+Separation for fmlae that are stratifiable-mod-$n$ means no $n$-loops
+Separation for stratified fmlae is consistent with TC$_n$T but refutes AC
+Separation for stratified formul{\ae}
+    is consistent with TC$_n$T
+Does Separation for stratified formul{\ae} plus no loops imply\marginpar{Yes --RH}
+    that every closed formula is equiv to a strat formula and thereby
+    imply full separation?
+\end{comment}
