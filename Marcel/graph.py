@@ -1,6 +1,10 @@
-# Graph stratification version of the Marcel theorem prover, 4/29/2026,
+# Graph stratification version of the Marcel theorem prover, 4/30/2026,
 # by (Lavinia) Randall Holmes, intellectual property
 # rights to be respected to the extent of preserving this attribution, please.
+
+# 4/30/2026 some debugging and new capabilities.  User commands labelled.
+# back() exists to undo commands in a proof -- it is a bit twitchy.
+# skip() exists to pass over the current sequent to be done and go to the next one.
 
 # This is an alternative development of the core of the Marcel sequent prover
 # for stratified set theory.  This version was inspired by considering
@@ -112,6 +116,8 @@ def reinstf(s,n,L):
 # (the parser has now been changed so that fresh variables cannot be bound, even apparently:  no bound variable can have the same surface form).
 
 def displayf(L):
+    global unknowns
+    global freshvars
     if isrelation(L[0]) and isterm(L[1]) and isterm(L[2]):  return (displayt(L[1]))+" "+L[0]+" "+(displayt(L[2]))
     if L[0] == "~" and isformula(L[1]): return "~" + (displayf(L[1]))
     if isconnective(L[0]) and isformula(L[1]) and isformula(L[2]): return "("+(displayf(L[1]))+" "+cexp(L[0])+" "+(displayf(L[2]))+")"
@@ -120,6 +126,7 @@ def displayf(L):
 
 def displayt(L):
     global unknowns
+    global freshvars
     if L[0]=="var" and not(findunknown(L[1])=="error"):  return L[1]+"?"
     if L[0]=="var" and L[1] in freshvars:  return L[1]+"!"
     if L[0]=="var" and type(L[1]) == str and type(L[2]) == int: return L[1]
@@ -196,6 +203,7 @@ def restt(s):
 
 def getf(s):
     global newint
+    global variables
     if len(s)==0:return "???"
     if isrelation(s[0]):return [s[0],gett(s[1:]),gett(restt(s[1:]))]
     if s[0]=="~":return [s[0],getf(s[1:])]
@@ -413,7 +421,7 @@ def graphf(L):
 # using graph method to check stratification
 
 # with the graph as input and a starting point, compute a distance function
-# (a type assignment) from that starting point.
+# (a relative type assignment) from that starting point.
 
 # a distance function is a list of pairs of a vertex and either the empty set (for infinite distance)
 # or a singleton of an integer, followed by either the empty set or a path (for data
@@ -464,51 +472,41 @@ def dropkey(L,v):
 
 def updatedistances(L,v,w,n):
 
-    #print("updating")
-    #print(L)
-    #print(v)
-    #print(w)
-    #print (n)
 
     vdist = getdistance(L,v)
-
-    #print(vdist)
     
     if not(type(vdist)==int):  return "error condition"
     wdist = getdistance(L,w)
 
+    # if w already has a different distance estimate, construct and return a cyle of nonzero length
     
+    if not(wdist=="infty" or wdist==vdist+n): return["stratification failure",getpath(L,v)+[n]+rev(getpath(L,w))]
 
-    #print(wdist)
-    #print(getpath(L,w))
+    # if the distance estimate is new, add it (nothing to do if no updating needed)
     
-    if not(wdist=="infty" or wdist==vdist+n): return["stratification failure",getpath(L,v),getpath(L,w),[v,w,n]]
     if wdist=="infty": return [[w,[vdist+n],getpath(L,v)+[n,w]]]+dropkey(L,w)
-
-    #print([getdistance(L,w),getpath(L,w)])
     
     return L
+
+# reverse a list, needed in updatedistance to build the bad cycle
+
+def rev(L):
+    if L==[]:  return []
+    return L[1:]+[L[0]]
 
 def stratify(G,x):
 
     #initialize the distances
 
     thedistances=makedistances(G,x)
-    #print (thedistances)
+
     i=0
     while(i<len(G)):
 
        # move thus far uninformative vertices to the end
        j=i
-       #print(j)
-       #print(G[i][0])
-       #print(getdistance(thedistances,G[i][0]))
        while(j<len(G) and getdistance(thedistances,G[i][0])=="infty"):
-            #print("got here")
             G=G[0:i]+G[i+1:]+[G[i]]
-            #print("Moving graph entries")
-            #print (j)
-            #print(G)
             j=j+1
 
        #done if nothing informative is found
@@ -518,14 +516,15 @@ def stratify(G,x):
        k=0
        while(k<len(G[i][1])):
            thedistances = updatedistances(thedistances,G[i][1][k][0],G[i][1][k][1],G[i][1][k][2])
-           #print(thedistances)
+           #in the event of stratification failure return the bad cycle
            if thedistances[0]=="stratification failure":return thedistances
            k=k+1
        i=i+1
+    # if no errors occur, return the distance table (scheme of relative types)
     return thedistances
 
 # for the moment I only have a stratification tester for formulas.  But
-# set abstracts are tested by the parser.
+# set abstracts are tested by the parser.  So testt will test any nontrivial term.
 
 def strattest(s):
     t=getf(s)
@@ -604,38 +603,109 @@ linestack=[]
 # the function which determines whether we are done with the current line,
 # and if we are done proceeds to the next line.
 
+proofstack=[]
+
 def displaynextline():
     global theline
     global linestack
+    global proofstack
+    global variables
+    global unknowns
+    global freshvars
+    global newint
+    global theproof
+    global theline
+    
     if not (linestack==[]) and not(theproof[theline][2]==[-1]):
         theline = linestack[0]
         linestack=linestack[1:]
         print(displaysequent(theline,theproof[theline]))
         print ("Next!")
+        proofstack=[[theproof,theline,newint,variables,freshvars,unknowns,linestack]]+proofstack
         return("Next!")
     while (theline<len(theproof) and not(theproof[theline][2]==[-1])):
         theline=theline+1
     if theline==len(theproof):
         print ("Done!")
+        proofstack=[[theproof,theline,newint,variables,freshvars,unknowns,linestack]]+proofstack
         return "Done!"
     print(displaysequent(theline,theproof[theline]))
-    
+    proofstack=[[theproof,theline,newint,variables,freshvars,unknowns,linestack]]+proofstack
     print ("Next!")
 
+# USER COMMAND
+#put the current line at the bottom of the stack of sequents to be dealt with
+#and bring on the next sequent
+
+def skip():
+    global theline
+    global linestack
+    if len(linestack)<1:
+        print("Nothing to skip")
+        displaynextline()
+        return "Nothing to skip"
+    L=theline
+    theline=linestack[0]
+    linestack=linestack[1:]+[L]
+    displaynextline()
+
+# USER COMMAND
+
+def back():
+    global theproof
+    global theline
+    global newint
+    global variables
+    global freshvars
+    global unknowns
+    global linestack
+    global proofstack
+    if proofstack==[]:
+        print ("No back information")
+        return ("No back information")
+    P=proofstack[0]
+    proofstack=proofstack[1:]
+    theproof=P[0]
+    theline=P[1]
+    newint=P[2]
+    variables=P[3]
+    freshvars=P[4]
+    unknowns=P[5]
+    linestack=P[6]
+    theproof[theline][2]=[-1]
+    look()
+    return ("Backed up")
+
+# USER COMMAND
+
+def look():
+    if theproof == []:
+        print("no proof to show")
+        return ("No proof to show")
+    if not(theline==len(theproof)): print(displaysequent(theline,theproof[theline]))
+    if theline==len(theproof): print(displaysequent(theline,theproof[0]))
+    if theline==len(theproof): print("Done!")
+
+    
+    
+# USER COMMAND
 # initialize a sequent to be proved
 
 def start(f):
-
+    global newint
     global theproof
     global theline
     global variables
     global unknowns
     global freshvars
+    global proofstack
+    global linestack
     newint = 1
     variables=[]
     unknowns=[]
     freshvars=[]
     linestack=[]
+    proofstack=[]
     if not(isformula(getf(f))):
         print("Formula entry error")
         return("Formula entry error")
@@ -654,14 +724,20 @@ def nextrefs(n):
         i=i+1
     return r
 
+# USER COMMAND
 # apply a left rule
 
 def left():
     global theproof
     global linestack
-    if len(theproof[theline][0])==0:return "No left proposition to act on!"
+    global variables
+    if len(theproof[theline][0])==0:
+        displaynextline()
+        return "No left proposition to act on!"
     L=leftaction(theproof[theline][0][0])
-    if L==[[]]:  return "Left action unsuccessful"
+    if L==[[]]:
+        displaynextline()
+        return "Left action unsuccessful"
     theproof[theline][2]=nextrefs(len(L))
     i=0
     while (i<len(L)):
@@ -672,14 +748,20 @@ def left():
     linestack=theproof[theline][2]+linestack
     displaynextline()
 
+# USER COMMAND
 # apply a right rule
 
 def right():
     global theproof
     global linestack
-    if len(theproof[theline][1])==0:return "No left proposition to act on!"
+    global variables
+    if len(theproof[theline][1])==0:
+        displaynextline()
+        return "No left proposition to act on!"
     R=rightaction(theproof[theline][1][0])
-    if R==[[]]:  return "Right action unsuccessful"
+    if R==[[]]:
+        displaynextline()
+        return "Right action unsuccessful"
     theproof[theline][2]=nextrefs(len(R))
     i=0
     while (i<len(R)):
@@ -693,18 +775,40 @@ def right():
 #because of our occurrence based mechanics, determining equality of terms takes work.
 #everything has a price.
 
-# I will consider following the other versions of Marcel in making assignments to unknowns
-# to make equality true...
+# When terms are not equal and evaluating an unknown will make them true, the appropriate
+# setunknown action is executed to make them equal.
+
+# we might want a nondynamic equality function, but for the moment done() is the only client
 
 def equalt(t1,t2):
+    global unknowns
     if not(t1[0]==t2[0]):  return False
     if t1[0]=="var" and t1[1]==t2[1]:  return True
+    if t1[0]=="var" and not(findunknown(t1[1])=="error"):
+        V=findunknown(t1[1])
+        T=t2
+        L = freshvarlistt(T)
+        print(L)
+        while(not(L==[])):
+          if not(L[0] in V[1]):
+            return False
+          L=L[1:]
+        setunknown2(t1[1],t2)
+        return True
+    if t2[0]=="var" and not(findunknown(t2[1])=="error"):
+        V=findunknown(t2[1])
+        T=t1
+        L = freshvarlistt(T)
+        print(L)
+        while(not(L==[])):
+          if not(L[0] in V[1]):
+            return False
+          L=L[1:]
+        setunknown2(t2[1],t1)
+        return True            
     if t1[0]=="var":  return False
     if t1[0]=="set":
         v=renamevart(t1[1],t1[1],["var",t1[1],t1[2]])
-        #print(v)
-        #print(subsf(t1[1],t1[2],v,t1[3]))
-        #print(subsf(t2[1],t2[2],v,t2[3]))
         return equalf(subsf(t1[1],t1[2],v,t1[3]),subsf(t2[1],t2[2],v,t2[3]))
 
 def equalf(f1,f2):
@@ -718,11 +822,9 @@ def equalf(f1,f2):
         return False
     if isquantifier(f1[0]):
         v=renamevart(f1[1],f1[1],["var",f1[1],f1[2]])
-        #print(v)
-        #print(subsf(f1[1],f1[2],v,f1[3]))
-        #print(subsf(f2[1],f2[2],v,f2[3]))
         return equalf(subsf(f1[1],f1[2],v,f1[3]),subsf(f2[1],f2[2],v,f2[3]))
 
+# USER COMMAND
 # recognize sequent axioms.  I believe this is the only place
 # where equality of terms and formulas is used so far.  Bespoke rules for equality
 # would use it no doubt.
@@ -741,16 +843,26 @@ def done():
 
 # move a desired left or right term to the front of the list
 
+# these had to be written differently to let the back() function work through them
+
+# USER COMMAND
+
 def getleft(n):
     global theproof
-    if n> len(theproof[theline][0]): return "the left proposition list is not that long"
-    theproof[theline][0] = theproof[theline][0][n:]+theproof[theline][0][0:n]
+    if n> len(theproof[theline][0]):
+        displaynextline
+        return "the left proposition list is not that long"
+    theproof= theproof[0:theline]+[[(theproof[theline][0][n:]+theproof[theline][0][0:n]),theproof[theline][1],theproof[theline][2]]]+theproof[theline+1:]
     displaynextline()
+
+# USER COMMAND
 
 def getright(n):
     global theproof
-    if n> len(theproof[theline][1]): return "the right proposition list is not that long"
-    theproof[theline][1] = theproof[theline][1][n:]+theproof[theline][1][0:n]
+    if n> len(theproof[theline][1]):
+        displaynextline()
+        return "the right proposition list is not that long"
+    theproof= theproof[0:theline]+[[theproof[theline][0],(theproof[theline][1][n:]+theproof[theline][1][0:n]),theproof[theline][2]]]+theproof[theline+1:]
     displaynextline()
 
 # leftaction and rightaction are the meat of the logic
@@ -759,6 +871,7 @@ def leftaction(f):
     global unknowns
     global newint
     global freshvars
+    global variables
     if f[0]=="&":  return [[[f[1],f[2]],[]]]
     if f[0]=="V":  return [[[f[1]],[]],[[f[2]],[]]]
     if f[0]==">":  return [[[],[f[1]]],[[f[2]],[]]]
@@ -772,7 +885,7 @@ def leftaction(f):
     if f[0]=="=":
         newint=newint+1
         v=renamevart(variables[0],variables[0],["var",variables[0],newint])
-        return [[["A",v[1],v[2],["X",["e",f[1],v],["e",f[2],v]]],[]]]
+        return [[[["A",v[1],v[2],["X",["e",f[1],v],["e",f[2],v]]]],[]]]
     if f[0]=="A":
         v=renamevart(f[1],f[1],["var",f[1],f[2]])
         unknowns=[[v[1],freshvars]]+unknowns
@@ -789,6 +902,7 @@ def rightaction(f):
     global unknowns
     global newint
     global freshvars
+    global variables
     if f[0]=="&":  return[[[],[f[1]]],[[],[f[2]]]]
     if f[0]=="V":  return [[[],[f[1],f[2]]]]
     if f[0]==">":  return [[[f[1]],[f[2]]]]
@@ -856,6 +970,8 @@ def freshvarlistf(f):
 # of a concrete witness can be carried out later -- even some time later
 # when the proof suggests what the witness should be.
 
+# USER COMMAND
+
 def setunknown(v,t):
     global theproof
     global newint
@@ -889,6 +1005,64 @@ def setunknown(v,t):
         P2=P2+[subs1s(V[0],T2,P[0])]
         P=P[1:]
     theproof=P2
+    displaynextline()
+
+#internal version of setunknown for equality function
+
+def setunknown2(v,t):
+    global theproof
+    global newint
+    V=findunknown(v)
+    if V == "error":
+        print ("not an unknown")
+        displaynextline()
+        return "error"
+    T=t
+    if not(isterm(T)):
+        print("Bad term entered")
+        displaynextline()
+        return "Bad term entered"
+
+    L = freshvarlistt(T)
+    while(not(L==[])):
+        if not(L[0] in V[1]):
+            print("Fresh variable reference error")
+            displaynextline()
+            return "Fresh variable reference error"
+        L=L[1:]
+
+    a=occt(T)
+    d=newint-a[0]+1
+    newint=a[1]+d
+    T2=displaceocct(T,d)
+
+    P=theproof
+    P2=[]
+    while(not(P==[])):
+        P2=P2+[subs1s(V[0],T2,P[0])]
+        P=P[1:]
+    theproof=P2
+    #displaynextline()
+
+
+# USER COMMAND
+# the Cut rule
+
+def Cut(f):
+    global theproof
+    global linestack
+    F=getf(f)
+    if not(isformula(F)):
+        print("Bad formula entry")
+        displaynextlin()
+        return("Bad formula entry")
+    P=theproof[theline]
+    P1=[[F]+P[0],P[1],[-1]]
+    P2=[P[0],[F]+P[1],[-1]]
+    theproof=theproof+[P1]
+    theproof=theproof+[P2]
+    theproof[theline][2]=[len(theproof)-2,len(theproof)-1]
+    linestack = theproof[theline][2]+linestack
     displaynextline()
         
     
