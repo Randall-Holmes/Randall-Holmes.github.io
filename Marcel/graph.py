@@ -46,6 +46,12 @@
 # more constituents could be added.  We could have defined relations, defined unary predicates, propositional variables, for example.
 # we could also have functions and operations.
 
+# immediate work orders:  user commands have been identified, and scripting could be set up.
+
+# the ability to prove and store theorems and cut on a theorem should be added.
+
+# I am thinking about what kind of definition mechanism is wanted.
+
 relations = ["e","="]
 
 def isrelation(s):
@@ -172,6 +178,7 @@ def gett(s):
     global newint
     global variables
     if len(s)==0: return "!!!"
+    if s[0]==" ": return gett(s[1:])
     if isprime(s[0]):return ["var",gett(s[1:])[1]+s[0],newint]
     if "a" <= s[0] and s[0] <= "z":
         if not(s[0] in variables):  variables=variables+[s[0]]
@@ -197,6 +204,7 @@ def gett(s):
 
 def restt(s):
     if len(s)==0:  return ""
+    if s[0]==" ":  return restt(s[1:])
     if isprime(s[0]):  return restt(s[1:])
     if "a"<=s[0] and s[0]<="z": return s[1:]
     if s[0]=="{":
@@ -208,6 +216,7 @@ def restt(s):
 def getf(s):
     global newint
     global variables
+    if s[0]==" ":  return getf(s[1:])
     if len(s)==0:return "???"
     if isrelation(s[0]):return [s[0],gett(s[1:]),gett(restt(s[1:]))]
     if s[0]=="~":return [s[0],getf(s[1:])]
@@ -220,6 +229,7 @@ def getf(s):
 
 def restf(s):
     if len(s)==0:return "???"
+    if s[0]==" ":return restf(s[1:])
     if isrelation(s[0]): return restt(restt(s[1:]))
     if s[0]=="~":return restf(s[1:])
     if isconnective(s[0]):return restf(restf(s[1:]))
@@ -802,7 +812,6 @@ def equalt(t1,t2):
         V=findunknown(t1[1])
         T=t2
         L = freshvarlistt(T)
-        print(L)
         while(not(L==[])):
           if not(L[0] in V[1]):
             return False
@@ -813,7 +822,6 @@ def equalt(t1,t2):
         V=findunknown(t2[1])
         T=t1
         L = freshvarlistt(T)
-        print(L)
         while(not(L==[])):
           if not(L[0] in V[1]):
             return False
