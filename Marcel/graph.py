@@ -5,6 +5,10 @@
 # 4/30/2026 some debugging and new capabilities.  User commands labelled.
 # back() exists to undo commands in a proof -- it is a bit twitchy.
 # skip() exists to pass over the current sequent to be done and go to the next one.
+# considerable improvement in new variable naming.
+# strange left reduction rule for membership statements under consideration:
+# it enforces extensionality and makes possible a cut free proof
+# that coextensionality implies Leibniz equality.
 
 # This is an alternative development of the core of the Marcel sequent prover
 # for stratified set theory.  This version was inspired by considering
@@ -66,7 +70,7 @@ def isquantifier(s):
 
 # we could add more primes to diversify the variables.  Actually, digits could play this role.
 
-primes = ["'"]
+primes = ["'","*"]
 
 def isprime(s):
     return s in primes
@@ -353,12 +357,22 @@ def subsf(v,n,t,u):
 def dropitem(v,L):
     if L==[]:  return []
     if L[0]==v:  return dropitem(v,L[1:])
-    return [L[0]]+droptiem(v,L[1:])
+    return [L[0]]+dropitem(v,L[1:])
+
+# this function makes the generation of fresh variables much
+# less cluttering.  In effect, binary notation in the primes ' and *
+
+def nextvarname(s):
+    if s[-1]=="'":
+        return s[0:-1]+"*"
+    if s[-1]=="*":
+        return (nextvarname(s[0:-1]))+"'"
+    return s+"'"
 
 def renamevart(v,w,t):
     global variables
     #global unknowns
-    if (w in variables):  return renamevart(v,w+"'",t)
+    if (w in variables):  return renamevart(v,nextvarname(w),t)
     variables=variables+[w]
     #if v in unknowns: unknowns=dropitem(v,unknowns)+[w]
     if t[0]=="var" and t[1]==v:  return ["var",w,t[2]]
@@ -368,7 +382,7 @@ def renamevart(v,w,t):
     
 def renamevarf(v,w,f):
     global variables
-    if (w in variables):  return renamevarf(v,w+"'",t)
+    if (w in variables):  return renamevarf(v,nextvarname(w),t)
     variables=variables+[w]
     if isrelation(f[0]):  return[f[0],renamevart(v,w,f[1]),renamevart(v,w,f[2])]
     if f[0]=="~": return [f[0],renamevarf(v,w,f[1])]
@@ -818,7 +832,7 @@ def equalf(f1,f2):
         return False
     if f1[0]=="~":  return equalf(f1[1],f2[1])
     if isconnective(f1[0]):
-        if equalf(f1[1],f1[2]) and equalf(f2[1],f2[2]):  return True
+        if equalf(f1[1],f2[1]) and equalf(f1[2],f2[2]):  return True
         return False
     if isquantifier(f1[0]):
         v=renamevart(f1[1],f1[1],["var",f1[1],f1[2]])
@@ -882,6 +896,13 @@ def leftaction(f):
     if f[0]=="~":  return [[[],[f[1]]]]
     if f[0]=="e" and f[2][0]=="set":
         return [[[subsf(f[2][1],f[2][2],f[1],f[2][3])],[]]]
+    if f[0]=="e":
+        newint=newint+3
+        v=renamevart(variables[0],variables[0],["var",variables[0],newint-2])
+        w=renamevart(variables[0],variables[0],["var",variables[0],newint-1])
+        A=["A",v[1],v[2],["V",["e",v,f[2]],["E",w[1],w[2],["~",["X",["e",w,f[1]],["e",w,v]]]]]]
+        return [[[A],[]]]   
+        
     if f[0]=="=":
         newint=newint+1
         v=renamevart(variables[0],variables[0],["var",variables[0],newint])
@@ -910,7 +931,12 @@ def rightaction(f):
     if f[0]=="~":  return [[[f[1]],[]]]
     if f[0]=="e" and f[2][0]=="set":
         return [[[],[subsf(f[2][1],f[2][2],f[1],f[2][3])]]]
-
+    #if f[0]=="e":
+        #newint=newint+3
+        #v=renamevart(variables[0],variables[0],["var",variables[0],newint-2])
+        #w=renamevart(variables[0],variables[0],["var",variables[0],newint-1])
+        #A=["A",v[1],v[2],["V",["e",v,f[2]],["E",w[1],w[2],["~",["X",["e",w,f[1]],["e",w,v]]]]]]
+        #return [[[],[A]]]
 # this is the extensional right rule for NF;  the one for SF is obtained by
 #reversing the membership statements
     
