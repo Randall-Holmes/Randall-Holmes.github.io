@@ -12,6 +12,7 @@ prover: documentation and examples}
 \begin{document}
 
 \maketitle
+\tableofcontents
 
 \section{Introduction}
 
@@ -63,9 +64,7 @@ substitutions are carried out, the substitution term has all
 of its occurrence information displaced to a new range (so that
 no identification can exist between any variable
 in the substituted term and any binder into whose scope it is
-substituted). The clarification is that identifications of
-occurrences {\em do\/} exist between variables in disjoint
-occurrences of the same substituted text, but this should not create difficulties.   [it is possible for such identifications to cause displayed terms not to be stratified in a technical sense, but the prover only checks stratification at parse time, and such terms are always stratifiable by increasing diversity of variable occurrences].  Attention to the moral law probably
+substituted).  Attention to the moral law probably
 requires us to install a warning to the viewer when free
 variables are introduced into scopes of binders using variables
 of the same shape: the distinction is not apparent to the viewer
@@ -587,8 +586,1335 @@ evident what witness will work.
 
 \section{Sample proofs}
 
+\subsection{Equality is transitive}
+
+Here is a proof that equality is transitive.  Strictly speaking it is a proof of an instance of this and needs to be packaged in universal quantifiers
+to be really useful.
+
+\begin{verbatim}
+
+start ("> & =xy =yz =xz")
+
+
+Line number 0
+
+
+
+----
+
+
+
+0.  ((x = y & y = z) -> x = z)
+
+by lines [-1]
+Next!
+right()
+
+
+Line number 1
+
+
+
+
+0.  (x = y & y = z)
+----
+
+
+
+0.  x = z
+
+by lines [-1]
+Next!
+right()
+
+
+Line number 2
+
+
+
+
+0.  (x = y & y = z)
+----
+
+
+
+0.  (Ax' : (x' e x == x' e z))
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 3
+
+
+
+
+0.  x = y
+
+1.  y = z
+----
+
+
+
+0.  (Ax' : (x' e x == x' e z))
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 4
+
+
+
+
+0.  x = y
+
+1.  y = z
+----
+
+
+
+0.  (x*! e x == x*! e z)
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 5
+
+
+
+
+0.  x*! e x
+
+1.  x = y
+
+2.  y = z
+----
+
+
+
+0.  x*! e z
+
+by lines [-1]
+Next!
+getleft(1)
+     
+
+
+Line number 5
+
+
+
+
+0.  x = y
+
+1.  y = z
+
+2.  x*! e x
+----
+
+
+
+0.  x*! e z
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 7
+
+
+
+
+0.  (Ax'' : (x e x'' == y e x''))
+
+1.  y = z
+
+2.  x*! e x
+----
+
+
+
+0.  x*! e z
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 8
+
+
+
+
+0.  (x e x'*? == y e x'*?)
+
+1.  (Ax'' : (x e x'' == y e x''))
+
+2.  y = z
+
+3.  x*! e x
+----
+
+
+
+0.  x*! e z
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 9
+
+
+
+
+0.  (x e x'*? -> y e x'*?)
+
+1.  (y e x'*? -> x e x'*?)
+
+2.  (Ax'' : (x e x'' == y e x''))
+
+3.  y = z
+
+4.  x*! e x
+----
+
+
+
+0.  x*! e z
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 10
+
+
+
+
+0.  (y e x'*? -> x e x'*?)
+
+1.  (Ax'' : (x e x'' == y e x''))
+
+2.  y = z
+
+3.  x*! e x
+----
+
+
+
+0.  x e x'*?
+
+1.  x*! e z
+
+by lines [-1]
+Next!
+setunknown("x'*","{ue*xu")
+     
+
+
+Line number 10
+
+
+
+
+0.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+1.  (Ax'' : (x e x'' == y e x''))
+
+2.  y = z
+
+3.  x*! e x
+----
+
+
+
+0.  x e {u | x*! e u}
+
+1.  x*! e z
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 12
+
+
+
+
+0.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+1.  (Ax'' : (x e x'' == y e x''))
+
+2.  y = z
+
+3.  x*! e x
+----
+
+
+
+0.  x*! e x
+
+1.  x*! e z
+
+by lines [-1]
+Next!
+getleft(3)
+     
+
+
+Line number 12
+
+
+
+
+0.  x*! e x
+
+1.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+2.  (Ax'' : (x e x'' == y e x''))
+
+3.  y = z
+----
+
+
+
+0.  x*! e x
+
+1.  x*! e z
+
+by lines [-1]
+Next!
+done()
+     
+
+
+Line number 11
+
+
+
+
+0.  y e {u | x*! e u}
+
+1.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+2.  (Ax'' : (x e x'' == y e x''))
+
+3.  y = z
+
+4.  x*! e x
+----
+
+
+
+0.  x*! e z
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 13
+
+
+
+
+0.  x*! e y
+
+1.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+2.  (Ax'' : (x e x'' == y e x''))
+
+3.  y = z
+
+4.  x*! e x
+----
+
+
+
+0.  x*! e z
+
+by lines [-1]
+Next!
+getleft(3)
+     
+
+
+Line number 13
+
+
+
+
+0.  y = z
+
+1.  x*! e x
+
+2.  x*! e y
+
+3.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+4.  (Ax'' : (x e x'' == y e x''))
+----
+
+
+
+0.  x*! e z
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 14
+
+
+
+
+0.  (Ax*' : (y e x*' == z e x*'))
+
+1.  x*! e x
+
+2.  x*! e y
+
+3.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+4.  (Ax'' : (x e x'' == y e x''))
+----
+
+
+
+0.  x*! e z
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 15
+
+
+
+
+0.  (y e x**? == z e x**?)
+
+1.  (Ax*' : (y e x*' == z e x*'))
+
+2.  x*! e x
+
+3.  x*! e y
+
+4.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+5.  (Ax'' : (x e x'' == y e x''))
+----
+
+
+
+0.  x*! e z
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 16
+
+
+
+
+0.  (y e x**? -> z e x**?)
+
+1.  (z e x**? -> y e x**?)
+
+2.  (Ax*' : (y e x*' == z e x*'))
+
+3.  x*! e x
+
+4.  x*! e y
+
+5.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+6.  (Ax'' : (x e x'' == y e x''))
+----
+
+
+
+0.  x*! e z
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 17
+
+
+
+
+0.  (z e x**? -> y e x**?)
+
+1.  (Ax*' : (y e x*' == z e x*'))
+
+2.  x*! e x
+
+3.  x*! e y
+
+4.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+5.  (Ax'' : (x e x'' == y e x''))
+----
+
+
+
+0.  y e x**?
+
+1.  x*! e z
+
+by lines [-1]
+Next!
+setunknown("x**","{ue*xu")
+     
+
+
+Line number 17
+
+
+
+
+0.  (z e {u | x*! e u} -> y e {u | x*! e u})
+
+1.  (Ax*' : (y e x*' == z e x*'))
+
+2.  x*! e x
+
+3.  x*! e y
+
+4.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+5.  (Ax'' : (x e x'' == y e x''))
+----
+
+
+
+0.  y e {u | x*! e u}
+
+1.  x*! e z
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 19
+
+
+
+
+0.  (z e {u | x*! e u} -> y e {u | x*! e u})
+
+1.  (Ax*' : (y e x*' == z e x*'))
+
+2.  x*! e x
+
+3.  x*! e y
+
+4.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+5.  (Ax'' : (x e x'' == y e x''))
+----
+
+
+
+0.  x*! e y
+
+1.  x*! e z
+
+by lines [-1]
+Next!
+getleft(3)
+     
+
+
+Line number 19
+
+
+
+
+0.  x*! e y
+
+1.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+2.  (Ax'' : (x e x'' == y e x''))
+
+3.  (z e {u | x*! e u} -> y e {u | x*! e u})
+
+4.  (Ax*' : (y e x*' == z e x*'))
+
+5.  x*! e x
+----
+
+
+
+0.  x*! e y
+
+1.  x*! e z
+
+by lines [-1]
+Next!
+done()
+     
+
+
+Line number 18
+
+
+
+
+0.  z e {u | x*! e u}
+
+1.  (z e {u | x*! e u} -> y e {u | x*! e u})
+
+2.  (Ax*' : (y e x*' == z e x*'))
+
+3.  x*! e x
+
+4.  x*! e y
+
+5.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+6.  (Ax'' : (x e x'' == y e x''))
+----
+
+
+
+0.  x*! e z
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 20
+
+
+
+
+0.  x*! e z
+
+1.  (z e {u | x*! e u} -> y e {u | x*! e u})
+
+2.  (Ax*' : (y e x*' == z e x*'))
+
+3.  x*! e x
+
+4.  x*! e y
+
+5.  (y e {u | x*! e u} -> x e {u | x*! e u})
+
+6.  (Ax'' : (x e x'' == y e x''))
+----
+
+
+
+0.  x*! e z
+
+by lines [-1]
+Next!
+done()
+     
+
+
+Line number 6
+
+
+
+
+0.  x*! e z
+
+1.  x = y
+
+2.  y = z
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+getleft(3)
+     
+
+
+Line number 6
+
+
+
+
+0.  x*! e z
+
+1.  x = y
+
+2.  y = z
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+getleft(2)
+     
+
+
+Line number 6
+
+
+
+
+0.  y = z
+
+1.  x*! e z
+
+2.  x = y
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 21
+
+
+
+
+0.  (Ax''' : (y e x''' == z e x'''))
+
+1.  x*! e z
+
+2.  x = y
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+left()
+
+
+Line number 22
+
+
+
+
+0.  (y e x''*? == z e x''*?)
+
+1.  (Ax''' : (y e x''' == z e x'''))
+
+2.  x*! e z
+
+3.  x = y
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 23
+
+
+
+
+0.  (y e x''*? -> z e x''*?)
+
+1.  (z e x''*? -> y e x''*?)
+
+2.  (Ax''' : (y e x''' == z e x'''))
+
+3.  x*! e z
+
+4.  x = y
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+getleft(1)
+
+
+Line number 23
+
+
+
+
+0.  (z e x''*? -> y e x''*?)
+
+1.  (Ax''' : (y e x''' == z e x'''))
+
+2.  x*! e z
+
+3.  x = y
+
+4.  (y e x''*? -> z e x''*?)
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 24
+
+
+
+
+0.  (Ax''' : (y e x''' == z e x'''))
+
+1.  x*! e z
+
+2.  x = y
+
+3.  (y e x''*? -> z e x''*?)
+----
+
+
+
+0.  z e x''*?
+
+1.  x*! e x
+
+by lines [-1]
+Next!
+setunknown("x**","{ue*xu")
+
+
+Line number 24
+
+
+
+
+0.  (Ax''' : (y e x''' == z e x'''))
+
+1.  x*! e z
+
+2.  x = y
+
+3.  (y e x''*? -> z e x''*?)
+----
+
+
+
+0.  z e x''*?
+
+1.  x*! e x
+
+by lines [-1]
+Next!
+setunknown("x''*","{ue*xu")
+     
+
+
+Line number 24
+
+
+
+
+0.  (Ax''' : (y e x''' == z e x'''))
+
+1.  x*! e z
+
+2.  x = y
+
+3.  (y e {u | x*! e u} -> z e {u | x*! e u})
+----
+
+
+
+0.  z e {u | x*! e u}
+
+1.  x*! e x
+
+by lines [-1]
+Next!
+right()
+
+
+Line number 26
+
+
+
+
+0.  (Ax''' : (y e x''' == z e x'''))
+
+1.  x*! e z
+
+2.  x = y
+
+3.  (y e {u | x*! e u} -> z e {u | x*! e u})
+----
+
+
+
+0.  x*! e z
+
+1.  x*! e x
+
+by lines [-1]
+Next!
+getleft(1)
+     
+
+
+Line number 26
+
+
+
+
+0.  x*! e z
+
+1.  x = y
+
+2.  (y e {u | x*! e u} -> z e {u | x*! e u})
+
+3.  (Ax''' : (y e x''' == z e x'''))
+----
+
+
+
+0.  x*! e z
+
+1.  x*! e x
+
+by lines [-1]
+Next!
+done()
+
+
+Line number 25
+
+
+
+
+0.  y e {u | x*! e u}
+
+1.  (Ax''' : (y e x''' == z e x'''))
+
+2.  x*! e z
+
+3.  x = y
+
+4.  (y e {u | x*! e u} -> z e {u | x*! e u})
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 27
+
+
+
+
+0.  x*! e y
+
+1.  (Ax''' : (y e x''' == z e x'''))
+
+2.  x*! e z
+
+3.  x = y
+
+4.  (y e {u | x*! e u} -> z e {u | x*! e u})
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+getleft(3)
+
+
+Line number 27
+
+
+
+
+0.  x = y
+
+1.  (y e {u | x*! e u} -> z e {u | x*! e u})
+
+2.  x*! e y
+
+3.  (Ax''' : (y e x''' == z e x'''))
+
+4.  x*! e z
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 28
+
+
+
+
+0.  (Ax'*' : (x e x'*' == y e x'*'))
+
+1.  (y e {u | x*! e u} -> z e {u | x*! e u})
+
+2.  x*! e y
+
+3.  (Ax''' : (y e x''' == z e x'''))
+
+4.  x*! e z
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+left()
+
+
+Line number 29
+
+
+
+
+0.  (x e x'**? == y e x'**?)
+
+1.  (Ax'*' : (x e x'*' == y e x'*'))
+
+2.  (y e {u | x*! e u} -> z e {u | x*! e u})
+
+3.  x*! e y
+
+4.  (Ax''' : (y e x''' == z e x'''))
+
+5.  x*! e z
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 30
+
+
+
+
+0.  (x e x'**? -> y e x'**?)
+
+1.  (y e x'**? -> x e x'**?)
+
+2.  (Ax'*' : (x e x'*' == y e x'*'))
+
+3.  (y e {u | x*! e u} -> z e {u | x*! e u})
+
+4.  x*! e y
+
+5.  (Ax''' : (y e x''' == z e x'''))
+
+6.  x*! e z
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+getleft(1)
+
+
+Line number 30
+
+
+
+
+0.  (y e x'**? -> x e x'**?)
+
+1.  (Ax'*' : (x e x'*' == y e x'*'))
+
+2.  (y e {u | x*! e u} -> z e {u | x*! e u})
+
+3.  x*! e y
+
+4.  (Ax''' : (y e x''' == z e x'''))
+
+5.  x*! e z
+
+6.  (x e x'**? -> y e x'**?)
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 31
+
+
+
+
+0.  (Ax'*' : (x e x'*' == y e x'*'))
+
+1.  (y e {u | x*! e u} -> z e {u | x*! e u})
+
+2.  x*! e y
+
+3.  (Ax''' : (y e x''' == z e x'''))
+
+4.  x*! e z
+
+5.  (x e x'**? -> y e x'**?)
+----
+
+
+
+0.  y e x'**?
+
+1.  x*! e x
+
+by lines [-1]
+Next!
+setunknown("x'**","{ue*xu")
+
+
+Line number 31
+
+
+
+
+0.  (Ax'*' : (x e x'*' == y e x'*'))
+
+1.  (y e {u | x*! e u} -> z e {u | x*! e u})
+
+2.  x*! e y
+
+3.  (Ax''' : (y e x''' == z e x'''))
+
+4.  x*! e z
+
+5.  (x e {u | x*! e u} -> y e {u | x*! e u})
+----
+
+
+
+0.  y e {u | x*! e u}
+
+1.  x*! e x
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 33
+
+
+
+
+0.  (Ax'*' : (x e x'*' == y e x'*'))
+
+1.  (y e {u | x*! e u} -> z e {u | x*! e u})
+
+2.  x*! e y
+
+3.  (Ax''' : (y e x''' == z e x'''))
+
+4.  x*! e z
+
+5.  (x e {u | x*! e u} -> y e {u | x*! e u})
+----
+
+
+
+0.  x*! e y
+
+1.  x*! e x
+
+by lines [-1]
+Next!
+getleft(2)
+
+
+Line number 33
+
+
+
+
+0.  x*! e y
+
+1.  (Ax''' : (y e x''' == z e x'''))
+
+2.  x*! e z
+
+3.  (x e {u | x*! e u} -> y e {u | x*! e u})
+
+4.  (Ax'*' : (x e x'*' == y e x'*'))
+
+5.  (y e {u | x*! e u} -> z e {u | x*! e u})
+----
+
+
+
+0.  x*! e y
+
+1.  x*! e x
+
+by lines [-1]
+Next!
+done()
+     
+
+
+Line number 32
+
+
+
+
+0.  x e {u | x*! e u}
+
+1.  (Ax'*' : (x e x'*' == y e x'*'))
+
+2.  (y e {u | x*! e u} -> z e {u | x*! e u})
+
+3.  x*! e y
+
+4.  (Ax''' : (y e x''' == z e x'''))
+
+5.  x*! e z
+
+6.  (x e {u | x*! e u} -> y e {u | x*! e u})
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+left()
+
+
+Line number 34
+
+
+
+
+0.  x*! e x
+
+1.  (Ax'*' : (x e x'*' == y e x'*'))
+
+2.  (y e {u | x*! e u} -> z e {u | x*! e u})
+
+3.  x*! e y
+
+4.  (Ax''' : (y e x''' == z e x'''))
+
+5.  x*! e z
+
+6.  (x e {u | x*! e u} -> y e {u | x*! e u})
+----
+
+
+
+0.  x*! e x
+
+by lines [-1]
+Next!
+done()
+     
+Done!
+
+
+
+\end{verbatim}
+
+\subsection{Coextensionality implies Leibniz equality}
+
 This example is perhaps a bit strange.  This is a proof that coextensionality implies Leibniz equality:  it uses the weird left rule for membership
-statements which I have introduced experimentally.  It is also a nice sequent proof, and examplifies the notation and style of use of the prover, so here it is.
+statements which I have introduced experimentally, in order to avoid the need to cut.  It is also a nice sequent proof, and examplifies the notation and style of use of the prover, so here it is.
+
+The ``by lines {\tt [-1]}''  annotations have to do with the fact that the lines are not justified at the time they are displayed in a transcript.  If I displayed the
+saved proofs, the list would refer to the numbers of lines justifying the given line,  But the displayed proof file would not show the commands
+used to carry out the proof.
 
 \begin{verbatim}
 
@@ -1383,6 +2709,267 @@ Next!
 done()
               
 Done!
+
+\end{verbatim}
+
+\subsection{A weird example with unknown variables}
+
+The entry line illustrates the new capability to use spaces, parentheses and brackets as padding in term and formula input.  There is no balance checking:
+parentheses and brackets are just for the person entering the term [to make sure they do it right].
+
+\begin{verbatim}
+
+start ("Ay(Eu(Ax>(exy)(euy)))")
+     
+
+
+Line number 0
+
+
+
+----
+
+
+
+0.  (Ay : (Eu : (Ax : (x e y -> u e y))))
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 1
+
+
+
+----
+
+
+
+0.  (Eu : (Ax : (x e y'! -> u e y'!)))
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 2
+
+
+
+----
+
+
+
+0.  (Ax : (x e y' -> u'? e y'))
+
+1.  (Eu : (Ax : (x e y' -> u e y')))
+
+by lines [-1]
+Next!
+right()
+           
+
+
+Line number 3
+
+
+
+----
+
+
+
+0.  (x'! e y' -> u'? e y')
+
+1.  (Eu : (Ax : (x e y' -> u e y')))
+
+by lines [-1]
+Next!
+right()
+           
+
+
+Line number 4
+
+
+
+
+0.  x'! e y'
+----
+
+
+
+0.  u'? e y'
+
+1.  (Eu : (Ax : (x e y' -> u e y')))
+
+by lines [-1]
+Next!
+setunknown("u'","'x")
+           
+Fresh variable reference error
+
+
+Line number 4
+
+
+
+
+0.  x'! e y'
+----
+
+
+
+0.  u'? e y'
+
+1.  (Eu : (Ax : (x e y' -> u e y')))
+
+by lines [-1]
+Next!
+'Fresh variable reference error'
+getright(1)
+           
+
+
+Line number 4
+
+
+
+
+0.  x'! e y'
+----
+
+
+
+0.  (Eu : (Ax : (x e y' -> u e y')))
+
+1.  u'? e y'
+
+by lines [-1]
+Next!
+right()
+           
+
+
+Line number 5
+
+
+
+
+0.  x' e y'
+----
+
+
+
+0.  (Ax : (x e y' -> u*? e y'))
+
+1.  (Eu : (Ax : (x e y' -> u e y')))
+
+2.  u'? e y'
+
+by lines [-1]
+Next!
+right()
+           
+
+
+Line number 6
+
+
+
+
+0.  x' e y'
+----
+
+
+
+0.  (x*! e y' -> u*? e y')
+
+1.  (Eu : (Ax : (x e y' -> u e y')))
+
+2.  u'? e y'
+
+by lines [-1]
+Next!
+right()
+           
+
+
+Line number 7
+
+
+
+
+0.  x*! e y'
+
+1.  x' e y'
+----
+
+
+
+0.  u*? e y'
+
+1.  (Eu : (Ax : (x e y' -> u e y')))
+
+2.  u'? e y'
+
+by lines [-1]
+Next!
+setunknown("u*","'x")
+           
+
+
+Line number 7
+
+
+
+
+0.  x*! e y'
+
+1.  x' e y'
+----
+
+
+
+0.  x' e y'
+
+1.  (Eu : (Ax : (x e y' -> u e y')))
+
+2.  u'? e y'
+
+by lines [-1]
+Next!
+getleft(1)
+           
+
+
+Line number 7
+
+
+
+
+0.  x' e y'
+
+1.  x*! e y'
+----
+
+
+
+0.  x' e y'
+
+1.  (Eu : (Ax : (x e y' -> u e y')))
+
+2.  u'? e y'
+
+by lines [-1]
+Next!
+done()
+           
+Done!
+
+
 
 \end{verbatim}
 

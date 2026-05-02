@@ -10,6 +10,10 @@
 # it enforces extensionality and makes possible a cut free proof
 # that coextensionality implies Leibniz equality.
 
+# 5/2/2026:  notable changes are that spaces may appear in input notation. I think Ill add
+# parentheses and brackets as well.  In soft substitution, displacements of occurence indices in the substituted
+# term are made at each substitution, so no stratification difficulties are to be expected.
+
 # This is an alternative development of the core of the Marcel sequent prover
 # for stratified set theory.  This version was inspired by considering
 # Ryan Nolan's use of the Bellman-Ford algorithm to test stratification:
@@ -51,6 +55,22 @@
 # the ability to prove and store theorems and cut on a theorem should be added.
 
 # I am thinking about what kind of definition mechanism is wanted.
+
+# I have a very specific idea for the definition problem which I think
+# may do the trick completely all at once.  Introduce let terms for
+# both terms and formulas where the body is a single capital letter (primes allowed
+# so we can have lots of them):  arguments are thus supplied by explicit substitution.
+# the data for a definition should of course include the body, but also the
+# stratification graph, so that let terms can be stratified without expansion.
+# with this, I probably do not need extra notions of pairing, application,
+# lambda abstraction and such.
+
+# it may nonetheless be good to have independent relation and/or function machinery.  But
+# the let machinery should give a full idiom for compaction of reasoning by definition.
+
+# another idea to record which might be useful for fluent use of equality
+# is the notion of being able to extract the context for a variable in a given
+# proposition as a lambda term.
 
 relations = ["e","="]
 
@@ -174,11 +194,13 @@ freshvars=[]
 # Weak stratification checking of set abstracts is done at parse time.  The graph generation
 # and stratification functions are below.
 
+def isspace(s):  return s==" " or s=="(" or s == ")" or s == "[" or s == "]"
+
 def gett(s):
     global newint
     global variables
     if len(s)==0: return "!!!"
-    if s[0]==" ": return gett(s[1:])
+    if isspace(s[0]): return gett(s[1:])
     if isprime(s[0]):return ["var",gett(s[1:])[1]+s[0],newint]
     if "a" <= s[0] and s[0] <= "z":
         if not(s[0] in variables):  variables=variables+[s[0]]
@@ -204,7 +226,7 @@ def gett(s):
 
 def restt(s):
     if len(s)==0:  return ""
-    if s[0]==" ":  return restt(s[1:])
+    if isspace(s[0]):  return restt(s[1:])
     if isprime(s[0]):  return restt(s[1:])
     if "a"<=s[0] and s[0]<="z": return s[1:]
     if s[0]=="{":
@@ -216,7 +238,7 @@ def restt(s):
 def getf(s):
     global newint
     global variables
-    if s[0]==" ":  return getf(s[1:])
+    if isspace(s[0]):  return getf(s[1:])
     if len(s)==0:return "???"
     if isrelation(s[0]):return [s[0],gett(s[1:]),gett(restt(s[1:]))]
     if s[0]=="~":return [s[0],getf(s[1:])]
@@ -229,7 +251,7 @@ def getf(s):
 
 def restf(s):
     if len(s)==0:return "???"
-    if s[0]==" ":return restf(s[1:])
+    if isspace(s[0]):return restf(s[1:])
     if isrelation(s[0]): return restt(restt(s[1:]))
     if s[0]=="~":return restf(s[1:])
     if isconnective(s[0]):return restf(restf(s[1:]))
@@ -312,15 +334,22 @@ def subs1f(v,n,t,u):
 # it is used by commands for global substitution into proofs, which
 # supply the needed displacement of the substituted text.
 
-def freesubs1t(v,t,u):
+# added fresh displacement in each substitution.  This removes
+# a technical stratification problem.
 
-    if u[0]=="var" and u[1]==v: return t
+def freesubs1t(v,t,u):
+    global newint
+    if u[0]=="var" and u[1]==v:
+        a=occt(t)
+        d=newint-a[0]+1
+        newint=a[1]+d
+        T=displaceocct(t,d)
+        return T
     if u[0]=="var":  return u
     if u[0]=="set" and u[1]==v:  return u
     if u[0]=="set":return ["set",u[1],u[2],freesubs1f(v,t,u[3])]
 
 def freesubs1f(v,t,u):
-
     if isrelation(u[0]):  return [u[0],freesubs1t(v,t,u[1]),freesubs1t(v,t,u[2])]
     if u[0]=="~": return ["~",freesubs1f(v,t,u[1])]
     if isconnective(u[0]):  return [u[0],freesubs1f(v,t,u[1]),freesubs1f(v,t,u[2])]
@@ -1028,10 +1057,7 @@ def setunknown(v,t):
             return "Fresh variable reference error"
         L=L[1:]
 
-    a=occt(T)
-    d=newint-a[0]+1
-    newint=a[1]+d
-    T2=displaceocct(T,d)
+    T2=T
 
     P=theproof
     P2=[]
@@ -1065,10 +1091,7 @@ def setunknown2(v,t):
             return "Fresh variable reference error"
         L=L[1:]
 
-    a=occt(T)
-    d=newint-a[0]+1
-    newint=a[1]+d
-    T2=displaceocct(T,d)
+    T2=T
 
     P=theproof
     P2=[]
