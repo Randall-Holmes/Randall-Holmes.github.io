@@ -151,6 +151,20 @@ Details to be explained later. But notice that the attempt to
 present $\{x \mid x \in x\}$ is a failure: one never even sees
 it, though one sees its body.
 
+A new feature which has been introduced but which needs debugging is a feature supporting defined terms and formulas.
+I did this in a possibly eccentric way which may cause me vast difficulties, or may prove really convenient.  I am not sure.
+
+Capital letters, possibly primed, may be used to represent defined terms and formulas.  The defined terms and formulas
+are introduced with {\tt deft} and {\tt deff} commands to be documented.  They are further used by supplying values for variables
+in the defined term or formula.  For example, if we define {\tt I} as $\{x:x=a\}$ then we can abbreviate the singleton of $t$ as
+$I(a:t)$ ({\tt :atI} in the input language) [$I(a:x)$ actually works correctly though it displays as $\{x:x=x\}$ at the moment:  the variable capture is only apparent (the prover knows all about it) it just isnt seen in the display [which I do need to fix, but it is in a way fun].  If we define {\tt C} as $(\forall x:x \in a rightarrow b \in a)$ then we can represent $t \subseteq u$
+as $C(a:t)(b:u)$ (which is {\tt :bu:atC} in the input language;  exchanging order of the arguments would be harmless, as the variable
+name controls where the argument is put).   Stratification for these notations is defined (but will no doubt require some debugging):  the term
+or formula in a definition must be stratified in the strong sense, so each variable in it has a fixed type, and this information can be used
+to build a stratification graph for a term with defined notions in it without unpacking the definitions (the table of relative types of variables in the body of a definition is stored with the definition).
+
+Notice that defined notions may have arbitrary numbers of arguments which may be supplied in any order (since they have associated keys).
+
 \section{Substitutions}
 
 There are two kinds of substitution. One replaces all free
@@ -295,6 +309,8 @@ A report of failure contains two paths from the selected node and an edge betwee
 
 The emphasis of this work has not been on creating nifty displays for stratification information:  I could improve this, but have not done so so far.
 
+I advise the reader that stratification data is now more crowded.  Installing the definition feature required that I create graphs for terms as well as formulas, and graphs for terms need a base node for the entire term.  So all subterms acquire base nodes, and there are a lot of additional nodes in the graphs.  I should clean the base nodes out of stratification display output, but I cannot remove them from graphs;  they are essential to making the definition feature work.
+
 \section{The sequent prover}
 
 The remainder of the work is development of a user driven sequent prover for NF (which could be adapted to a prover for SF or NFU by changing the right equality rule).  This parallels my earlier work on versions of the Marcel prover, but it does have interesting features.
@@ -345,6 +361,8 @@ When every line has a justification, the proof is complete.
 The meat of the logic supported is in the functions {\tt leftaction} and {\tt rightaction}. which are used to indicate how to construct the one or two sequents from which a current sequent is derived.
 
 We present the rules.  I have copied these with some editing from a manual for a long-ago version of Marcel.
+
+In addition to applying the rules below, the prover also expands defined terms and formulas in a manner which should be documented.
 
 \subsection{Specific Sequent Rules:  Connectives}
 

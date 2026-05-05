@@ -2,6 +2,14 @@
 # by (Lavinia) Randall Holmes, intellectual property
 # rights to be respected to the extent of preserving this attribution, please.
 
+# 5/5/2006: the definition facility is installed and works at least superficially,
+# though it surely may be buggy in various ways.
+
+# 5/2/2026:  notable changes are that spaces may appear in input notation. I think Ill add
+# parentheses and brackets as well.  In soft substitution, displacements of occurence indices in the substituted
+# term are made at each substitution, so no stratification difficulties are to be expected.
+
+
 # 4/30/2026 some debugging and new capabilities.  User commands labelled.
 # back() exists to undo commands in a proof -- it is a bit twitchy.
 # skip() exists to pass over the current sequent to be done and go to the next one.
@@ -9,10 +17,6 @@
 # strange left reduction rule for membership statements under consideration:
 # it enforces extensionality and makes possible a cut free proof
 # that coextensionality implies Leibniz equality.
-
-# 5/2/2026:  notable changes are that spaces may appear in input notation. I think Ill add
-# parentheses and brackets as well.  In soft substitution, displacements of occurence indices in the substituted
-# term are made at each substitution, so no stratification difficulties are to be expected.
 
 # This is an alternative development of the core of the Marcel sequent prover
 # for stratified set theory.  This version was inspired by considering
@@ -72,6 +76,20 @@
 # is the notion of being able to extract the context for a variable in a given
 # proposition as a lambda term.
 
+# Construction of the definition system is underway.  Parsing is in place,
+# working on substitution.  I need the lists of definitions for terms
+# and formulas (which weirdly occupy the same namespace);  data to be stored
+# is a simplified stratification function, just variable names to numbers,
+# checking that no variable is assigned more than one type.  Then I need
+# to define stratification, then do the simple business of expanding defined
+# terms in the sequent engine.
+
+# the stratification algorithm is now easier to extend, at a cost:  there
+# is now a graphing function for terms, which adds a node for each entire term.  These make
+# it possible to write all cases of the stratification of atomic formulas
+# in a quite uniform way, but the graphs are larger, and output of the
+# functions is harder to read.
+
 relations = ["e","="]
 
 def isrelation(s):
@@ -112,6 +130,11 @@ def isformula(L):
     if isconnective(L[0]) and isformula(L[1]) and isformula(L[2]):  return True
     #quantified formula
     if isquantifier(L[0]) and type(L[1]) == str and type(L[2]) == int and isformula(L[3]):  return True
+    # formula let terms look typgraphically the same as term let terms:  what this does is force formula definitions to have arguments)
+    # we allow defined constant terms but not defined constant formulas
+    #let term
+    if L[0] == "let" and isterm(L):  return True
+
     return False
 
 def isterm(L):
@@ -119,6 +142,10 @@ def isterm(L):
     if L[0] == "var" and type(L[1]) == str and type(L[2]) == int:  return True
     #set abstract
     if L[0] == "set" and type(L[1]) == str and type(L[2]) == int and isformula(L[3]):  return True
+    #defined
+    if L[0] == "defined" and type(L[1]) == str: return True
+    #let term
+    if L[0] == "let" and isterm(L[1]) and L[1][0]=="var" and isterm(L[2]) and isterm(L[3]) and (L[3][0]=="defined" or L[3][0]=="let"):  return True
     return False
 
 # these functions are used to renumber occurrences of variables which are bound by the same quantifier or abstract:
@@ -129,6 +156,8 @@ def reinstt(s,n,L):
     if L[0]=="var" and type(L[1])==str and type (L[2])==int:return L
     if L[0]=="set" and L[1] == s and type(L[2])==int and isformula(L[3]): return L
     if L[0]=="set" and type(L[1])==str and type (L[2])==int and isformula (L[3]):return [L[0],L[1],L[2],reinstf(s,n,L[3])]
+    if L[0]=="defined": return L
+    if L[0]=="let": return [L[0],L[1],reinstt(s,n,L[2]),reinstt(s,n,L[3])]
     return "!!!"
 
 def reinstf(s,n,L):
@@ -137,6 +166,7 @@ def reinstf(s,n,L):
     if isconnective(L[0]) and isformula(L[1]) and isformula(L[2]): return [L[0],reinstf(s,n,L[1]),reinstf(s,n,L[2])]
     if isquantifier(L[0]) and L[1]==s and type(L[2])== int and isformula(L[3]):  return L
     if isquantifier(L[0]) and type(L[1])==str and type(L[2])==int and isformula(L[3]):  return [L[0],L[1],L[2],reinstf(s,n,L[3])]
+    if L[0]=="let": return [L[0],L[1],reinstt(s,n,L[2]),resinstt(s,n,L[3])]   # term function in the formula third argument is not a mistake
     return "???"
 
 
@@ -152,6 +182,9 @@ def displayf(L):
     if L[0] == "~" and isformula(L[1]): return "~" + (displayf(L[1]))
     if isconnective(L[0]) and isformula(L[1]) and isformula(L[2]): return "("+(displayf(L[1]))+" "+cexp(L[0])+" "+(displayf(L[2]))+")"
     if isquantifier(L[0]) and type(L[1])==str and type(L[2]) == int and isformula(L[3]): return "("+L[0]+L[1]+" : "+(displayf(L[3]))+")"
+    if L[0]=="defined" and type(L[1]) == str: return L[1]
+    if L[0]=="let" and isterm(L[1]) and L[1][0]=="var" and isterm(L[2]) and isterm(L[3]) and (L[3][0]=="defined" or L[3][0]=="let"):
+        return displayt(L[3])+"("+displayt(L[1])+":"+displayt(L[2])+")"
     return "???"
 
 def displayt(L):
@@ -160,6 +193,9 @@ def displayt(L):
     if L[0]=="var" and not(findunknown(L[1])=="error"):  return L[1]+"?"
     if L[0]=="var" and L[1] in freshvars:  return L[1]+"!"
     if L[0]=="var" and type(L[1]) == str and type(L[2]) == int: return L[1]
+    if L[0]=="defined" and type(L[1]) == str: return L[1]
+    if L[0]=="let" and isterm(L[1]) and L[1][0]=="var" and isterm(L[2]) and isterm(L[3]) and (L[3][0]=="defined" or L[3][0]=="let"):
+        return displayt(L[3])+"("+displayt(L[1])+":"+displayt(L[2])+")"
     if L[0]=="set" and type(L[1]) == str and type(L[2]) == int and isformula(L[3]): return "{"+L[1]+" | "+(displayf(L[3]))+"}"
     return "!!!"
                                                                                                  
@@ -196,16 +232,27 @@ freshvars=[]
 
 def isspace(s):  return s==" " or s=="(" or s == ")" or s == "[" or s == "]"
 
+def applyprime(p,L):  return [L[0]]+[L[1]+p]+L[2:]  # this makes it possible to prime both variables and definienda.
+
 def gett(s):
     global newint
     global variables
     if len(s)==0: return "!!!"
     if isspace(s[0]): return gett(s[1:])
-    if isprime(s[0]):return ["var",gett(s[1:])[1]+s[0],newint]
+    if isprime(s[0]):return applyprime(s[0],gett(s[1:]))
     if "a" <= s[0] and s[0] <= "z":
         if not(s[0] in variables):  variables=variables+[s[0]]
         newint=newint+1
         return ["var",s[0],newint]
+    if "A" <= s[0] and s[0] <= "Z":
+        return ["defined",s[0]]
+    if s[0]==":":
+        V=gett(s[1:])
+        T=gett(restt(s[1:]))
+        B=gett(restt(restt(s[1:])))
+        if not(V[0]=="var"):  return "!!!"
+        if not(B[0]=="defined" or B[0]=="let"):  return "!!!"
+        return ["let",V,T,B]
     if s[0]=="{":
         var=gett(s[1:])
 
@@ -229,6 +276,8 @@ def restt(s):
     if isspace(s[0]):  return restt(s[1:])
     if isprime(s[0]):  return restt(s[1:])
     if "a"<=s[0] and s[0]<="z": return s[1:]
+    if "A"<=s[0] and s[0]<="Z": return s[1:]
+    if s[0]==":":  return restt(restt(restt(s[1:])))
     if s[0]=="{":
         var=gett(s[1:])
         if not(var[0]=="var"):  return ""
@@ -247,6 +296,8 @@ def getf(s):
         var=gett(s[1:])
         if not (var[0]=="var"):  return "???"
         return [s[0],var[1],var[2],reinstf(var[1],var[2],getf(restt(s[1:])))]
+    if s[0]==":": return gett(s)  # getting a term here is a trick;  let terms have same form in both classes, and in this way
+    # we forbid defined formulas without assignments as arguments.
     return "???"
 
 def restf(s):
@@ -259,6 +310,7 @@ def restf(s):
         var=gett(s[1:])
         if not(var[0]=="var"): return ""
         return restf(restt(s[1:]))
+    if s[0]==":": return restt(s)
     return ""
 
 def testt(s):return displayt(gett(s))
@@ -268,17 +320,24 @@ def testf(s):return displayf(getf(s))
 # the range of occurrence indices in a term or formula
 # needed for substitution
 
+# I need to think about what to do with expressions which actually have
+# no variables in them, possible if we have defined constants.
+
 def occt(t):
     if t[0]=="var":  return [t[2],t[2]]
     if t[0]=="set":
         R=occf(t[3])
         return [min(t[2],R[0]),max(t[2],R[1])]
-    return [0,0]
+    if t[0]=="let" and t[3][0]=="defined": return occt(t[2])
+    if t[0]=="let": return occt(t[2])
+    return [newint,newint]
 
 def occf(f):
     if isrelation(f[0]):
         a=occt(f[1])
         b=occt(f[2])
+        if f[1][0]=="defined":  return b
+        if f[2][0]=="defined":  return a
         return [min(a[0],b[0]),max(a[0],b[0])]
     if f[0]=="~":  return occf(f[1])
     if isconnective(f[0]):
@@ -288,6 +347,9 @@ def occf(f):
     if isquantifier(f[0]):
         a=occf(f[3])
         return [min(f[2],a[0]),max(f[2],a[1])]
+    if f[0]=="let" and f[3][0]=="defined":  return occt(f[2])
+    if f[0]=="let":  return occt(f[2])+occt(f[3])   #use of occt is not an error
+    return [newint,newint]
 
 #this is hard substitution for variable occurrences.  The same copy is put in everywhere (with occurrences refreshed).
 #this preserves stratification.  I am not sure whether soft substitution based just on surface form of variables is needed at all.
@@ -301,9 +363,13 @@ def occf(f):
 # when substituting a term into a context, and how much to increase nextint
 # (the variable containing the next occurrence index)
 
+# start here, working on definition syntax
+
 def displaceocct(t,d):
     if t[0] == "var":  return ["var",t[1],t[2]+d]
     if t[0] == "set":  return ["set",t[1],t[2]+d,displaceoccf(t[3],d)]
+    if t[0] == "let":  return ["let", t[1],displaceocct(t[2],d),displaceocct(t[3],d)]
+    if t[0] == "defined":  return t
 
 def displaceoccf(f,d):
 
@@ -311,6 +377,7 @@ def displaceoccf(f,d):
     if f[0]=="~":  return ["~",displaceoccf(f[1],d)]
     if isconnective(f[0]):  return [f[0],displaceoccf(f[1],d),displaceoccf(f[2],d)]
     if isquantifier(f[0]):  return [f[0],f[1],f[2]+d,displaceoccf(f[3],d)]
+    if t[0] == "let":  return ["let", t[1],displaceocct(t[2],d),displaceocct(t[3],d)]
 
 # substitution without displacement for a variable with a precise occurrence
 # index (as with a bound variable)
@@ -321,6 +388,8 @@ def subs1t(v,n,t,u):
     if u[0]=="var":  return u
     if u[0]=="set" and u[1]==v and u[2]==n:  return u
     if u[0]=="set":return ["set",u[1],u[2],subs1f(v,n,t,u[3])]
+    if u[0]=="defined": return u
+    if u[0]== "let":  return ["let",u[1],subs1t(v,n,t,u[2]),subs1t(v,n,t,u[3])]
 
 def subs1f(v,n,t,u):
 
@@ -329,6 +398,7 @@ def subs1f(v,n,t,u):
     if isconnective(u[0]):  return [u[0],subs1f(v,n,t,u[1]),subs1f(v,n,t,u[2])]
     if isquantifier(u[0]) and u[1]==v and u[2]==n: return u
     if isquantifier(u[0]):  return [u[0],u[1],u[2],subs1f(v,n,t,u[3])]
+    if u[0]== "let":  return ["let",u[1],subs1t(v,n,t,u[2]),subs1t(v,n,t,u[3])]
 
 # substitution without displacement (soft) for a free variable
 # it is used by commands for global substitution into proofs, which
@@ -348,6 +418,8 @@ def freesubs1t(v,t,u):
     if u[0]=="var":  return u
     if u[0]=="set" and u[1]==v:  return u
     if u[0]=="set":return ["set",u[1],u[2],freesubs1f(v,t,u[3])]
+    if u[0]=="defined": return u
+    if u[0]== "let":  return ["let",u[1],freesubs1t(v,n,t,u[2]),freesubs1t(v,n,t,u[3])]
 
 def freesubs1f(v,t,u):
     if isrelation(u[0]):  return [u[0],freesubs1t(v,t,u[1]),freesubs1t(v,t,u[2])]
@@ -355,6 +427,7 @@ def freesubs1f(v,t,u):
     if isconnective(u[0]):  return [u[0],freesubs1f(v,t,u[1]),freesubs1f(v,t,u[2])]
     if isquantifier(u[0]) and u[1]==v: return u
     if isquantifier(u[0]):  return [u[0],u[1],u[2],freesubs1f(v,t,u[3])]
+    if u[0]== "let":  return ["let",u[1],freesubs1t(v,n,t,u[2]),freesubs1t(v,n,t,u[3])]
 
 #these are the real (hard) substitution functions:  the substituted text has all its occurrence indices made fresh, so
 # nothing in it cannot be bound by something outside it, and no stratification problems can be introduced if the original formula was weakly stratified
@@ -439,37 +512,123 @@ def addkey(s,x,L):
 # I have done easy tests of stratification, but a full test of
 # the type differentials involving set abstracts is probably a good idea.
 
+
 def graphf(L):
+    global countbase
     if isrelation(L[0]) and isterm(L[1]) and isterm(L[2]):
-        key1=[L[1][1],L[1][2]]
-        key2 = [L[2][1],L[2][2]]
-        startgraph=[]
-        if L[0] == "=" and L[1][0]==L[2][0]:
-            startgraph=addkey(key1,[key1,key2,0],startgraph)
-            startgraph=addkey(key2,[key2,key1,0],startgraph)
-        if L[0] == "e" and L[1][0]==L[2][0]:
-            startgraph=addkey(key1,[key1,key2,1],startgraph)
-            startgraph=addkey(key2,[key2,key1,-1],startgraph)
-        if L[0] == "=" and L[1][0]=="var" and L[2][0]=="set":
-            startgraph=addkey(key1,[key1,key2,-1],startgraph)
-            startgraph=addkey(key2,[key2,key1,1],startgraph)
-        if L[0] == "e" and L[1][0]=="var" and L[2][0]=="set":
-            startgraph=addkey(key1,[key1,key2,0],startgraph)
-            startgraph=addkey(key2,[key2,key1,0],startgraph) 
-        if L[0] == "=" and L[1][0]=="set" and L[2][0]=="var":
-            startgraph=addkey(key1,[key1,key2,1],startgraph)
-            startgraph=addkey(key2,[key2,key1,-1],startgraph)
-        if L[0] == "e" and L[1][0]=="set" and L[2][0]=="var":
-            startgraph=addkey(key1,[key1,key2,2],startgraph)
-            startgraph=addkey(key2,[key2,key1,-2],startgraph)
-        if L[1][0]=="set": startgraph = startgraph + graphf(L[1][3])
-        if L[2][0]=="set":startgraph = startgraph+ graphf(L[2][3])
+        c1=[str(countbase+1),-1]
+        G1=grapht(L[1])
+        c2=[str(countbase+1),-1]        
+        G2=grapht(L[2])
+        startgraph=(G1+G2)
+        if L[0]=="=":
+            startgraph=addkey(c1,[c1,c2,0],startgraph)
+            startgraph=addkey(c2,[c2,c1,0],startgraph)
+        if L[0]=="e":
+            startgraph=addkey(c1,[c1,c2,1],startgraph)
+            startgraph=addkey(c2,[c2,c1,-1],startgraph)
         return startgraph
+ 
 
     if L[0]=="~":  return graphf(L[1])
-    if isconnective(L[0]):  return graphf(L[1])+graphf(L[2])
+    if isconnective(L[0]):  return (graphf(L[1])+graphf(L[2]))
     if isquantifier(L[0]):  return graphf(L[3])
+    if L[0]=="let" and L[3][0]=="defined":
+        thedefquery=findvalues(L[3][1],termdefs)
+        if thedefquery==[]:
+            print ("undefined definition term")
+            startgraph= addkey([basename,-1],[[basename,-1],[basename,-1],1],startgraph)
+            return startgraph
+        thetypes=thedefquery[0][1]
+        thetypequery=findvalues(L[1][1],thetypes)
+        if thetypequery==[]:
+            print ("no type for this variable found")
+            startgraph= addkey([basename,-1],[[basename,-1],[basename,-1],1],startgraph)
+            return startgraph
+        thetype=thetypequery[0]
+        countbase=countbase+1
+        c2=[str(countbase),-1]
+        c1=[str(countbase+1),-1]
+        G1=grapht(L2)
+        
+        
+        startgraph=addkey(c2,[c2,c1,thetype],startgraph)
+        startgraph=addkey(c1,[c1,c2,-thetype],startgraph)
+    return startgraph        
+    if L[0]=="let":
+        thedefquery=findvalues(L[3][1],termdefs)
+        if thedefquery==[]:
+            print ("undefined definition term")
+            startgraph= addkey([basename,-1],[[basename,-1],[basename,-1],1],startgraph)
+            return startgraph
+        thetypes=thedefquery[0][1]
+        thetypequery=findvalues(L[1][1],thetypes)
+        if thetypequery==[]:
+            print ("no type for this variable found")
+            startgraph= addkey([basename,-1],[[basename,-1],[basename,-1],1],startgraph)
+            return startgraph
+        thetype=thetypequery[0]
+        c2=[str(countbase+1),-1]
+        G2=grapht(L[3])
+        c1=[str(countbase+1),-1]
+        G1=grapht(L[2])
+
+        
+        startgraph=addkey(c2,[c2,c1,thetype],startgraph)
+        startgraph=addkey(c1,[c1,c2,-thetype],startgraph)
+    return startgraph        
+         
+        
+        
     return []
+
+#  adding in a node [base,-1] standing for the term itself in grapht
+
+# this means there are lots of base nodes generated, one for every subterm!
+
+def grapht0(L,basename):
+    startgraph=[]
+    if L[0]=="var":
+        startgraph=addkey([basename,-1],[[basename,-1],[L[1],L[2]],0],startgraph)
+        startgraph=addkey([L[1],L[2]],[[L[1],L[2]],[basename,-1],0],startgraph)
+        return startgraph
+    if L[0]=="set":
+        startgraph=graphf(L[3])
+        startgraph=addkey([basename,-1],[[basename,-1],[L[1],L[2]],-1],startgraph)
+        startgraph=addkey([L[1],L[2]],[[L[1],L[2]],[basename,-1],1],startgraph)
+        return startgraph
+    if L[0]=="defined":
+        startgraph=[]
+        startgraph=addkey([basename,-1],[[basename,-1],[basename,-1],0],startgraph)
+        return startgraph
+    if L[0]=="let":
+        startgraph = (grapht0(L[3],basename)+grapht0(L[2],basename+L[1][1]))
+        thedefquery=findvalues(L[3][1],termdefs)
+        if thedefquery==[]:
+            print ("undefined definition term")
+            startgraph= addkey([basename,-1],[[basename,-1],[basename,-1],1],startgraph)
+            return startgraph
+        thetypes=thedefquery[0][1]
+        thetypequery=findvalues(L[1][1],thetypes)
+        if thetypequery==[]:
+            print ("no type for this variable found")
+            startgraph= addkey([basename,-1],[[basename,-1],[basename,-1],1],startgraph)
+            return startgraph
+        thetype=thetypequery[0]
+        startgraph=addkey([basename,-1],[[basename,-1],[basename+L[1][1],-1],thetype],startgraph)
+        startgraph=addkey([basename+L[1][1],-1],[[basename+L[1][1],-1],[basename,-1],-thetype],startgraph)
+    return startgraph
+
+countbase=1
+
+def grapht(L):
+    global countbase
+    countbase=countbase+1
+    return grapht0(L,str(countbase))
+
+
+        
+        
 
 # using graph method to check stratification
 
@@ -507,16 +666,20 @@ def getdistance(L,v):
 
 def getpath(L,v):
 
-    if L==[]:  return "error"
+    if L==[]:
+        print ("error")
+        return []
     if L[0][0]==v:
-        if L[0][2]==[]:return "none"
+        if L[0][2]==[]:
+            print ("none")
+            return []
         return L[0][2]
     return getpath(L[1:],v)
 
 # drop the distance to v (in order to replace it)
 
 def dropkey(L,v):
-    if L==[]:  return "error"
+    if L==[]:  return []
     if L[0][0]==v:  return L[1:]
     return [L[0]]+dropkey(L[1:],v)
 
@@ -533,11 +696,12 @@ def updatedistances(L,v,w,n):
 
     # if w already has a different distance estimate, construct and return a cyle of nonzero length
     
-    if not(wdist=="infty" or wdist==vdist+n): return["stratification failure",getpath(L,v)+[n]+rev(getpath(L,w))]
+    if not(wdist=="infty" or wdist==vdist+n): return["stratification failure",getpath(L,v)+[[v,n,w]]+rev(getpath(L,w))]
 
     # if the distance estimate is new, add it (nothing to do if no updating needed)
     
-    if wdist=="infty": return [[w,[vdist+n],getpath(L,v)+[n,w]]]+dropkey(L,w)
+    if wdist=="infty": return [[w,[vdist+n],getpath(L,v)+[[v,n,w]]]]+dropkey(L,w) # this output is now a bit more readable
+    # mod the number of new nodes.
     
     return L
 
@@ -545,7 +709,7 @@ def updatedistances(L,v,w,n):
 
 def rev(L):
     if L==[]:  return []
-    return L[1:]+[L[0]]
+    return rev(L[1:])+[L[0]]
 
 def stratify(G,x):
 
@@ -584,6 +748,227 @@ def strattest(s):
     g=graphf(t)
     v=g[0][0]
     return stratify(g,v)
+
+# tester for terms
+
+def strattest2(s):
+    t = gett(s)
+    b=countbase+1
+    g = grapht(t)
+    return(stratify(g,[str(b),-1]))
+
+# definition mechanism
+
+# return a simplified table of relative types
+
+def findvalues(v,L):
+    if L==[]:  return []
+    if len(L[0])<2:
+        print ("Key list error condition")
+        return []
+    rest = findvalues(v,L[1:])
+    if L[0][0]==v:  return [L[0][1]]+dropitem(L[0][1],rest)
+    return rest
+
+def collapsestrat(L):
+    M=L
+    L2=[]
+    while (not (M==[])):
+        var=M[0][0][0]
+        if M[0][1]==[]: return [] #we want connected
+        val=M[0][1][0]
+        vals = findvalues(var,L2)
+        if vals ==[]: L2=L2+[[var,val]]
+        if not(vals == [] or vals ==[val]): return [] #conflict of values
+        M=M[1:]
+    return L2
+
+def ctest(s):  return collapsestrat(strattest(s))
+
+termdefs=[]
+
+# USER COMMAND
+
+# introduce a term definition
+
+def deft(key,term):
+    global termdefs
+
+    K= gett(key)
+    if not (K[0]=="defined"):
+        print ("Cant define that")
+        return "Cant define that"
+    if not(findvalues(displayt(K),termdefs)==[]):
+        print("Symbol already defined")
+        return "Symbol already defined"
+    T=gett(term)
+    if not(isterm(T)):
+        print ("Term entry error")
+        return "Term entry error"
+    c=[str(countbase+1),-1]
+    TT=grapht(T)
+    
+    L=collapsestrat(stratify(TT,c))
+    if L==[]:
+        print("Term is unstratified or disconnected")
+        return "Term is unstratified or disconnected"
+    termdefs=[[displayt(K),[T,L]]]+termdefs
+    print ((displayt(K))+ " = "+(displayt(T)))
+    print (L)
+
+# USER COMMAND
+
+def showdeft(s):
+     if findvalues(s,termdefs)==[]:
+         print ("Undefined term symbol")
+         return "Undefined term symbol"
+     print (s+" = "+(displayt(findvalues(s,termdefs)[0][0])))
+     print (findvalues(s,termdefs)[0][1])
+     return "Done!"
+
+# USER COMMAND
+
+def showdeff(s):
+     if findvalues(s,formuladefs)==[]:
+         print ("Undefined formula symbol")
+         return "Undefined formula symbol"
+     print (s+" = "+(displayf(findvalues(s,formuladefs)[0][0])))
+     print (findvalues(s,formuladefs)[0][1])
+     return "Done!"
+
+formuladefs=[]
+
+# USER COMMAND
+
+# introduce a formula definition
+
+def deff(key,term):
+    global formuladefs
+
+    K= gett(key)
+    if not (K[0]=="defined"):
+        print ("Cant define that")
+        return "Cant define that"
+    if not(findvalues(displayt(K),termdefs)==[]):
+        print("Symbol already defined")
+        return "Symbol already defined"
+    T=getf(term)
+    if not(isformula(T)):
+        print ("Formula entry error")
+        return "Formula entry error"
+    c=[str(countbase+1),-1]
+    TT=graphf(T)
+    
+    L=collapsestrat(stratify(TT,TT[0][0]))
+    if L==[]:
+        print("Term is unstratified or disconnected")
+        return "Term is unstratified or disconnected"
+    formuladefs=[[displayt(K),[T,L]]]+formuladefs
+    print ((displayt(K))+ " = "+(displayf(T)))
+    print (L)
+
+# definition expansion involves quite elaborate variable reshuffling
+
+def defexpandt(t):
+    # if applied to a definition term, simply expand it
+    global newint
+    if t[0]=="defined":
+        if findvalues(t[1],termdefs) == []:
+            print ("undefined symbol in defexpandt")
+            return ("undefined symbol in defexpandt")
+        u=findvalues(t[1],termdefs)[0][0]
+        a=occt(u)
+        d=newint-a[0]+1
+        newint=a[1]+d
+        T=displaceocct(u,d)
+        
+        return T
+    if t[0]=="let":
+        T=atify(t)
+        U=cascadesubst(T)
+        return deatifyt(U)
+
+def defexpandf(t):
+
+    if t[0]=="let":
+        T=atify2(t)
+        U=cascadesubsf(T)
+        return deatifyf(U)
+
+def atify(t):
+    global newint
+    if t[0]=="let":
+        return [t[0],["var","@"+t[1][1],t[1][2]],t[2],atify(t[3])]
+
+    if t[0]=="defined":
+            if findvalues(t[1],termdefs) == []:
+               print ("undefined symbol "+t[1]+" in atify")
+               return ("undefined symbol in atify")
+            u=findvalues(t[1],termdefs)[0][0]
+            a=occt(u)
+            d=newint-a[0]+1
+            newint=a[1]+d
+            T=displaceocct(u,d)
+            return atify2t(T)
+
+def atify2(t):
+    global newint
+    if t[0]=="let":
+        return [t[0],["var","@"+t[1][1],t[1][2]],t[2],atify2(t[3])]
+
+    if t[0]=="defined":
+            if findvalues(t[1],formuladefs) == []:
+               print ("undefined symbol "+t[1]+"  in atify2")
+               return ("undefined symbol "+t[1]+"  in atify2")
+            u=findvalues(t[1],formuladefs)[0][0]
+            a=occf(u)
+            d=newint-a[0]+1
+            newint=a[1]+d
+            T=displaceoccf(u,d)
+ 
+            return atify2f(T)
+
+def atify2t(t):
+    if t[0]=="var": return ["var","@"+t[1],t[2]]
+    if t[0]=="set":  return [t[0],"@"+t[1],t[2],atify2f(t[3])]
+    if t[0]=="defined":  return t
+    if t[0]=="left":  return [t[0],t[1],atify2t(t[2]),atify2t(t[3])]
+
+def atify2f(f):
+    if isrelation(f[0]):  return [f[0],atify2t(f[1]),atify2t(f[2])]
+    if isconnective(f[0]):  return [f[0],atify2f(f[1]),atify2f(f[2])]
+    if f[0]=="~":  return [f[0],atify2f(f[1])]
+    if isquantifier(f[0]):  return [f[0],"@"+f[1],f[2],atify2f(f[3])]
+    if t[0]=="left":  return [t[0],t[1],atify2t(t[2]),atify2t(t[3])]
+
+def cascadesubst(t):
+    if t[0] == "let" and t[1][1][0] =="@":
+        return freesubs1t(t[1][1],t[2],cascadesubst(t[3]))
+    return t
+
+def cascadesubsf(t):
+    if t[0] == "let" and t[1][1][0] =="@":
+        return freesubs1f(t[1][1],t[2],cascadesubsf(t[3]))
+    return t
+
+def removeat(s):
+    if s[0]=="@":  return s[1:]
+    return s
+
+def deatifyt(t):
+    if t[0]=="var": return ["var",removeat(t[1]),t[2]]
+    if t[0]=="set":  return [t[0],removeat(t[1]),t[2],deatifyf(t[3])]
+    if t[0]=="defined":  return t
+    if t[0]=="left":  return [t[0],t[1],deatifyt(t[2]),deatifyt(t[3])]
+
+def deatifyf(f):
+    if isrelation(f[0]):  return [f[0],deatifyt(f[1]),deatifyt(f[2])]
+    if isconnective(f[0]):  return [f[0],deatifyf(f[1]),deatifyf(f[2])]
+    if f[0]=="~":  return [f[0],deatifyf(f[1])]
+    if isquantifier(f[0]):  return [f[0],removeat(f[1]),f[2],deatifyf(f[3])]
+    if f[0]=="left":  return [f[0],f[1],deatifyt(f[2]),deatifyt(f[3])]
+    
+    
 
 #start sequent development
 
@@ -674,13 +1059,13 @@ def displaynextline():
         linestack=linestack[1:]
         print(displaysequent(theline,theproof[theline]))
         print ("Next!")
-        proofstack=[[theproof,theline,newint,variables,freshvars,unknowns,linestack]]+proofstack
+        proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
         return("Next!")
     while (theline<len(theproof) and not(theproof[theline][2]==[-1])):
         theline=theline+1
     if theline==len(theproof):
         print ("Done!")
-        proofstack=[[theproof,theline,newint,variables,freshvars,unknowns,linestack]]+proofstack
+        proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
         return "Done!"
     print(displaysequent(theline,theproof[theline]))
     proofstack=[[theproof,theline,newint,variables,freshvars,unknowns,linestack]]+proofstack
@@ -721,10 +1106,11 @@ def back():
     theproof=P[0]
     theline=P[1]
     newint=P[2]
-    variables=P[3]
-    freshvars=P[4]
-    unknowns=P[5]
-    linestack=P[6]
+    countbase=P[3]
+    variables=P[4]
+    freshvars=P[5]
+    unknowns=P[6]
+    linestack=P[7]
     theproof[theline][2]=[-1]
     look()
     return ("Backed up")
@@ -753,7 +1139,9 @@ def start(f):
     global freshvars
     global proofstack
     global linestack
+    global countbase
     newint = 1
+    countbase = 1
     variables=[]
     unknowns=[]
     freshvars=[]
@@ -835,7 +1223,7 @@ def right():
 
 def equalt(t1,t2):
     global unknowns
-    if not(t1[0]==t2[0]):  return False
+
     if t1[0]=="var" and t1[1]==t2[1]:  return True
     if t1[0]=="var" and not(findunknown(t1[1])=="error"):
         V=findunknown(t1[1])
@@ -858,9 +1246,17 @@ def equalt(t1,t2):
         setunknown2(t2[1],t1)
         return True            
     if t1[0]=="var":  return False
+    if not(t1[0]==t2[0]):  return False
     if t1[0]=="set":
         v=renamevart(t1[1],t1[1],["var",t1[1],t1[2]])
         return equalf(subsf(t1[1],t1[2],v,t1[3]),subsf(t2[1],t2[2],v,t2[3]))
+    if t1[0]=="defined":
+        if t1[0]==t2[0]:  return True
+        return False
+    if t1[0]=="let":
+        if not(t1[1]==t2[1]):  return False
+        if not(equalt(t1[2],t2[2])):  return False
+        return equalt(t1[3],t2[3])
 
 def equalf(f1,f2):
     if not(f1[0]==f2[0]):  return False
@@ -874,6 +1270,10 @@ def equalf(f1,f2):
     if isquantifier(f1[0]):
         v=renamevart(f1[1],f1[1],["var",f1[1],f1[2]])
         return equalf(subsf(f1[1],f1[2],v,f1[3]),subsf(f2[1],f2[2],v,f2[3]))
+    if f1[0]=="let":
+        if not(t1[1]==t2[1]):  return False
+        if not(equalt(t1[2],t2[2])):  return False
+        return equalt(t1[3],t2[3]) #equalt is correct here
 
 # USER COMMAND
 # recognize sequent axioms.  I believe this is the only place
@@ -923,6 +1323,7 @@ def leftaction(f):
     global newint
     global freshvars
     global variables
+    if f[0]=="let":  return [[[defexpandf(f)],[]]]
     if f[0]=="&":  return [[[f[1],f[2]],[]]]
     if f[0]=="V":  return [[[f[1]],[]],[[f[2]],[]]]
     if f[0]==">":  return [[[],[f[1]]],[[f[2]],[]]]
@@ -933,13 +1334,21 @@ def leftaction(f):
     if f[0]=="~":  return [[[],[f[1]]]]
     if f[0]=="e" and f[2][0]=="set":
         return [[[subsf(f[2][1],f[2][2],f[1],f[2][3])],[]]]
+    if f[0]=="e" and (f[2][0]=="let" or f[2][0]=="defined"):
+        return [[[[f[0],f[1],defexpandt(f[2])]],[]]]
+    if f[0]=="e" and (f[1][0]=="let" or f[1][0]=="defined"):
+        return [[[[f[0],defexpandt(f[1]),f[2]]],[]]]
     if f[0]=="e":
         newint=newint+3
         v=renamevart(variables[0],variables[0],["var",variables[0],newint-2])
         w=renamevart(variables[0],variables[0],["var",variables[0],newint-1])
         A=["A",v[1],v[2],["V",["e",v,f[2]],["E",w[1],w[2],["~",["X",["e",w,f[1]],["e",w,v]]]]]]
         return [[[A],[]]]   
-        
+    if f[0]=="=" and (f[2][0]=="let" or f[2][0]=="defined"):
+        return [[[[f[0],f[1],defexpandt(f[2])]],[]]]
+    if f[0]=="=" and (f[1][0]=="let" or f[1][0]=="defined"):
+        return [[[[f[0],defexpandt(f[1]),f[2]]],[]]]
+         
     if f[0]=="=":
         newint=newint+1
         v=renamevart(variables[0],variables[0],["var",variables[0],newint])
@@ -961,6 +1370,7 @@ def rightaction(f):
     global newint
     global freshvars
     global variables
+    if f[0]=="let":  return [[[],[defexpandf(f)]]]
     if f[0]=="&":  return[[[],[f[1]]],[[],[f[2]]]]
     if f[0]=="V":  return [[[],[f[1],f[2]]]]
     if f[0]==">":  return [[[f[1]],[f[2]]]]
@@ -968,6 +1378,11 @@ def rightaction(f):
     if f[0]=="~":  return [[[f[1]],[]]]
     if f[0]=="e" and f[2][0]=="set":
         return [[[],[subsf(f[2][1],f[2][2],f[1],f[2][3])]]]
+    if f[0]=="e" and (f[2][0]=="let" or f[2][0]=="defined"):
+        return [[[],[[f[0],f[1],defexpandt(f[2])]]]]
+    if f[0]=="e" and (f[1][0]=="let" or f[1][0]=="defined"):
+        return [[[],[[f[0],defexpandt(f[1]),f[2]]]]]
+
     #if f[0]=="e":
         #newint=newint+3
         #v=renamevart(variables[0],variables[0],["var",variables[0],newint-2])
@@ -976,6 +1391,10 @@ def rightaction(f):
         #return [[[],[A]]]
 # this is the extensional right rule for NF;  the one for SF is obtained by
 #reversing the membership statements
+    if f[0]=="=" and (f[2][0]=="let" or f[2][0]=="defined"):
+        return [[[],[[f[0],f[1],defexpandt(f[2])]]]]
+    if f[0]=="=" and (f[1][0]=="let" or f[1][0]=="defined"):
+        return [[[],[[f[0],defexpandt(f[1]),f[2]]]]]
     
     if f[0]=="=":
         newint=newint+1
