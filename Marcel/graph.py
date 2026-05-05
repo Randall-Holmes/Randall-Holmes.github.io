@@ -2,7 +2,9 @@
 # by (Lavinia) Randall Holmes, intellectual property
 # rights to be respected to the extent of preserving this attribution, please.
 
-# 5/5/2006: the definition facility is installed and works at least superficially,
+# 5/6/2026:  proved transitivity of inclusion and put it in the docs.  This uncoversed bugs.
+
+# 5/5/2026: the definition facility is installed and works at least superficially,
 # though it surely may be buggy in various ways.
 
 # 5/2/2026:  notable changes are that spaces may appear in input notation. I think Ill add
@@ -166,7 +168,7 @@ def reinstf(s,n,L):
     if isconnective(L[0]) and isformula(L[1]) and isformula(L[2]): return [L[0],reinstf(s,n,L[1]),reinstf(s,n,L[2])]
     if isquantifier(L[0]) and L[1]==s and type(L[2])== int and isformula(L[3]):  return L
     if isquantifier(L[0]) and type(L[1])==str and type(L[2])==int and isformula(L[3]):  return [L[0],L[1],L[2],reinstf(s,n,L[3])]
-    if L[0]=="let": return [L[0],L[1],reinstt(s,n,L[2]),resinstt(s,n,L[3])]   # term function in the formula third argument is not a mistake
+    if L[0]=="let": return [L[0],L[1],reinstt(s,n,L[2]),reinstt(s,n,L[3])]   # term function in the formula third argument is not a mistake
     return "???"
 
 
@@ -419,7 +421,7 @@ def freesubs1t(v,t,u):
     if u[0]=="set" and u[1]==v:  return u
     if u[0]=="set":return ["set",u[1],u[2],freesubs1f(v,t,u[3])]
     if u[0]=="defined": return u
-    if u[0]== "let":  return ["let",u[1],freesubs1t(v,n,t,u[2]),freesubs1t(v,n,t,u[3])]
+    if u[0]== "let":  return ["let",u[1],freesubs1t(v,t,u[2]),freesubs1t(v,t,u[3])]
 
 def freesubs1f(v,t,u):
     if isrelation(u[0]):  return [u[0],freesubs1t(v,t,u[1]),freesubs1t(v,t,u[2])]
@@ -427,7 +429,7 @@ def freesubs1f(v,t,u):
     if isconnective(u[0]):  return [u[0],freesubs1f(v,t,u[1]),freesubs1f(v,t,u[2])]
     if isquantifier(u[0]) and u[1]==v: return u
     if isquantifier(u[0]):  return [u[0],u[1],u[2],freesubs1f(v,t,u[3])]
-    if u[0]== "let":  return ["let",u[1],freesubs1t(v,n,t,u[2]),freesubs1t(v,n,t,u[3])]
+    if u[0]== "let":  return ["let",u[1],freesubs1t(v,t,u[2]),freesubs1t(v,t,u[3])]
 
 #these are the real (hard) substitution functions:  the substituted text has all its occurrence indices made fresh, so
 # nothing in it cannot be bound by something outside it, and no stratification problems can be introduced if the original formula was weakly stratified
@@ -475,6 +477,7 @@ def dropitem(v,L):
 # less cluttering.  In effect, binary notation in the primes ' and *
 
 def nextvarname(s):
+    if s[0]=="@":  return nextvarname(s[1:])
     if s[-1]=="'":
         return s[0:-1]+"*"
     if s[-1]=="*":
@@ -873,27 +876,18 @@ def defexpandt(t):
     # if applied to a definition term, simply expand it
     global newint
     if t[0]=="defined":
-        if findvalues(t[1],termdefs) == []:
-            print ("undefined symbol in defexpandt")
-            return ("undefined symbol in defexpandt")
-        u=findvalues(t[1],termdefs)[0][0]
-        a=occt(u)
-        d=newint-a[0]+1
-        newint=a[1]+d
-        T=displaceocct(u,d)
-        
-        return T
+        return atify(t)
     if t[0]=="let":
         T=atify(t)
         U=cascadesubst(T)
-        return deatifyt(U)
+        return (U)
 
 def defexpandf(t):
 
     if t[0]=="let":
         T=atify2(t)
         U=cascadesubsf(T)
-        return deatifyf(U)
+        return (U)
 
 def atify(t):
     global newint
@@ -954,6 +948,8 @@ def cascadesubsf(t):
 def removeat(s):
     if s[0]=="@":  return s[1:]
     return s
+
+# I preserve the deatify functions in case of need, but I don't actually use them.
 
 def deatifyt(t):
     if t[0]=="var": return ["var",removeat(t[1]),t[2]]
@@ -1068,7 +1064,7 @@ def displaynextline():
         proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
         return "Done!"
     print(displaysequent(theline,theproof[theline]))
-    proofstack=[[theproof,theline,newint,variables,freshvars,unknowns,linestack]]+proofstack
+    proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
     print ("Next!")
 
 # USER COMMAND
@@ -1088,6 +1084,8 @@ def skip():
     displaynextline()
 
 # USER COMMAND
+
+# restore the last prover state for which displaynextline() was called.  Historically a bit buggy.
 
 def back():
     global theproof
@@ -1340,8 +1338,8 @@ def leftaction(f):
         return [[[[f[0],defexpandt(f[1]),f[2]]],[]]]
     if f[0]=="e":
         newint=newint+3
-        v=renamevart(variables[0],variables[0],["var",variables[0],newint-2])
-        w=renamevart(variables[0],variables[0],["var",variables[0],newint-1])
+        v=renamevart("x","x",["var","x",newint-2])
+        w=renamevart("x","x",["var","x",newint-1])
         A=["A",v[1],v[2],["V",["e",v,f[2]],["E",w[1],w[2],["~",["X",["e",w,f[1]],["e",w,v]]]]]]
         return [[[A],[]]]   
     if f[0]=="=" and (f[2][0]=="let" or f[2][0]=="defined"):
@@ -1351,7 +1349,7 @@ def leftaction(f):
          
     if f[0]=="=":
         newint=newint+1
-        v=renamevart(variables[0],variables[0],["var",variables[0],newint])
+        v=renamevart("x","x",["var","x",newint])
         return [[[["A",v[1],v[2],["X",["e",f[1],v],["e",f[2],v]]]],[]]]
     if f[0]=="A":
         v=renamevart(f[1],f[1],["var",f[1],f[2]])
@@ -1385,8 +1383,8 @@ def rightaction(f):
 
     #if f[0]=="e":
         #newint=newint+3
-        #v=renamevart(variables[0],variables[0],["var",variables[0],newint-2])
-        #w=renamevart(variables[0],variables[0],["var",variables[0],newint-1])
+        #v=renamevart("x","x",["var","x",newint-2])
+        #w=renamevart("x","x",["var","x",newint-1])
         #A=["A",v[1],v[2],["V",["e",v,f[2]],["E",w[1],w[2],["~",["X",["e",w,f[1]],["e",w,v]]]]]]
         #return [[[],[A]]]
 # this is the extensional right rule for NF;  the one for SF is obtained by
@@ -1398,7 +1396,7 @@ def rightaction(f):
     
     if f[0]=="=":
         newint=newint+1
-        v=renamevart(variables[0],variables[0],["var",variables[0],newint])
+        v=renamevart("x","x",["var","x",newint])
         return [[[],[["A",v[1],v[2],["X",["e",v,f[1]],["e",v,f[2]]]]]]]
     if f[0]=="A":
         v=renamevart(f[1],f[1],["var",f[1],f[2]])

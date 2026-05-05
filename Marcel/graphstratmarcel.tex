@@ -164,6 +164,15 @@ or formula in a definition must be stratified in the strong sense, so each varia
 to build a stratification graph for a term with defined notions in it without unpacking the definitions (the table of relative types of variables in the body of a definition is stored with the definition).
 
 Notice that defined notions may have arbitrary numbers of arguments which may be supplied in any order (since they have associated keys).
+The use of defined terms is a bit weird from the standpoint of variable use.  It is best to think of the defined term and the keys for arguments
+as bits of text.  One cannot substitute for them and the keys are not variables in the expression.  When a definition with an argument is evaluated,
+all unused variables get prefixed with an at sign:  this avoids not actual error but a serious risk of apparent variable capture.  It also warns you when
+not all arguments are used.
+
+Merits of this:  there are just two forms of definition, and no more are needed.  Arguments can be supplied in any order, and any number of arguments is supported.  Inhomogeneous operations
+are supported (arguments can have arbitrary relative type, though defined terms and formulas must be stratified in the strong sense).   Demerits:  the notation is weird.  The order of the arguments gets reversed between the two forms of display, though this is semantically harmless.
+
+Defined constant terms are permitted (defined terms do not require arguments);  defined constant formulas are not permitted (a defined formula must appear with at least one argument).
 
 \section{Substitutions}
 
@@ -607,7 +616,7 @@ evident what witness will work.
 \subsection{Equality is transitive}
 
 Here is a proof that equality is transitive.  Strictly speaking it is a proof of an instance of this and needs to be packaged in universal quantifiers
-to be really useful.
+to be really useful.  
 
 \begin{verbatim}
 
@@ -2987,6 +2996,1452 @@ done()
            
 Done!
 
+
+
+\end{verbatim}
+
+\subsection{Transitivity of inclusion}
+
+This is the first shakedown cruise for defined formulas in a proof.  I found bugs, and I am sure there are more.  There is a false start in this proof
+which made extra work for me.
+
+Variables from definitions which are not substituted for get moved into an inaccessible name space to avoid apparent variable capture (prefixing an at sign).
+
+\begin{verbatim}
+
+deff("C","Ax>exaexb")
+     
+C = (Ax : (x e a -> x e b))
+[['b', 1], ['5', 1], ['4', 0], ['a', 1], ['x', 0], ['3', 1], ['2', 0]]
+start("Ax Ay Az >(&(:ax:byC :ay:bzC ) :ax:bzC)")
+     
+
+
+Line number 0
+
+
+
+----
+
+
+
+0.  (Ax : (Ay : (Az : ((C(b:y)(a:x) & C(b:z)(a:y)) -> C(b:z)(a:x)))))
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 1
+
+
+
+----
+
+
+
+0.  (Ay : (Az : ((C(b:y)(a:x'!) & C(b:z)(a:y)) -> C(b:z)(a:x'!))))
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 2
+
+
+
+----
+
+
+
+0.  (Az : ((C(b:y'!)(a:x'!) & C(b:z)(a:y'!)) -> C(b:z)(a:x'!)))
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 3
+
+
+
+----
+
+
+
+0.  ((C(b:y'!)(a:x'!) & C(b:z'!)(a:y'!)) -> C(b:z'!)(a:x'!))
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 4
+
+
+
+
+0.  (C(b:y'!)(a:x'!) & C(b:z'!)(a:y'!))
+----
+
+
+
+0.  C(b:z'!)(a:x'!)
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 5
+
+
+
+
+0.  C(b:y'!)(a:x'!)
+
+1.  C(b:z'!)(a:y'!)
+----
+
+
+
+0.  C(b:z'!)(a:x'!)
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 6
+
+
+
+
+0.  C(b:y'!)(a:x'!)
+
+1.  C(b:z'!)(a:y'!)
+----
+
+
+
+0.  (A@x : (@x e x'! -> @x e z'!))
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 7
+
+
+
+
+0.  C(b:y'!)(a:x'!)
+
+1.  C(b:z'!)(a:y'!)
+----
+
+
+
+0.  (@x! e x'! -> @x! e z'!)
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 8
+
+
+
+
+0.  @x! e x'!
+
+1.  C(b:y'!)(a:x'!)
+
+2.  C(b:z'!)(a:y'!)
+----
+
+
+
+0.  @x! e z'!
+
+by lines [-1]
+Next!
+getleft(1)
+     
+
+
+Line number 8
+
+
+
+
+0.  C(b:y'!)(a:x'!)
+
+1.  C(b:z'!)(a:y'!)
+
+2.  @x! e x'!
+----
+
+
+
+0.  @x! e z'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 9
+
+
+
+
+0.  (A@x : (@x! e x'! -> @x! e y'!))
+
+1.  C(b:z'!)(a:y'!)
+
+2.  @x! e x'!
+----
+
+
+
+0.  @x! e z'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 10
+
+
+
+
+0.  (@x'? e x'! -> @x'? e y'!)
+
+1.  (A@x : (@x! e x'! -> @x! e y'!))
+
+2.  C(b:z'!)(a:y'!)
+
+3.  @x! e x'!
+----
+
+
+
+0.  @x! e z'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 11
+
+
+
+
+0.  (A@x : (@x! e x'! -> @x! e y'!))
+
+1.  C(b:z'!)(a:y'!)
+
+2.  @x! e x'!
+----
+
+
+
+0.  @x'? e x'!
+
+1.  @x! e z'!
+
+by lines [-1]
+Next!
+getleft(2)
+     
+
+
+Line number 11
+
+
+
+
+0.  @x! e x'!
+
+1.  (A@x : (@x! e x'! -> @x! e y'!))
+
+2.  C(b:z'!)(a:y'!)
+----
+
+
+
+0.  @x'? e x'!
+
+1.  @x! e z'!
+
+by lines [-1]
+Next!
+done()
+     
+
+
+Line number 12
+
+
+
+
+0.  @x! e y'!
+
+1.  (A@x : (@x! e x'! -> @x! e y'!))
+
+2.  C(b:z'!)(a:y'!)
+
+3.  @x! e x'!
+----
+
+
+
+0.  @x! e z'!
+
+by lines [-1]
+Next!
+getleft(1)
+     
+
+
+Line number 12
+
+
+
+
+0.  (A@x : (@x! e x'! -> @x! e y'!))
+
+1.  C(b:z'!)(a:y'!)
+
+2.  @x! e x'!
+
+3.  @x! e y'!
+----
+
+
+
+0.  @x! e z'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 13
+
+
+
+
+0.  (@x*? e x'! -> @x*? e y'!)
+
+1.  (A@x : (@x! e x'! -> @x! e y'!))
+
+2.  C(b:z'!)(a:y'!)
+
+3.  @x! e x'!
+
+4.  @x! e y'!
+----
+
+
+
+0.  @x! e z'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 14
+
+
+
+
+0.  (A@x : (@x! e x'! -> @x! e y'!))
+
+1.  C(b:z'!)(a:y'!)
+
+2.  @x! e x'!
+
+3.  @x! e y'!
+----
+
+
+
+0.  @x*? e x'!
+
+1.  @x! e z'!
+
+by lines [-1]
+Next!
+getleft(1)
+     
+
+
+Line number 14
+
+
+
+
+0.  C(b:z'!)(a:y'!)
+
+1.  @x! e x'!
+
+2.  @x! e y'!
+
+3.  (A@x : (@x! e x'! -> @x! e y'!))
+----
+
+
+
+0.  @x*? e x'!
+
+1.  @x! e z'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 16
+
+
+
+
+0.  (A@x : (@x! e y'! -> @x! e z'!))
+
+1.  @x! e x'!
+
+2.  @x! e y'!
+
+3.  (A@x : (@x! e x'! -> @x! e y'!))
+----
+
+
+
+0.  @x*? e x'!
+
+1.  @x! e z'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 17
+
+
+
+
+0.  (@x''? e y'! -> @x''? e z'!)
+
+1.  (A@x : (@x! e y'! -> @x! e z'!))
+
+2.  @x! e x'!
+
+3.  @x! e y'!
+
+4.  (A@x : (@x! e x'! -> @x! e y'!))
+----
+
+
+
+0.  @x*? e x'!
+
+1.  @x! e z'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 18
+
+
+
+
+0.  (A@x : (@x! e y'! -> @x! e z'!))
+
+1.  @x! e x'!
+
+2.  @x! e y'!
+
+3.  (A@x : (@x! e x'! -> @x! e y'!))
+----
+
+
+
+0.  @x''? e y'!
+
+1.  @x*? e x'!
+
+2.  @x! e z'!
+
+by lines [-1]
+Next!
+getleft(2)
+     
+
+
+Line number 18
+
+
+
+
+0.  @x! e y'!
+
+1.  (A@x : (@x! e x'! -> @x! e y'!))
+
+2.  (A@x : (@x! e y'! -> @x! e z'!))
+
+3.  @x! e x'!
+----
+
+
+
+0.  @x''? e y'!
+
+1.  @x*? e x'!
+
+2.  @x! e z'!
+
+by lines [-1]
+Next!
+done()
+     
+
+
+Line number 19
+
+
+
+
+0.  @x! e z'!
+
+1.  (A@x : (@x! e y'! -> @x! e z'!))
+
+2.  @x! e x'!
+
+3.  @x! e y'!
+
+4.  (A@x : (@x! e x'! -> @x! e y'!))
+----
+
+
+
+0.  @x*? e x'!
+
+1.  @x! e z'!
+
+by lines [-1]
+Next!
+getright(1)
+     
+
+
+Line number 19
+
+
+
+
+0.  @x! e z'!
+
+1.  (A@x : (@x! e y'! -> @x! e z'!))
+
+2.  @x! e x'!
+
+3.  @x! e y'!
+
+4.  (A@x : (@x! e x'! -> @x! e y'!))
+----
+
+
+
+0.  @x! e z'!
+
+1.  @x*? e x'!
+
+by lines [-1]
+Next!
+done()
+     
+
+
+Line number 15
+
+
+
+
+0.  @x*? e y'!
+
+1.  (A@x : (@x! e x'! -> @x! e y'!))
+
+2.  C(b:z'!)(a:y'!)
+
+3.  @x! e x'!
+
+4.  @x! e y'!
+----
+
+
+
+0.  @x! e z'!
+
+by lines [-1]
+Next!
+getleft(2)
+     
+
+
+Line number 15
+
+
+
+
+0.  C(b:z'!)(a:y'!)
+
+1.  @x! e x'!
+
+2.  @x! e y'!
+
+3.  @x*? e y'!
+
+4.  (A@x : (@x! e x'! -> @x! e y'!))
+----
+
+
+
+0.  @x! e z'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 20
+
+
+
+
+0.  (A@x : (@x! e y'! -> @x! e z'!))
+
+1.  @x! e x'!
+
+2.  @x! e y'!
+
+3.  @x*? e y'!
+
+4.  (A@x : (@x! e x'! -> @x! e y'!))
+----
+
+
+
+0.  @x! e z'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 21
+
+
+
+
+0.  (@x'*? e y'! -> @x'*? e z'!)
+
+1.  (A@x : (@x! e y'! -> @x! e z'!))
+
+2.  @x! e x'!
+
+3.  @x! e y'!
+
+4.  @x*? e y'!
+
+5.  (A@x : (@x! e x'! -> @x! e y'!))
+----
+
+
+
+0.  @x! e z'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 22
+
+
+
+
+0.  (A@x : (@x! e y'! -> @x! e z'!))
+
+1.  @x! e x'!
+
+2.  @x! e y'!
+
+3.  @x*? e y'!
+
+4.  (A@x : (@x! e x'! -> @x! e y'!))
+----
+
+
+
+0.  @x'*? e y'!
+
+1.  @x! e z'!
+
+by lines [-1]
+Next!
+getleft(2)
+     
+
+
+Line number 22
+
+
+
+
+0.  @x! e y'!
+
+1.  @x*? e y'!
+
+2.  (A@x : (@x! e x'! -> @x! e y'!))
+
+3.  (A@x : (@x! e y'! -> @x! e z'!))
+
+4.  @x! e x'!
+----
+
+
+
+0.  @x'*? e y'!
+
+1.  @x! e z'!
+
+by lines [-1]
+Next!
+done()
+     
+
+
+Line number 23
+
+
+
+
+0.  @x! e z'!
+
+1.  (A@x : (@x! e y'! -> @x! e z'!))
+
+2.  @x! e x'!
+
+3.  @x! e y'!
+
+4.  @x*? e y'!
+
+5.  (A@x : (@x! e x'! -> @x! e y'!))
+----
+
+
+
+0.  @x! e z'!
+
+by lines [-1]
+Next!
+done()
+     
+Done!
+
+
+\end{verbatim}
+
+\subsection{Atomic inclusion is membership}
+
+This proves the equivalence of $\{x\} \subseteq y$ and $x \in y$.  It involves both term and formula definition.
+
+\begin{verbatim}
+
+deff("C","Ax>exaexb")
+     
+C = (Ax : (x e a -> x e b))
+[['b', 1], ['5', 1], ['4', 0], ['a', 1], ['x', 0], ['3', 1], ['2', 0]]
+deft("I","{x=xa")
+     
+I = {x | x = a}
+[['a', -1], ['10', -1], ['9', -1], ['x', -1], ['8', 0]]
+
+start("AxAyX:a:axI:byCexy")
+            
+
+
+Line number 0
+
+
+
+----
+
+
+
+0.  (Ax : (Ay : (C(b:y)(a:I(a:x)) == x e y)))
+
+by lines [-1]
+Next!
+right()
+            
+
+
+Line number 1
+
+
+
+----
+
+
+
+0.  (Ay : (C(b:y)(a:I(a:x'!)) == x'! e y))
+
+by lines [-1]
+Next!
+right()
+           
+
+
+Line number 2
+
+
+
+----
+
+
+
+0.  (C(b:y'!)(a:I(a:x'!)) == x'! e y'!)
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 3
+
+
+
+
+0.  C(b:y'!)(a:I(a:x'!))
+----
+
+
+
+0.  x'! e y'!
+
+by lines [-1]
+Next!
+left()
+            
+
+
+Line number 5
+
+
+
+
+0.  (A@x : (@x e I(a:x'!) -> @x e y'!))
+----
+
+
+
+0.  x'! e y'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 6
+
+
+
+
+0.  (@x? e I(a:x'!) -> @x? e y'!)
+
+1.  (A@x : (@x? e I(a:x'!) -> @x? e y'!))
+----
+
+
+
+0.  x'! e y'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 7
+
+
+
+
+0.  (A@x : (@x? e I(a:x'!) -> @x? e y'!))
+----
+
+
+
+0.  @x? e I(a:x'!)
+
+1.  x'! e y'!
+
+by lines [-1]
+Next!
+right()
+            
+
+
+Line number 9
+
+
+
+
+0.  (A@x : (@x? e I(a:x'!) -> @x? e y'!))
+----
+
+
+
+0.  @x? e {@x | @x? = x'!}
+
+1.  x'! e y'!
+
+by lines [-1]
+Next!
+right()
+           
+
+
+Line number 10
+
+
+
+
+0.  (A@x : (@x? e I(a:x'!) -> @x? e y'!))
+----
+
+
+
+0.  @x? = x'!
+
+1.  x'! e y'!
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 11
+
+
+
+
+0.  (A@x : (@x? e I(a:x'!) -> @x? e y'!))
+----
+
+
+
+0.  (Ax* : (x* e @x? == x* e x'!))
+
+1.  x'! e y'!
+
+by lines [-1]
+Next!
+right()
+            
+
+
+Line number 12
+
+
+
+
+0.  (A@x : (@x? e I(a:x'!) -> @x? e y'!))
+----
+
+
+
+0.  (x''! e @x? == x''! e x'!)
+
+1.  x'! e y'!
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 13
+
+
+
+
+0.  x''! e @x?
+
+1.  (A@x : (@x? e I(a:x'!) -> @x? e y'!))
+----
+
+
+
+0.  x''! e x'!
+
+1.  x'! e y'!
+
+by lines [-1]
+Next!
+done()
+     
+
+
+Line number 14
+
+
+
+
+0.  x''! e x'!
+
+1.  (A@x : (@x? e I(a:x'!) -> @x? e y'!))
+----
+
+
+
+0.  x''! e x'!
+
+1.  x'! e y'!
+
+by lines [-1]
+Next!
+done()
+     
+
+
+Line number 8
+
+
+
+
+0.  x'! e y'!
+
+1.  (A@x : (@x? e I(a:x'!) -> @x? e y'!))
+----
+
+
+
+0.  x'! e y'!
+
+by lines [-1]
+Next!
+done()
+     
+
+
+Line number 4
+
+
+
+
+0.  x'! e y'!
+----
+
+
+
+0.  C(b:y'!)(a:I(a:x'!))
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 15
+
+
+
+
+0.  x'! e y'!
+----
+
+
+
+0.  (A@x : (@x? e I(a:x'!) -> @x? e y'!))
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 16
+
+
+
+
+0.  x'! e y'!
+----
+
+
+
+0.  (@x'! e I(a:x'!) -> @x'! e y'!)
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 17
+
+
+
+
+0.  @x'! e I(a:x'!)
+
+1.  x'! e y'!
+----
+
+
+
+0.  @x'! e y'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 18
+
+
+
+
+0.  @x'! e {@x | @x? = x'!}
+
+1.  x'! e y'!
+----
+
+
+
+0.  @x'! e y'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 19
+
+
+
+
+0.  @x'! = x'!
+
+1.  x'! e y'!
+----
+
+
+
+0.  @x'! e y'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 20
+
+
+
+
+0.  (Ax'* : (@x'! e x'* == x'! e x'*))
+
+1.  x'! e y'!
+----
+
+
+
+0.  @x'! e y'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 21
+
+
+
+
+0.  (@x'! e x*'? == x'! e x*'?)
+
+1.  (Ax'* : (@x'! e x'* == x'! e x'*))
+
+2.  x'! e y'!
+----
+
+
+
+0.  @x'! e y'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 22
+
+
+
+
+0.  (@x'! e x*'? -> x'! e x*'?)
+
+1.  (x'! e x*'? -> @x'! e x*'?)
+
+2.  (Ax'* : (@x'! e x'* == x'! e x'*))
+
+3.  x'! e y'!
+----
+
+
+
+0.  @x'! e y'!
+
+by lines [-1]
+Next!
+getleft(1)
+     
+
+
+Line number 22
+
+
+
+
+0.  (x'! e x*'? -> @x'! e x*'?)
+
+1.  (Ax'* : (@x'! e x'* == x'! e x'*))
+
+2.  x'! e y'!
+
+3.  (@x'! e x*'? -> x'! e x*'?)
+----
+
+
+
+0.  @x'! e y'!
+
+by lines [-1]
+Next!
+setunknown("x*!","{ueu'y")
+     
+not an unknown
+
+
+Line number 22
+
+
+
+
+0.  (x'! e x*'? -> @x'! e x*'?)
+
+1.  (Ax'* : (@x'! e x'* == x'! e x'*))
+
+2.  x'! e y'!
+
+3.  (@x'! e x*'? -> x'! e x*'?)
+----
+
+
+
+0.  @x'! e y'!
+
+by lines [-1]
+Next!
+'error'
+setunknown("x*'","{ueu'y")
+     
+
+
+Line number 22
+
+
+
+
+0.  (x'! e {u | u e y'!} -> @x'! e {u | u e y'!})
+
+1.  (Ax'* : (@x'! e x'* == x'! e x'*))
+
+2.  x'! e y'!
+
+3.  (@x'! e {u | u e y'!} -> x'! e {u | u e y'!})
+----
+
+
+
+0.  @x'! e y'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 23
+
+
+
+
+0.  (Ax'* : (@x'! e x'* == x'! e x'*))
+
+1.  x'! e y'!
+
+2.  (@x'! e {u | u e y'!} -> x'! e {u | u e y'!})
+----
+
+
+
+0.  x'! e {u | u e y'!}
+
+1.  @x'! e y'!
+
+by lines [-1]
+Next!
+right()
+     
+
+
+Line number 25
+
+
+
+
+0.  (Ax'* : (@x'! e x'* == x'! e x'*))
+
+1.  x'! e y'!
+
+2.  (@x'! e {u | u e y'!} -> x'! e {u | u e y'!})
+----
+
+
+
+0.  x'! e y'!
+
+1.  @x'! e y'!
+
+by lines [-1]
+Next!
+getleft(1)
+     
+
+
+Line number 25
+
+
+
+
+0.  x'! e y'!
+
+1.  (@x'! e {u | u e y'!} -> x'! e {u | u e y'!})
+
+2.  (Ax'* : (@x'! e x'* == x'! e x'*))
+----
+
+
+
+0.  x'! e y'!
+
+1.  @x'! e y'!
+
+by lines [-1]
+Next!
+done()
+     
+
+
+Line number 24
+
+
+
+
+0.  @x'! e {u | u e y'!}
+
+1.  (Ax'* : (@x'! e x'* == x'! e x'*))
+
+2.  x'! e y'!
+
+3.  (@x'! e {u | u e y'!} -> x'! e {u | u e y'!})
+----
+
+
+
+0.  @x'! e y'!
+
+by lines [-1]
+Next!
+left()
+     
+
+
+Line number 26
+
+
+
+
+0.  @x'! e y'!
+
+1.  (Ax'* : (@x'! e x'* == x'! e x'*))
+
+2.  x'! e y'!
+
+3.  (@x'! e {u | u e y'!} -> x'! e {u | u e y'!})
+----
+
+
+
+0.  @x'! e y'!
+
+by lines [-1]
+Next!
+done()
+     
+Done!
 
 
 \end{verbatim}
