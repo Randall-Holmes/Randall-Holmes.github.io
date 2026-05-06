@@ -4,6 +4,7 @@
 
 # 5/6/2026:  proved transitivity of inclusion and put it in the docs.  This uncoversed bugs.
 # later:  further debugging, definitions with two parameters were not working
+# later, more silly bugs.  Some substantial proofs managed, though.
 
 # 5/5/2026: the definition facility is installed and works at least superficially,
 # though it surely may be buggy in various ways.
@@ -519,6 +520,7 @@ def addkey(s,x,L):
 
 def graphf(L):
     global countbase
+    startgraph=[]
     if isrelation(L[0]) and isterm(L[1]) and isterm(L[2]):
         c1=[str(countbase+1),-1]
         G1=grapht(L[1])
@@ -553,12 +555,11 @@ def graphf(L):
         countbase=countbase+1
         c2=[str(countbase),-1]
         c1=[str(countbase+1),-1]
-        G1=grapht(L2)
-        
-        
+        G1=grapht(L[2])
+        startgraph=G1
         startgraph=addkey(c2,[c2,c1,thetype],startgraph)
         startgraph=addkey(c1,[c1,c2,-thetype],startgraph)
-    return startgraph        
+        return startgraph      
     if L[0]=="let":
         search=L[3]
         while(not(search[0]=="defined")):
@@ -576,14 +577,14 @@ def graphf(L):
             return startgraph
         thetype=thetypequery[0]
         c2=[str(countbase+1),-1]
-        G2=grapht(L[3])
+        G2=graphf(L[3])
         c1=[str(countbase+1),-1]
         G1=grapht(L[2])
 
-        
+        startgraph=G1+G2
         startgraph=addkey(c2,[c2,c1,thetype],startgraph)
         startgraph=addkey(c1,[c1,c2,-thetype],startgraph)
-    return startgraph        
+        return startgraph        
          
         
         
@@ -620,7 +621,7 @@ def grapht0(L,basename):
             search=search[3]
         thedefquery=findvalues(search[1],termdefs)
         if thedefquery==[]:
-            print ("undefined definition term")
+            print ("undefined definition term"+(search[1]))
             startgraph= addkey([basename,-1],[[basename,-1],[basename,-1],1],startgraph)
             return startgraph
         thetypes=thedefquery[0][1]
@@ -938,14 +939,14 @@ def atify2t(t):
     if t[0]=="var": return ["var","@"+t[1],t[2]]
     if t[0]=="set":  return [t[0],"@"+t[1],t[2],atify2f(t[3])]
     if t[0]=="defined":  return t
-    if t[0]=="left":  return [t[0],t[1],atify2t(t[2]),atify2t(t[3])]
+    if t[0]=="let":  return [t[0],t[1],atify2t(t[2]),atify2t(t[3])]
 
 def atify2f(f):
     if isrelation(f[0]):  return [f[0],atify2t(f[1]),atify2t(f[2])]
     if isconnective(f[0]):  return [f[0],atify2f(f[1]),atify2f(f[2])]
     if f[0]=="~":  return [f[0],atify2f(f[1])]
     if isquantifier(f[0]):  return [f[0],"@"+f[1],f[2],atify2f(f[3])]
-    if t[0]=="left":  return [t[0],t[1],atify2t(t[2]),atify2t(t[3])]
+    if t[0]=="let":  return [t[0],t[1],atify2t(t[2]),atify2t(t[3])]
 
 def cascadesubst(t):
     if t[0] == "let" and t[1][1][0] =="@":
@@ -967,14 +968,14 @@ def deatifyt(t):
     if t[0]=="var": return ["var",removeat(t[1]),t[2]]
     if t[0]=="set":  return [t[0],removeat(t[1]),t[2],deatifyf(t[3])]
     if t[0]=="defined":  return t
-    if t[0]=="left":  return [t[0],t[1],deatifyt(t[2]),deatifyt(t[3])]
+    if t[0]=="let":  return [t[0],t[1],deatifyt(t[2]),deatifyt(t[3])]
 
 def deatifyf(f):
     if isrelation(f[0]):  return [f[0],deatifyt(f[1]),deatifyt(f[2])]
     if isconnective(f[0]):  return [f[0],deatifyf(f[1]),deatifyf(f[2])]
     if f[0]=="~":  return [f[0],deatifyf(f[1])]
     if isquantifier(f[0]):  return [f[0],removeat(f[1]),f[2],deatifyf(f[3])]
-    if f[0]=="left":  return [f[0],f[1],deatifyt(f[2]),deatifyt(f[3])]
+    if f[0]=="let":  return [f[0],f[1],deatifyt(f[2]),deatifyt(f[3])]
     
     
 
