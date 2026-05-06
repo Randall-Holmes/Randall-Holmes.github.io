@@ -2,6 +2,9 @@
 # by (Lavinia) Randall Holmes, intellectual property
 # rights to be respected to the extent of preserving this attribution, please.
 
+# 5/7/2026:  introduced infix display notation for terms and formulas and removed the clutter of base nodes from simplified
+# stratification displays.  I wonder if there is a way to cut all or most base nodes from graphs.
+
 # 5/6/2026:  proved transitivity of inclusion and put it in the docs.  This uncoversed bugs.
 # later:  further debugging, definitions with two parameters were not working
 # later, more silly bugs.  Some substantial proofs managed, though.
@@ -179,6 +182,8 @@ def reinstf(s,n,L):
 # the display of terms highlights things which might be "fresh variables" introduced by the quantifier rules, though it doesn't test whether they are free
 # (the parser has now been changed so that fresh variables cannot be bound, even apparently:  no bound variable can have the same surface form).
 
+# added infix display of let terms (for both terms and formulas) if the first two keys used are a and b
+
 def displayf(L):
     global unknowns
     global freshvars
@@ -187,6 +192,9 @@ def displayf(L):
     if isconnective(L[0]) and isformula(L[1]) and isformula(L[2]): return "("+(displayf(L[1]))+" "+cexp(L[0])+" "+(displayf(L[2]))+")"
     if isquantifier(L[0]) and type(L[1])==str and type(L[2]) == int and isformula(L[3]): return "("+L[0]+L[1]+" : "+(displayf(L[3]))+")"
     if L[0]=="defined" and type(L[1]) == str: return L[1]
+    if L[0]=="let" and isterm(L[1]) and L[1][0]=="var" and L[1][1]=="a" and isterm(L[2]) and L[3][0]=="let" and isterm(L[3][1]) and L[3][1][0]=="var" and L[3][1][1]=="b" and isterm(L[3][2]) and isterm(L[3][3]):
+        return "("+(displayt(L[2]))+" "+(displayf(L[3][3]))+" "+(displayt(L[3][2]))+")"
+
     if L[0]=="let" and isterm(L[1]) and L[1][0]=="var" and isterm(L[2]) and isterm(L[3]) and (L[3][0]=="defined" or L[3][0]=="let"):
         return displayt(L[3])+"("+displayt(L[1])+":"+displayt(L[2])+")"
     return "???"
@@ -198,6 +206,8 @@ def displayt(L):
     if L[0]=="var" and L[1] in freshvars:  return L[1]+"!"
     if L[0]=="var" and type(L[1]) == str and type(L[2]) == int: return L[1]
     if L[0]=="defined" and type(L[1]) == str: return L[1]
+    if L[0]=="let" and isterm(L[1]) and L[1][0]=="var" and L[1][1]=="a" and isterm(L[2]) and L[3][0]=="let" and isterm(L[3][1]) and L[3][1][0]=="var" and L[3][1][1]=="b" and isterm(L[3][2]) and isterm(L[3][3]):
+        return "("+(displayt(L[2]))+" "+(displayt(L[3][3]))+" "+(displayt(L[3][2]))+")"
     if L[0]=="let" and isterm(L[1]) and L[1][0]=="var" and isterm(L[2]) and isterm(L[3]) and (L[3][0]=="defined" or L[3][0]=="let"):
         return displayt(L[3])+"("+displayt(L[1])+":"+displayt(L[2])+")"
     if L[0]=="set" and type(L[1]) == str and type(L[2]) == int and isformula(L[3]): return "{"+L[1]+" | "+(displayf(L[3]))+"}"
@@ -234,7 +244,7 @@ freshvars=[]
 # Weak stratification checking of set abstracts is done at parse time.  The graph generation
 # and stratification functions are below.
 
-def isspace(s):  return s==" " or s=="(" or s == ")" or s == "[" or s == "]"
+def isspace(s):  return s==" " or s=="(" or s == ")" or s == "[" or s == "]" or s ==","   # these allow organization of the Polish notation input
 
 def applyprime(p,L):  return [L[0]]+[L[1]+p]+L[2:]  # this makes it possible to prime both variables and definienda.
 
@@ -776,6 +786,7 @@ def strattest2(s):
 # definition mechanism
 
 # return a simplified table of relative types
+# which now omits the clutter of base nodes
 
 def findvalues(v,L):
     if L==[]:  return []
@@ -786,7 +797,7 @@ def findvalues(v,L):
     if L[0][0]==v:  return [L[0][1]]+dropitem(L[0][1],rest)
     return rest
 
-def collapsestrat(L):
+def collapsestrat1(L):
     M=L
     L2=[]
     while (not (M==[])):
@@ -798,6 +809,13 @@ def collapsestrat(L):
         if not(vals == [] or vals ==[val]): return [] #conflict of values
         M=M[1:]
     return L2
+
+def collapsestrat2(L):
+    if L==[]:  return L
+    if "0" <= L[0][0][0] and L[0][0][0]<= "9":  return collapsestrat2(L[1:])
+    return [L[0]]+collapsestrat2(L[1:])
+
+def collapsestrat(L):  return collapsestrat2(collapsestrat1(L))
 
 def ctest(s):  return collapsestrat(strattest(s))
 
