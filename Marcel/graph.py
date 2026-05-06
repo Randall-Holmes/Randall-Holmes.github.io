@@ -3,6 +3,7 @@
 # rights to be respected to the extent of preserving this attribution, please.
 
 # 5/6/2026:  proved transitivity of inclusion and put it in the docs.  This uncoversed bugs.
+# later:  further debugging, definitions with two parameters were not working
 
 # 5/5/2026: the definition facility is installed and works at least superficially,
 # though it surely may be buggy in various ways.
@@ -537,9 +538,9 @@ def graphf(L):
     if isconnective(L[0]):  return (graphf(L[1])+graphf(L[2]))
     if isquantifier(L[0]):  return graphf(L[3])
     if L[0]=="let" and L[3][0]=="defined":
-        thedefquery=findvalues(L[3][1],termdefs)
+        thedefquery=findvalues(L[3][1],formuladefs)
         if thedefquery==[]:
-            print ("undefined definition term")
+            print ("undefined definition formula")
             startgraph= addkey([basename,-1],[[basename,-1],[basename,-1],1],startgraph)
             return startgraph
         thetypes=thedefquery[0][1]
@@ -559,7 +560,10 @@ def graphf(L):
         startgraph=addkey(c1,[c1,c2,-thetype],startgraph)
     return startgraph        
     if L[0]=="let":
-        thedefquery=findvalues(L[3][1],termdefs)
+        search=L[3]
+        while(not(search[0]=="defined")):
+            search=search[3]
+        thedefquery=findvalues(search[1],formuladefs)
         if thedefquery==[]:
             print ("undefined definition term")
             startgraph= addkey([basename,-1],[[basename,-1],[basename,-1],1],startgraph)
@@ -605,8 +609,16 @@ def grapht0(L,basename):
         startgraph=addkey([basename,-1],[[basename,-1],[basename,-1],0],startgraph)
         return startgraph
     if L[0]=="let":
-        startgraph = (grapht0(L[3],basename)+grapht0(L[2],basename+L[1][1]))
-        thedefquery=findvalues(L[3][1],termdefs)
+        c1=[basename,-1]
+        G1=grapht0(L[3],basename)
+        c2=[str(countbase+1),-1]
+        G2=grapht(L[2])
+        
+        startgraph = G1+G2
+        search=L[3]
+        while(not(search[0]=="defined")):
+            search=search[3]
+        thedefquery=findvalues(search[1],termdefs)
         if thedefquery==[]:
             print ("undefined definition term")
             startgraph= addkey([basename,-1],[[basename,-1],[basename,-1],1],startgraph)
@@ -618,8 +630,8 @@ def grapht0(L,basename):
             startgraph= addkey([basename,-1],[[basename,-1],[basename,-1],1],startgraph)
             return startgraph
         thetype=thetypequery[0]
-        startgraph=addkey([basename,-1],[[basename,-1],[basename+L[1][1],-1],thetype],startgraph)
-        startgraph=addkey([basename+L[1][1],-1],[[basename+L[1][1],-1],[basename,-1],-thetype],startgraph)
+        startgraph=addkey(c1,[c1,c2,thetype],startgraph)
+        startgraph=addkey(c2,[c2,c1,-thetype], startgraph)
     return startgraph
 
 countbase=1
