@@ -4,6 +4,13 @@
 
 # 5/7/2026:  introduced infix display notation for terms and formulas and removed the clutter of base nodes from simplified
 # stratification displays.  I wonder if there is a way to cut all or most base nodes from graphs.
+# later:  I have a full proof logging feature.  The next project is to install the
+# ability to save and use theorems, which I think will be very simple.  A general
+# feature of this version of Marcel is that I have avoided any use of matching.
+# for theorems, I intend to simply support their use by a direct cut, their use as a
+# hypothesis being justified by their appearance as a conclusion simply justified
+# by a theorem reference.
+
 
 # 5/6/2026:  proved transitivity of inclusion and put it in the docs.  This uncoversed bugs.
 # later:  further debugging, definitions with two parameters were not working
@@ -96,6 +103,22 @@
 # it possible to write all cases of the stratification of atomic formulas
 # in a quite uniform way, but the graphs are larger, and output of the
 # functions is harder to read.
+
+logfilename="testlog,txt"
+
+logfile=open(logfilename,'a')
+
+def setlog(s):
+    global logfilename
+    global logfile
+    logfile.close()
+    logfilename="logs/"+s+'logfile.py'
+    logfile=open(logfilename,'w')
+    logfile.write('from graph import *\n\n')
+
+def usercommand(s):
+
+    logfile.write(s)
 
 relations = ["e","="]
 
@@ -828,6 +851,8 @@ termdefs=[]
 def deft(key,term):
     global termdefs
 
+    usercommand("deft "+"('"+key+"', '"+term+"')\n")
+
     K= gett(key)
     if not (K[0]=="defined"):
         print ("Cant define that")
@@ -878,7 +903,7 @@ formuladefs=[]
 
 def deff(key,term):
     global formuladefs
-
+    usercommand("deff "+"('"+key+"', '"+term+"')\n")
     K= gett(key)
     if not (K[0]=="defined"):
         print ("Cant define that")
@@ -1103,6 +1128,7 @@ def displaynextline():
 #and bring on the next sequent
 
 def skip():
+    usercommand("skip()\n")
     global theline
     global linestack
     if len(linestack)<1:
@@ -1119,6 +1145,7 @@ def skip():
 # restore the last prover state for which displaynextline() was called.  Historically a bit buggy.
 
 def back():
+    usercommand("back()\n")
     global theproof
     global theline
     global newint
@@ -1169,6 +1196,7 @@ def start(f):
     global proofstack
     global linestack
     global countbase
+    usercommand("start ('"+f+"')\n")
     newint = 1
     countbase = 1
     variables=[]
@@ -1198,9 +1226,11 @@ def nextrefs(n):
 # apply a left rule
 
 def left():
+    
     global theproof
     global linestack
     global variables
+    usercommand("left()\n")
     if len(theproof[theline][0])==0:
         displaynextline()
         return "No left proposition to act on!"
@@ -1222,9 +1252,11 @@ def left():
 # apply a right rule
 
 def right():
+    
     global theproof
     global linestack
     global variables
+    usercommand("right()\n")
     if len(theproof[theline][1])==0:
         displaynextline()
         return "No left proposition to act on!"
@@ -1310,8 +1342,10 @@ def equalf(f1,f2):
 # would use it no doubt.
 
 def done():
+    
     global theproof
     global theline
+    usercommand("done()\n")
     if len(theproof[theline][0])==0 or len(theproof[theline][1])==0:
         print("one of the formulas to be compared not found")
         return "one of the formulas to be compared not found"
@@ -1328,7 +1362,9 @@ def done():
 # USER COMMAND
 
 def getleft(n):
+    
     global theproof
+    usercommand("getleft("+str(n)+")\n")
     if n> len(theproof[theline][0]):
         displaynextline
         return "the left proposition list is not that long"
@@ -1339,6 +1375,7 @@ def getleft(n):
 
 def getright(n):
     global theproof
+    usercommand("getright("+str(n)+")\n")
     if n> len(theproof[theline][1]):
         displaynextline()
         return "the right proposition list is not that long"
@@ -1486,6 +1523,7 @@ def freshvarlistf(f):
 def setunknown(v,t):
     global theproof
     global newint
+    usercommand("setunknown ('"+v+"','"+t+")\n")
     V=findunknown(v)
     if V == "error":
         print ("not an unknown")
@@ -1556,6 +1594,7 @@ def setunknown2(v,t):
 def Cut(f):
     global theproof
     global linestack
+    usercommand("Cut('"+f+"')\n")
     F=getf(f)
     if not(isformula(F)):
         print("Bad formula entry")
@@ -1569,7 +1608,41 @@ def Cut(f):
     theproof[theline][2]=[len(theproof)-2,len(theproof)-1]
     linestack = theproof[theline][2]+linestack
     displaynextline()
-        
+
+def LogTheProof():
+    logfile.write('"""')
+    logfile.write(displayproof(theproof))
+    logfile.write('"""')
+
+theorems = []
+
+# USER COMMAND
+
+def savetheorem(s):
+    global theorems
+    usercommand("savetheorem('"+s+"')\n")
+    if not (findvalues(s,theorems)==[]):  return "Theorem "+s+" already exists"
+    if not (theline==len(theproof)):  return "Not done!"
+    theorems = [[s,[theproof[0][1][0],theproof]]]+theorems
+    print (s+":= "+(displayf(theorems[0][1][0])))
+
+# USER COMMAND
+
+def theoremcut(s):
+    global theproof
+    global linestack
+    usercommand("theoremcut('"+s+"')\n")
+    
+    P=theproof[theline]
+    if findvalues(s,theorems)==[]:  return "Theorem "+s+" does not exist"
+    S=findvalues(s,theorems)[0][0]
+    Q=findvalues(s,theorems)[0][1][0]
+    R=[Q[0],Q[1],[s]]
+    T=[[S]+P[0],P[1],[-1]]
+    theproof=theproof+[R]+[T]
+    theproof[theline][2]=[len(theproof)-2,len(theproof)-1]
+    linestack=[len(theproof)-1]+linestack
+    displaynextline()
     
 
 
