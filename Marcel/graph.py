@@ -2,6 +2,18 @@
 # by (Lavinia) Randall Holmes, intellectual property
 # rights to be respected to the extent of preserving this attribution, please.
 
+# 5/8/2026  Improved scripting.  The automatically constructed scripts
+# now look like transcripts, and should replace the things pasted from the
+# Python window in the documentation examples (some have been replaced).
+
+# 5/7/2026:  I now have theorem saving and theorem cut.  Mod bugs, this
+# is something like a full production version of Marcel with some distinctive
+# differences of approach.  Of course, what would really make it sweet
+# is the ability to parse the output language.
+
+#a new idea which I have which my experience with this version has led me to
+#think of is equipping done() with higher order matching.
+
 # 5/7/2026:  introduced infix display notation for terms and formulas and removed the clutter of base nodes from simplified
 # stratification displays.  I wonder if there is a way to cut all or most base nodes from graphs.
 # later:  I have a full proof logging feature.  The next project is to install the
@@ -851,7 +863,7 @@ termdefs=[]
 def deft(key,term):
     global termdefs
 
-    usercommand("deft "+"('"+key+"', '"+term+"')\n")
+    usercommand("deft "+'("'+key+'", "'+term+'")\n')
 
     K= gett(key)
     if not (K[0]=="defined"):
@@ -903,7 +915,7 @@ formuladefs=[]
 
 def deff(key,term):
     global formuladefs
-    usercommand("deff "+"('"+key+"', '"+term+"')\n")
+    usercommand('deff '+'("'+key+'", "'+term+'")\n')
     K= gett(key)
     if not (K[0]=="defined"):
         print ("Cant define that")
@@ -1110,6 +1122,9 @@ def displaynextline():
         theline = linestack[0]
         linestack=linestack[1:]
         print(displaysequent(theline,theproof[theline]))
+        logfile.write('\n"""')
+        logfile.write(displaysequent(theline,theproof[theline]))
+        logfile.write('\nNext!"""\n\n')
         print ("Next!")
         proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
         return("Next!")
@@ -1117,9 +1132,13 @@ def displaynextline():
         theline=theline+1
     if theline==len(theproof):
         print ("Done!")
+        logfile.write('\n"""Done!"""\n\n')
         proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
         return "Done!"
     print(displaysequent(theline,theproof[theline]))
+    logfile.write('\n"""')
+    logfile.write(displaysequent(theline,theproof[theline]))
+    logfile.write('\nNext!"""\n\n')
     proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
     print ("Next!")
 
@@ -1196,7 +1215,7 @@ def start(f):
     global proofstack
     global linestack
     global countbase
-    usercommand("start ('"+f+"')\n")
+    usercommand('start ("'+f+'")\n')
     newint = 1
     countbase = 1
     variables=[]
@@ -1498,6 +1517,8 @@ def freshvarlistt(t):
     if t[0]=="var" and t[1] in freshvars:  return [t[1]]
     if t[0]=="var":  return []
     if t[0]=="set":  return freshvarlistf(t[3])
+    if t[0]=="defined":  return []
+    if t[0]=="let":  return freshvarlistt(t[2])+freshvarlistt(t[3])
 
 def freshvarlistf(f):
 
@@ -1505,6 +1526,8 @@ def freshvarlistf(f):
     if f[0]=="~":  return freshvarlistf(f[1])
     if isconnective(f[0]):  return freshvarlistf(f[1])+freshvarlistf(f[2])
     if isquantifier(f[0]):  return freshvarlist(f[3])
+    if f[0]=="let" and t[3][0] == "defined":  return freshvarlistt(f[2])
+    if f[0]=="let":  return freshvarlistt(f[2])+freshvarlistf(f[3])
 
 # we use this device to replace witnesses introduced by right
 # existential or left universal rules;  in this way we do not have
@@ -1523,7 +1546,7 @@ def freshvarlistf(f):
 def setunknown(v,t):
     global theproof
     global newint
-    usercommand("setunknown ('"+v+"','"+t+")\n")
+    usercommand('setunknown ("'+v+'","'+t+'")\n')
     V=findunknown(v)
     if V == "error":
         print ("not an unknown")
@@ -1594,7 +1617,7 @@ def setunknown2(v,t):
 def Cut(f):
     global theproof
     global linestack
-    usercommand("Cut('"+f+"')\n")
+    usercommand('Cut("'+f+'")\n')
     F=getf(f)
     if not(isformula(F)):
         print("Bad formula entry")
