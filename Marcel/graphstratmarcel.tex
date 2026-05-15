@@ -174,7 +174,7 @@ all unused variables get prefixed with an at sign:  this avoids not actual error
 not all arguments are used.
 
 Merits of this:  there are just two forms of definition, and no more are needed.  Arguments can be supplied in any order, and any number of arguments is supported.  Inhomogeneous operations
-are supported (arguments can have arbitrary relative type, though defined terms and formulas must be stratified in the strong sense).   Demerits:  the notation is weird.  The order of the arguments gets reversed between the two forms of display, though this is semantically harmless.
+are supported (arguments can have arbitrary relative type, though defined terms and formulas must be stratified in the strong sense).   Demerits:  the notation is weird.  The order of the arguments gets reversed between the input and output notation, though this is semantically harmless.
 
 Defined constant terms are permitted (defined terms do not require arguments);  defined constant formulas are not permitted (a defined formula must appear with at least one argument).
 In a bit of syntactic sugar, if the first two keys supplied to a defined notation are {\tt a} and {\tt b}, it is displayed in infix form (this works both for terms and for formulas).
@@ -286,7 +286,7 @@ strattest("e{x=xx{x=xx")
 
 \end{verbatim}
 
-In this term, there are two different occurrences of $x$, and
+In this formula, there are two different occurrences of $x$, and
 the stratification data supplied gives distances for each of
 them and a path from the selected node (chosen automatically by
 the testing function) to each of the two nodes.
@@ -315,7 +315,7 @@ different types.
 
 In the second formula, where we quantify over $y$ and $z$, there
 is no need to run the stratification checker: just trying to
-display the term with the unstratified set abstract in it is a
+display the formula with the unstratified set abstract in it is a
 sufficient disaster to cause the checker to complain.
 
 To assist with reading the output:  a successful stratification is a list of triples, a node followed by the singleton list of the distance to the selected node (or the empty list to signify infinite distance) followed by a path (decorated with weights of edges) from the selected node to the given node.
@@ -325,9 +325,11 @@ The emphasis of this work has not been on creating nifty displays for stratifica
 
 I advise the reader that stratification data is now more crowded.  Installing the definition feature required that I create graphs for terms as well as formulas, and graphs for terms need a base node for the entire term.  So all subterms acquire base nodes, and there are a lot of additional nodes in the graphs (such nodes have names which are numerals).  I clean the base nodes out of stratification display output, but I cannot remove them from graphs [at least, I do not see a way to do it];  they are essential to making the definition feature work.
 
+We note that there is now also a tester for stratified terms rather than formulas ({\tt strattest2})
+
 \section{The sequent prover}
 
-The remainder of the work is development of a user driven sequent prover for NF (which could be adapted to a prover for SF or NFU by changing the right equality rule).  This parallels my earlier work on versions of the Marcel prover, but it does have interesting features.
+The remainder of the work is development of a user driven sequent prover for NF (which could be adapted to a prover for SF [for which the cut elimination result exists] or NFU by changing the right equality rule).  This parallels my earlier work on versions of the Marcel prover, but it does have interesting features.
 
 The general plan of the sequent prover is that one uses {\tt start s}  to introduce a sequent of the form
 
@@ -355,6 +357,10 @@ One then has a limited number of commands as options.
 The {\tt done()} command is dynamic:  its underlying equality test will make an equation between an unknown variable in one term or formula and the matching term in the other term or formula true by executing the {\tt setunknown} command on the fly.  It does this safely (it tests that the
 {\tt setunknown} command will execute without error).  A static equality test will probably be needed eventually, but {\tt done} is currently its only client.
 
+A further, even more dangerous feature has been added.  When the equality function checks whether $x \in u?$ matches $P(x)$
+(where $u?$ is an unknown and $P(x)$ is any stratified formula in $x$, it will attempt to set the unknown $u?$ to the value $\{x\mid P(x)\}$.  It does (mod bugs) check that this can actually be done.
+This is a kind of higher order matching.  It can be very nice for forestalling the need to manually enter values to be assigned to unknowns.
+
 Where the {\tt done} command fails, one might want to use {\tt back()} to restore the previous state, because the prover might have
 made undesired global substitutions for unknowns.
 
@@ -363,7 +369,7 @@ made undesired global substitutions for unknowns.
 \item  The {\tt Cut(f)} command executes the cut rule with the formula {\tt f}.
 
 \item  The {\tt deft(key,term)} command introduces a defined term (defining {\tt key}, a possibly primed capital letter, as {\tt term}) and the {\tt deff(key,formula)} command similarly introduces a defined formula.  These can further be accessed by assigning values to variables: 
-in the definiendum:  a defined term can be used as a constant, but a defined formula must have at least one assignment.  I need to provide examples.
+in the definiendum:  a defined term can be used as a constant, but a defined formula must have at least one assignment.  I need to provide examples (they are present in the last section).
 
 \item The {\tt savetheorem} command saves the current theorem:  it takes the name to be given to the theorem as its sole argument.
 
@@ -374,7 +380,7 @@ in the definiendum:  a defined term can be used as a constant, but a defined for
 \item The {\tt skip()} command lets you move the current sequent to the end of the work queue and go to the next one.  This lets you cycle through all the work to be done and view it.
 
 \item The {\tt back()} command undoes a command, roughly speaking.  A stack of proof states is updated from time to time.  This function
-is not entirely reliable.
+is not entirely reliable [but seems to be improving.]
 
 \item  The {\tt setlog} command sets the name of a log file to which user commands will be appended as they are executed.
 This creates scripts which can be used to reconstruct work done under the prover.  I close a log file by setting the log file to a default name ({\tt setlog (``done'')}).  There must be a directory called {\tt logs} in the current directory for a log file to be set up successfully.
@@ -390,7 +396,7 @@ The meat of the logic supported is in the functions {\tt leftaction} and {\tt ri
 We present the rules.  I have copied these with some editing from a manual for a long-ago version of Marcel.  There is a special additional left rule
 for membership in a variable which is described at the end.
 
-This version of Marcel frankly has NF as its logic.  This could be changed straightforwardly.
+This version of Marcel frankly has NF as its logic.  This could be changed straightforwardly.  The logic of this version is classical, but it could very easily be made intuitionistic.
 
 In addition to applying the rules below, the prover also expands defined terms and formulas in a manner which should be documented.
 
@@ -644,12 +650,12 @@ We note here (5/6/2026) that we have just installed the ability to log all user 
 \subsection{Inclusion is transitive}
 
 Here is a proof that inclusion is transitive.  The text was generated by the new scripting features of the system.
-\verbatiminput{inclusionistransitivelogfile.py}
+\verbatiminput{docslogs/inclusionistransitivelogfile.py}
 \subsection{Equality is transitive}
 
 Here is a proof that equality is transitive.
 
-\verbatiminput{eqtransitivelogfile.py}
+\verbatiminput{docslogs/eqtransitivelogfile.py}
 
 \subsection{Coextensionality implies Leibniz equality}
 
@@ -1459,269 +1465,16 @@ Done!
 
 \subsection{A weird example with unknown variables}
 
-The entry line illustrates the new capability to use spaces, parentheses and brackets as padding in term and formula input.  There is no balance checking:
+The entry line illustrates the new capability to use spaces, parentheses, brackets, and commas as padding in term and formula input.  There is no balance checking:
 parentheses and brackets are just for the person entering the term [to make sure they do it right].
 
-\begin{verbatim}
-
-start ("Ay(Eu(Ax>(exy)(euy)))")
-     
-
-
-Line number 0
-
-
-
-----
-
-
-
-0.  (Ay : (Eu : (Ax : (x e y -> u e y))))
-
-by lines [-1]
-Next!
-right()
-     
-
-
-Line number 1
-
-
-
-----
-
-
-
-0.  (Eu : (Ax : (x e y'! -> u e y'!)))
-
-by lines [-1]
-Next!
-right()
-     
-
-
-Line number 2
-
-
-
-----
-
-
-
-0.  (Ax : (x e y' -> u'? e y'))
-
-1.  (Eu : (Ax : (x e y' -> u e y')))
-
-by lines [-1]
-Next!
-right()
-           
-
-
-Line number 3
-
-
-
-----
-
-
-
-0.  (x'! e y' -> u'? e y')
-
-1.  (Eu : (Ax : (x e y' -> u e y')))
-
-by lines [-1]
-Next!
-right()
-           
-
-
-Line number 4
-
-
-
-
-0.  x'! e y'
-----
-
-
-
-0.  u'? e y'
-
-1.  (Eu : (Ax : (x e y' -> u e y')))
-
-by lines [-1]
-Next!
-setunknown("u'","'x")
-           
-Fresh variable reference error
-
-
-Line number 4
-
-
-
-
-0.  x'! e y'
-----
-
-
-
-0.  u'? e y'
-
-1.  (Eu : (Ax : (x e y' -> u e y')))
-
-by lines [-1]
-Next!
-'Fresh variable reference error'
-getright(1)
-           
-
-
-Line number 4
-
-
-
-
-0.  x'! e y'
-----
-
-
-
-0.  (Eu : (Ax : (x e y' -> u e y')))
-
-1.  u'? e y'
-
-by lines [-1]
-Next!
-right()
-           
-
-
-Line number 5
-
-
-
-
-0.  x' e y'
-----
-
-
-
-0.  (Ax : (x e y' -> u*? e y'))
-
-1.  (Eu : (Ax : (x e y' -> u e y')))
-
-2.  u'? e y'
-
-by lines [-1]
-Next!
-right()
-           
-
-
-Line number 6
-
-
-
-
-0.  x' e y'
-----
-
-
-
-0.  (x*! e y' -> u*? e y')
-
-1.  (Eu : (Ax : (x e y' -> u e y')))
-
-2.  u'? e y'
-
-by lines [-1]
-Next!
-right()
-           
-
-
-Line number 7
-
-
-
-
-0.  x*! e y'
-
-1.  x' e y'
-----
-
-
-
-0.  u*? e y'
-
-1.  (Eu : (Ax : (x e y' -> u e y')))
-
-2.  u'? e y'
-
-by lines [-1]
-Next!
-setunknown("u*","'x")
-           
-
-
-Line number 7
-
-
-
-
-0.  x*! e y'
-
-1.  x' e y'
-----
-
-
-
-0.  x' e y'
-
-1.  (Eu : (Ax : (x e y' -> u e y')))
-
-2.  u'? e y'
-
-by lines [-1]
-Next!
-getleft(1)
-           
-
-
-Line number 7
-
-
-
-
-0.  x' e y'
-
-1.  x*! e y'
-----
-
-
-
-0.  x' e y'
-
-1.  (Eu : (Ax : (x e y' -> u e y')))
-
-2.  u'? e y'
-
-by lines [-1]
-Next!
-done()
-           
-Done!
-
-
-
-\end{verbatim}
+\verbatiminput{docslogs/weirdnesslogfile.py}
 
 
 \subsection{Atomic inclusion is membership}
 
 This proves the equivalence of $\{x\} \subseteq y$ and $x \in y$.  It involves both term and formula definition.
+This is legacy pasted from a Python window:  a new log file is needed.
 
 \begin{verbatim}
 
@@ -2387,7 +2140,7 @@ Done!
 There may be some wheel spinning in this proof.  It contains definitions of the unordered pair, the ordered pair,
 and the first projection operator on ordered pairs, and the proof that the first projection operator works.
 
-\verbatiminput{pairs2logfile.py}
+\verbatiminput{docslogs/pairs2logfile.py}
 
 
 
