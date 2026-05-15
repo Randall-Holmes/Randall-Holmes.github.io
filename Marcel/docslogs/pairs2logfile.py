@@ -1,5 +1,5 @@
 from graph import *
-
+setlog ("pairs3")
 deft ("P", "{xV=xa=xb")
 deft ("O", ":a:aa:baP:b:aa:bbPP")
 deft ("'P", "{xAy>eyaexy")
@@ -926,7 +926,7 @@ Line number 39
 by lines [-1]
 Next!"""
 
-setunknown ("x'*'","{u-'xu")
+#setunknown ("x'*'","{u-'xu")
 setunknown ("x'*'","{u='xu")
 
 """
@@ -3761,7 +3761,7 @@ Line number 121
 by lines [-1]
 Next!"""
 
-setunknown ("x****","{u-u'x")
+#setunknown ("x****","{u-u'x")
 setunknown ("x****","{u=u'x")
 
 """
