@@ -24,6 +24,13 @@ theory with no extensionality axiom but with a set abstraction
 operator) defined by Marcel Crabb\'e and shown by him to satisfy
 cut elimination (the right rule for equality that we use actually gives the full extensionality of NF, and cut elimination is not known for this system, but this can be corrected if desired).
 
+This version differs from earlier versions in having no special commands for particular logical operations.  All 
+transformations based on rules for particular logical constructions are handled by {\tt left()}, {\tt right()} or {\tt done()} with assistance from
+{\tt setunknown} to set particular instances of variables introduced.  It differs from other versions in frankly using full extensionality.  We know that New Foundations itself is consistent.  We could easily install the appropriate modifications of the rules to give SF or NFU.  Unlike the previous version, it does stratification itself automatically (the reasons for this, which are actually the initial trigger of this version of the project, are discussed shortly).  The just previous version used user supplied type indices on bound variables [which we still regard as a good approach].  This version handles defined notions quite differently from earlier versions, and we are rather interested in the results.   This version handles weak stratification issues and variable binding issues generally by keeping track of occurrences of variables invisibly.  This means that in fact only bound variables which are connected to the binding variable of a set abstract need to be typed consistently, which gives a stratification criterion weaker than Marcel's weak stratification (in an inessential way, but it is weaker).   Occurrences
+of variables are only identified if they are bound by the same binder.  This has the curious effect that the prover entirely ignores issues
+of variable capture: apparent variable capture can happen in the display, but the prover knows which occurrences of variables of the same shape are actually bound in a context with a binder of that shape, and currently keeps track of this without telling the user.  This doesn't seem to actually happen often, but I probably ought to fix the display for user comfort.  The input language is entirely in Polish notation,
+which we did for ease of prototyping.  The output language is more familiar-looking.  We probably ought to write a parser for the output language.
+
 We are actively debugging the code:  the example transcripts in the back need to be refreshed now and then and they
 will not always be up to date.
 
@@ -49,7 +56,8 @@ study by Thomas Forster and myself of the properties of the
 graph on variables in a formula determined by the atomic
 formulas in the graph (and in particular the properties of the
 notion of connectedness for formulas determined by connectedness
-of this graph.
+of this graph:  I was already thinking about the graph on variables determined by a formula
+and its relation to stratification when I encountered Nolan's suggestion.
 
 This version also follows the path of assigning invisible
 occurrence data to every variable in a term or formula.
@@ -361,7 +369,7 @@ A further, even more dangerous feature has been added.  When the equality functi
 (where $u?$ is an unknown and $P(x)$ is any stratified formula in $x$, it will attempt to set the unknown $u?$ to the value $\{x\mid P(x)\}$.  It does (mod bugs) check that this can actually be done.
 This is a kind of higher order matching.  It can be very nice for forestalling the need to manually enter values to be assigned to unknowns.
 
-I have also added reflexivity of equality as an axiom, and the {\em done()} command handles this.  This may have dynamic effects
+I have also added reflexivity of equality as an axiom, and the {\tt done()} command handles this.  This may have dynamic effects
 if the prover can make the terms in an equation equal by setting unknowns suitably.  The other rules prove reflexivity of equality, but this
 should remove lots of junk lines from proofs.
 
@@ -381,7 +389,8 @@ in the definiendum:  a defined term can be used as a constant, but a defined for
 
 \item The {\tt look()} command lets you look at the current sequent.
 
-\item The {\tt skip()} command lets you move the current sequent to the end of the work queue and go to the next one.  This lets you cycle through all the work to be done and view it.
+\item The {\tt skip()} command lets you move the current sequent to the end of the work queue and go to the next one.  This lets you cycle through all the work to be done and view it (This command is much more sensible than its analogues in older versions, where we used
+an actual tree rather than a list of sequents as our data structure).
 
 \item The {\tt back()} command undoes a command, roughly speaking.  A stack of proof states is updated from time to time.  This function
 is not entirely reliable [but seems to be improving.]
@@ -619,7 +628,7 @@ This is just definitional expansion.  It allows substitution only in stratified 
 This gives full extensionality.  It can be revised to give SF (use the same Leibniz formulation as in the left rule) or NFU, a bit more elaborate.
 
 To improve the proof theoretic behavior of extensionality, we added a new left rule for membership, tentatively,
-which expands $x \in y$ to $$(\forall u:u \in y \vee (\exists v:\neg(v \in x \leftrightarrow v \in u)))$$ on the left  (when the other rule does not apply).  We can report that this allows proof of Leibniz equality from coextensionality without cut.
+which expands $x \in y$ to $$(\forall v:(\forall w:w\in x \leftrightarrow w\in v) \rightarrow v \in y)$$ on the left  (when the other rule does not apply).  We can report that this allows proof of Leibniz equality from coextensionality without cut.  [we revised the exact form of this rule 5/16/2026].
 
 I have also added reflexivity of equality as an axiom.  It is provable from the other axioms, but it is convenient not to have to do it over and over.
 
@@ -658,7 +667,9 @@ the state of the display at each step in comments.
 
 \subsection{Inclusion is transitive}
 
-Here is a proof that inclusion is transitive.  The text was generated by the new scripting features of the system.
+Here is a proof that inclusion is transitive.  The text was generated by the new scripting features of the system.   In this proof,
+we used the {\tt LogTheProof()} command to append the final form of the proof to the script file as a comment.
+
 \verbatiminput{docslogs/inclusionistransitivelogfile.py}
 \subsection{Equality is transitive}
 
@@ -674,7 +685,7 @@ statements which I have introduced experimentally, in order to avoid the need to
 
 This new version uses the new higher order matching facility.
 
-\verbatiminput{coextensionalitylogfile.py}
+\verbatiminput{docslogs/coextensionalitylogfile.py}
 
 
 
@@ -690,7 +701,7 @@ parentheses and brackets are just for the person entering the term [to make sure
 
 This proves the equivalence of $\{x\} \subseteq y$ and $x \in y$.  It involves both term and formula definition.
 
-\verbatiminput{atomicinclusionlogfile.py}
+\verbatiminput{docslogs/atomicinclusionlogfile.py}
 
 \subsection{First projection theorem for the ordered pair}
 There may be some wheel spinning in this proof.  It contains definitions of the unordered pair, the ordered pair,
