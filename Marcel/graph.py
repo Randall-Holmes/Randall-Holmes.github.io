@@ -2,6 +2,25 @@
 # by (Lavinia) Randall Holmes, intellectual property
 # rights to be respected to the extent of preserving this attribution, please.
 
+# 5/21/2026: fixed some incorrect variable names in cases involving
+# let expressions.  The first Peano axiom revealed a bug...
+
+# added demo() to go into demo mode, undemo() to come out of it.  Demo mode is
+# useful to show someone what a script is doing.
+
+# 5/20/2026  Working on a theory of arithmetic.  Found that
+# some commands were not updating the proof stack, so back was failing
+# to work as expected.
+
+# 5/19/2026:  added the varelim() command which will use an initial equation on the left
+# to eliminate a fresh variable from the current sequent, under appropriate conditions.  This is
+# hard to test, and I'm not guaranteeing its behavior.  I decided that making it the default
+# left action was not a good thing, but my recollection from doing actual proof work with older
+# versions of Marcel is that it is a very valuable capability.
+
+# I have some reasonable hope that varelim works, and debugging it let me detect a horrible bug
+# in rightaction which was corrupting the fresh variables list.
+
 # 5/17/2020:  noticed that renamevart and renamevarf were NEVER used except to return a new variable,
 # so replaced them entirely with a much simpler function generating a new variable.
 
@@ -187,6 +206,8 @@ def setlog(s):
 
 def usercommand(s):
 
+    if demostate==True: print(s)
+
     logfile.write(s)
 
 relations = ["e","="]
@@ -313,6 +334,10 @@ def displayt(L):
 
 newint = 1
 
+def shownewint():
+
+    print(newint)
+
 # note that the parser enforces stratification of set abstract terms.
 # However, it does this in quite a weak sense.  Types are assigned
 # to occurrences of variables, not to variables themselves;  the only
@@ -326,13 +351,23 @@ newint = 1
 
 variables=[]
 
+def showvariables():
+    print(variables)
+
+
 # the list of all "unknowns" (witnesses introduced for later specification)
 
 unknowns=[]
 
+def showunknowns():
+    print(unknowns)
+
 # the list of all fresh variables (arbitraries and unknowns) introduced by quantifier rules
 
 freshvars=[]
+
+def showfreshvars():
+    print(freshvars)
 
 # The parser:  for rapid prototyping, this is Polish notation.  The display notation is more standard.
 # Examples when they are produced will give an indication of how to enter terms and formulas.
@@ -496,7 +531,7 @@ def displaceoccf(f,d):
     if f[0]=="~":  return ["~",displaceoccf(f[1],d)]
     if isconnective(f[0]):  return [f[0],displaceoccf(f[1],d),displaceoccf(f[2],d)]
     if isquantifier(f[0]):  return [f[0],f[1],f[2]+d,displaceoccf(f[3],d)]
-    if t[0] == "let":  return ["let", t[1],displaceocct(t[2],d),displaceocct(t[3],d)]
+    if f[0] == "let":  return ["let", f[1],displaceocct(f[2],d),displaceocct(f[3],d)]
 
 # substitution without displacement for a variable with a precise occurrence
 # index (as with a bound variable)
@@ -950,6 +985,7 @@ def stratify(G,x):
 
 # for the moment I only have a stratification tester for formulas.  But
 # set abstracts are tested by the parser.  So testt will test any nontrivial term.
+# this is outdated:  there is now a function for terms as well.
 
 def strattest(s):
     t=getf(s)
@@ -1002,6 +1038,10 @@ def collapsestrat(L):  return collapsestrat2(collapsestrat1(L))
 def ctest(s):  return collapsestrat(strattest(s))
 
 termdefs=[]
+
+def showtermdefs():
+
+    print(termdefs)
 
 # USER COMMAND
 
@@ -1061,6 +1101,10 @@ def showdeff(s):
      return "Done!"
 
 formuladefs=[]
+
+def showformuladefs():
+
+    print(formuladefs)
 
 # USER COMMAND
 
@@ -1167,7 +1211,7 @@ def atify2f(f):
     if isquantifier(f[0]):
         if not "@"+f[1] in variables:  variables = variables+["@"+f[1]]
         return [f[0],"@"+f[1],f[2],atify2f(f[3])]
-    if t[0]=="let":  return [t[0],t[1],atify2t(t[2]),atify2t(t[3])]
+    if f[0]=="let":  return [f[0],f[1],atify2t(f[2]),atify2t(f[3])]
 
 def cascadesubst(t):
     if t[0] == "let" and t[1][1][0] =="@":
@@ -1226,7 +1270,6 @@ def displaysequent(n,S):
 
 
 #substitution into a sequent
-#occurrence displacement is assumed already done (by setunknown, so far the only client)
 
 def subs1s(v,t,S):
     L=S[0]
@@ -1256,9 +1299,19 @@ def displayproof(P):
     print(o)
     return o
 
+# USER COMMAND
+
+def showtheproof():
+
+    print(displayproof(theproof))
+
 #the line number in the proof where we are working
 
 theline=0
+
+def showtheline():
+
+    print(theline)
 
 # something like the original proof graph traversal is now implemented,
 #using a stack to indicate which line we want to do next
@@ -1268,10 +1321,30 @@ theline=0
 
 linestack=[]
 
-# the function which determines whether we are done with the current line,
-# and if we are done proceeds to the next line.
+def showlinestack():
+
+    print(linestack)
+
+# the stack of previous proof states maintained for the back() function
 
 proofstack=[]
+
+#
+
+demostate=False
+
+# USER COMMANDS
+
+def demo():
+    global demostate
+    demostate=True
+
+def undemo():
+    global demostate
+    demostate=False
+
+# the function which determines whether we are done with the current line,
+# and if we are done proceeds to the next line.
 
 def displaynextline():
     global theline
@@ -1293,6 +1366,10 @@ def displaynextline():
         logfile.write('\nNext!"""\n\n')
         print ("Next!")
         proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
+        if demostate==True:
+            print("Hit any key to continue\n")
+            input()
+
         return("Next!")
     while (theline<len(theproof) and not(theproof[theline][2]==[-1])):
         theline=theline+1
@@ -1306,6 +1383,9 @@ def displaynextline():
     logfile.write(displaysequent(theline,theproof[theline]))
     logfile.write('\nNext!"""\n\n')
     proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
+    if demostate==True:
+            print("Hit any key to continue\n")
+            input()
     print ("Next!")
 
 # USER COMMAND
@@ -1313,7 +1393,7 @@ def displaynextline():
 #and bring on the next sequent
 
 def skip():
-
+    global proofstack
     global theline
     global linestack
     if len(linestack)<1:
@@ -1324,6 +1404,7 @@ def skip():
     L=theline
     theline=linestack[0]
     linestack=linestack[1:]+[L]
+    proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
     displaynextline()
 
 # USER COMMAND
@@ -1414,6 +1495,33 @@ def nextrefs(n):
         i=i+1
     return r
 
+# toggle indicating whether constructive logic is to be used
+
+constructive=False
+
+# USER COMMANDS
+
+# toggle constructivity
+
+def makeconstructive():
+    global constructive
+    global theorems
+    if constructive==True:
+        print ("Already constructive")
+        return "No action taken"
+    theorems = []
+    start("=xx")
+    constructive = True
+
+def makeclassical():
+    global constructive
+    if constructive==False:
+        print("Already classical")
+        return "No action taken"
+    constructive = False
+    
+
+
 # USER COMMAND
 # apply a left rule
 
@@ -1435,6 +1543,7 @@ def left():
     i=0
     while (i<len(L)):
         A=L[i][0]+theproof[theline][0][1:]
+        if constructive==True and not(theproof[theline][1]==[]): theproof[theline][1]=[theproof[theline][1][0]]
         B=L[i][1]+theproof[theline][1]
         theproof=theproof+[[A,B,[-1]]]
         i=i+1
@@ -1462,6 +1571,7 @@ def right():
     i=0
     while (i<len(R)):
         A=R[i][0]+theproof[theline][0]
+        if constructive==True and not(theproof[theline][1]==[]): theproof[theline][1]=[theproof[theline][1][0]]
         B=R[i][1]+theproof[theline][1][1:]
         theproof=theproof+[[A,B,[-1]]]
         i=i+1
@@ -1567,16 +1677,16 @@ def equalf(f1,f2):
         v=newvariable(["var",f1[1],f1[2]])
         return equalf(subsf(f1[1],f1[2],v,f1[3]),subsf(f2[1],f2[2],v,f2[3]))
     if f1[0]=="let":
-        if not(equalt(t1[1],t2[1])):
+        if not(equalt(f1[1],f2[1])):
 
 
 
             return False
-        if not(equalt(t1[2],t2[2])):
+        if not(equalt(f1[2],f2[2])):
 
 
             return False
-        return equalt(t1[3],t2[3]) #equalt is correct here
+        return equalt(f1[3],f2[3]) #equalt is correct here
 
 # USER COMMAND
 # recognize sequent axioms.  I believe this is the only place
@@ -1733,7 +1843,7 @@ def rightaction(f):
     if f[0]=="E":
         v=newvariable(["var",f[1],f[2]])
         unknowns=[[v[1],freshvars]]+unknowns
-        freshvars=[v[1]]+unknowns
+        freshvars=[v[1]]+freshvars
         return [[[],[subs1f(f[1],f[2],v,f[3]),f]]]
 
     return [[]]
@@ -1871,7 +1981,9 @@ def Cut(f):
     theproof=theproof+[P1]
     theproof=theproof+[P2]
     theproof[theline][2]=[len(theproof)-2,len(theproof)-1]
+    proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
     linestack = theproof[theline][2]+linestack
+    
     displaynextline()
 
 def LogTheProof():
@@ -1892,6 +2004,13 @@ def savetheorem(s):
     theorems = [[s,[theproof[0][1][0],theproof]]]+theorems
     print (s+":= "+(displayf(theorems[0][1][0])))
 
+def showtheorem(s):
+
+    if findvalues(s,theorems)==[]:
+        print("Theorem "+s+" not found")
+        return "Not found"
+    print (s+":= "+(displayf(findvalues(s,theorems)[0][0])))
+
 # USER COMMAND
 
 def theoremcut(s):
@@ -1909,9 +2028,89 @@ def theoremcut(s):
     theproof=theproof+[R]+[T]
     theproof[theline][2]=[len(theproof)-2,len(theproof)-1]
     linestack=[len(theproof)-1]+linestack
+    proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
     displaynextline()
 
 # make sure there is always a log file
+
+# install a variable elimination command.  Use an equation on the left
+# to eliminate a variable then drop the equation.   If both sides of the equation are variables,
+# eliminate the one introduced latest.
+
+# It should be safe to replace the replaceable variable with the other
+
+def replaceable(t,u):
+    global freshvars
+    if not(t[0])=="var" or not(u[0]=="var"):
+        type("Inappropriate use of variable priority function")
+        return True
+    if not(t[1] in freshvars): return False
+    if not(u[1] in freshvars): return True
+    U=findunknown(u[1])
+    if not(U=="error"):
+        if (t[1]in U[1]):  return False
+    T=findunknown(t[1])
+    if not(T=="error"):
+        if not(u[1] in T[1]):  return False
+    if U=="error" and T=="error":
+        return replaceablearbitrary(t,u)
+    return True
+
+# we do not want to make a replacement of arbitrary variables which impedes setting an unknown
+
+def replaceablearbitrary(t,u):
+    global unknowns
+    L=unknowns
+    while(not(L==[])):
+        if not(t in L[0][1]) and u in L[0][1]:  return True
+        if not(u in L[0][1]) and t in L[0][1]:  return False
+        L=L[1:]
+    return True
+
+
+# USER COMMAND
+
+#globally eliminate a fresh variable from a sequent
+#using the leading equation on the left and removing it
+
+def varelim():
+
+    global theproof
+    global proofstack
+    global freshvars
+    global proofstack
+    if len(theproof[theline][0])==0:
+        print("No left proposition to eliminate")
+        return("error")
+    if not(theproof[theline][0][0][0]=="="):
+        print("The leading left proposition is not an equation")
+        return("error")
+    L=theproof[theline][0][0][1]
+    R=theproof[theline][0][0][2]
+    if not(L[0] =="var" and L[1] in freshvars) and not(R[0]=="var" and R[1] in freshvars):  print("Neither term in the leading equation is a fresh variable")
+    if not(R[0] =="var" and R[1] in freshvars):
+        if L[1] in freshvarlistt(R):  return "circularity error"
+        V=L[1]
+        T=R
+    if not(L[0] =="var" and L[1] in freshvars):
+        print(L[1] in freshvars)
+        if R[1] in freshvarlistt(L):  return "circularity error"
+        V=R[1]
+        T=L
+    if L[0]=="var" and R[0]=="var" and replaceable(L,R):
+        V=L[1]
+        T=R
+    if L[0]=="var" and R[0]=="var" and not(replaceable(L,R)):
+        V=R[1]
+        T=L
+    usercommand("varelim()\n")
+    S=subs1s(V,T,[theproof[theline][0][1:],theproof[theline][1],[-1]])
+    theproof[theline][2]=[len(theproof)]
+    theproof=theproof+[S]
+    linestack=theproof[theline][2]+linestack
+    proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
+    displaynextline()
+    
 
 setlog("autolog")
     
