@@ -24,6 +24,8 @@ theory with no extensionality axiom but with a set abstraction
 operator) defined by Marcel Crabb\'e and shown by him to satisfy
 cut elimination (the right rule for equality that we use actually gives the full extensionality of NF, and cut elimination is not known for this system, but this can be corrected if desired).
 
+5/24/2026  documentation is updated to include all user commands available in the software as of that date.
+
 This version differs from earlier versions in having no special commands for particular logical operations.  All 
 transformations based on rules for particular logical constructions are handled by {\tt left()}, {\tt right()} or {\tt done()} with assistance from
 {\tt setunknown} to set particular instances of variables introduced.  It differs from other versions in frankly using full extensionality.  We know that New Foundations itself is consistent.  We could easily install the appropriate modifications of the rules to give SF or NFU.  Unlike the previous version, it does stratification itself automatically (the reasons for this, which are actually the initial trigger of this version of the project, are discussed shortly).  The just previous version used user supplied type indices on bound variables [which we still regard as a good approach].  This version handles defined notions quite differently from earlier versions, and we are rather interested in the results.   This version handles weak stratification issues and variable binding issues generally by keeping track of occurrences of variables invisibly.  This means that in fact only bound variables which are connected to the binding variable of a set abstract need to be typed consistently, which gives a stratification criterion weaker than Marcel's weak stratification (in an inessential way, but it is weaker).   Occurrences
@@ -358,7 +360,7 @@ One then has a limited number of commands as options.
 
 \item  The {\tt getleft(n)} command brings the $n$th proposition on the left (above the horizontal bar, actually) to the front.
 
-\item The {\tt getright()} command brings the $n$ proposition on the right to the front.
+\item The {\tt getright(n)} command brings the $n$ proposition on the right to the front.
 
 \item The {\tt done()} command invites the prover to recognize that the current sequent is an axiom (that the propositions at the beginnings of the lists on left and right are the same).  Identity of propositions up to $\alpha$-equivalence, ignoring occurrence data, is supported.
 
@@ -378,14 +380,20 @@ made undesired global substitutions for unknowns.
 
 \item  The {\tt setunknown(u,t)} command allows one to set the value (globally in the proof) of an ``unknown'' {\tt u} (a free variable introduced by the right rule for the existential quantifier or the left rule for the universal quantifier) with a term {\tt t}.  In a usual presentation, a specific term is supplied when the rule is applied:  here the unity of the {\tt left()} and {\tt right} rules is preserved by separating out the choice of witness.  It may also be useful to delay choosing the witness until it is evident from developments in the proof what might work.   There are limitations on what can replace an ``unknown'' [the term replacing it cannot contain any fresh variable introduced by quantifier rules which is introduced after the unknown which is being replaced].
 
+The command also now allows a value not including any fresh variables to be set for a variable free in the sequent.  This gives theorems and definitions with free variables in them some limited usefulness.
+
 \item  The {\tt Cut(f)} command executes the cut rule with the formula {\tt f}.
+
+\item The {\tt varelim()} command uses an equation at the head of the left list of the sequent to make a global substitution for a fresh variable
+when priority conditions on fresh variables permit this.  The equation is then eliminated.  The use of this is to reduce variable clutter, which we recall
+is a problem in large proofs which we encountered in older versions of this system.
 
 \item  The {\tt deft(key,term)} command introduces a defined term (defining {\tt key}, a possibly primed capital letter, as {\tt term}) and the {\tt deff(key,formula)} command similarly introduces a defined formula.  These can further be accessed by assigning values to variables: 
 in the definiendum:  a defined term can be used as a constant, but a defined formula must have at least one assignment.  I need to provide examples (they are present in the last section).
 
 \item The {\tt savetheorem} command saves the current theorem:  it takes the name to be given to the theorem as its sole argument.
 
-\item  The {\tt theoremcut} command has as its argument the name of a theorem, whose conclusion is introduced as a hypothesis in the current sequent.  This allows saved theorems to be used.
+\item  The {\tt theoremcut} command has as its argument the name of a theorem, whose conclusion is introduced as a hypothesis in the current sequent.  This allows saved theorems to be used (examination of the proofs will reveal that this is a hidden use of cut;  one of the sequents in the cut is never seen by the user).
 
 \item The {\tt look()} command lets you look at the current sequent.
 
@@ -398,6 +406,13 @@ is not entirely reliable [but seems to be improving.]
 \item  The {\tt setlog} command sets the name of a log file to which user commands will be appended as they are executed.
 This creates scripts which can be used to reconstruct work done under the prover.  I close a log file by setting the log file to a default name ({\tt setlog (``done'')}).  There must be a directory called {\tt logs} in the current directory for a log file to be set up successfully.
 
+\item The {\tt demo()} and {\tt undemo()} commands turn demo mode on and off.  Running a script in demo mode causes a pause after each command (hit any key to continue).
+
+\item The {\tt showdeft}, {\tt showdeff} and {\tt showtheorem} commands display a term or formula definition or theorem named by their string arguments.
+The {\tt showtheorems()} command pages through all the theorems (hit any key to continue).  {\tt showdefts()} and {\tt showdeffs()} are analogous.
+{\tt showtheproof()} shows the current complete proof all at once, possibly a large object.  {\tt LogTheProof()} does the same thing and also posts it to the log.
+
+\item {\tt makeconstructive()} and {\tt makeclassical()} toggle between classical and intuitionistic logic.  Toggling to intuitionistic logic clears the current proof.  Intuitionistic logic is implemented by causing the {\tt left()} and {\tt right()} commands to discard all right propositions in a sequent except the first one {\em before\/} applying a rule.  Afterwward, it might display more than one proposition on the right:  use {\tt getright()} to decide which one to keep.  Note that the stratified comprehension of this version of Marcel is more liberal than the stratified comprehension used in presentations of intuitionistic NF up to this point.
 \end{itemize}
 
 The prover maintains a stack of sequents needing attention.  When the {\tt left()} or {\tt right()} rule is applied, one or two sequents are appended to the end of the proof [which is a list of sequents with pointers (really just lists of line numbers) from sequents to ones justifying them] and one then proceeds to the first sequent on the stack.  Other rules affecting proof state have appropriate effects on the stack.
@@ -673,9 +688,9 @@ we used the {\tt LogTheProof()} command to append the final form of the proof to
 \verbatiminput{docslogs/inclusionistransitivelogfile.py}
 \subsection{Equality is transitive}
 
-Here is a proof that equality is transitive.
+Here is a proof that equality is transitive, upgraded to use higher order matching.
 
-\verbatiminput{docslogs/eqtransitivelogfile.py}
+\verbatiminput{docslogs/neweqtranslogfile.py}
 
 \subsection{Coextensionality implies Leibniz equality}
 

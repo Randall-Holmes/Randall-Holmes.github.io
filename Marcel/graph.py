@@ -2,6 +2,15 @@
 # by (Lavinia) Randall Holmes, intellectual property
 # rights to be respected to the extent of preserving this attribution, please.
 
+# 5/23/2026  Global free variables can have values set by setunknown.
+# theorems are atified by theoremcut.  This means that free atted variables
+# can be eliminated by setunknown.  Usefulness of theorems (and definitions)
+# with free variables remains limited, as no fresh variables can appear in terms
+# replacing them.  Universally closed theorems are preferable.
+
+# 5/22/2026:  added line breaks in formula display.  The way I do it is a bit of a hack
+# but seems to work OK.
+
 # 5/21/2026: fixed some incorrect variable names in cases involving
 # let expressions.  The first Peano axiom revealed a bug...
 
@@ -301,12 +310,19 @@ def reinstf(s,n,L):
 
 # added infix display of let terms (for both terms and formulas) if the first two keys used are a and b
 
+# function to insert line breaks to avoid margin overflow.  The criterion is
+# a bit weird.
+
+def maybebreak(L,M):
+    if (len(str(L))>25 and len(str(M))> 60) or (len(str(M))>25 and len(str(L))> 60): return "\n   "
+    return " "
+
 def displayf(L):
     global unknowns
     global freshvars
-    if isrelation(L[0]) and isterm(L[1]) and isterm(L[2]):  return (displayt(L[1]))+" "+L[0]+" "+(displayt(L[2]))
+    if isrelation(L[0]) and isterm(L[1]) and isterm(L[2]):  return (displayt(L[1]))+(maybebreak(L[1],L[2]))+L[0]+" "+(displayt(L[2]))
     if L[0] == "~" and isformula(L[1]): return "~" + (displayf(L[1]))
-    if isconnective(L[0]) and isformula(L[1]) and isformula(L[2]): return "("+(displayf(L[1]))+" "+cexp(L[0])+" "+(displayf(L[2]))+")"
+    if isconnective(L[0]) and isformula(L[1]) and isformula(L[2]): return "("+(displayf(L[1]))+(maybebreak(L[1],L[2]))+cexp(L[0])+" "+(displayf(L[2]))+")"
     if isquantifier(L[0]) and type(L[1])==str and type(L[2]) == int and isformula(L[3]): return "("+L[0]+L[1]+" : "+(displayf(L[3]))+")"
     if L[0]=="defined" and type(L[1]) == str: return L[1]
     if L[0]=="let" and isterm(L[1]) and L[1][0]=="var" and L[1][1]=="a" and isterm(L[2]) and L[3][0]=="let" and isterm(L[3][1]) and L[3][1][0]=="var" and L[3][1][1]=="b" and isterm(L[3][2]) and isterm(L[3][3]):
@@ -324,7 +340,7 @@ def displayt(L):
     if L[0]=="var" and type(L[1]) == str and type(L[2]) == int: return L[1]
     if L[0]=="defined" and type(L[1]) == str: return L[1]
     if L[0]=="let" and isterm(L[1]) and L[1][0]=="var" and L[1][1]=="a" and isterm(L[2]) and L[3][0]=="let" and isterm(L[3][1]) and L[3][1][0]=="var" and L[3][1][1]=="b" and isterm(L[3][2]) and isterm(L[3][3]):
-        return "("+(displayt(L[2]))+" "+(displayt(L[3][3]))+" "+(displayt(L[3][2]))+")"
+        return "("+(displayt(L[2]))+(maybebreak(L[2],L[3][2]))+(displayt(L[3][3]))+" "+(displayt(L[3][2]))+")"
     if L[0]=="let" and isterm(L[1]) and L[1][0]=="var" and isterm(L[2]) and isterm(L[3]) and (L[3][0]=="defined" or L[3][0]=="let"):
         return displayt(L[3])+"("+displayt(L[1])+":"+displayt(L[2])+")"
     if L[0]=="set" and type(L[1]) == str and type(L[2]) == int and isformula(L[3]): return "{"+L[1]+" | "+(displayf(L[3]))+"}"
@@ -1892,24 +1908,46 @@ def freshvarlistf(f):
 # of a concrete witness can be carried out later -- even some time later
 # when the proof suggests what the witness should be.
 
+# I have added the ability to globally replace variables free in the sequent
+# with any term which does not contain a fresh variable.  This makes variables
+# with free variables usable, though they remain of limited usefulness.
+# Universal closures of such theorems are much preferable.
+
 # USER COMMAND
 
 def setunknown(v,t):
     global theproof
     global newint
-    
-    V=findunknown(v)
-    if V == "error":
-        print ("not an unknown")
-        displaynextline()
-        return "error"
+    global proofstack
     T=gett(t)
     if not(isterm(T)):
         print("Bad term entered")
         displaynextline()
         return "Bad term entered"
-
     L = freshvarlistt(T)
+    
+    V=findunknown(v)
+    if V == "error":
+        if v in freshvars:
+            print("Cannot set an arbitrary variable to a value")
+            displaynextline()
+            return "Cannot set an arbitrary variable to a value"
+        if not(L==[]):
+            print("Cannot replace global free variable with term containing fresh variables")
+            displaynextline()
+            return "Cannot replace global free variable with term containing fresh variables"
+        usercommand('setunknown ("'+v+'","'+t+'")\n')
+        
+        P=theproof
+        P2=[]
+        while(not(P==[])):
+             P2=P2+[subs1s(v,T,P[0])]
+             P=P[1:]
+        theproof=P2
+        displaynextline()
+        return("global free variable handled")
+
+
     while(not(L==[])):
         if not(L[0] in V[1]):
             print("Fresh variable reference error")
@@ -1918,7 +1956,7 @@ def setunknown(v,t):
         L=L[1:]
     usercommand('setunknown ("'+v+'","'+t+'")\n')
     T2=T
-
+    
     P=theproof
     P2=[]
     while(not(P==[])):
@@ -1928,6 +1966,8 @@ def setunknown(v,t):
     displaynextline()
 
 #internal version of setunknown for equality function
+# we do not make automatic substitutions for free variables based
+# on matching.
 
 def setunknown2(v,t):
     global theproof
@@ -1981,10 +2021,12 @@ def Cut(f):
     theproof=theproof+[P1]
     theproof=theproof+[P2]
     theproof[theline][2]=[len(theproof)-2,len(theproof)-1]
-    proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
+    
     linestack = theproof[theline][2]+linestack
     
     displaynextline()
+
+# USER COMMAND
 
 def LogTheProof():
     logfile.write('"""')
@@ -2011,24 +2053,54 @@ def showtheorem(s):
         return "Not found"
     print (s+":= "+(displayf(findvalues(s,theorems)[0][0])))
 
+def showtheorems():
+    T=rev(theorems)
+    while(not T==[]):
+        showtheorem(T[0][0])
+        print("Hit return for next theorem")
+        input()
+        T=T[1:]
+
+def showdefts():
+    T=rev(termdefs)
+    while(not T==[]):
+        showdeft(T[0][0])
+        print("Hit return for next term definition")
+        input()
+        T=T[1:]
+
+def showdeffs():
+    T=rev(formuladefs)
+    while(not T==[]):
+        showdeff(T[0][0])
+        print("Hit return for next formula definition")
+        input()
+        T=T[1:]
+
+
+# copies of theorems introduced by theoremcut are "atified" for good variable management.
+# the ability to use setunknown on free variables means that theorems with free variables
+# can be used.
+
 # USER COMMAND
 
 def theoremcut(s):
     global theproof
     global linestack
+    global proofstack
 
     
     P=theproof[theline]
     if findvalues(s,theorems)==[]:  return "Theorem "+s+" does not exist"
     usercommand("theoremcut('"+s+"')\n")
     S=findvalues(s,theorems)[0][0]
-    Q=findvalues(s,theorems)[0][1][0]
-    R=[Q[0],Q[1],[s]]
-    T=[[S]+P[0],P[1],[-1]]
+    #Q=findvalues(s,theorems)[0][1][0]
+    R=[[],[atify2f(S)],[s]]
+    T=[[atify2f(S)]+P[0],P[1],[-1]]
     theproof=theproof+[R]+[T]
     theproof[theline][2]=[len(theproof)-2,len(theproof)-1]
     linestack=[len(theproof)-1]+linestack
-    proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
+    
     displaynextline()
 
 # make sure there is always a log file
@@ -2108,7 +2180,7 @@ def varelim():
     theproof[theline][2]=[len(theproof)]
     theproof=theproof+[S]
     linestack=theproof[theline][2]+linestack
-    proofstack=[[theproof,theline,newint,countbase,variables,freshvars,unknowns,linestack]]+proofstack
+    
     displaynextline()
     
 
