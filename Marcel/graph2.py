@@ -2,6 +2,58 @@
 # by (Lavinia) Randall Holmes, intellectual property
 # rights to be respected to the extent of preserving this attribution, please.
 
+# 5/27/2026  Quite a lot has been added today.
+
+# 1.  Made the variable space used for let terms (definitions) completely
+# disjoint from variables which can be entered or displayed.  This makes
+# evaluation of definitions secure from variable capture problems.
+
+# 2.  Fixed soundness problems with dynamic setting of unknowns.  An unknown is to be
+# matched only once, and its match is recorded (for the equality function
+# to make checks for consistency).  Also, realized that higher order matching
+# had no unknown dependency checks.
+
+# 3.  Further, equality tests will now attempt to establish equality
+# by definition expansion.  This may have various fancy effects.
+
+# It is a fun point that though I did a lot of work today it appears
+# to have no effect on existing scripts.
+
+# 5/27/2026  The equality functions now test whether definition expansion will make terms equal.
+
+# The unknown setting feature is unsound and needs to be repaired.
+# installed a fix:  dare I test it?   Fix seems to work...
+
+# It is very important that done() appears to be the only client
+# of the equality tests.  Any client needs to appropriately reset
+# unknownassignments.
+
+# Also added unknown dependency checks to the higher order matching.
+# There needs to be a lot of tightening.
+
+# 5/27/2026  More variable security needed for the definition facility.
+# the @ variables used in substitutions into definitions cannot be allowed
+# to be generated in user entered or even generated text. 
+
+#  The appearance is exactly the same as before, but function
+# names in the code may be annoying due to the history of my
+# thought process while correcting this problem :
+# the hash # is now the variable prefix used
+# internally (so atify functions add hashes) and the at sign @ is used
+# externally as before (so hashify adds @ and deatify changes # to @)
+# But the variables used for definition (let term) computation
+# are now completely secure:  no user operation can produce them, so
+# no variable capture can occur in let term computation.
+
+# theoremcut now atifies ("hashifies") the new formula introduced,
+# so that free variables in theorems will not intrude in the usual namespace.
+# they can be manipulated using setunknown to be replaced with terms
+# containing no fresh variables, which gives them very limited privileges.
+# Free variables left over from definitions will be treated similarly.
+
+# I still havent fixed apparent variable capture ;-)  It is philosophically
+# appealing but probably not practical that I somehow do not have to.
+
 # 5/26/2026:  new version.  Changed left and right action so that
 # definition expansions are not done on equations.  This required rewriting
 # of scripts.  It also led to discovery of a serious bug.
@@ -453,7 +505,7 @@ def gett(s):
 def restt(s):
     if len(s)==0:  return ""
     if isspace(s[0]):  return restt(s[1:])
-    if s[0]=="@":  return restt(s[1:])
+    #if s[0]=="#":  return restt(s[1:])
     if isprime(s[0]):  return restt(s[1:])
     if "a"<=s[0] and s[0]<="z": return s[1:]
     if "A"<=s[0] and s[0]<="Z": return s[1:]
@@ -656,7 +708,7 @@ def dropitem(v,L):
 # less cluttering.  In effect, binary notation in the primes ' and *
 
 def nextvarname(s):
-    if s[0]=="@":  return nextvarname(s[1:])
+    if s[0]=="#" or s[0]=="@":  return nextvarname(s[1:])
     if s[-1]=="'":
         return s[0:-1]+"*"
     if s[-1]=="*":
@@ -1143,25 +1195,31 @@ def defexpandt(t):
     # if applied to a definition term, simply expand it
     global newint
     if t[0]=="defined":
-        return atify(t)
+        return deatifyt(atify(t))
     if t[0]=="let":
         T=atify(t)
         U=cascadesubst(T)
-        return (U)
+        return (deatifyt(U))
+    return t
 
 def defexpandf(t):
 
     if t[0]=="let":
         T=atify2(t)
         U=cascadesubsf(T)
-        return (U)
+        return (deatifyf(U))
+    return t
+
+# Note that for variable security, the internal variables
+# created by atify are now hashed (#).  These variables must
+# not be possible for the user to create in displayed text in any way.
 
 def atify(t):
     global variables
     global newint
     if t[0]=="let":
-        if not "@"+t[1][1] in variables:  variables = variables+["@"+t[1][1]]
-        return [t[0],["var","@"+t[1][1],t[1][2]],t[2],atify(t[3])]
+        if not "#"+t[1][1] in variables:  variables = variables+["#"+t[1][1]]
+        return [t[0],["var","#"+t[1][1],t[1][2]],t[2],atify(t[3])]
 
     if t[0]=="defined":
             if findvalues(t[1],termdefs) == []:
@@ -1178,8 +1236,8 @@ def atify2(t):
     global variables
     global newint
     if t[0]=="let":
-        if not "@"+t[1][1] in variables:  variables = variables+["@"+t[1][1]]
-        return [t[0],["var","@"+t[1][1],t[1][2]],t[2],atify2(t[3])]
+        if not "#"+t[1][1] in variables:  variables = variables+["#"+t[1][1]]
+        return [t[0],["var","#"+t[1][1],t[1][2]],t[2],atify2(t[3])]
 
     if t[0]=="defined":
             if findvalues(t[1],formuladefs) == []:
@@ -1196,11 +1254,11 @@ def atify2(t):
 def atify2t(t):
     global variables
     if t[0]=="var":
-        if not "@"+t[1] in variables:  variables = variables+["@"+t[1]]
-        return ["var","@"+t[1],t[2]]
+        if not "#"+t[1] in variables:  variables = variables+["#"+t[1]]
+        return ["var","#"+t[1],t[2]]
     if t[0]=="set":
-        if not "@"+t[1] in variables:  variables = variables+["@"+t[1]]
-        return [t[0],"@"+t[1],t[2],atify2f(t[3])]
+        if not "#"+t[1] in variables:  variables = variables+["#"+t[1]]
+        return [t[0],"#"+t[1],t[2],atify2f(t[3])]
     if t[0]=="defined":  return t
     if t[0]=="let":  return [t[0],t[1],atify2t(t[2]),atify2t(t[3])]
 
@@ -1210,25 +1268,55 @@ def atify2f(f):
     if isconnective(f[0]):  return [f[0],atify2f(f[1]),atify2f(f[2])]
     if f[0]=="~":  return [f[0],atify2f(f[1])]
     if isquantifier(f[0]):
-        if not "@"+f[1] in variables:  variables = variables+["@"+f[1]]
-        return [f[0],"@"+f[1],f[2],atify2f(f[3])]
+        if not "#"+f[1] in variables:  variables = variables+["#"+f[1]]
+        return [f[0],"#"+f[1],f[2],atify2f(f[3])]
     if f[0]=="let":  return [f[0],f[1],atify2t(f[2]),atify2t(f[3])]
 
+# It is an accident of the thought process in correcting for
+# variable security that hashify actually adds @
+
+def hashifyt(t):
+    global variables
+    if t[0]=="var":
+        if not "@"+t[1] in variables:  variables = variables+["@"+t[1]]
+        return ["var","@"+t[1],t[2]]
+    if t[0]=="set":
+        if not "@"+t[1] in variables:  variables = variables+["@"+t[1]]
+        return [t[0],"@"+t[1],t[2], hashifyf(t[3])]
+    if t[0]=="defined":  return t
+    if t[0]=="let":  return [t[0],t[1],hashifyt(t[2]),hashifyt(t[3])]
+
+def hashifyf(f):
+    global variables
+    if isrelation(f[0]):  return [f[0],hashifyt(f[1]),hashifyt(f[2])]
+    if isconnective(f[0]):  return [f[0],hashifyf(f[1]),hashifyf(f[2])]
+    if f[0]=="~":  return [f[0],hashifyf(f[1])]
+    if isquantifier(f[0]):
+        if not "@"+f[1] in variables:  variables = variables+["@"+f[1]]
+        return [f[0],"@"+f[1],f[2],hashifyf(f[3])]
+    if f[0]=="let":  return [f[0],f[1],hashifyt(f[2]),hashifyt(f[3])]
+
+
 def cascadesubst(t):
-    if t[0] == "let" and t[1][1][0] =="@":
+    if t[0] == "let" and t[1][1][0] =="#":
         return freesubs1t(t[1][1],t[2],cascadesubst(t[3]))
     return t
 
 def cascadesubsf(t):
-    if t[0] == "let" and t[1][1][0] =="@":
+    if t[0] == "let" and t[1][1][0] =="#":
         return freesubs1f(t[1][1],t[2],cascadesubsf(t[3]))
     return t
 
+# actually replaces # with @
+
 def removeat(s):
-    if s[0]=="@":  return s[1:]
+    global variables
+    if s[0]=="#":
+        if not "@"+s[1:] in variables: variables=variables+["@"+s[1:]]
+        return "@"+s[1:]
     return s
 
-# I preserve the deatify functions in case of need, but I don't actually use them.
+# change all hashes to ats (so the name is funny).
 
 def deatifyt(t):
     if t[0]=="var": return ["var",removeat(t[1]),t[2]]
@@ -1357,6 +1445,8 @@ def displaynextline():
     global newint
     global theproof
     global theline
+    global unknownassignments
+    unknownassignments=[]
     
     if not (linestack==[]) and not(theproof[theline][2]==[-1]):
         theline = linestack[0]
@@ -1587,9 +1677,11 @@ def right():
 
 # we might want a nondynamic equality function, but for the moment done() is the only client
 
+unknownassignments=[]
+
 def equalt(t1,t2):
     global unknowns
-
+    global unknownassignments
     if t1[0]=="var" and t1[1]==t2[1]:  return True
     if t1[0]=="var" and not(findunknown(t1[1])=="error"):
         V=findunknown(t1[1])
@@ -1599,8 +1691,11 @@ def equalt(t1,t2):
           if not(L[0] in V[1]):
             return False
           L=L[1:]
-        setunknown2(t1[1],t2)
-        return True
+        if findvalues(t1[1],unknownassignments)==[]:
+            unknownassignments=[[t1[1],t2]]+unknownassignments
+            setunknown2(t1[1],t2)
+            return True
+        return equalt(findvalues(t1[1],unknownassignments)[0],t2)
     if t2[0]=="var" and not(findunknown(t2[1])=="error"):
         V=findunknown(t2[1])
         T=t1
@@ -1609,8 +1704,13 @@ def equalt(t1,t2):
           if not(L[0] in V[1]):
             return False
           L=L[1:]
-        setunknown2(t2[1],t1)
-        return True            
+        if findvalues(t2[1],unknownassignments)==[]:
+             unknownassignments=[[t2[1],t1]]+unknownassignments
+             setunknown2(t2[1],t1)
+             return True
+        return equalt(findvalues(t2[1],unknownassignments)[0],t1)
+    if (not(t1[0]==t2[0])) and (t1[0]=="let" or t1[0]=="defined" or t2[0]=="let" or t2[0]=="defined"):
+        return equalt(defexpandt(t1),defexpandt(t2))
     if t1[0]=="var":
 
         return False
@@ -1637,7 +1737,7 @@ def equalt(t1,t2):
 # to make formulas equivalent.
 
 def equalf(f1,f2):
-
+    global unknownassignments
     if isrelation(f1[0]) and f1[0]==f2[0]:
         if equalt(f1[1],f2[1]) and equalt(f1[2],f2[2]):  return True
     #print ([f1[0],f1[2][0], findunknown(f1[2])])
@@ -1645,30 +1745,66 @@ def equalf(f1,f2):
            #print("Got here")
 
            F=renamevarf2(f1[1],f1[2],f2)
+           print("F is")
+           print(F)
+           V=findunknown(f1[2][1])
+           print("V is")
+           print (V)
+           
+           T=F
+           L = freshvarlistf(T[0])
+           print("L is")
+           print(L)
+           while(not(L==[])):
+              if not(L[0] in V[1]):
+                 return False
+              L=L[1:]
            #print("The term after renaming")
            #print(F)
            S=stratify(graphf(F[0]),F[1])
            #print(S)
            if S[0]=="stratification failure":
-               #print("first return point")
+               #print("first return p2][oint")
                return False
            #print(displayt(["set",F[1][1],F[1][2],F[0]]))
-           setunknown2(f1[2][1],["set",F[1][1],F[1][2],F[0]])
-           return True
+           if findvalues(f1[2][1],unknownassignments)==[]:
+                unknownassignments=   [[f1[2][1],["set",F[1][1],F[1][2],F[0]]]]+unknownassignments          
+                setunknown2(f1[2][1],["set",F[1][1],F[1][2],F[0]])
+                return True
+           return equalt(["set",F[1][1],F[1][2],F[0]],findvalues(f1[2][1],unknownassignments)[0])
     #print ([f2[0],f2[2][0], findunknown(f2[2][1])])    
     if f2[0]=="e" and f2[2][0]=="var" and not(findunknown(f2[2][1])=="error"):
            #print("Got here")
 
 
            F=renamevarf2(f2[1],f2[2],f1)
+           print("F is")
+           print(F)
+           V=findunknown(f2[2][1])
+           print("V is")
+           print(V)
+           T=F
+           L = freshvarlistf(T[0])
+           print("L is")
+           print(L)
+           while(not(L==[])):
+              if not(L[0] in V[1]):
+                 return False
+              L=L[1:]
            #print("The term after renaming")
            #print(F)           
            S=stratify(graphf(F[0]),F[1])
            #displayt(["set",F[1][1],F[1][2],F[0]])          
            if S[0]=="stratification failure":  return False
-           #print(displayt(["set",F[1][1],F[1][2],F[0]]))          
-           setunknown2(f2[2][1],["set",F[1][1],F[1][2],F[0]])
-           return True
+           #print(displayt(["set",F[1][1],F[1][2],F[0]]))
+           if findvalues(f2[2][1],unknownassignments)==[]:
+                unknownassignments=   [[f2[2][1],["set",F[1][1],F[1][2],F[0]]]]+unknownassignments
+                setunknown2(f2[2][1],["set",F[1][1],F[1][2],F[0]])
+                return True
+           return equalt(["set",F[1][1],F[1][2],F[0]],findvalues(f2[2][1],unknownassignments)[0])            
+    if (not(f1[0]==f2[0])) and (f1[0]=="let" or f2[0]=="let"):
+        return equalf(defexpandf(f1),defexpandf(f2))
+
     if isrelation(f1[0]) or isrelation(f2[0]):
         #print("second return point")
         return False
@@ -1704,7 +1840,8 @@ def done():
     
     global theproof
     global theline
-
+    global unknownassignments
+    unknownassignments=[]
     # adding reflexivity of equality as an axiom
 
     if len(theproof[theline][1])>0:
@@ -1881,7 +2018,7 @@ def freshvarlistf(f):
     if f[0]=="~":  return freshvarlistf(f[1])
     if isconnective(f[0]):  return freshvarlistf(f[1])+freshvarlistf(f[2])
     if isquantifier(f[0]):  return freshvarlistf(f[3])
-    if f[0]=="let" and t[3][0] == "defined":  return freshvarlistt(f[2])
+    if f[0]=="let" and f[3][0] == "defined":  return freshvarlistt(f[2])
     if f[0]=="let":  return freshvarlistt(f[2])+freshvarlistf(f[3])
 
 # we use this device to replace witnesses introduced by right
@@ -2083,8 +2220,8 @@ def theoremcut(s):
     usercommand("theoremcut('"+s+"')\n")
     S=findvalues(s,theorems)[0][0]
     #Q=findvalues(s,theorems)[0][1][0]
-    R=[[],[atify2f(S)],[s]]
-    T=[[atify2f(S)]+P[0],P[1],[-1]]
+    R=[[],[hashifyf(S)],[s]]
+    T=[[hashifyf(S)]+P[0],P[1],[-1]]
     theproof=theproof+[R]+[T]
     theproof[theline][2]=[len(theproof)-2,len(theproof)-1]
     linestack=[len(theproof)-1]+linestack

@@ -1,4 +1,4 @@
-from graph import *
+from graph2 import *
 setlog("eqtransitive")
 start ("AxAyAz>&=xy=yz=xz")
 

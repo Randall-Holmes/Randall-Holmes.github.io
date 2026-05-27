@@ -1,4 +1,4 @@
-from graph import *
+from graph2 import *
 
 deff ("C", "Ax>exaexb")
 start ("AxAyAz > & :ax:byC :ay:bzC :ax:bzC")
