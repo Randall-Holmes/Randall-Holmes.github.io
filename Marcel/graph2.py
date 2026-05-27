@@ -2,6 +2,17 @@
 # by (Lavinia) Randall Holmes, intellectual property
 # rights to be respected to the extent of preserving this attribution, please.
 
+# 5/26/2026:  new version.  Changed left and right action so that
+# definition expansions are not done on equations.  This required rewriting
+# of scripts.  It also led to discovery of a serious bug.
+
+# further work:  I intend to have equalt and equalf expand definitions
+# to check for equality.
+
+# I can report from script debugging that the reduction in definition
+# expansion is helpful, and also that varelim is very powerful (as I knew
+# from earlier versions).
+
 # 5/23/2026  Global free variables can have values set by setunknown.
 # theorems are atified by theoremcut.  This means that free atted variables
 # can be eliminated by setunknown.  Usefulness of theorems (and definitions)
@@ -211,7 +222,7 @@ def setlog(s):
     logfile.close()
     logfilename="logs/"+s+'logfile.py'
     logfile=open(logfilename,'w')
-    logfile.write('from graph import *\n\n')
+    logfile.write('from graph2 import *\n\n')
 
 def usercommand(s):
 
@@ -660,45 +671,16 @@ def newvariable(v):
     variables=variables+[v[1]]
     return v
 
+def newvariable2(v):
+    global variables
+    if v[1] in variables: return newvariable2(["var",nextvarname(v[1]),v[2]])
+    #variables=variables+[v[1]]
+    return v
+
 # this substitute a fresh variable function is hardly used, except by the equality function.
 # all other uses could simply be handled by a function which generated a fresh variable.
 
-"""
-def renamevart0(v,w,t):
-    global variables
 
-    #global unknowns
-    if (w in variables):  return renamevart(v,nextvarname(w),t)
-    #if v in unknowns: unknowns=dropitem(v,unknowns)+[w]
-    if t[0]=="var" and t[1]==v:
-        return ["var",w,t[2]]
-    if t[0]=="var":
-        return t
-    if t[0]=="set" and t[1]==v:  return t
-    if t[0]=="set":  return ["set",t[0],t[1],renamevarf0(v,w,t[3])]
-    
-def renamevarf0(v,w,f):
-    global variables
-    if (w in variables):  return renamevarf(v,nextvarname(w),f)
-    if isrelation(f[0]):  return[f[0],renamevart0(v,w,f[1]),renamevart0(v,w,f[2])]
-    if f[0]=="~": return [f[0],renamevarf0(v,w,f[1])]
-    if isconnective(f[0]):  return[f[0],renamevarf0(v,w,f[1]),renamevarf0(v,w,f[2])]
-    if isquantifier(f[0]) and f[1]==v: return f
-    if isquantifier(f[0]):  return [f[0],f[1],f[2],renamevarf0(v,w,f[3])]
-
-def renamevart(v,w,t):
-    global variables
-    R=renamevart0(v,w,t)
-    variables = variables+[w]
-    return R
-
-def renamevarf(v,w,t):
-    global variables
-    R=renamevarf0(v,w,t)
-    variables = variables+[w]
-    return R
-
-"""
 
 # this is the complicated term renaming case needed for
 # higher order matching.  In the term t, the term v is replaced with the
@@ -706,7 +688,7 @@ def renamevarf(v,w,t):
 
 def renamevart2a(v,w,t):
     global variables
-    if (w[1] in variables):  return renamevart2(v,["var",nextvarname(w[1]),w[2]],t)
+    if (w[1] in variables):  return renamevart2(v,newvariable2(w),t)
     if v[0]=="var" and t[0]== "var" and t[1]==v[1]:  return [w,w]
     if not(v[0]=="var") and ((not(t[0]=="var")) or (t[0]=="var" and findunknown(t[1])=="error") and equalt(v,t)):
         return [w,w]
@@ -714,15 +696,18 @@ def renamevart2a(v,w,t):
     if t[0]=="var":  return [t,w]
     if t[0]=="set" and v[0]=="var" and t[1]==v[1]:  return [t,w]
     if t[0]=="set":  return [["set",t[0],t[1],renamevarf2a(v,w,t[3])[0]],w]
+    if t[0]=="defined":  return [t,w]
+    if t[0]=="let":  return [["let",t[1],renamevart2a(v,w,t[2]),renamevart2a(v,w,t[3])],w]
     
 def renamevarf2a(v,w,f):
     global variables
-    if (w[1] in variables):  return renamevarf2(v,["var",nextvarname(w[1]),w[2]],f)
+    if (w[1] in variables):  return renamevarf2(v,newvariable2(w),f)
     if isrelation(f[0]):  return[[f[0],renamevart2a(v,w,f[1])[0],renamevart2a(v,w,f[2])[0]],w]
     if f[0]=="~": return [[f[0],renamevarf2a(v,w,f[1])[0]],w]
     if isconnective(f[0]):  return[[f[0],renamevarf2a(v,w,f[1])[0],renamevarf2a(v,w,f[2])[0]],w]
     if isquantifier(f[0]) and v[0] == "var" and f[1]==v[1]: return [f,w]
     if isquantifier(f[0]):  return [[f[0],f[1],f[2],renamevarf2a(v,w,f[3])[0]],w]
+    if f[0]=="let":  return [["let",f[1],renamevart2a(v,w,f[2]),renamevart2a(v,w,f[3])],w]
 
 def renamevart2(v,w,t):
     global variables
@@ -1658,6 +1643,7 @@ def equalf(f1,f2):
     #print ([f1[0],f1[2][0], findunknown(f1[2])])
     if f1[0]=="e" and f1[2][0]=="var" and not(findunknown(f1[2][1])=="error"):
            #print("Got here")
+
            F=renamevarf2(f1[1],f1[2],f2)
            #print("The term after renaming")
            #print(F)
@@ -1672,6 +1658,8 @@ def equalf(f1,f2):
     #print ([f2[0],f2[2][0], findunknown(f2[2][1])])    
     if f2[0]=="e" and f2[2][0]=="var" and not(findunknown(f2[2][1])=="error"):
            #print("Got here")
+
+
            F=renamevarf2(f2[1],f2[2],f1)
            #print("The term after renaming")
            #print(F)           
@@ -1682,7 +1670,7 @@ def equalf(f1,f2):
            setunknown2(f2[2][1],["set",F[1][1],F[1][2],F[0]])
            return True
     if isrelation(f1[0]) or isrelation(f2[0]):
-        print("second return point")
+        #print("second return point")
         return False
     if not(f1[0]==f2[0]):  return False
     if f1[0]=="~":  return equalf(f1[1],f2[1])
@@ -1796,10 +1784,10 @@ def leftaction(f):
         w=newvariable(["var","x",newint-1])
         A=["A",v[1],v[2],[">",["A",w[1],w[2],["X",["e",w,f[1]],["e",w,v]]],["e",v,f[2]]]]
         return [[[A],[]]]   
-    if f[0]=="=" and (f[2][0]=="let" or f[2][0]=="defined"):
-        return [[[[f[0],f[1],defexpandt(f[2])]],[]]]
-    if f[0]=="=" and (f[1][0]=="let" or f[1][0]=="defined"):
-        return [[[[f[0],defexpandt(f[1]),f[2]]],[]]]
+    #if f[0]=="=" and (f[2][0]=="let" or f[2][0]=="defined"):
+        #return [[[[f[0],f[1],defexpandt(f[2])]],[]]]
+    #if f[0]=="=" and (f[1][0]=="let" or f[1][0]=="defined"):
+        #return [[[[f[0],defexpandt(f[1]),f[2]]],[]]]
          
     if f[0]=="=":
         newint=newint+1
@@ -1843,10 +1831,10 @@ def rightaction(f):
         #return [[[],[A]]]
 # this is the extensional right rule for NF;  the one for SF is obtained by
 #reversing the membership statements
-    if f[0]=="=" and (f[2][0]=="let" or f[2][0]=="defined"):
-        return [[[],[[f[0],f[1],defexpandt(f[2])]]]]
-    if f[0]=="=" and (f[1][0]=="let" or f[1][0]=="defined"):
-        return [[[],[[f[0],defexpandt(f[1]),f[2]]]]]
+    #if f[0]=="=" and (f[2][0]=="let" or f[2][0]=="defined"):
+        #return [[[],[[f[0],f[1],defexpandt(f[2])]]]]
+    #if f[0]=="=" and (f[1][0]=="let" or f[1][0]=="defined"):
+        #return [[[],[[f[0],defexpandt(f[1]),f[2]]]]]
     
     if f[0]=="=":
         newint=newint+1
@@ -2148,7 +2136,7 @@ def replaceablearbitrary(t,u):
 def varelim():
 
     global theproof
-    global proofstack
+    global linestack
     global freshvars
     global proofstack
     if len(theproof[theline][0])==0:
