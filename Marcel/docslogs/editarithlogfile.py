@@ -1,5 +1,5 @@
 from graph2 import *
-setlog("editarith")
+#setlog("editarith")
 
 deft ("Z", "{xAy~eyx")
 deft ("N", "{x~=xx")

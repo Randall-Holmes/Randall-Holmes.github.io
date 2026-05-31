@@ -6,6 +6,7 @@ r'''
 
 \author{Lavinia Randall Holmes}
 
+\usepackage{verbatim}
 \usepackage{amssymb}
 \usepackage{bussproofs}
 \usepackage{amssymb}
@@ -22,6 +23,13 @@ r'''
  rights to be respected to the extent of preserving this attribution, please.
  
  \begin{description}
+ 
+ \item[5/31/2026:]  Notes to self as I edit.  The occurrence index counter might need to be updated
+ when {\tt theoremcut} is executed.  This might be faked using a substitution.  Addressed this issue:  the cut
+ instance of the theorem has all new occurrence indices.
+ 
+ It remains interesting to try to improve the display of stratifications, though the ones actually displayed in normal
+ work, the cycles witnessing stratification failure and the type tables for definitions, are actually pretty readable at this point.
  
  \item[5/29/2026:]  The self-documented literate programming version of this code.
  
@@ -130,7 +138,7 @@ r'''
  \begin{itemize}
  
  \item Decluttering of sequents (pruning propositions from left or right) should be supported.  The autopruning feature
- of previous versions of Marcel makes for more economical formal proofs.
+ of previous versions of Marcel makes for more economical saved formal proofs.
  
  \item  It would be nice to have a parser for something more like the output notation.  An approach might be to parse with the Polish notation as the target, then check by applying the display function that we got the right thing.
  
@@ -141,6 +149,8 @@ r'''
  \end{itemize}
 
 \section{The code}
+
+The initial utilities handle things to do with scripting.  Marcel generates a Python script which will repeat a session, if prompted correctly.
 
 \begin{verbatim}
   '''
@@ -180,6 +190,8 @@ a basic construction in the formula type.  The quantifiers are the usual univers
 There is a construction for defined predicates to be discussed later.
 
 Terms are either variables (single lower case letters possibly followed by one or more primes {\tt `} or {\tt *}), set abstracts, or defined terms, to be discussed later.
+
+There is a much more complete discussion of the language of Marcel below.
 
 \begin{verbatim}
 '''
@@ -391,7 +403,7 @@ There are additional variables {\tt @v} which cannot be input by the user (gener
 or use of theorems):  they can be addressed with some commands using their output notation.  There are
 internal variables {\tt \#v} used in the innards of the definition feature which should never be seen by the user.
 
-Variables have occurrence indices which are managed by the prover and never seen by the user.  Two variables have the same occurrence index precisely if they are bound by the same binder (quantifier or set abstraction).
+Variables have occurrence indices which are managed by the prover and never seen by the user.  Two occurrences of a variable have the same occurrence index precisely if they are bound by the same binder (quantifier or set abstraction).
 
 \item Set abstracts are of the form $\{v \mid \phi\}$ where $\phi$ is a formula and $v$ is a variable.  The input notation
 is {\tt \{v$\phi$} and the output notation is {\tt \{v | $\phi$\}}.  It is useful to note that the parser will not accept
@@ -932,6 +944,14 @@ def subsf(v,n,t,u):
     T=displaceocct(t,d)
     return subs1f(v,n,T,u)
 
+def raisef(f):
+    global newint
+    a=occf(f)
+    d=newint-a[0]+1
+    newint=a[1]+d
+    F=displaceoccf(f,d)
+    return F
+
 # functions for changing variable names to fresh names.
 # new names will be generated using priming if necessary.
 
@@ -1067,7 +1087,7 @@ Defined terms and formulas are required to be uniquely typed (up to uniform disp
 
 The graph for a variable has a base node with weight 0 links in both directions to the variable occurrence.
 
-The graph for a set $\{x\mid \phi\}$ has graph consisting of the graph for $\phi$ with a base node with a weight $1$ link from $x$ and a weight $-1$ link to $x$.
+The graph for a set $\{x\mid \phi\}$ has graph consisting of the graph for $\phi$ with a base node with a weight $1$ link from the bound occurrence of $x$ and a weight $-1$ link to the bound occurrence of $x$.
 
 The graph for a defined term consists of graphs for terms substituted in with links from base nodes of those terms
 to the base node of the whole term and back with weights determined by the types of the keys in the definition relative to the type of the whole term defined.
@@ -1083,7 +1103,7 @@ a node $w$ to compute a distance from the starting node to $w$.  If the distance
 In the master algorithm we process each term with finite distance from the starting node once, and we stop when there are no more nodes with finite distance and report a distance function, if no failure of stratification has occurred.
 
 The criterion for stratification here is that each variable occurrence which is connected to the starting variable (which may be taken to be the binding variable in a set abstract) is assigned a consistent finite type.  Note that different occurrences of free variables may be assigned different types.  The parser tests set abstracts and does
-not even allow unstratified ones to be displayed.  The definition facility requires that the body of a definition be stratified and that no node be at infinite distance from the starting point (stratified and connected), and further that variables of the same shape are always assigned the same type independent of occurrence index (so quite rigidly stratified).
+not even allow unstratified ones to be displayed.  The definition facility requires that the body of a definition be stratified and that no node be at infinite distance from the starting point (stratified and connected), and further that variables of the same shape, even if free, are always assigned the same type independent of occurrence index (so quite rigidly stratified).
 
 \begin{verbatim}
 
@@ -1829,7 +1849,7 @@ One then has a limited number of commands as options.
 
 \item  The {\tt getleft(n)} command brings the $n$th proposition on the left (above the horizontal bar, actually) to the front.
 
-\item The {\tt getright(n)} command brings the $n$ proposition on the right to the front.
+\item The {\tt getright(n)} command brings the $nth$ proposition on the right to the front.
 
 \item The {\tt done()} command invites the prover to recognize that the current sequent is an axiom (that the propositions at the beginnings of the lists on left and right are the same).  Identity of propositions up to $\alpha$-equivalence, ignoring occurrence data, is supported.
 
@@ -1847,18 +1867,21 @@ should remove lots of junk lines from proofs.
 Where the {\tt done} command fails, one might want to use {\tt back()} to restore the previous state, because the prover might have
 made undesired global substitutions for unknowns.
 
-\item  The {\tt setunknown(u,t)} command allows one to set the value (globally in the proof) of an ``unknown'' {\tt u} (a free variable introduced by the right rule for the existential quantifier or the left rule for the universal quantifier) with a term {\tt t}.  In a usual presentation, a specific term is supplied when the rule is applied:  here the unity of the {\tt left()} and {\tt right} rules is preserved by separating out the choice of witness.  It may also be useful to delay choosing the witness until it is evident from developments in the proof what might work.   There are limitations on what can replace an ``unknown'' [the term replacing it cannot contain any fresh variable introduced by quantifier rules which is introduced after the unknown which is being replaced].
+\item  The {\tt setunknown(u,t)} command allows one to set the value (globally in the proof) of an ``unknown'' {\tt u} (a free variable introduced by the right rule for the existential quantifier or the left rule for the universal quantifier) to a term {\tt t}.  In a usual presentation, a specific term is supplied when the rule is applied:  here the unity of the {\tt left()} and {\tt right()} rules is preserved by separating out the choice of witness.  It may also be useful to delay choosing the witness until it is evident from developments in the proof what might work.   There are limitations on what can replace an ``unknown'' [the term replacing it cannot contain any fresh variable introduced by quantifier rules which is introduced after the unknown which is being replaced].
 
-The command also now allows a value not including any fresh variables to be set for a variable free in the sequent.  This gives theorems and definitions with free variables in them some limited usefulness.
+The command also now allows a value not including any fresh variables to be set for a variable free in the sequent.  This gives theorems and definitions with free variables in them some limited usefulness.  It provides support for the design
+decision of using output notation for {\tt u}, since a variable beginning with an at sign (as a free variable introduced by application of a definition or theorem will) has no input notation.
+
+The user should note that the notation for {\tt t} is input notation:  variables in {\tt t} will have to be typed differently!
 
 \item  The {\tt Cut(f)} command executes the cut rule with the formula {\tt f}.
 
-\item The {\tt varelim()} command uses an equation at the head of the left list of the sequent to make a global substitution for a fresh variable
+\item The {\tt varelim()} command uses an equation at the head of the left list of the sequent to make a global substitution in the current sequent for a fresh variable
 when priority conditions on fresh variables permit this.  The equation is then eliminated.  The use of this is to reduce variable clutter, which we recall
 is a problem in large proofs which we encountered in older versions of this system.
 
 \item  The {\tt deft(key,term)} command introduces a defined term (defining {\tt key}, a possibly primed capital letter, as {\tt term}) and the {\tt deff(key,formula)} command similarly introduces a defined formula.  These can further be accessed by assigning values to variables: 
-in the definiendum:  a defined term can be used as a constant, but a defined formula must have at least one assignment.  I need to provide examples.
+in the definiens:  a defined term can be used as a constant, but a defined formula must have at least one assignment.  I need to provide examples.
 
 \item The {\tt savetheorem} command saves the current theorem:  it takes the name to be given to the theorem as its sole argument.
 
@@ -1869,11 +1892,10 @@ in the definiendum:  a defined term can be used as a constant, but a defined for
 \item The {\tt skip()} command lets you move the current sequent to the end of the work queue and go to the next one.  This lets you cycle through all the work to be done and view it (This command is much more sensible than its analogues in older versions, where we used
 an actual tree rather than a list of sequents as our data structure).
 
-\item The {\tt back()} command undoes a command, roughly speaking.  A stack of proof states is updated from time to time.  This function
-is not entirely reliable [but seems to be improving.]
+\item The {\tt back()} command undoes a command, roughly speaking.  A stack of proof states is updated from time to time.  Security problems experienced with it earlier seem to be resolved (fingers crossed).
 
 \item  The {\tt setlog} command sets the name of a log file to which user commands will be appended as they are executed.
-This creates scripts which can be used to reconstruct work done under the prover.  I close a log file by setting the log file to a default name ({\tt setlog (``done'')}).  There must be a directory called {\tt logs} in the current directory for a log file to be set up successfully.
+This creates scripts which can be used to reconstruct work done under the prover.  I close a log file by setting the log file to a default name ({\tt setlog (``done'')} ).  There must be a directory called {\tt logs} in the current directory for a log file to be set up successfully.
 
 \item The {\tt demo()} and {\tt undemo()} commands turn demo mode on and off.  Running a script in demo mode causes a pause after each command (hit any key to continue).
 
@@ -1881,10 +1903,10 @@ This creates scripts which can be used to reconstruct work done under the prover
 The {\tt showtheorems()} command pages through all the theorems (hit any key to continue).  {\tt showdefts()} and {\tt showdeffs()} are analogous.
 {\tt showtheproof()} shows the current complete proof all at once, possibly a large object.  {\tt LogTheProof()} does the same thing and also posts it to the log.
 
-\item {\tt makeconstructive()} and {\tt makeclassical()} toggle between classical and intuitionistic logic.  Toggling to intuitionistic logic clears the current proof.  Intuitionistic logic is implemented by causing the {\tt left()} and {\tt right()} commands to discard all right propositions in a sequent except the first one {\em before\/} applying a rule.  Afterwward, it might display more than one proposition on the right:  use {\tt getright()} to decide which one to keep.  Note that the stratified comprehension of this version of Marcel is more liberal than the stratified comprehension used in presentations of intuitionistic NF up to this point.
+\item {\tt makeconstructive()} and {\tt makeclassical()} toggle between classical and intuitionistic logic.  Toggling to intuitionistic logic clears the current proof.  Intuitionistic logic is implemented by causing the {\tt left()} and {\tt right()} commands to discard all right propositions in a sequent except the first one {\em before\/} applying a rule.  Afterward, it might display more than one proposition on the right:  use {\tt getright()} to decide which one to keep.  Note that the stratified comprehension of this version of Marcel is more liberal than the stratified comprehension used in presentations of intuitionistic NF up to this point.
 \end{itemize}
 
-The prover maintains a stack of sequents needing attention.  When the {\tt left()} or {\tt right()} rule is applied, one or two sequents are appended to the end of the proof [which is a list of sequents with pointers (really just lists of line numbers) from sequents to ones justifying them] and one then proceeds to the first sequent on the stack.  Other rules affecting proof state have appropriate effects on the stack.
+The prover maintains a stack of sequents needing attention.  When the {\tt left()} or {\tt right()} rule is applied, one or two sequents are appended to the end of the proof [which is a list of sequents with pointers (really just lists of line numbers) from sequents to ones justifying them] and added to the top of the stack, and one then proceeds to the first sequent on the stack.  Other rules affecting proof state have appropriate effects on the stack.
 
 When every line has a justification, the proof is complete.
 
@@ -1905,11 +1927,16 @@ In addition to applying the rules stated below, the prover also expands defined 
 
 # a proof is a list of sequents
 
-# a sequent contains three parts, a list of left proposition, a list of right propositions,
-# and a list of positions (integers) of sequents in the proof intended to justify it, or [-1] if it is not yet
-# proved.  A sequent rule will take the left and right propositions and return
-# one or two new sequents, inserting them at the end of the proof as
-# further goals, and adjusting the third component of the original sequent
+# a sequent contains three parts, a list of left proposition, 
+# a list of right propositions,
+# and a list of positions (integers) of sequents 
+# in the proof intended to justify it, or [-1] if it is not yet
+# proved.  A sequent rule will take 
+# the left and right propositions and return
+# one or two new sequents, inserting them 
+# at the end of the proof as
+# further goals, and adjusting the third component 
+# of the original sequent
 # to point to them.
 
 def displayproplist(L):
@@ -1976,7 +2003,8 @@ def showtheline():
 #using a stack to indicate which line we want to do next
 
 #this is the stack of lines to be dealt with
-#when it is exhausted, simply proceed to the next line (if this actually happens)
+#when it is exhausted, simply proceed to the next line 
+# (if this actually happens)
 
 linestack=[]
 
@@ -2059,7 +2087,8 @@ def displaynextline():
     print ("Next!")
 
 # USER COMMAND
-#put the current line at the bottom of the stack of sequents to be dealt with
+#put the current line at the bottom 
+# of the stack of sequents to be dealt with
 #and bring on the next sequent
 
 def skip():
@@ -2082,10 +2111,12 @@ def skip():
 
 # USER COMMAND
 
-# restore the last prover state for which displaynextline() was called.  Historically a bit buggy.
+# restore the last prover state for which displaynextline() was called.  
+# Historically a bit buggy.
 # it seems to be reliable now.
 
-# it is worth noting that definitions and saved theorems are not part of the proof state managed by back().
+# it is worth noting that definitions and saved theorems 
+# are not part of the proof state managed by back().
 # it is not clear to me whether this could cause trouble.
 
 def back():
@@ -2159,7 +2190,8 @@ def start(f):
     theline=0
     displaynextline()
 
-# utility to generate the line numbers on which proof of a line depends immediately
+# utility to generate the line numbers 
+# on which proof of a line depends immediately
 
 def nextrefs(n):
     i=0
@@ -2257,13 +2289,16 @@ def right():
     linestack=theproof[theline][2]+linestack
     displaynextline()
 
-#because of our occurrence based mechanics, determining equality of terms takes work.
+#because of our occurrence based mechanics, 
+# determining equality of terms takes work.
 #everything has a price.
 
-# When terms are not equal and evaluating an unknown will make them true, the appropriate
+# When terms are not equal and evaluating 
+# an unknown will make them true, the appropriate
 # setunknown action is executed to make them equal.
 
-# we might want a nondynamic equality function, but for the moment done() is the only client
+# we might want a nondynamic equality function, 
+# but for the moment done() is the only client
 
 r'''
 
@@ -2342,7 +2377,8 @@ def equalt(t1,t2):
         return equalt(t1[3],t2[3])
 
 # dynamic higher order matching is now installed in equalf
-# if one matches with a statement of membership in an unknown it will try to set the unknown
+# if one matches with a statement of membership in an unknown 
+# it will try to set the unknown
 # to make formulas equivalent.
 
 def equalf(f1,f2):
@@ -2450,7 +2486,8 @@ def equalf(f1,f2):
 
 # USER COMMAND
 # recognize sequent axioms.  I believe this is the only place
-# where equality of terms and formulas is used so far.  Bespoke rules for equality
+# where equality of terms and formulas is used so far.  
+# Bespoke rules for equality
 # would use it no doubt.
 
 # because of higher order matching, there are in some cases axioms
@@ -2488,7 +2525,8 @@ def done():
 
 # move a desired left or right term to the front of the list
 
-# these had to be written differently to let the back() function work through them
+# these had to be written differently 
+# to let the back() function work through them
 
 # USER COMMAND
 
@@ -3082,8 +3120,10 @@ def showdeffs():
         T=T[1:]
 
 
-# copies of theorems introduced by theoremcut are "atified" for good variable management.
-# the ability to use setunknown on free variables means that theorems with free variables
+# copies of theorems introduced by theoremcut 
+# are "atified" for good variable management.
+# the ability to use setunknown on free variables 
+# means that theorems with free variables
 # can be used.
 
 # USER COMMAND
@@ -3097,7 +3137,7 @@ def theoremcut(s):
     P=theproof[theline]
     if findvalues(s,theorems)==[]:  return "Theorem "+s+" does not exist"
     usercommand("theoremcut('"+s+"')\n")
-    S=findvalues(s,theorems)[0][0]
+    S=raisef(findvalues(s,theorems)[0][0])
     #Q=findvalues(s,theorems)[0][1][0]
     R=[[],[hashifyf(S)],[s]]
     T=[[hashifyf(S)]+P[0],P[1],[-1]]
@@ -3110,7 +3150,8 @@ def theoremcut(s):
 # make sure there is always a log file
 
 # install a variable elimination command.  Use an equation on the left
-# to eliminate a variable then drop the equation.   If both sides of the equation are variables,
+# to eliminate a variable then drop the equation.  
+#  If both sides of the equation are variables,
 # eliminate the one introduced latest.
 
 # It should be safe to replace the replaceable variable with the other
@@ -3132,7 +3173,8 @@ def replaceable(t,u):
         return replaceablearbitrary(t,u)
     return True
 
-# we do not want to make a replacement of arbitrary variables which impedes setting an unknown
+# we do not want to make a replacement 
+# of arbitrary variables which impedes setting an unknown
 
 def replaceablearbitrary(t,u):
     global unknowns
@@ -3163,7 +3205,10 @@ def varelim():
         return("error")
     L=theproof[theline][0][0][1]
     R=theproof[theline][0][0][2]
-    if not(L[0] =="var" and L[1] in freshvars) and not(R[0]=="var" and R[1] in freshvars):  print("Neither term in the leading equation is a fresh variable")
+    if (not(L[0] =="var" 
+        and L[1] in freshvars) 
+        and not(R[0]=="var" and R[1] in freshvars)):  
+        print("Neither term in the leading equation is a fresh variable")
     if not(R[0] =="var" and R[1] in freshvars):
         if L[1] in freshvarlistt(R):  return "circularity error"
         V=L[1]
@@ -3191,6 +3236,67 @@ def varelim():
 setlog("autolog")
 r'''
 \end{verbatim} 
+
+\section{Some sample script files}
+
+The ``by lines {\tt [-1]}''  annotations have to do with the fact that the lines are not justified at the time they are displayed in a transcript.  If I displayed the
+saved proofs, the list would refer to the numbers of lines justifying the given line,  But the displayed proof file would not show the commands
+used to carry out the proof.
+
+We note here (5/6/2026) that we have just installed the ability to log all user commands to an executable file, so  work can be saved and expanded on
+(and also run again after revisions of the software.  All example files are now executable Python files generated by the prover as logs of proofs I carried out.  This looks much the same as what I pasted from Python windows in earlier versions, because the logs contain
+the state of the display at each step in comments.
+
+\subsection{Inclusion is transitive}
+
+Here is a proof that inclusion is transitive.  The text was generated by the new scripting features of the system.   In this proof,
+we used the {\tt LogTheProof()} command to append the final form of the proof to the script file as a comment.
+
+\verbatiminput{docslogs/inclusionistransitivelogfile.py}
+\subsection{Equality is transitive}
+
+Here is a proof that equality is transitive, upgraded to use higher order matching.
+
+\verbatiminput{docslogs/neweqtranslogfile.py}
+
+\subsection{Coextensionality implies Leibniz equality}
+
+This example is perhaps a bit strange.  This is a proof that coextensionality implies Leibniz equality:  it uses the weird left rule for membership
+statements which I have introduced experimentally, in order to avoid the need to cut.  It is also a nice sequent proof, and examplifies the notation and style of use of the prover, so here it is.
+
+
+This new version uses the new higher order matching facility.
+
+\verbatiminput{docslogs/coextensionalitylogfile.py}
+
+
+
+\subsection{A weird example with unknown variables}
+
+The entry line illustrates the new capability to use spaces, parentheses, brackets, and commas as padding in term and formula input.  There is no balance checking:
+parentheses and brackets are just for the person entering the term [to make sure they do it right].
+
+\verbatiminput{docslogs/weirdnesslogfile.py}
+
+
+\subsection{Atomic inclusion is membership}
+
+This proves the equivalence of $\{x\} \subseteq y$ and $x \in y$.  It involves both term and formula definition.
+
+\verbatiminput{docslogs/atomicinclusionlogfile.py}
+
+\subsection{Projection theorems for the ordered pair}
+There may be some wheel spinning in this proof.  It contains definitions of the unordered pair, the ordered pair,
+and the first projection operator on ordered pairs, and the proof that the first projection operator works.  This is an enormous text.
+
+\verbatiminput{docslogs/editpairslogfile.py}
+
+\subsection{Foundations of arithmetic}
+
+Also a large file.  Some work on definitions and axioms for arithmetic.
+
+\verbatiminput{docslogs/editarithlogfile.py}
+
 \end{document}
  '''
 

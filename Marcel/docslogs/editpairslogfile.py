@@ -1,6 +1,6 @@
 from graph2 import *
 
-setlog("newpairslog")
+#setlog("newpairslog")
 deft ("P", "{xV=xa=xb")
 deft ("O", ":a:aa:baP:b:aa:bbPP")
 deft ("'P", "{xAy>eyaexy")
