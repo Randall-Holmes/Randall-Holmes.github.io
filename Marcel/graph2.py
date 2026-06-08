@@ -18,15 +18,24 @@ r'''
 \tableofcontents
 \subsection{version remarks}
 
- Graph stratification version of the Marcel theorem prover, 5/28/2026
+ Graph stratification version of the Marcel theorem prover, 6/7/2026
  by (Lavinia) Randall Holmes, intellectual property
  rights to be respected to the extent of preserving this attribution, please.
  
  \begin{description}
+
+ \item[6/7/2026:]  savethproof and loadproof commands now are recorded to logs
+ 
+ \item[6/6/2026:]  The {\tt savetheproof} and {\tt loadproof} arguments have been installed, allowing one to leave a proof,
+ prove a required lemma, then rejoin it at the same point.
+ 
+ \item[6/2/2026:]  Installed digits as definienda.  Fixed harmless bug which posted definienda to the variable list.
+ Installed a brief construction for entering arguments to let terms.
  
  \item[5/31/2026:]  Notes to self as I edit.  The occurrence index counter might need to be updated
  when {\tt theoremcut} is executed.  This might be faked using a substitution.  Addressed this issue:  the cut
- instance of the theorem has all new occurrence indices.
+ instance of the theorem has all new occurrence indices.  It is worth noting (because this concerned me)
+ that there is no such problem for definitions:  defexpand already updates occurrences.
  
  It remains interesting to try to improve the display of stratifications, though the ones actually displayed in normal
  work, the cycles witnessing stratification failure and the type tables for definitions, are actually pretty readable at this point.
@@ -116,7 +125,7 @@ r'''
  system does prevent the binding of the free ``fresh variables"
  introduced by the quantifier rules.
  
- It is important to note that the basic stratification condition, that the lengths of all paths between the same pair of variables is the same, was stated (in an incorrect form) by Quine in the original NF paper, and the correction
+ It is important to note that the basic stratification condition, that the lengths of all paths between the same pair of variables are the same, was stated (in an incorrect form) by Quine in the original NF paper, and the correction
  allowing paths to contain converse membership (with negative length) as well as membership with positive length
  (and equality with zero length) was proposed (as a correction to Quine) by Thomas Forster years ago.  Nolan was an incidental inspiration to the present effort, but had not proposed anything not prefigured in earlier work:  and what we do is actually quite different.  It is a nod to Nolan that the data reported on stratification failure is a cycle of nonzero length in the graph associated with a formula.
 
@@ -146,7 +155,34 @@ r'''
  
  \item  I have never made any particular attempt to write tactics for Marcel in any of its versions.  Perhaps I should think about this.
  
+ \item  I should work on an interactive script editor to make it easier to correct a script (if the proof strategy needs to be changed, or if a change in the code messes up its behavior).  One envisions the ability to run a script in demo mode, but
+ also to be able to drop in and change a command and/or insert or delete some commands, and then resume.  A related idea would be construction of proofs from scripts, or designing scripts to be as far as possible stable after code changes.
+ 
+ \item Can the definition facility be modified to enable safe use of definitions of unstratified concepts?
+ 
+ \item  Do we want additional primitives, such as pairs and projections, relation and function abstraction, and so forth?  What about defined binding constructions?
+ 
  \end{itemize}
+ 
+ \subsection{Philosophical considerations}
+ 
+ The author is tempted to contemplate Marcel as an implementation of the program of the original New Foundations paper.   We maintain, in line with what Quine actually says, is that the purpose of the paper was not to propose a weird new set theory, though that was its practical effect.  The purpose of the paper was to explore the logicist viewpoint of the foundations of mathematics.
+ 
+ Quine was at pains to minimize his primitives (probably to be sure that they were logical).  He uses the Sheffer stroke and the universal quantifier to cover the ground of first order logic.  We adopt more primitives, but of course they are all definable in terms of Quine's primitives, and Quine defines all of them and makes essential use of them.  It might be fun in this connection to add the Sheffer stroke with suitable sequent rules to our machinery, to support the demonstration of its sufficiency.   Our style of first order logic proof is different from Quine's.  But the state of the art has improved.
+ 
+ The final primitive is membership.  In this connection we have two concerns to air.
+ 
+ The first is whether membership is a logical notion.  What we say on this is, {\em predication\/} is certainly a logical notion, and membership is a case of predication.  The additional element is that we are given a criterion (stratification) for allowing reification of a predicate.  Reification of predicates is needed because in $x \in y$, $y$ represents a predicate to be considering as holding or not holding of $x$, but it is also an object.  Some predicates are being taken to be objects.  Some cannot be so taken, the index example being non-self-membership.  Quine's adoption of this criterion was purely pragmatic.  We believe that there may be a way to motivate it which preserves the impression that it might be a logical notion.   We need a reason to believe that the stratification criterion picks out those predicates which are ``genuine'' in some sense.  We have elsewhere suggested such a motivation, based on the idea that stratified predicates are those which are invariant in a suitable sense under redefinitions of the membership relation by permutation...the underlying idea being that the identification of predicates with particular objects required to implement membership is extrinsic to the predicates and to the objects, and that genuine properties of objects should be invariant under redefinition of membership.   There is also the original view which probably accurately represents Quine's thinking:  logic of order $\omega$ is logic.  Then the
+ collapse of the types into one can be evaluated as a pragmatic move to simplify matters, still leaving us with an implementation of logic of order $\omega$, though incidentally creating more predicates which we cannot (or at least do not) reify.
+ 
+ The second is whether we should at the same time introduce other related notions, such as abstract relations or functions
+ (for which pairs are useful).  In the domain of first order logic we did this, but Quine's working set of concepts
+ includes all of the ones we used.  We have not so far chosen to implement relational or functional abstraction directly in this system [though we did implement lambda terms, and also pairs and their projections, as primitives in previous versions of Marcel].  So far we are choosing to keep membership and set abstraction as our primitives.  Quine did not take set abstraction as primitive:  he defined set abstraction as a species of definite description, and used a contextual definition of definite description, following Russell.  We note that we can define (stratified) definite description using set abstraction.
+ What we {\em have\/} done is provided a systematic way to introduce defined notions (with both term and formula values);  we aim for a reasonably fluent treatment of pairs, relations and functions without introducing new primitive constructions.  It is an adventure.
+ 
+ We are letting the logic of this prover be New Foundations.  In earlier versions of Marcel, we implemented NFU;  the original motivation was to implement Marcel Crabb\'e's sequent calculus SF for stratified set theory with no extensionality at all but with a set abstraction construction, for which he was able to prove cut elimination.  New Foundations is very convenient in certain ways.  We do want to bear in mind how the logic could be weakened to NFU, and how the development of a body of mathematics would change.
+ 
+ The mathematical project we have in mind is to carry out Specker's proof of the ``Axiom'' of Infinity in NF.   This will involve developing arithmetic, which is always interesting.
 
 \section{The code}
 
@@ -419,6 +455,9 @@ Note that all defined formulas are typographically identical to defined terms,  
 
 \end{itemize}
 
+A new feature:  the form {\tt .tu} abbreviates {\tt :atu} while {\tt.t.uv} abbreviates {\tt :at:buv}, {\tt.t.u.vw} abbreviates
+{\tt :at:bu:cvw} and so forth.  This works for both terms and formulas.
+
 \begin{verbatim}
 '''
 
@@ -601,6 +640,11 @@ def applyprime(p,L):
     return [L[0]]+[L[1]+p]+L[2:]
 # this makes it possible to prime both variables and definienda.
 
+def raisekey(t):
+    if t[0]=="let" and len(t[1][1])==1:
+        return ["let",gett(chr(ord(t[1][1])+1)),t[2],raisekey(t[3])]
+    return t
+
 def gett(s):
     global newint
     global variables
@@ -609,7 +653,8 @@ def gett(s):
     if isprime(s[0]):
         v=applyprime(s[0],gett(s[1:]))
         if v == "!!!":  return "!!!"
-        if not(v[1] in variables):
+        if (("a" <= v[1][0] and v[1][0] <= "z")
+            and not(v[1] in variables)):
             variables=variables+[v[1]]
         return v
     if "a" <= s[0] and s[0] <= "z":
@@ -617,7 +662,8 @@ def gett(s):
             variables=variables+[s[0]]
         newint=newint+1
         return ["var",s[0],newint]
-    if "A" <= s[0] and s[0] <= "Z":
+    if (("A" <= s[0] and s[0] <= "Z")
+        or ("0" <= s[0] and s[0] <= "9")):
         return ["defined",s[0]]
     if s[0]==":":
         V=gett(s[1:])
@@ -629,6 +675,13 @@ def gett(s):
                 or B[0]=="let")):
             return "!!!"
         return ["let",V,T,B]
+    if s[0]==".":
+        T=gett(s[1:])
+        B=gett(restt(s[1:]))
+        if (not(B[0]=="defined"
+                or B[0]=="let")):
+            return "!!!"
+        return ["let",gett("a"),T,raisekey(B)]
     if s[0]=="{":
         var=gett(s[1:])
 
@@ -654,13 +707,17 @@ def restt(s):
     #if s[0]=="#":  return restt(s[1:])
     if isprime(s[0]):  return restt(s[1:])
     if "a"<=s[0] and s[0]<="z": return s[1:]
-    if "A"<=s[0] and s[0]<="Z": return s[1:]
+    if (("A"<=s[0] and s[0]<="Z")
+        or ("0" <= s[0] and s[0] <= "9")): return s[1:]
     if s[0]==":":  return restt(restt(restt(s[1:])))
+    if s[0]==".":  return restt(restt(s[1:]))
     if s[0]=="{":
         var=gett(s[1:])
         if not(var[0]=="var"):  return ""
         return restf(restt(s[1:]))
     return ""
+
+
 
 def getf(s):
     global newint
@@ -679,7 +736,7 @@ def getf(s):
         return [s[0],var[1],var[2],
                 reinstf(var[1],var[2],
                         getf(restt(s[1:])))]
-    if s[0]==":": return gett(s)
+    if s[0]==":" or s[0]==".": return gett(s)
     # getting a term here is a trick;
     # let terms have same form in both classes, and in this way
     # we forbid defined formulas without assignments to arguments.
@@ -1466,6 +1523,9 @@ Evaluation of a defined term with substitution suffixes (prefixes in the input n
 The {\tt deft} and {\tt deff} user commands introduce defined terms and formulas respectively.  When a definition is displayed, stratification information about the definiens is shown.  The {\tt showdeft}
 and {\tt showdeff} functions allow them to be viewed.
 
+NOTE:  the official criterion for a definiens is that it be stratified and connected.  But in fact it must contain at least one variable:  a definiens consisting entirely of defined notions is reported as unstratified and disconnected for the moment.
+Replacing a definiens $\Delta$ with $\{x\mid x \in \Delta\}$ should fix this cheaply.
+
 \begin{verbatim}
 
 '''
@@ -1475,6 +1535,7 @@ and {\tt showdeff} functions allow them to be viewed.
 
 # return a simplified table of relative types
 # which now omits the clutter of base nodes
+# and also requires a unique type for each variable shape
 
 def findvalues(v,L):
     if L==[]:  return []
@@ -1851,6 +1912,8 @@ One then has a limited number of commands as options.
 
 \item The {\tt getright(n)} command brings the $nth$ proposition on the right to the front.
 
+\item The {\tt pruneleft(n)} and {\tt pruneright(n)} commands are as {\tt getleft(n)} and {\tt getright(n)} except that they bring the designated proposition to the front of the appropriate side of the sequent, then remove it.  This can be used with care to declutter an argument.
+
 \item The {\tt done()} command invites the prover to recognize that the current sequent is an axiom (that the propositions at the beginnings of the lists on left and right are the same).  Identity of propositions up to $\alpha$-equivalence, ignoring occurrence data, is supported.
 
 The {\tt done()} command is dynamic:  its underlying equality test will make an equation between an unknown variable in one term or formula and the matching term in the other term or formula true by executing the {\tt setunknown} command on the fly.  It does this safely (it tests that the
@@ -1893,6 +1956,10 @@ in the definiens:  a defined term can be used as a constant, but a defined formu
 an actual tree rather than a list of sequents as our data structure).
 
 \item The {\tt back()} command undoes a command, roughly speaking.  A stack of proof states is updated from time to time.  Security problems experienced with it earlier seem to be resolved (fingers crossed).
+
+\item The {\tt savetheproof(s)} command will save a snapshot of the current proof state with a key given as its argument;
+{\tt loadproof(s)} command will return to the proof saved with the key given as argument.   This allows one to leave a proof
+and prove needed lemmas to be introduced by {\tt theoremcut}, for example, then return with the lemma ready to use.
 
 \item  The {\tt setlog} command sets the name of a log file to which user commands will be appended as they are executed.
 This creates scripts which can be used to reconstruct work done under the prover.  I close a log file by setting the log file to a default name ({\tt setlog (``done'')} ).  There must be a directory called {\tt logs} in the current directory for a log file to be set up successfully.
@@ -2085,6 +2152,64 @@ def displaynextline():
             print("Hit any key to continue\n")
             input()
     print ("Next!")
+
+# USER COMMAND
+
+# save a snapshot of the current proof state
+
+savedproofs=[]
+
+def savetheproof(s):
+    global savedproofs
+    global theline
+    global linestack
+    global proofstack
+    global variables
+    global unknowns
+    global freshvars
+    global newint
+    global theproof
+    global theline
+    if not(findvalues(s,savedproofs) == []):
+        print ("A proof has already been saved as "+s)
+        return "name already used"
+    usercommand('savetheproof("'+s+'")\n')
+    savedproofs = [[s,[theproof,theline,
+                     newint,countbase,
+                     variables,freshvars,
+                     unknowns,linestack,proofstack]]]+savedproofs
+
+# USER COMMAND
+
+# load a saved proof state
+
+def loadproof(s):
+
+    global savedproofs
+    global theline
+    global linestack
+    global proofstack
+    global variables
+    global unknowns
+    global freshvars
+    global newint
+    global theproof
+    global theline
+    if findvalues(s,savedproofs)==[]:
+        print("No saved proof state found that is called "+s)
+        return "No state found with that name"
+    usercommand('loadproof("'+s+'")\n')
+    P=findvalues(s,savedproofs)[0]
+    theproof=P[0]
+    theline=P[1]
+    newint=P[2]
+    countbase=P[3]
+    variables=P[4]
+    freshvars=P[5]
+    unknowns=P[6]
+    linestack=P[7]
+    proofstack=P[8]
+    look()
 
 # USER COMMAND
 #put the current line at the bottom 
@@ -2534,7 +2659,7 @@ def getleft(n):
     
     global theproof
 
-    if n> len(theproof[theline][0]):
+    if n>= len(theproof[theline][0]):
         displaynextline
         return "the left proposition list is not that long"
     usercommand("getleft("+str(n)+")\n")
@@ -2551,13 +2676,50 @@ def getleft(n):
 def getright(n):
     global theproof
 
-    if n> len(theproof[theline][1]):
+    if n>= len(theproof[theline][1]):
         displaynextline()
         return "the right proposition list is not that long"
     usercommand("getright("+str(n)+")\n")
     theproof= (theproof[0:theline]
                +[[theproof[theline][0],
                   (theproof[theline][1][n:]
+                   +theproof[theline][1][0:n]),
+                  theproof[theline][2]]]
+               +theproof[theline+1:])
+    displaynextline()
+
+# USER COMMANDS
+
+# remove line n from the left or right
+
+def pruneleft(n):
+    
+    global theproof
+
+    if n>= len(theproof[theline][0]):
+        displaynextline
+        return "the left proposition list is not that long"
+    usercommand("pruneleft("+str(n)+")\n")
+    theproof= (theproof[0:theline]
+               +[[(theproof[theline][0][n+1:]
+                   +theproof[theline][0][0:n]),
+                  theproof[theline][1],
+                  theproof[theline][2]]]
+               +theproof[theline+1:])
+    displaynextline()
+
+# USER COMMAND
+
+def pruneright(n):
+    global theproof
+
+    if n>= len(theproof[theline][1]):
+        displaynextline()
+        return "the right proposition list is not that long"
+    usercommand("pruneright("+str(n)+")\n")
+    theproof= (theproof[0:theline]
+               +[[theproof[theline][0],
+                  (theproof[theline][1][n+1:]
                    +theproof[theline][1][0:n]),
                   theproof[theline][2]]]
                +theproof[theline+1:])
@@ -3214,7 +3376,7 @@ def varelim():
         V=L[1]
         T=R
     if not(L[0] =="var" and L[1] in freshvars):
-        print(L[1] in freshvars)
+        #print(L[1] in freshvars)
         if R[1] in freshvarlistt(L):  return "circularity error"
         V=R[1]
         T=L
@@ -3246,6 +3408,8 @@ used to carry out the proof.
 We note here (5/6/2026) that we have just installed the ability to log all user commands to an executable file, so  work can be saved and expanded on
 (and also run again after revisions of the software.  All example files are now executable Python files generated by the prover as logs of proofs I carried out.  This looks much the same as what I pasted from Python windows in earlier versions, because the logs contain
 the state of the display at each step in comments.
+
+It can be noted that scripts are {\em enormous\/}.  They are not as enormous as they appear to be:  the text of a script would be much shorter if it were only the command lines, but also very hard to understand.  We choose to include the generated output displays, and we have not been economical in terms of space in implementing our output displays.   The proofs are long because they are made of many small steps without automation.  We could perhaps investigate the implementation of proof tactics in Marcel, but we have not done so so far.
 
 \subsection{Inclusion is transitive}
 
