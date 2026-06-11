@@ -235,23 +235,32 @@ We transform any stratifiable formula $\phi$ with type assignment $\sigma$ into 
 
 Recall that we introduced the notation $\iota(x)$ for $\{x\}$ because we can conveniently write $\iota^n(x)$ for iteration of this operation $n$ times.
 
-Where $N$ is the maximum element of the range of $\sigma$, replace each variable $x$  in the formula $\phi$ with $\iota^{N-\sigma(x)}(x)$.
+Where $N$ is the maximum element of the range of $\sigma$, replace each variable $x$  in the formula $\phi$ with a variable $x^*$ representing $\iota^{N-\sigma(x)}(x)$.  Variables continue to have the same reference whereever they appear, because they always appear at the same type.  A bound variable $x^*$ is of course supposed restricted to $\iota^{N-\sigma(x)}``V$ (add an atomic formula
+$x^* \in \iota^{N-\sigma(x)}``V$ connected appropriately to restrict the quantifier).
 
 To preserve the meaning of the formula, we need to replace the relations in atomic formulas.
+\end{slide}
 
-Any atomic formula $x \in y$ becomes $$\iota^{N-\sigma(x)}(x) ???\iota^{N-\sigma(y)}(y).$$  Note that this
-is  $\iota^{N-\sigma(x)}(x) ??? \iota^{N-(\sigma(x)+1)}(y)$ and can be helpfully written $\iota^M(x) ??? \iota^{M-1}(y)$ (where $M=N-\sigma(x)$)  Now if $M=1$ (the smallest possible value) we want $\{x\} ??? y$ to be equivalent to $x \in y$.
+\begin{slide}
+
+Any atomic formula $x \in y$ is then interpreted as $$\iota^{N-\sigma(x)}(x) ???\iota^{N-\sigma(y)}(y),$$  where ??? is a relation to be determined.  Note that this
+is  $\iota^{N-\sigma(x)}(x) ??? \iota^{N-(\sigma(x)+1)}(y)$ and can be helpfully written $\iota^M(x) ??? \iota^{M-1}(y)$ (where $M=N-\sigma(x)$)  Now if $M=1$ (the smallest possible value) we want $\{x\} ??? y$ to be equivalent to $x \in y$ in the original sense.
 The relation to use is the inclusion relation with domain restricted to the collection of singletons.  The collection of singletons
 is $\iota``V= {\tt dom}(V \times V)^{\iota}$, so the desired relation of ``atomic inclusion'' is $E = (\iota``V \times V) \cap [\subseteq]$.
-Then ??? in the general formula $\iota^M(x) ??? \iota^{M-1}(y)$ is $E^{\iota^{M-1}}$ (the notation indicating iteration of the singleton image operation on relations $M-1$ times).  Other atomic relations are simply replaced by suitable iterated singleton images:  the other relations are easier because they are representable and will be flanked by variables assigned the same type, so the same number of iterated applications of the singleton operation.
+Then ??? in the general formula $x\in y$ read as $\iota^M(x) ??? \iota^{M-1}(y)$ is $E^{\iota^{M-1}}$ (the notation indicating iteration of the singleton image operation on relations $M-1$ times).  
+
+\end{slide}
+
+\begin{slide}
+Other atomic relations are simply replaced by suitable iterated singleton images:  the other relations are easier because they are representable and will be flanked by variables assigned the same type, so the same number of iterated applications of the singleton operation.
 
 \end{slide}
 \begin{slide}
 This immediately shows that stratified comprehension holds.  A stratified formula $\phi(x)$ converts to a representable formula
-$\phi(\iota^M(x))$.  From its representation, it is straightforward to construct $\{\iota^M(x)\mid \phi\}$ and then application of Set Union
+$\phi(x^*)$ where $x^*$ represents $\iota^M(x)$ for some $M$.  From its representation, it is straightforward to construct $\{\iota^M(x)\mid \phi\}$ and then application of Set Union
 $M$ times gives $\{x\mid \phi\}$.
 
-Someone might think of parameters in $\phi$ here.  We note that $x=a$ for any free variable $a$ is represented by $\{(x,a)\mid x=x\}$, which exists by our axioms, being $V \times \{a\}$.
+Someone might think of parameters in $\phi$ here.  We note that $x=a$ for any free variable $a$ is represented by $\{(x,a)\mid x=x\}$, which exists by our axioms, being $V \times \{a\}$.  This applies in particular to the handling of the bounding of quantifiers to iterated singleton images of the universe during the formula transformation.
 \end{slide}
 
 \begin{slide}
@@ -274,6 +283,91 @@ If we adopt strong extensionality we have an axiomatization of NF.  NF proves th
 
 \end{slide}
 
+\begin{slide}
+
+We outline a purely set theoretic solution which works in NFU without Infinity (or in NF, perfectly well).  This uses not relation algebra
+but a more direct representation of constructions of first order logic.
+
+Initially, we adopt from our axiom list above the axioms of weak extensionality (strong extensionality would give NF), empty set, singletons, complement and binary union.
+
+As a term of art for this construction, we call a set a {\em variable\/} iff it has more than one element.
+
+An environment $e$  is a set of pairs $\{\{x\},v\}$ where $v$ is a variable, with the further property that for any variable $w$ there
+is at most one $x$ such that $\{\{x\},w\}\in e$.  Where $e$ is an environment and $\{\{x\},w\}\in e$ we write $x=e[w]$.  Notice that
+the empty set is a domain.
+
+We provide as an axiom that for each environment $e$, the set ${\tt dom}(e)$ of variables which belong to elements of $e$ exists.
+This is convenient but perhaps not necessary:  what we really need in what follows is a convenient way to say that two environments
+have the same domain, and equality of these domain sets is a very handy way to say this.
+
+\end{slide}
+
+\begin{slide}
+
+For any environments $e$ and $f$, we define $e+f$ as $e\cup f$ just in case it is an environment, and otherwise leave it undefined.
+We do not need any additional axioms to show that $e+f$ exists (when it does).
+
+A predicate is a set of environments all of which have the same domain, which we call the Domain of $P$, with the special proviso
+that the empty set has every $d$ as its Domain.
+
+For any predicate $P$ with Domain $d$, we provide by axiom the existence of the predicate $\neg P$ which contains all environments
+with Domain $d$ which do not belong to $P$.
+
+For any predicate $P$ with Domain $d$ and predicate $Q$ with Domain $f$, we provide a predicate $P \wedge Q$ which consists of
+all environments $e+f$ with $e \in P$ and $f \in Q$.
+
+Our choice of notation for these operations is not accidental.
+
+\end{slide}
+
+\begin{slide}
+
+For any predicate $P$ with Domain $d$ and variable $v$, the predicate $(\exists v:P)$ is defined as $P$ if $v$ is not in the Domain of $P$,
+and otherwise as the set of all environments $e$ with $v \not\in {\tt dom}(e)$ such that there is $x$ such that $e \cup \{\{\{x\},v\}\} \in P$.
+
+We provide for any variables $v$ and $w$ the predicate $=_{vw} = \{\{\{\{x\},v\},\{\{x\},w\}\}\mid x=x\}$, the equality relation $v = w$.
+
+We provide for any variables $v$ and $w$ the atomic inclusion relation $E_{v,w} = \{\{\{\{\{x\}\},v\},\{\{y\},w\}\}\mid x\in y\}$, representing
+$v \in \iota``V \wedge v \subseteq w$.
+
+\end{slide}
+
+\begin{slide}
+
+We provide the singleton image construction:  if $P$ is a predicate, the set $P^\iota$ exists which contains $\{\{\{x\}\},\{v,\emptyset\}\}$
+exactly if $P$ contains $\{\{x\},v\}$ [we have to do a little trick here with the variable to preserve stratification].  The fact that we only use variables of special form in $P^\iota$ is irrelevant, as we can use quantification and equality to change the variables to whatever we like.
+
+We provide that if $P$ is a predicate with Domain $\{v\}$, that $\{x\mid \{\{x\},v\} \in P\}$ exists (we provide the ability to recover
+a set from a 1-ary predicate).
+
+We provide the axiom of set union.
+
+\end{slide}
+
+\begin{slide}
+
+It is evident from the way we define operations on predicates that we can represent any formula of first order logic in which each
+atomic formula is represented by a predicate in an obvious sense by a set.
+
+Thus, if we carry out the transformation on a stratified formula described above, amounting to replacing each variable with a suitable iterated singleton to bring everything to the same relative type, we can see that some iterated singleton image of any set defined by a stratified formula exists, and so by union that set exists.
+
+Note that  restriction of values of a variable to $n$-ary singletons for any given $n$ is straightforward, and further that fixing the
+value of a variable to any desired constant value is straightforward (this handles parameters).
+
+\end{slide}
+
+\begin{slide}
+
+We think our approach here may have more general applicability.  Rather than building some ad hoc seeming toolkit of set theoretical operations which happens to handle representation of formulas, we provide a quite direct set theoretical representation of what it is
+to be a predicate of a collection of free variables (a collection of assignments of values to the variables which make the predicate true)
+and then provide the logical operations on predicates thus represented directly.  It is fun that we are using general set theoretical
+objects as variables.  Of course we are only really interested in environments with finite domain and predicates with finite Domain, but before we have the power of set comprehension, we cannot naturally even define what this means.  So we do not restrict ourselves.
+
+It may also be the case that we can show under strong assumptions that some infinitary logic works in extensions of NFU.
+
+
+
+\end{slide}
 
 \end{document}
 
