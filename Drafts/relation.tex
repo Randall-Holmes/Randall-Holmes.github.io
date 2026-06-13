@@ -334,8 +334,8 @@ $v \in \iota``V \wedge v \subseteq w$.
 
 \begin{slide}
 
-We provide the singleton image construction:  if $P$ is a predicate, the set $P^\iota$ exists which contains $\{\{\{x\}\},\{v,\emptyset\}\}$
-exactly if $P$ contains $\{\{x\},v\}$ [we have to do a little trick here with the variable to preserve stratification].  The fact that we only use variables of special form in $P^\iota$ is irrelevant, as we can use quantification and equality to change the variables to whatever we like.
+We provide the singleton image construction:  if $e$ is an environment, the set $e^\iota$ exists which contains $\{\{\{x\}\},\{v,\emptyset\}\}$
+exactly if $e$ contains $\{\{x\},v\}$ [we have to do a little trick here with the variable to preserve stratification].  $P^\iota$ is defined as the set of $e^\iota$ such that $e \in P$, which is stipulated to exist by axiom.  The fact that we only use variables of special form in $P^\iota$ is irrelevant, as we can use quantification and equality to change the variables to whatever we like.
 
 We provide that if $P$ is a predicate with Domain $\{v\}$, that $\{x\mid \{\{x\},v\} \in P\}$ exists (we provide the ability to recover
 a set from a 1-ary predicate).
@@ -366,6 +366,61 @@ objects as variables.  Of course we are only really interested in environments w
 It may also be the case that we can show under strong assumptions that some infinitary logic works in extensions of NFU.
 
 
+
+\end{slide}
+
+\begin{slide}
+ 
+ This can be reconstrued as giving a semantics for formulas of first order logic, with correlated axioms that certain sets always exist.
+ 
+ As initial framework, provide weak extensionality (or strong if desired), empty sets, singletons, complements and binary unions.
+ 
+ Define a variable as a set with more than one element.  We use letters from $p$ to $w$ to stand for variables, by convention.
+ 
+ Define an environment as a collection $e$ of sets $\{\{x\},v\}$ where $v$ is (as our convention suggests) a variable, in which each variable
+ is an element of no more than one element of $e$.  We use letters from $d$ to $h$ by convention to represent environments.  Notice that the empty set is an environment.
+ 
+ The domain ${\tt dom}(e)$ of an environment $e$ is the set of all variables which belong to elements of the environment.  We provide by axiom
+ that all environments have domains.
+ 
+ We enclose a formula of first order logic in brackets to represent its semantics.  We omit brackets inside brackets.
+ 
+ Define $[u=v]$ as the set of all environments $\{\{\{x\},u\},\{\{x\},v\}\}$.  We provide that this exists for each $u,v$.
+ 
+ Define $[u,E,v]$ as the set of all environments $\{\{\{\{x\}\},u\},\{\{y\},v\}\}$ where $x \in y$.  This is the semantics for the relation of atomic inclusion.  We provide that this exists for each $u,v$.
+ 
+ Define $[v=a]$ (where $a$ is any constant) as $\{\{\{a\},v\}\}$.  This doesn't need an axiom.
+ 
+ Define a predicate as a set of environments each element of which has the same domain.  We say that $\Delta$ is a Domain of a predicate $P$ just in case $\Delta$ is the domain of each element of $P$, defining the Domain of the empty set as the empty set.    Notice that atomic formulas defined just above are predicates.
+ 
+ Where $P$ is a predicate, define $[\neg P]$ as the set of all environments with domain the Domain of $P$ which do not belong to $P$.
+ Notice that $[\neg[\neg P]]=P$ unless $P$ contains all environments with domain its Domain, in which case $[\neg[\neg P]]=\{\emptyset\}$
+Note that by convention we can write just $[\neg\neg P]$. We provide by axiom that negations of predicates exist.
+
+Where $P$ and $Q$ are predicates, define $[P \wedge Q]$ as the set of all environments of the form $e \cup f$ where $e \in P$ and $f \in Q$.  Notice that not all sets of the form $e \cup f$ with $e \in P$ and $f \in Q$ are necessarily environments:  the requirement that
+elements of this set be environments is a genuine restriction.  We provide by axiom that conjunctions of predicates exist.
+
+We can then define semantics for all binary propositional connectives using the usual definitions in terms of negation and conjunction.
+
+Where $P$ is a predicate and $v$ is a variable, define $[(\exists v:P)]$ as the set of all $$e \setminus \{\{\{x\},v\}:x=x\}$$ such that $e \in P$.  We provide by axiom that existential quantifications of predicates exist,
+and note that universal quantifications of predicates can then be defined in a standard way.
+
+We provide for each environment $e$ the environment $e^\iota = \{\{\{\{x\}\},\{v,\emptyset\}\}:\{\{x\},v\}\in P\}$.  We provide for
+each predicate $P$ the predicate $P^\iota = \{e^\iota:e \in P\}$.
+
+We provide for each relation $P$ and variable $v$ the set $\{x:\{\{x\},v\}\in P\}$  (the use of this is to extract the extensions of predicates with singleton Domain, but there is no reason to restrict the statement of the axiom).
+
+We provide the axiom of set union.
+
+Observe that by construction the semantics $[\phi]$ of a formula for which we have provided semantics is the set of all environments representing assignments of values to its free variables which make it true, possibly omitting variables which can be assigned any value desired.
+
+This does not immediately give us semantics for stratified formulas, because we do not have semantics for membership.  The key is to convert any stratified formula to a formula with the same truth value for which we do have semantics.  If $\phi$ is stratified with stratification $\sigma$ with the maximum of its range equal to $N$,
+replace each component membership formula $u \in v$ with $[u\,E\,v]^{\iota^{N-\sigma(v)}}$, replace each formula $u=v$ with
+$[u=v]^{\iota^{N-\sigma(v)}}$, and convert each quantified formula $(\exists v:\psi)$ to $$(\exists v:[v=v]^{\iota^{N-\sigma(v)}}\wedge \psi^*)$$ ($\psi^*$ the already transformed form of $\psi$; with universal quantification considered as defined in terms of existential quantification).  This has the effect of changing all references to values $x$  assigned 
+to variables $v$ to references to $\iota^{N-\sigma(v)}(x)$ [stratification of the formula ensures that the same number of $\iota$'s are affixed to each occurrence of a value assigned to a variable -- the variables themselves are actually changed by the same number of iterated applications of $v \mapsto \{v,\emptyset\}$ to each occurrence, but this can be neglected], without changing the truth value of the formula represented.  A unary stratified predicate $\phi(v)$ with stratification $\sigma$ transforms to a predicate of $\iota^{N-\sigma(v)}(v)$ with semantics (speaking a little loosely), and applying set union $N-\sigma(v)$ times to the extension of this predicate gives
+$\{x:\phi(x)\}$.
+
+Semantics for constants allow us to handle parameters.
 
 \end{slide}
 
