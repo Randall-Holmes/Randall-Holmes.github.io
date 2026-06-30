@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dungeons of DOS — standalone</title>
+<style>
+  :root{
+    --bg:#120c06;
+    --bg2:#1c1209;
+    --amber:#ffb000;       /* P3 phosphor */
+    --amber-dim:#a86a1c;
+    --amber-faint:#5e3d16;
+    --amber-bright:#ffe6b0;
+    --danger:#ff5a35;
+    --sys:#7fd1c0;         /* cool meta tint, used sparingly */
+    --line:#3a2710;
+    --mono:"IBM Plex Mono","JetBrains Mono",ui-monospace,"SF Mono",Menlo,"Cascadia Code",Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--amber);
+    font-family:var(--mono);font-size:15px;line-height:1.55;
+    -webkit-font-smoothing:none;text-rendering:geometricPrecision;
+    overflow:hidden;
+  }
+  /* ambient CRT */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:50;
+    background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,0,0,.18) 3px,rgba(0,0,0,0) 4px);
+    mix-blend-mode:multiply;opacity:.6;
+  }
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:51;
+    background:radial-gradient(120% 120% at 50% 40%,rgba(0,0,0,0) 55%,rgba(0,0,0,.55) 100%);
+  }
+  @keyframes flicker{0%,100%{opacity:1}96%{opacity:1}97%{opacity:.94}98%{opacity:1}}
+  .crt{animation:flicker 7s linear infinite}
+  @media (prefers-reduced-motion:reduce){.crt{animation:none}.blink{animation:none}}
+
+  .shell{height:100dvh;display:grid;grid-template-rows:auto 1fr;}
+  /* status bar */
+  .bar{
+    display:flex;gap:0;align-items:stretch;border-bottom:1px solid var(--line);
+    background:linear-gradient(var(--bg2),var(--bg));font-size:12.5px;letter-spacing:.04em;
+  }
+  .bar .cell{padding:7px 12px;border-right:1px solid var(--line);white-space:nowrap;color:var(--amber-dim)}
+  .bar .cell b{color:var(--amber);font-weight:600}
+  .bar .grow{flex:1;border-right:none;overflow:hidden;text-overflow:ellipsis}
+  .bar .save{color:var(--amber-faint)}
+  .bar .save.ok{color:var(--sys)}
+  .bar .save.warn{color:var(--danger)}
+
+  .main{display:grid;grid-template-columns:1fr 320px;min-height:0}
+  @media (max-width:760px){
+    .main{grid-template-columns:1fr}
+    .fs{display:none}
+    .fs.show{display:flex;position:fixed;inset:42px 0 0 0;z-index:40;border-left:none}
+  }
+
+  /* console */
+  .console{display:flex;flex-direction:column;min-height:0;min-width:0}
+  .scroll{flex:1;overflow-y:auto;padding:14px 16px 6px;scrollbar-width:thin;scrollbar-color:var(--amber-faint) transparent}
+  .scroll::-webkit-scrollbar{width:9px}
+  .scroll::-webkit-scrollbar-thumb{background:var(--amber-faint);border-radius:0}
+  .out{white-space:pre-wrap;word-break:break-word}
+  .out .room{color:var(--amber-bright);font-weight:600;text-shadow:0 0 7px rgba(255,176,0,.25)}
+  .out .sys{color:var(--sys)}
+  .out .dim{color:var(--amber-dim)}
+  .out .bad{color:var(--danger)}
+  .out .good{color:var(--amber-bright)}
+  .out .echo{color:var(--amber-dim)}            /* the player's typed command */
+  .out .err{color:var(--danger)}
+  .out .title{font-size:clamp(28px,8vw,54px);font-weight:600;letter-spacing:.14em;color:var(--amber-bright);text-shadow:0 0 18px rgba(255,176,0,.4);line-height:1;margin:6px 0 3px;display:flex;flex-wrap:wrap;align-items:baseline;gap:.3em}
+  .out .title .of{font-size:.36em;letter-spacing:.34em;color:var(--amber-dim);font-weight:400}
+  .out .subtitle{color:var(--amber-faint);letter-spacing:.04em;font-size:13px;margin-bottom:2px}
+  .out hr{border:none;border-top:1px dashed var(--amber-faint);margin:8px 0;opacity:.5}
+
+  /* input line */
+  .inwrap{display:flex;align-items:baseline;gap:0;padding:6px 16px 16px;border-top:1px solid var(--line)}
+  .prompt{color:var(--amber-dim);white-space:nowrap;margin-right:8px;flex:0 0 auto;max-width:48%;overflow:hidden;text-overflow:ellipsis;direction:rtl;text-align:left}
+  .prompt span{direction:ltr;unicode-bidi:plaintext}
+  #cmd{
+    flex:1;background:transparent;border:none;outline:none;color:var(--amber-bright);
+    font:inherit;caret-color:var(--amber);min-width:0;padding:0;
+  }
+  #cmd::placeholder{color:var(--amber-faint)}
+  .blink{animation:bl 1.05s steps(1) infinite;color:var(--amber)}
+  @keyframes bl{50%{opacity:0}}
+
+  /* filesystem signature panel */
+  .fs{border-left:1px solid var(--line);background:linear-gradient(var(--bg),#0e0905);display:flex;flex-direction:column;min-height:0}
+  .fs h2{margin:0;padding:8px 12px;font-size:11px;letter-spacing:.14em;color:var(--amber-faint);border-bottom:1px solid var(--line);text-transform:uppercase;font-weight:600;display:flex;justify-content:space-between}
+  .fs h2 .x{color:var(--amber-dim);cursor:pointer;display:none}
+  @media (max-width:760px){.fs h2 .x{display:inline}}
+  .tree{flex:1;overflow:auto;padding:10px 12px;font-size:12.5px;white-space:pre;line-height:1.5;color:var(--amber-dim);scrollbar-width:thin;scrollbar-color:var(--amber-faint) transparent}
+  .tree::-webkit-scrollbar{width:8px}.tree::-webkit-scrollbar-thumb{background:var(--amber-faint)}
+  .tree .d{color:var(--amber-bright)}      /* directory */
+  .tree .here{color:var(--amber);font-weight:600}
+  .tree .flag{color:var(--sys)}            /* .$$$ property */
+  .tree .obj{color:var(--amber)}           /* .ob1 */
+  .tree .con{color:var(--amber)}           /* .co1 */
+  .tree .dead{color:var(--danger)}
+  .tree .cmt{color:var(--amber-faint)}
+
+  /* editor modal */
+  .modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(8,5,2,.8)}
+  .modal.show{display:flex}
+  .editor{width:min(680px,94vw);background:var(--bg2);border:1px solid var(--amber-dim);box-shadow:0 0 0 1px #000,0 18px 60px rgba(0,0,0,.7)}
+  .editor .top{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);color:var(--amber);font-size:13px;letter-spacing:.06em}
+  .editor .top .k{color:var(--amber-faint)}
+  .editor textarea{width:100%;height:46vh;resize:vertical;background:#0e0905;color:var(--amber-bright);border:none;outline:none;font-family:var(--mono);font-size:14px;line-height:1.55;padding:14px;white-space:pre}
+  .editor .hint{padding:8px 14px;border-top:1px solid var(--line);color:var(--amber-faint);font-size:11.5px;line-height:1.5}
+  .editor .row{display:flex;gap:10px;padding:10px 14px;border-top:1px solid var(--line)}
+  .btn{font-family:var(--mono);font-size:13px;background:transparent;border:1px solid var(--amber-dim);color:var(--amber);padding:7px 16px;cursor:pointer;letter-spacing:.06em}
+  .btn:hover{background:var(--amber);color:#1a1209}
+  .btn.ghost{border-color:var(--line);color:var(--amber-dim)}
+  .btn.ghost:hover{background:var(--amber-faint);color:#1a1209}
+  a{color:var(--sys)}
+</style>
+</head>
+<body>
+<div class="shell crt">
+  <div class="bar">
+    <div class="cell">DUNGEONS OF <b>DOS</b></div>
+    <div class="cell">LOC <b id="bLoc">—</b></div>
+    <div class="cell">STATE <b id="bState">alive</b></div>
+    <div class="cell grow"><span id="bPath" style="color:var(--amber-faint)"></span></div>
+    <div class="cell save" id="bSave">MEMORY ·</div>
+  </div>
+  <div class="main">
+    <div class="console">
+      <div class="scroll" id="scroll"><div class="out" id="out"></div></div>
+      <div class="inwrap">
+        <div class="prompt"><span id="prompt">C:\&gt;</span></div>
+        <input id="cmd" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="type a command — try  look  ·  help" />
+      </div>
+    </div>
+    <aside class="fs" id="fs">
+      <h2><span>filesystem · the world</span><span class="x" id="fsx">[close]</span></h2>
+      <div class="tree" id="tree"></div>
+    </aside>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="editor">
+    <div class="top"><span id="edTitle">edit</span><span class="k" id="edKind"></span></div>
+    <textarea id="edText" spellcheck="false"></textarea>
+    <div class="hint" id="edHint"></div>
+    <div class="row">
+      <button class="btn" id="edSave">Save</button>
+      <button class="btn ghost" id="edCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================================
+   DUNGEONS OF DOS — an HTML port of M. Randall Holmes's batch-file dungeon.
+   Preserves his architecture:
+     - the WORLD is a virtual filesystem  (rooms / containers / monsters = dirs,
+       properties = flag-files, exits = little "cd" scripts)
+     - COMMANDS live in a registry        (his "verbs are executables on the PATH")
+     - object/monster/command BEHAVIOUR   is editable script in a batch-flavoured
+       mini-language, exactly as his .obj/.con/.bat files were editable
+     - everything PERSISTS                 (window.storage; his game lived on disk)
+   ============================================================================ */
+
+/* ---- persistence: works standalone. Prefer the host runtime if present,
+   otherwise the browser's own localStorage (survives across sessions when you
+   open this file directly), and fall back to memory only in locked sandboxes. */
+const Store = (() => {
+  // 1) host-provided storage (if this file is embedded in such a runtime)
+  if (typeof window !== "undefined" && window.storage && window.storage.get) {
+    return { kind:"host", persistent:true,
+      get:k=>window.storage.get(k).then(r=>r?r.value:null).catch(()=>null),
+      set:(k,v)=>window.storage.set(k,v,false).catch(()=>null) };
+  }
+  // 2) standard browser localStorage (the standalone path: double-click the file)
+  try {
+    const t="__ddos_probe__";
+    window.localStorage.setItem(t,"1"); window.localStorage.removeItem(t);
+    return { kind:"local", persistent:true,
+      get:async k=>{ try{ return window.localStorage.getItem(k); }catch(e){ return null; } },
+      set:async (k,v)=>{ try{ window.localStorage.setItem(k,v); }catch(e){} } };
+  } catch(e){ /* storage blocked (e.g. sandboxed iframe) -> fall through */ }
+  // 3) in-memory (no persistence)
+  const m = new Map();
+  return { kind:"memory", persistent:false, get:async k=>m.has(k)?m.get(k):null, set:async (k,v)=>{m.set(k,v);} };
+})();
+const SAVE_KEY = "ddos:save:v1";
+
+/* ---- DOM ---- */
+const $ = s => document.querySelector(s);
+const outEl=$("#out"), scrollEl=$("#scroll"), cmdEl=$("#cmd"), promptEl=$("#prompt"),
+      treeEl=$("#tree"), bLoc=$("#bLoc"), bState=$("#bState"), bPath=$("#bPath"), bSave=$("#bSave"),
+      modal=$("#modal"), edText=$("#edText"), edTitle=$("#edTitle"), edKind=$("#edKind"), edHint=$("#edHint");
+
+/* ---- console output ---- */
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+function print(text="", cls=""){
+  const div=document.createElement("div");
+  if(cls) div.className=cls;
+  div.innerHTML=esc(text);
+  outEl.appendChild(div);
+  scrollEl.scrollTop=scrollEl.scrollHeight;
+}
+function printRaw(html){const d=document.createElement("div");d.innerHTML=html;outEl.appendChild(d);scrollEl.scrollTop=scrollEl.scrollHeight;}
+function rule(){const d=document.createElement("hr");outEl.appendChild(d);}
+function blank(){print(" ");}
+
+/* ===========================================================================
+   THE DSL  — a tiny batch-flavoured interpreter.
+   One statement per line. Supported:
+     rem ...                         comment
+     echo TEXT                       print (interpolates {arg} {self} {roll})
+     :label / goto LABEL / end       flow
+     pause                           wait for Enter
+     roll                            clock-jitter RNG -> {roll} = 0..9 (asks to press)
+     onroll LO HI then CMD           run CMD if last roll in [LO,HI]
+     if COND then CMD / ifnot COND then CMD
+        COND: exists N | alive N | has PROP N | eq A B | arg | carrying N
+     ascribe PROP [N] / unascribe PROP [N]    set/clear a flag-file
+     wound [N] / kill [N]            sugar over flags
+     destroy N / destroyself         remove a thing / the running object
+     spawn TYPE                      create an instance here
+     slay                            the player dies (rebirth at root)
+     provoke N                       run N's behaviour with arg 'attack'
+     call VERB [ARG] / look          re-enter the command layer
+   Default target N, when omitted, is {arg}.
+   =========================================================================== */
+async function runScript(src, ctx){
+  const lines=String(src).replace(/\r/g,"").split("\n");
+  const labels={};
+  lines.forEach((l,i)=>{const m=l.trim().match(/^:(\S+)/);if(m)labels[m[1].toLowerCase()]=i;});
+  let ip=0, guard=0;
+  const interp=s=>String(s)
+      .replace(/\{arg\}/gi,ctx.arg||"")
+      .replace(/\{self\}/gi,ctx.self?ctx.self.name:"")
+      .replace(/\{roll\}/gi,ctx.roll==null?"":ctx.roll);
+  const here = ()=> ctx.inInventory ? G.player.inventory : currentRoom();
+  const findThing=name=>{const n=(name||ctx.arg||"").toLowerCase();return here().contents[n]||currentRoom().contents[n]||null;};
+
+  function cond(expr){
+    const t=expr.trim().split(/\s+/), k=(t[0]||"").toLowerCase();
+    if(k==="arg") return !!(ctx.arg&&ctx.arg.length);
+    if(k==="noarg") return !(ctx.arg&&ctx.arg.length);
+    if(k==="eq") return interp(t[1]||"").toLowerCase()===interp(t[2]||"").toLowerCase();
+    if(k==="exists") return !!findThing(interp(t[1]));
+    if(k==="notexists") return !findThing(interp(t[1]));
+    if(k==="carrying") return !!G.player.inventory.contents[interp(t[1]||"").toLowerCase()];
+    if(k==="alive"){const x=findThing(interp(t[1]));return !!(x&&x.props&&x.props.alive);}
+    if(k==="notalive"){const x=findThing(interp(t[1]));return !(x&&x.props&&x.props.alive);}
+    if(k==="has"){const x=findThing(interp(t[2]));return !!(x&&x.props&&x.props[(t[1]||"").toLowerCase()]);}
+    return false;
+  }
+  async function exec(line){
+    const raw=line.trim(); if(!raw||raw[0]===":"||/^rem\b/i.test(raw))return;
+    // guarded line
+    let m=raw.match(/^(if|ifnot)\s+(.*?)\s+then\s+(.+)$/i);
+    if(m){const ok=cond(m[2]); if((m[1].toLowerCase()==="if")===ok) await exec(m[3]); return;}
+    const t=raw.split(/\s+/), k=t[0].toLowerCase(), rest=raw.slice(t[0].length).trim();
+    switch(k){
+      case "echo": print(interp(rest)); break;
+      case "blank": blank(); break;
+      case "pause": await waitEnter(); break;
+      case "end": case "stop": ip=lines.length; break;
+      case "goto": {const L=(t[1]||"").toLowerCase(); if(labels[L]!=null) ip=labels[L]; else print("[script: no label "+t[1]+"]","err"); break;}
+      case "roll": ctx.roll = await luckyRoll(); break;
+      case "onroll": {
+        const lo=+t[1],hi=+t[2],mm=raw.match(/then\s+(.+)$/i);
+        if(ctx.roll!=null&&ctx.roll>=lo&&ctx.roll<=hi&&mm) await exec(mm[1]); break;
+      }
+      case "ascribe": setFlag(findThing(interp(t[2])), (t[1]||"").toLowerCase(), true); break;
+      case "unascribe": setFlag(findThing(interp(t[2])), (t[1]||"").toLowerCase(), false); break;
+      case "wound": setFlag(findThing(interp(t[1])), "wounded", true); break;
+      case "kill": {const x=findThing(interp(t[1])); if(x){setFlag(x,"dead",true);setFlag(x,"alive",false);} break;}
+      case "destroy": removeThing(interp(t[1])); break;
+      case "destroyself": if(ctx.self) removeThing(ctx.self.name); break;
+      case "spawn": spawnType(interp(t[1])); break;
+      case "slay": await playerDeath(); ip=lines.length; break;
+      case "provoke": {const x=findThing(interp(t[1])); if(x&&G.types[x.type]) await runScript(G.types[x.type].script,{self:{name:interp(t[1])},arg:"attack"}); break;}
+      case "call": await dispatch((t[1]||"")+" "+t.slice(2).join(" "),true); break;
+      case "look": cmdLook(""); break;
+      default: print("[script: unknown op '"+k+"']","err");
+    }
+  }
+  while(ip<lines.length){ if(++guard>4000){print("[script: runaway]","err");break;} const line=lines[ip++]; await exec(line); }
+}
+
+/* ---- flag-files (.$$$) and instance helpers ---- */
+function setFlag(thing,prop,on){ if(!thing||!thing.props)return; if(on)thing.props[prop]=true; else delete thing.props[prop]; renderFS(); }
+function removeThing(name){const r=currentRoom();const n=(name||"").toLowerCase();
+  if(r.contents[n]){delete r.contents[n];return;} if(G.player.inventory.contents[n])delete G.player.inventory.contents[n];}
+function spawnType(name){const n=(name||"").toLowerCase();const T=G.types[n];const r=currentRoom();
+  if(!T){print("There is no type '"+n+"' to create.","bad");return;}
+  if(r.contents[n]){print("There is already a "+n+" here.","dim");return;}
+  r.contents[n]=newInstance(n);}
+function newInstance(type){const T=G.types[type];
+  if(T.kind==="object")return{kind:"object",type};
+  return{kind:"container",type,props:{},inside:{contents:{}}};}
+
+/* ===========================================================================
+   WORLD = virtual filesystem. A "place" = {name,desc,effects,children,exits,contents}
+   children: dir -> child place (the .dr subfolders, made by DIG, tree only)
+   exits:    dir -> {up:true} | {down:dir} | {warp:[path]}   (WAYS lists these)
+   contents: name -> object|container instance
+   =========================================================================== */
+let G = null; // game state
+
+function place(name,desc,effects=""){return{name,desc,effects,children:{},exits:{},contents:{}};}
+function currentRoom(){let p=G.world; for(const d of G.player.path){p=p.children[d];} return p;}
+function pathAt(arr){let p=G.world; for(const d of arr){if(!p.children[d])return null;p=p.children[d];} return p;}
+function dosPath(){const base="C:\\WINDOWS\\DESKTOP\\DDOS\\"+G.world.name.toUpperCase();
+  const tail=G.player.path.map(d=>d.toUpperCase()+".DR").join("\\");
+  return base+(tail?"\\"+tail:"")+">";}
+
+function seedWorld(){
+  // ---- type library (his .obj / .con masters), behaviour as editable script ----
+  const types={
+    sword:{kind:"object",desc:"A short steel sword, nicked along the edge.",script:
+`rem strike a living thing; wound first, kill the wounded, then it hits back
+ifnot exists {arg} then echo Swing the sword at WHAT? There is no {arg} here.
+ifnot exists {arg} then end
+ifnot alive {arg} then echo The {arg} is not alive. Why attack it?
+ifnot alive {arg} then end
+echo You swing the sword at the {arg}.
+roll
+onroll 0 2 then goto hit
+echo  -- and miss.
+goto back
+:hit
+if has wounded {arg} then goto slay
+wound {arg}
+echo  -- a solid cut. The {arg} is wounded.
+goto back
+:slay
+kill {arg}
+echo  -- the killing blow. The {arg} falls.
+:back
+if alive {arg} then provoke {arg}
+end`},
+    bazooka:{kind:"object",desc:"An anti-tank bazooka. The trigger looks sticky.",script:
+`rem overwhelming, except when it isn't (1-in-10 catastrophic backfire)
+ifnot exists {arg} then echo Aim at WHAT? There is no {arg} here.
+ifnot exists {arg} then end
+echo You shoulder the bazooka, sight the {arg}, and squeeze the trigger.
+roll
+onroll 0 0 then goto boom
+onroll 1 7 then goto kill
+echo The rocket screams past and detonates somewhere harmless.
+end
+:kill
+kill {arg}
+echo A fireball erases the {arg} from history.
+end
+:boom
+echo The tube splits. The bazooka EXPLODES in your hands!
+destroyself
+slay
+end`},
+    baby:{kind:"object",desc:"A startlingly heavy baby. It regards you with suspicion.",script:
+`echo You cradle the baby. It gurgles, spits up on you, and giggles wildly.
+echo (M. Randall Holmes says hi.)
+end`},
+    remote:{kind:"object",desc:"A television remote with one sticky button.",script:
+`ifnot exists tv then echo There is nothing here to point it at.
+ifnot exists tv then end
+if has on tv then goto off
+ascribe on tv
+echo Click. The television wakes into a grainy late-night rerun.
+end
+:off
+unascribe on tv
+echo Click. The television dies to a white dot, then black.
+end`},
+    purse:{kind:"container",desc:"A worn leather purse.",script:``},
+    box:{kind:"container",desc:"A plain wooden box.",script:``},
+    backpack:{kind:"container",desc:"A canvas backpack, mostly empty.",script:``},
+    tv:{kind:"container",desc:"A boxy cathode-ray television.",script:
+`if has on {arg} then echo The screen flickers with an old rerun.
+ifnot has on {arg} then echo The screen is dark.
+end`},
+    // ---- monsters: a .con with ALIVE ascribed. arg 'attack' = retaliate ----
+    orc:{kind:"container",desc:"A rank, tusked orc.",script:
+`if eq {arg} attack then goto hit
+echo The orc snarls and hefts a cleaver.
+end
+:hit
+echo The orc swings back at you!
+roll
+onroll 0 3 then slay
+onroll 4 9 then echo  -- you duck the cleaver.
+end`},
+    cat:{kind:"container",desc:"A large, unbothered cat.",script:
+`if eq {arg} attack then goto hit
+echo The cat watches you with contempt.
+end
+:hit
+echo The cat lashes out, all claws!
+roll
+onroll 0 2 then slay
+onroll 3 9 then echo  -- claws snag only your sleeve.
+end`},
+    kzin:{kind:"container",desc:"A Kzin: eight feet of orange fury and teeth. (Niven says hi.)",script:
+`if eq {arg} attack then goto hit
+echo The Kzin screams a challenge. Its tail whips.
+end
+:hit
+echo The Kzin leaps, claws extended, screaming!
+roll
+onroll 0 4 then slay
+onroll 5 9 then echo  -- it overshoots and skids past.
+end`},
+    gremlin:{kind:"container",desc:"A twitchy gremlin, fond of sabotage.",script:
+`if eq {arg} attack then goto hit
+echo The gremlin cackles and fiddles with something it shouldn't.
+end
+:hit
+echo The gremlin flings a wrench at your head!
+roll
+onroll 0 2 then slay
+onroll 3 9 then echo  -- it clangs off the wall.
+end`},
+    boojum:{kind:"container",desc:"A Boojum. You feel, distinctly, that you should not have come.",script:
+`if eq {arg} attack then goto hit
+echo The Boojum is very nearly not there at all.
+end
+:hit
+echo You strike the Boojum -- and softly and suddenly vanish away,
+echo for the Boojum's a particularly dangerous sort of Snark.
+slay
+end`}
+  };
+
+  // ---- the dungeon itself (a compact homage to his cluttered test zone) ----
+  const root=place("dungeon","The entrance chamber. Cold stone, a guttering torch, and the\nunmistakable hum of an operating system pretending to be a world.");
+  const W={name:"dungeon",children:{},exits:{},contents:{},desc:root.desc,effects:""};
+  Object.assign(W,root);
+
+  function dig(from,dir,back,name,desc){const child=place(name,desc);
+    from.children[dir]=child; from.exits[dir]={down:dir}; child.exits[back]={up:true}; return child;}
+
+  // entrance dressing: a TV + its remote, and a friendly note
+  W.contents.tv=mk("tv"); W.contents.remote=mk("remote");
+
+  const north=dig(W,"north","south","The North Gallery","A long gallery. Bones crunch underfoot.");
+  north.contents.orc=mkAlive("orc");
+  north.contents.purse=mk("purse"); north.contents.purse.inside.contents.sword=mk("sword");
+  north.contents.cat=mkAlive("cat");
+
+  const east=dig(W,"east","west","The Armory","Weapon racks, all empty but one.");
+  east.contents.box=mk("box"); east.contents.box.inside.contents.baby=mk("baby");
+  east.contents.bazooka=mk("bazooka");
+  const alcove=dig(east,"north","south","A Cramped Alcove","Barely room to stand.");
+  alcove.contents.kzin=mkAlive("kzin");
+
+  const south=dig(W,"south","north","A Damp Stair","Water beads on the walls and runs downward.");
+  const cell=dig(south,"east","west","The Old Cell","A cell. Something was kept here, once.");
+  cell.contents.gremlin=mkAlive("gremlin");
+  cell.contents.backpack=mk("backpack");
+  cell.contents.boojum=mkAlive("boojum");
+
+  function mk(type){return{kind:types[type].kind==="object"?"object":"container",type,
+      ...(types[type].kind==="object"?{}:{props:{},inside:{contents:{}}})};}
+  function mkAlive(type){const o=mk(type);o.props.alive=true;return o;}
+
+  return {
+    world:W, types,
+    player:{path:[],inventory:{contents:{}}},
+    bookmark:null,
+    commands:{}, // user-defined script verbs live here; natives are added at runtime
+    version:1
+  };
+}
+
+/* ===========================================================================
+   COMMAND REGISTRY  — natives (JS) + user scripts.  "verbs on the PATH."
+   =========================================================================== */
+const NATIVE = {};
+function defcmd(name,help,fn){NATIVE[name]={help,fn};}
+
+function listExits(){const r=currentRoom();return Object.keys(r.exits);}
+function findHere(name){const r=currentRoom();return r.contents[(name||"").toLowerCase()]||null;}
+function findInv(name){return G.player.inventory.contents[(name||"").toLowerCase()]||null;}
+function typeDesc(type){return (G.types[type]&&G.types[type].desc)||"";}
+function art(w){return /^[aeiou]/i.test(w)?"an":"a";}
+
+/* ---- LOOK: render the room, list contents, activate live monsters ---- */
+async function cmdLook(arg){
+  const r=currentRoom();
+  if(arg){ const x=findHere(arg)||findInv(arg);
+    if(!x){print("Look at WHAT? There is no "+arg+" here.","bad");return;}
+    print(typeDesc(x.type)||("It's "+art(arg)+" "+arg+"."));
+    if(x.kind==="container"){
+      const flags=Object.keys(x.props||{}); 
+      if(flags.length) print("The "+arg+" is "+flags.join(", ")+".","dim");
+      const inside=Object.keys(x.inside.contents);
+      print(inside.length?("Inside the "+arg+": "+inside.join(", ")+"."):("The "+arg+" is empty."),"dim");
+    }
+    return;
+  }
+  blank(); print(r.name,"room"); print(r.desc);
+  if(r.effects && r.effects.trim() && !/^rem\b/.test(r.effects.trim()))
+    await runScript(r.effects,{self:null,arg:""});
+  const names=Object.keys(r.contents);
+  if(names.length){
+    blank();
+    for(const n of names){
+      const x=r.contents[n];
+      const dead=x.props&&x.props.dead;
+      print("  There is "+art(n)+" "+n+" here"+(dead?" (dead)":"")+".", dead?"dim":"");
+    }
+  } else { blank(); print("  There is nothing here.","dim"); }
+  // activate living monsters (his look "activates" the .con scripts)
+  for(const n of names){ const x=r.contents[n];
+    if(x.kind==="container" && x.props && x.props.alive && G.types[x.type] && G.types[x.type].script.trim()){
+      await runScript(G.types[x.type].script,{self:{name:n},arg:""});
+    }
+  }
+  renderFS();
+}
+defcmd("look","look / look <thing> — describe the room, or peer at a thing or inside a container.",(a)=>cmdLook(a.trim()));
+defcmd("l","alias for look.",(a)=>cmdLook(a.trim()));
+defcmd("examine","examine <thing> — look closely.",(a)=>cmdLook(a.trim()));
+
+/* ---- WAYS / GO ---- */
+defcmd("ways","ways — list the directions you can go from here.",()=>{
+  const e=listExits(); blank();
+  print(e.length?("Ways out:  "+e.join("   ")):("No obvious way out. Try  dig."));
+});
+async function go(dir){
+  dir=(dir||"").trim().toLowerCase();
+  const r=currentRoom(), ex=r.exits[dir];
+  if(!dir){print("Go WHERE? (try  ways)","bad");return;}
+  if(!ex){print("You can't go "+dir+" from here. (try  ways)","bad");return;}
+  if(ex.up) G.player.path.pop();
+  else if(ex.down) G.player.path.push(ex.down);
+  else if(ex.warp){ if(pathAt(ex.warp)) G.player.path=ex.warp.slice(); else {print("The passage collapses into static. (broken wormhole)","bad");return;} }
+  await cmdLook(""); save();
+}
+defcmd("go","go <direction> — move. North, south, in, down, or any way you dug.",(a)=>go(a));
+["north","south","east","west","up","down","in","out"].forEach(d=>defcmd(d,"go "+d+".",()=>go(d)));
+[["n","north"],["s","south"],["e","east"],["w","west"],["u","up"],["d","down"]].forEach(([a,d])=>defcmd(a,"go "+d+".",()=>go(d)));
+
+/* ---- INVENTORY ---- */
+defcmd("inventory","inventory / inventory <container> — what you're carrying.",(a)=>{
+  a=a.trim().toLowerCase(); blank();
+  let where=G.player.inventory.contents;
+  if(a){const c=findInv(a); if(!c||c.kind!=="container"){print("You aren't carrying "+art(a)+" "+a+" to look in.","bad");return;}
+    where=c.inside.contents; const n=Object.keys(where);
+    print(n.length?("In your "+a+": "+n.join(", ")):("Your "+a+" is empty.")); return;}
+  const n=Object.keys(where);
+  print(n.length?"You are carrying:":"You aren't carrying anything.");
+  n.forEach(k=>print("  "+art(k)+" "+k));
+});
+defcmd("i","alias for inventory.",a=>NATIVE.inventory.fn(a));
+
+/* ---- GET / DROP (subset of his prepositional mover) ---- */
+function parseGet(a){ // get X [from Y] [into Z]
+  const t=a.trim().split(/\s+/).filter(Boolean); const o={item:t[0]||"",from:"",into:""};
+  for(let i=1;i<t.length;i++){const w=t[i].toLowerCase();
+    if((w==="from")&&t[i+1]){o.from=t[++i].toLowerCase();}
+    else if((w==="into"||w==="in")&&t[i+1]){o.into=t[++i].toLowerCase();}}
+  return o;
+}
+defcmd("get","get <thing> [from <container>] [into <container>] — pick something up.",(a)=>{
+  const {item,from,into}=parseGet(a); blank();
+  if(!item){print("Get WHAT?","bad");return;}
+  let srcMap=currentRoom().contents;
+  if(from){const c=findHere(from); if(!c||c.kind!=="container"){print("There is no "+from+" here to take from.","bad");return;}
+    if(c.props&&c.props.alive&&!c.props.stunned){print("The "+from+" objects to being looted!","bad");return;}
+    srcMap=c.inside.contents;}
+  const it=srcMap[item]; if(!it){print("There is no "+item+" "+(from?("in the "+from):"here")+" to get.","bad");return;}
+  if(it.kind==="container"&&into){print("You can't put a container inside a container.","bad");return;}
+  if(it.kind==="container"&&it.props&&it.props.alive&&!it.props.stunned){print("The "+item+" objects to being carried!","bad");return;}
+  let dstMap=G.player.inventory.contents;
+  if(into){const c=findInv(into)||findHere(into); if(!c||c.kind!=="container"){print("You have no "+into+" to put it in.","bad");return;}
+    dstMap=c.inside.contents;}
+  if(dstMap[item]){print("You can't hold more than one "+item+".","bad");return;}
+  dstMap[item]=it; delete srcMap[item];
+  print("You pick up the "+item+"."); renderFS(); save();
+});
+defcmd("take","alias for get.",a=>NATIVE.get.fn(a));
+defcmd("drop","drop <thing> [into <container>] — put something down.",(a)=>{
+  const {item,into}=parseGet(a); blank();
+  if(!item){print("Drop WHAT?","bad");return;}
+  const it=findInv(item); if(!it){print("You aren't carrying "+art(item)+" "+item+".","bad");return;}
+  let dstMap=currentRoom().contents;
+  if(into){const c=findHere(into)||findInv(into); if(!c||c.kind!=="container"){print("There is no "+into+" to drop it into.","bad");return;}
+    if(c.props&&c.props.alive&&!c.props.stunned){print("The "+into+" objects!","bad");return;}
+    dstMap=c.inside.contents;}
+  if(dstMap[item]){print("There is already "+art(item)+" "+item+" there.","bad");return;}
+  dstMap[item]=it; delete G.player.inventory.contents[item];
+  print("You drop the "+item+"."); renderFS(); save();
+});
+
+/* ---- USE: run an object's behaviour script ("use sword on orc") ---- */
+defcmd("use","use <object> [on <target>] — use a carried object.",async(a)=>{
+  const t=a.trim().split(/\s+/).filter(Boolean);
+  const obj=(t[0]||"").toLowerCase(); let arg="";
+  const oni=t.findIndex(w=>w.toLowerCase()==="on"); if(oni>=0)arg=(t[oni+1]||"");
+  else if(t[1]) arg=t[1];
+  blank();
+  if(!obj){print("Use WHAT?","bad");return;}
+  const it=findInv(obj)||findHere(obj);
+  if(!it){print("You don't have "+art(obj)+" "+obj+" to use.","bad");return;}
+  const T=G.types[it.type];
+  if(!T||!T.script.trim()){print("Nothing happens.","dim");return;}
+  await runScript(T.script,{self:{name:obj,inst:it},arg});
+  renderFS(); save();
+});
+
+/* ---- world-building: DIG / CREATE / ASCRIBE / ANIMATE / HOMER / WORMHOLE ---- */
+defcmd("dig","dig <dir> <back> — carve a new room; <back> names the return way.",(a)=>{
+  const t=a.trim().split(/\s+/).filter(Boolean); blank();
+  const dir=(t[0]||"").toLowerCase(), back=(t[1]||"back").toLowerCase();
+  if(!dir){print("dig <direction-to-new-room> <direction-back>","bad");return;}
+  const r=currentRoom();
+  if(r.exits[dir]){print("There is already a way "+dir+".","bad");return;}
+  const child=place("A Raw Hewn Room","Freshly dug. The walls still smell of damp earth.\n(Use  describe  to write this room.)");
+  r.children[dir]=child; r.exits[dir]={down:dir}; child.exits[back]={up:true};
+  print("You dig "+dir+". A new room opens up."); renderFS(); save();
+  openEditor("describe", "room", child.name+"\n"+child.desc, (val)=>{
+    const i=val.indexOf("\n"); child.name=(i<0?val:val.slice(0,i)).trim()||child.name;
+    child.desc=(i<0?"":val.slice(i+1)); save(); print("Room saved.","sys");
+  }, "First line = room name. The rest = what you see on entering.");
+});
+defcmd("describe","describe — edit the current room's name and text.",()=>{
+  const r=currentRoom();
+  openEditor("describe","room",r.name+"\n"+r.desc,(val)=>{
+    const i=val.indexOf("\n"); r.name=(i<0?val:val.slice(0,i)).trim()||r.name;
+    r.desc=(i<0?"":val.slice(i+1)); save(); cmdLook(""); print("Room saved.","sys");
+  },"First line = room name. The rest = room text.");
+});
+defcmd("create","create <type> — drop a fresh instance of a type into this room.",(a)=>{
+  const n=a.trim().toLowerCase(); blank();
+  if(!n){print("create <type>   (see  types)","bad");return;}
+  if(!G.types[n]){print("No such type '"+n+"'. Make one with  typeedit "+n+".","bad");return;}
+  if(currentRoom().contents[n]){print("There is already "+art(n)+" "+n+" here.","bad");return;}
+  currentRoom().contents[n]=newInstance(n);
+  print("A "+n+" appears."); renderFS(); save();
+});
+defcmd("ascribe","ascribe <prop> <thing> / ascribe not <prop> <thing> — set a flag.",(a)=>{
+  const t=a.trim().split(/\s+/).filter(Boolean); blank();
+  if((t[0]||"").toLowerCase()==="not"){const x=findHere(t[2]); if(x){setFlag(x,(t[1]||"").toLowerCase(),false);print("Removed.","sys");} else print("No "+(t[2]||"")+" here.","bad");return;}
+  const x=findHere(t[1]); if(!x||x.kind!=="container"){print("ascribe needs a container/monster here.","bad");return;}
+  setFlag(x,(t[0]||"").toLowerCase(),true); print("Done.","sys"); save();
+});
+defcmd("animate","animate <monster> — make a creature alive (and not dead/wounded).",(a)=>{
+  const x=findHere(a.trim()); blank();
+  if(!x||x.kind!=="container"){print("animate needs a creature here.","bad");return;}
+  x.props.alive=true; delete x.props.dead; delete x.props.wounded;
+  print("The "+a.trim()+" stirs and lives.","good"); renderFS(); save();
+});
+defcmd("homer","homer — memorize this room as a wormhole anchor.",()=>{
+  G.bookmark=G.player.path.slice(); blank();
+  print("You fix this place in memory. (now  wormhole <dir> <back>  from elsewhere)","sys"); save();
+});
+defcmd("wormhole","wormhole <dir> <back> — link here to your homer anchor (makes a loop).",(a)=>{
+  const t=a.trim().split(/\s+/).filter(Boolean); blank();
+  if(!G.bookmark){print("Set an anchor first: go to the target room and type  homer.","bad");return;}
+  const dir=(t[0]||"").toLowerCase(), back=(t[1]||"back").toLowerCase();
+  if(!dir){print("wormhole <dir-to-anchor> <dir-back>","bad");return;}
+  const here=currentRoom(), there=pathAt(G.bookmark);
+  if(!there){print("The anchor has decayed.","bad");return;}
+  here.exits[dir]={warp:G.bookmark.slice()}; there.exits[back]={warp:G.player.path.slice()};
+  print("Space folds. A wormhole "+dir+" now leads to your anchor.","sys"); renderFS(); save();
+});
+
+/* ---- the editors: behaviour as editable script (his TYPEEDIT / CEDIT) ---- */
+defcmd("typeedit","typeedit <type> [obj|con] — edit a thing's behaviour script.",(a)=>{
+  const t=a.trim().split(/\s+/).filter(Boolean);
+  const n=(t[0]||"").toLowerCase(); if(!n){print("typeedit <type> [obj|con]","bad");return;}
+  let T=G.types[n];
+  if(!T){const kind=(t[1]||"obj").toLowerCase().startsWith("con")?"container":"object";
+    T=G.types[n]={kind,desc:"",script:""}; print("New "+kind+" type '"+n+"'.","sys");}
+  const blob="@desc "+(T.desc||"")+"\n"+T.script;
+  openEditor("typeedit "+n, T.kind, blob, (val)=>{
+    const lines=val.replace(/\r/g,"").split("\n"); let desc=T.desc, body=val;
+    if(lines[0].startsWith("@desc")){desc=lines[0].slice(5).trim();body=lines.slice(1).join("\n");}
+    T.desc=desc; T.script=body; save(); print("Saved type '"+n+"'.","sys");
+  }, "First line  @desc &lt;text&gt;  sets the look-text. Below it: behaviour script. {arg} is the target; 'attack' means a monster is retaliating.");
+});
+defcmd("cedit","cedit <verb> — edit (or create) a command as a script.",(a)=>{
+  const n=a.trim().toLowerCase(); if(!n){print("cedit <verb>","bad");return;}
+  if(NATIVE[n]){print("'"+n+"' is a built-in command and can't be edited here. Pick a new name.","bad");return;}
+  const cur=G.commands[n]||{help:"a custom command.",script:"echo (this command does nothing yet)\nend"};
+  const blob="@help "+(cur.help||"")+"\n"+cur.script;
+  openEditor("cedit "+n,"verb",blob,(val)=>{
+    const lines=val.replace(/\r/g,"").split("\n"); let help=cur.help,body=val;
+    if(lines[0].startsWith("@help")){help=lines[0].slice(5).trim();body=lines.slice(1).join("\n");}
+    G.commands[n]={help,script:body}; save(); print("Saved command '"+n+"'. Type it to run it.","sys");
+  },"First line  @help &lt;text&gt;  is the help string. Below: the command script. {arg} is everything after the verb.");
+});
+
+/* ---- help / meta ---- */
+defcmd("help","help [command] — list commands, or explain one.",(a)=>{
+  a=a.trim().toLowerCase(); blank();
+  if(a){const c=NATIVE[a]||G.commands[a]; if(!c){print("No help for '"+a+"'.","bad");return;}
+    print(a+" — "+(c.help||"(no description)")); return;}
+  print("PLAYER:   look  ways  go <dir>  get  drop  use  inventory  examine","dim");
+  print("BUILD:    dig  describe  create  ascribe  animate  homer  wormhole","dim");
+  print("SCRIPTS:  typeedit <type>   cedit <verb>   types   verbs","dim");
+  print("SYSTEM:   save  reset  about","dim");
+  print("Try:  use sword on orc   ·   look purse   ·   use baby","sys");
+});
+defcmd("cdir","cdir — list every command name available.",()=>{blank();
+  const all=[...Object.keys(NATIVE),...Object.keys(G.commands)].sort();
+  print(all.join("   "));});
+defcmd("verbs","alias for cdir.",()=>NATIVE.cdir.fn());
+defcmd("types","types — list object and monster/container types.",()=>{blank();
+  const o=[],c=[]; for(const k in G.types)(G.types[k].kind==="object"?o:c).push(k);
+  print("objects:    "+o.sort().join("  "));
+  print("containers: "+c.sort().join("  "));});
+defcmd("about","about — what this is.",()=>{blank();
+  printRaw('<span class="dim">Dungeons of DOS — a faithful HTML re-implementation of M. Randall '+
+   'Holmes\u2019s dungeon adventure written entirely in DOS batch files (2003). The world is a '+
+   'virtual filesystem, commands are a pluggable registry, and every object, monster, and command '+
+   'is an editable script. Progress is saved in persistent memory. '+
+   '<a href="https://randall-holmes.github.io/Personal/personaldata.html" target="_blank" rel="noopener">original here</a>.</span>');});
+defcmd("save","save — write the world to persistent memory now.",async()=>{await save(true);blank();print("Saved.","sys");});
+defcmd("reset","reset — wipe memory and regenerate the original dungeon.",()=>{blank();
+  print("This erases your saved world. Type  reset yes  to confirm.","bad");});
+defcmd("clear","clear — clear the screen.",()=>{outEl.innerHTML="";});
+
+/* ---- death & rebirth (his death.bat: respawn at root) ---- */
+async function playerDeath(){
+  blank(); print("You die.","bad");
+  print("You are drawn back into the cycle of rebirth...","dim");
+  await sleep(650);
+  G.player.path=[]; bState.textContent="alive";
+  await cmdLook(""); save();
+}
+
+/* ===========================================================================
+   DISPATCH  — the shell.  Look the verb up in the registry; run native or script.
+   =========================================================================== */
+async function dispatch(input, internal=false){
+  const line=input.trim(); if(!line) return;
+  const sp=line.indexOf(" ");
+  const verb=(sp<0?line:line.slice(0,sp)).toLowerCase();
+  const arg=sp<0?"":line.slice(sp+1).trim();
+  if(!internal){ printRaw('<div class="echo">'+esc(dosPath()+" "+line)+'</div>'); }
+  // confirm-guarded reset
+  if(verb==="reset"){ if(arg.toLowerCase()==="yes"){await doReset();} else NATIVE.reset.fn(""); return; }
+  try{
+    if(NATIVE[verb]) await NATIVE[verb].fn(arg);
+    else if(G.commands[verb]) await runScript(G.commands[verb].script,{self:null,arg});
+    else print("Bad command or file name: '"+verb+"'  (try  help)","bad");
+  }catch(err){ print("[error: "+(err&&err.message||err)+"]","err"); if(MODE!=="edit"){MODE="normal";cmdEl.placeholder=PH;enterResolver=null;luckyResolver=null;} }
+  updateBar();
+}
+
+/* ===========================================================================
+   INPUT STATE MACHINE: normal typing, "press Enter", and "feel lucky" RNG.
+   =========================================================================== */
+let MODE="normal", enterResolver=null, luckyResolver=null, busy=false, luckyStart=0;
+function waitEnter(){ MODE="enter"; cmdEl.placeholder="(press Enter to continue)"; return new Promise(r=>enterResolver=r); }
+function luckyRoll(){
+  MODE="lucky"; cmdEl.placeholder="press Enter when you feel lucky"; luckyStart=performance.now();
+  blank(); print("You hear the sound of dice rolling.","dim");
+  return new Promise(r=>luckyResolver=r);
+}
+cmdEl.addEventListener("keydown",async(e)=>{
+  if(e.key!=="Enter") return;
+  e.preventDefault();
+  if(MODE==="enter"){ MODE="normal"; cmdEl.placeholder=PH; const r=enterResolver; enterResolver=null; r&&r(); return; }
+  if(MODE==="lucky"){ MODE="normal"; cmdEl.placeholder=PH;
+    const d=luckyDigit(); print("...you rolled a "+d+".","dim");
+    const r=luckyResolver; luckyResolver=null; r&&r(d); return; }
+  if(busy) return;
+  const v=cmdEl.value; cmdEl.value="";
+  if(!v.trim()) { printRaw('<div class="echo">'+esc(dosPath())+'</div>'); return; }
+  busy=true; await dispatch(v); busy=false; cmdEl.focus();
+});
+/* Pure timer RNG, in the spirit of Holmes's dirty trick: the roll is just what the
+   clock says at the instant you press Enter. He sampled the DOS clock's hundredths
+   digit; we sample how many milliseconds you hesitated on "feel lucky" -- your own
+   reaction-time jitter. Reading the *interval* rather than the absolute sub-ms clock
+   keeps real entropy even though browsers round performance.now() for security.
+   Press at a moment you can't quite control, and the last digit is anyone's guess. */
+function luckyDigit(){
+  const waited = performance.now() - luckyStart;   // ms you hesitated before pressing
+  return Math.floor(Math.abs(waited)) % 10;
+}
+const PH="type a command — try  look  ·  help";
+
+/* ===========================================================================
+   THE SIGNATURE: render the current room AS A LIVE FILESYSTEM.
+   =========================================================================== */
+function renderFS(){
+  const r=currentRoom();
+  let s="";
+  const dirName=(G.player.path.length?G.player.path[G.player.path.length-1].toUpperCase()+".DR":G.world.name.toUpperCase()+".DR");
+  s+='<span class="here">'+esc(dirName)+'\\</span>\n';
+  s+='  <span class="cmt">start.txt</span>\n';
+  for(const d of Object.keys(r.exits)) s+='  <span class="d">'+esc(d.toUpperCase())+'.dir</span>\n';
+  for(const n of Object.keys(r.contents)){
+    const x=r.contents[n];
+    if(x.kind==="object"){ s+='  <span class="obj">'+esc(n)+'.ob1</span>\n'; }
+    else{
+      const dead=x.props&&x.props.dead;
+      s+='  <span class="'+(dead?'dead':'con')+'">'+esc(n)+'.co1</span>   <span class="d">'+esc(n)+'.dr2\\</span>\n';
+      for(const p of Object.keys(x.props||{})) s+='      <span class="flag">'+esc(p)+'.$$$</span>\n';
+      for(const inn of Object.keys(x.inside.contents)){
+        const ix=x.inside.contents[inn];
+        s+='      <span class="'+(ix.kind==="object"?"obj":"con")+'">'+esc(inn)+(ix.kind==="object"?".ob1":".co1")+'</span>\n';
+      }
+    }
+  }
+  // inventory as a second listing (his inventory lived in the commands dir)
+  const inv=Object.keys(G.player.inventory.contents);
+  s+='\n<span class="cmt">\\DDOS\\COMMANDS (you carry)</span>\n';
+  if(inv.length) for(const n of inv){const x=G.player.inventory.contents[n];
+    s+='  <span class="'+(x.kind==="object"?"obj":"con")+'">'+esc(n)+(x.kind==="object"?".ob1":".co1")+'</span>\n';}
+  else s+='  <span class="cmt">(empty)</span>\n';
+  treeEl.innerHTML=s;
+  updateBar();
+}
+function updateBar(){
+  const r=currentRoom();
+  bLoc.textContent=r.name.length>22?r.name.slice(0,21)+"\u2026":r.name;
+  bPath.textContent=dosPath();
+  promptEl.textContent=dosPath();
+}
+
+/* ===========================================================================
+   SAVE / LOAD  — single key, full world, persistent across sessions.
+   =========================================================================== */
+let saveTimer=null;
+function serialize(){return JSON.stringify({
+  world:G.world, types:G.types, player:G.player, bookmark:G.bookmark, commands:G.commands, version:G.version
+});}
+async function save(now=false){
+  const write=async()=>{ await Store.set(SAVE_KEY,serialize()); flashSave(); };
+  if(now){ await write(); return; }
+  clearTimeout(saveTimer); saveTimer=setTimeout(write,400);
+}
+function flashSave(){ const t=new Date().toLocaleTimeString();
+  bSave.textContent=Store.persistent?("MEMORY · saved "+t):("MEMORY · session only");
+  bSave.className="save "+(Store.persistent?"ok":"warn"); }
+async function load(){
+  try{ const raw=await Store.get(SAVE_KEY); if(!raw) return false;
+    const d=JSON.parse(raw); if(!d||!d.world) return false;
+    G=d; if(!G.commands)G.commands={}; if(!G.player.inventory)G.player.inventory={contents:{}};
+    return true;
+  }catch(e){ return false; }
+}
+async function doReset(){
+  G=seedWorld(); await save(true); outEl.innerHTML="";
+  print("Memory wiped. The dungeon is fresh.","sys");
+  await cmdLook(""); renderFS();
+}
+
+/* ---- editor plumbing ---- */
+let editorSave=null;
+function openEditor(title,kind,value,onSave,hint){
+  MODE="edit"; edTitle.textContent=title; edKind.textContent=kind?("["+kind+"]"):"";
+  edText.value=value; edHint.innerHTML=hint||""; editorSave=onSave;
+  modal.classList.add("show"); setTimeout(()=>edText.focus(),30);
+}
+function closeEditor(){ modal.classList.remove("show"); MODE="normal"; editorSave=null; cmdEl.focus(); }
+$("#edSave").onclick=()=>{ const v=edText.value; closeEditor(); if(editorSave) editorSave(v); editorSave=null; };
+$("#edCancel").onclick=closeEditor;
+edText.addEventListener("keydown",e=>{ if(e.key==="Escape")closeEditor(); if(e.key==="Tab"){e.preventDefault();
+  const s=edText.selectionStart,en=edText.selectionEnd; edText.value=edText.value.slice(0,s)+"  "+edText.value.slice(en); edText.selectionStart=edText.selectionEnd=s+2; }});
+
+/* ---- fs panel toggle on mobile ---- */
+$("#fsx").onclick=()=>$("#fs").classList.remove("show");
+
+/* ---- utils ---- */
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+/* ===========================================================================
+   BOOT
+   =========================================================================== */
+async function boot(){
+  const lines=[
+    "DDOS-BIOS v0.3   (c) 2003  M. Randall Holmes",
+    "Memory.................. "+(Store.persistent?(Store.kind==="local"?"PERSISTENT (this browser)":"PERSISTENT"):"SESSION ONLY"),
+    "COMMAND.COM substrate... emulated",
+    "Mounting world as filesystem... ok",
+    ""
+  ];
+  for(const l of lines){ print(l,"dim"); await sleep(120); }
+  printRaw('<div class="title">DUNGEONS<span class="of">of</span>DOS</div>'+
+    '<div class="subtitle">a dungeon that lives in the filesystem &mdash; after M. R. Holmes, 2003</div>');
+  blank();
+  const had=await load();
+  if(!had){ G=seedWorld(); await save(true);
+    print("A new dungeon has been generated and saved to memory.","sys"); }
+  else print("Saved world restored from memory.","sys");
+  if(!Store.persistent) print("(Storage is blocked here, so progress won't persist. Download this file and open it directly to save your dungeon.)","bad");
+  else if(Store.kind==="local") print("Your dungeon saves to this browser and will be here when you return.","sys");
+  rule();
+  print("Type  help  for commands, or  about  for what this is.","dim");
+  await cmdLook(""); renderFS(); flashSave(); cmdEl.focus();
+}
+boot();
+</script>
+</body>
+</html>
