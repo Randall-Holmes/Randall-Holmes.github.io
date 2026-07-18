@@ -1,10 +1,5 @@
-#  version of 6/14/2025
 
-# version notes below had not been updated for a long time.
-
-# this version implements the double hyphen version of the interverbal hyphen.
-
-# it still supports the backquote and tilde.
+#  version of 2/7/2022 2 pm
 
 # 2/7/2022 declutter no longer removes spaces.  This is preparatory
 # to making sure comments are included in grammar and developing a tool
@@ -1705,10 +1700,7 @@ def grammarbatch(gfile):
         if not (line1==''): rundef(loglan,line1)
     
 
-
-#from loglanpreamble import *
-
-
+# from loglanpreamble import *
 
 L("sp <- ([ ]+/([~`] &Co1))")
 
@@ -2244,7 +2236,7 @@ L("RA1 <- ((RA0 (!BadNIStress m a)? (!BadNIStress m oa NI0*)?) (Comma2 !(NI RA0)
 
 L("NI2 <- (((SA0? (NI1+/RA1))/SA0) NOI0? (CA0 ((SA0? (NI1+/RA1))/SA0) NOI0?)*)")
 
-L("NI <- (sp? (p i)? NI2 ((&(m ue) ACRONYM (Comma/&End/&Period) !(c u))/(Comma2? m ue Comma2? PRENAME !(c u)))? (c u)?)")
+L("NI <- (sp? (p i)? NI2 ((&(m ue) ACRONYM (Comma/&End/&Period) !(c u))/(Comma2? m ue Comma2? PRENAME (Comma/&End/&Period) !(c u)))? (c u)?)")
 
 L("mex <- (sp? NI)")
 
@@ -2446,7 +2438,7 @@ L("UI0 <- (!Predstart ((!([Ii] Juncture? [Ee]) Vv Juncture?)/(b ea)/(b uo)/(c ea
 
 L("NOUI <- ((sp? UI0 NOI0)/(sp? n [o] Juncture? Comma? sp? UI0))")
 
-L("UI <- (sp? (UI0+/(NI f i)))")
+L("UI <- (sp? (UI0+/((NI/TAI0) f i)))")
 
 L("HUE <- (sp? (h ue))")
 
