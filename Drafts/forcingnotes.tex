@@ -1,0 +1,90 @@
+\documentclass[12pt]{article}
+\usepackage{amssymb}
+
+\title{Forcing notes for Lanser}
+
+\author{Lavinia Randall Holmes}
+
+\begin{document}
+
+\maketitle
+
+We begin with an account of forcing in Mac Lane set theory (Zermelo with bounded separation) with atoms.  We show how to construct a Boolean-valued model of Mac Lane from a ground model.
+
+Let $P$ be a partial order, which we call the set of {\em conditions\/}.   We interpret $p \leq_P q$ (usually written without the subscript) as saying that $q$ gives
+more information than $p$.
+
+
+
+Truth values for us are sets of conditions.  A truth value $A$ is closed under added information (if $a \in A$ and $b \geq a$ then $b \in A$) and regular (if for each $b \geq a$ there is $c \geq b$ which belongs to $A$, then $a \in A$).  For
+any set $A$ of conditions, the closure of $A$ is the smallest truth value including $A$ as a subset.
+
+Let $P^*$ denote the set of truth values.
+
+If $\phi$ and $\psi$ are truth values, $\phi \wedge \psi$ is the intersection of $\phi$ and $\psi$ (which will be downward closed and regular).
+
+If $\phi$ and $\psi$ are truth values, $\neg \phi$ is the closure of the complement of $\phi$.
+
+Other propositional operations on truth values are definable in the usual ways.
+
+If $\phi$ is a function from $V$ to truth values, $(\forall x:\phi)$ is the intersection of all truth values $\phi(x)$.
+
+$(\exists x:\phi(x))$ is defined as $\neg(\forall x:\neg \phi)$.
+
+A {\em name\/} is a function with codomain the set of nonempty truth values, satisfying the additional technical condition that for a name $x$ and
+an element $y$ of the domain of $x$ which is a function with codomain $P^*$, we must have each element of the range of $y$ being $\leq y(x)$.
+
+We will be able to tell whether a statement is to be read as about the ground model (evaluating to true or false) or about the target model (evaluating to a truth value) by looking at the predicates appearing in it.
+
+For any name $x$ and truth value $p$, define $x_p$ as $$(y\in {\tt dom}(x) \mapsto x(y) \wedge p)\setminus ({\tt dom}(x) \times \{\emptyset\})$$  This amounts to cutting
+out information about $x$ extraneous to the truth value $p$.  If $x$ is not a name, define $x_p$ as $x$.
+
+Define $x \in_0 y$ as empty if $y$ is not a name and otherwise as the set of $q\in P$ such that there is $z\in {\tt dom}(y)$ such that $q \in y(z) \wedge z=x_{y(z)}$.  Because $y$ is a name, for all $z \in {\tt dom}(y)$, $z=z_{y(z)}$.  This defines
+the pseudo-extension of $y$:  for $y$ to have a nonempty pseudo-extension, we require ``elements'' of $y$ to contain only information relevant under the truth values which put them in $y$.  The pseudo-extension is not the final extension, because it may not respect the identity relation of the target model.
+
+Define $x =_1 y$ as $x=y$ [well, really as $P$ if $x=y$ and $\emptyset$ if $x \neq y$] if there is no $z$ such that $z \in_0 x$, and otherwise as $(\forall z:z \in_0 x \leftrightarrow z \in_0 y)$.
+
+Define ${\tt set}(x)$ as $(\forall y:(\forall z:y=_1 z \rightarrow y \in_0x \leftrightarrow z\in_0 x))$.  A name is a name of a set if its pseudo-extension respects the identity relation of the target model.  It is important to note that the way we have defined
+$\in_0$ ensures that this is actually a bounded assertion.  This statement can be framed in the language of the target model with unbounded quantifiers, but unwinding the definitions
+reveals that we actually only need to consider $y$ and $z$ which actually appear in the domain of $x$, because anything which is seen under a condition to belong to the pseudo-extension of a set $x$ is also seen under that very condition to be identified with a domain element of $x$.
+
+Define $x \in_1 y$ as $x \in_0 y \wedge {\tt set}(y)$.   We view items whose pseudo-extension does not respect identity as atoms, but we continue to use the pseudo-extension to provide identity criteria for atoms.
+
+There is stuff to be inserted here.  One needs to put in the technical stuff which says that logic works correctly (that is in no way original here).  One needs
+to verify that the target model satisfies the axioms of Mac Lane set theory with atoms.  The implementation of $\{x \in_1 A:\phi(x)\}$ should be the function
+taking elements $x$ of the domain of $A$ to $\phi(x)$.
+
+This technique does not use recursion on membership.  This is why it ends up being adaptable to NFU and ultimately to NF.  Recursion on membership actually cannot be used in Mac Lane set theory, either, so this might have some appeal even here.
+
+Inconveniently, the forcing process creates atoms.  But atoms are not that inconvenient.  If one is able to talk about pure sets (as one can already in Zermelo set theory or a quite modest extension of Zermelo)
+one can get rid of the atoms in a post-processing step by confining one's attention to the pure sets in the target model.  This means that this approach is usable in the usual set theory, and we do think it has some merits with regard to logical simplicity.
+
+There might be interesting questions about how this method performs in relation to the usual one in ordinary set theory.  It might also be that it is boringly identical.
+We do think it is simpler.
+
+We are actually using the method of Boolean-valued models here as opposed to forcing per se.  It is known that these methods are equivalent.  There is work to do to translate what we do here back into more usual forcing language (where possible:  there might be obstructions to a full translation in the case if NF(U) since these theories do not have well-founded models).
+
+The reason we developed this scheme is that it works in NFU, where it is not possible to do recursion on membership at all.   The formulation for NFU requires
+the further condition that the set of conditions $P$ (and so the set of truth values) must be strongly cantorian.  We have an open question in our minds as to whether this can be relaxed to $P$ being merely cantorian;  we are not certain, and this should be investigated.  This does mean that for the moment we actually assume
+Counting so that we have infinite strongly cantorian sets.
+
+In the NFU context, the extra precautions we took to ensure boundedness are not necessary:  $x \in_0 y$ can be defined simply as $y(x)$ if $y$ is a name
+and the empty set otherwise, and names can be functions from $V$ to the truth values.  Basically, this is because every formula is bounded in NFU anyway.  There might be some technical interest in looking at how the forcing in NFU translates back into forcing in type theory or Mac Lane.
+
+Stratified comprehension will hold in the target model because any expression representing a truth value, being restricted to a strongly cantorian set, can have its truth value freely raised or lowered to ensure stratification.  This ensures that in the argument for the truth of the stratification scheme in the target model, all that matters is that the formula being translated be stratified in the usual sense:  the fact that ``propositions'' in the argument actually have possibly quite complex values, not just true or false, will not obstruct stratification.   As noted, there is a technical question of interest as to whether we can formulate things so that $P$ can be merely cantorian.
+
+The surprise at the end of things (and it was a surprise for me) is that this works in NF, too.  Obviously this technique can be applied in NF to give a target model with atoms, a model of NFU.  The surprise is that we can define an injection from the universe into sets in the target model, and so, by results of Boffa, we can use a permutation technique to convert the target model into a model of NF.  The resulting model of NF will satisfy essentially the same sentences of mathematical interest as the target model itself:  the truth values of stratified sentences which are universal closures of sentences with a parameter $X$ which are stratified and in which each variable assigned
+type $i$ is restricted to ${\cal P}^i(X)$, which includes most sentences of mathematical interest, will not be affected by the permutation.
+
+It is convenient (and possible only in NF) to ensure that every object in the universe is construed as a name.  This is possible because in NF there are just as many functions from $V$ to $P^*$ as there are elements of $V$.
+
+For any set $x$, let ${\tt char}(x)$ be the name mapping each element of $x$ to $P$ and each non-element to the empty set.
+
+Transform any name $x$ to a name $x'$ by mapping ${\tt char}(y)$ to $x(y)$ for each $y$, then mapping each other object $z$ to $(\exists w:z={\tt char}(w) \wedge x(w))$ [some abuse of notation here, but this is the idea:  put $z$ in $x'$ only under conditions where the assignments to characteristic functions dictate that it go in $x'$).
+
+This transformation is stratified (so it is a function in the ground model), it is injective in terms of both models, and it maps general objects to sets, because if $x$ and $y$ are distinguished in the pseudo-extension of an object, ${\tt char}(x)$ and ${\tt char}(y)$ are actually distinct in the target model, so any identification between $x$ and $y$ under a condition which would break sethood is removed.
+
+
+
+
+\end{document}
