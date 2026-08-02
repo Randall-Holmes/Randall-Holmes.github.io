@@ -9,6 +9,16 @@
 
 \maketitle
 
+\section{Versions}
+
+\begin{description}
+
+\item[8/1/2026:  7 pm Boise time:]  I think I figured out what my problem was with trying to regulate structures of names.  I don't want to force them to satisfy a condition (that way lies recursion):  I want to use general functions to truth values as names, and interpret any such function as if the condition held of it (prune out extraneous information in assigning truth values to membership statements rather than trying to stipulate that no extraneous information is present).
+
+\end{description}
+
+\section{The notes themselves}
+
 We begin with an account of forcing in Mac Lane set theory (Zermelo with bounded separation) with atoms.  We show how to construct a Boolean-valued model of Mac Lane from a ground model.
 
 Let $P$ be a partial order, which we call the set of {\em conditions\/}.   We interpret $p \leq_P q$ (usually written without the subscript) as saying that $q$ gives
@@ -19,7 +29,7 @@ more information than $p$.
 Truth values for us are sets of conditions.  A truth value $A$ is closed under added information (if $a \in A$ and $b \geq a$ then $b \in A$) and regular (if for each $b \geq a$ there is $c \geq b$ which belongs to $A$, then $a \in A$).  For
 any set $A$ of conditions, the closure of $A$ is the smallest truth value including $A$ as a subset.
 
-Let $P^*$ denote the set of truth values.
+Let $P^*$ denote the set of truth values.  For any $q \in P$ let $q^*$ be the closure of the set of all $r$ such that $r \leq q$.
 
 If $\phi$ and $\psi$ are truth values, $\phi \wedge \psi$ is the intersection of $\phi$ and $\psi$ (which will be downward closed and regular).
 
@@ -31,20 +41,19 @@ If $\phi$ is a function from $V$ to truth values, $(\forall x:\phi)$ is the inte
 
 $(\exists x:\phi(x))$ is defined as $\neg(\forall x:\neg \phi)$.
 
-A {\em name\/} is a function with codomain the set of nonempty truth values, satisfying the additional technical condition that for a name $x$ and
-an element $y$ of the domain of $x$ which is a function with codomain $P^*$, we must have each element of the range of $y$ being $\leq y(x)$.
+A {\em name\/} is a function with codomain the set of nonempty truth values.
 
 We will be able to tell whether a statement is to be read as about the ground model (evaluating to true or false) or about the target model (evaluating to a truth value) by looking at the predicates appearing in it.
 
 For any name $x$ and truth value $p$, define $x_p$ as $$(y\in {\tt dom}(x) \mapsto x(y) \wedge p)\setminus ({\tt dom}(x) \times \{\emptyset\})$$  This amounts to cutting
 out information about $x$ extraneous to the truth value $p$.  If $x$ is not a name, define $x_p$ as $x$.
 
-Define $x \in_0 y$ as empty if $y$ is not a name and otherwise as the set of $q\in P$ such that there is $z\in {\tt dom}(y)$ such that $q \in y(z) \wedge z=x_{y(z)}$.  Because $y$ is a name, for all $z \in {\tt dom}(y)$, $z=z_{y(z)}$.  This defines
-the pseudo-extension of $y$:  for $y$ to have a nonempty pseudo-extension, we require ``elements'' of $y$ to contain only information relevant under the truth values which put them in $y$.  The pseudo-extension is not the final extension, because it may not respect the identity relation of the target model.
+Define $x \in_0 y$ as empty if $y$ is not a name and otherwise as the closure of the set of $q\in P$ such that there is $z\in {\tt dom}(y)$ such that $q \in y(z) \wedge z_{q^*}=x_{q^*}$.  This defines
+the pseudo-extension of $y$.
 
-Define $x =_1 y$ as $x=y$ [well, really as $P$ if $x=y$ and $\emptyset$ if $x \neq y$] if there is no $z$ such that $z \in_0 x$, and otherwise as $(\forall z:z \in_0 x \leftrightarrow z \in_0 y)$.
+Define $x =_1 y$ as $x=y$ [well, really as $P$ if $x=y$ and $\emptyset$ if $x \neq y$, if it is not the case that both $x$ and $y$ are names], and otherwise as $$(\forall z:z \in_0 x \leftrightarrow z \in_0 y).$$
 
-Define ${\tt set}(x)$ as $(\forall y:(\forall z:y=_1 z \rightarrow y \in_0x \leftrightarrow z\in_0 x))$.  A name is a name of a set if its pseudo-extension respects the identity relation of the target model.  It is important to note that the way we have defined
+Define ${\tt set}(x)$ as holding iff $y$ is a name and $$(\forall y:(\forall z:y=_1 z \rightarrow y \in_0x \leftrightarrow z\in_0 x)).$$  A name is a name of a set if its pseudo-extension respects the identity relation of the target model.  It is important to note that the way we have defined
 $\in_0$ ensures that this is actually a bounded assertion.  This statement can be framed in the language of the target model with unbounded quantifiers, but unwinding the definitions
 reveals that we actually only need to consider $y$ and $z$ which actually appear in the domain of $x$, because anything which is seen under a condition to belong to the pseudo-extension of a set $x$ is also seen under that very condition to be identified with a domain element of $x$.
 
