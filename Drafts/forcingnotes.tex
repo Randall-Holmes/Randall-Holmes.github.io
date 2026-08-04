@@ -23,12 +23,12 @@
 
 We begin with an account of forcing in Mac Lane set theory (Zermelo with bounded separation) with atoms.  We show how to construct a Boolean-valued model of Mac Lane from a ground model.
 
+We note that the definition for Mac Lane is rather more complicated than the definition we will use in NFU.  But it seems important to show that there is nothing peculiarly NF-iste about the account of forcing that we give.
+
 Let $P$ be a partial order, which we call the set of {\em conditions\/}.   We interpret $p \leq_P q$ (usually written without the subscript) as saying that $q$ gives
 more information than $p$.
 
-
-
-Truth values for us are sets of conditions.  A truth value $A$ is closed under added information (if $a \in A$ and $b \geq a$ then $b \in A$) and regular (if for each $b \geq a$ there is $c \geq b$ which belongs to $A$, then $a \in A$).  For
+Truth values for us are sets of conditions.  A set $A$ is a truth value iff it is closed under added information (if $a \in A$ and $b \geq a$ then $b \in A$) and regular (if for each $b \geq a$ there is $c \geq b$ which belongs to $A$, then $a \in A$).  For
 any set $A$ of conditions, the closure of $A$ is the smallest truth value including $A$ as a subset.
 
 Let $P^*$ denote the set of truth values.  For any $q \in P$ let $q^*$ be the closure of the set of all $r$ such that $r \geq q$.
@@ -37,13 +37,36 @@ If $\phi$ and $\psi$ are truth values, $\phi \wedge \psi$ is the intersection of
 
 If $\phi$ and $\psi$ are truth values, $\neg \phi$ is $\{p \in P:(\forall q\geq p:q \not\in \phi)\}$.
 
+Note that if $p \in \phi$ and $p \in \psi$, then $p \in \phi\wedge \psi$.
+
+Note that if $p \in \phi \wedge \psi$, then $p \in \phi$ and $p \in \psi$.
+
+We show that $\neg\neg \phi = \phi$.  $\neg\neg\phi$ is the collection of $p$ such that no $q \geq p$ is in $\neg\phi$, that is for every $q \geq p$ there is $r \geq q$ such that $r \in \phi$,
+and this is equal to $\phi$ by regularity.
+
+If we can show for every $p$ that if $p \in \phi$ then $p \in \emptyset$, it follows immediately that for any $q \in \phi$, if $q \in \phi$ then $p \in \phi$ then $p \in \emptyset$ so no $q \geq p$ belongs to $\phi$, so $p \in \neg\phi$.
+
+If we have $p \in \phi$ and $p \in \neg phi$ we have $p \in \emptyset$.
+
+This actually gives a complete set of rules of deduction for $\wedge$ and $\neg$, which means we have all rules of deduction for propositional tautologies.
+
 Other propositional operations on truth values are definable in the usual ways.
 
 If $\phi$ is a function from $V$ to truth values, $(\forall x:\phi)$ is the intersection of all truth values $\phi(x)$.
 
+If we can show for any $x \in V$ that $p \in \phi(x)$ then by definition $p \in (\forall x:\phi(x))$.  This gives us the rule of universal generalization.
+
+If we have $p \in (\forall x:\phi(x))$ and we have $a \in V$, then we certainly have $p \in \phi(a)$.  This gives the rule of universal instantiation.
+
 $(\exists x:\phi(x))$ is defined as $\neg(\forall x:\neg \phi)$.
 
-A {\em name\/} is a function with codomain the set of nonempty truth values.
+Suitable rules for the existential quantifier follow from the rules given.
+
+All tautologies of first order logic evaluate to $P$ in the calculus of truth values.
+
+We note that it is not at all clear that $p \in (\exists x:\phi(x))$ implies that there is a name $a$ such that $p \in \phi(a)$.  What is true is that if $p \in (\exists x:\phi(x))$ there are for each $q \geq p$, $r$ and $a_r$ such that $r \in \phi(a_r)$.
+
+A {\em name\/} is a function with codomain the set of nonempty truth values.  I am not sure that we have to exclude the empty ones, but it seems stylistically proper to do so.
 
 We will be able to tell whether a statement is to be read as about the ground model (evaluating to true or false) or about the target model (evaluating to a truth value) by looking at the predicates appearing in it.
 
@@ -51,19 +74,27 @@ For any name $x$ and truth value $p$, define $x_p$ as $$(y\in {\tt dom}(x) \maps
 out information about $x$ extraneous to the truth value $p$.  If $x$ is not a name, define $x_p$ as $x$.
 
 Define $x \in_0 y$ as empty if $y$ is not a name and otherwise as the closure of the set of $q\in P$ such that there is $z\in {\tt dom}(y)$ such that $q \in y(z) \wedge z_{q^*}=x_{q^*}$.  This defines
-the pseudo-extension of $y$.
+the pseudo-extension of $y$.  The pseudo-extension cannot be taken to be the actual extension, because it may not respect the identity relation we introduce next.
+
+Notice for any $p$ that $p \subseteq x \in_0 y$ iff $p \subseteq  x_p \in_0 y$.  The basic reason is that if $q \in p$, $(x_p)_{q^*}=x_{q^*}$.
 
 Define $x =_1 y$ as $x=y$ [well, really as $P$ if $x=y$ and $\emptyset$ if $x \neq y$, if it is not the case that both $x$ and $y$ are names], and otherwise as $$(\forall z:z \in_0 x \leftrightarrow z \in_0 y).$$
 
+Note that $p \subseteq  x_p =_1 x$.
+
 Define ${\tt set}(x)$ as holding iff $y$ is a name and $$(\forall y:(\forall z:y=_1 z \rightarrow y \in_0x \leftrightarrow z\in_0 x)).$$  A name is a name of a set if its pseudo-extension respects the identity relation of the target model.  It is important to note that the way we have defined
-$\in_0$ ensures that this is actually a bounded assertion.  This statement can be framed in the language of the target model with unbounded quantifiers, but unwinding the definitions
+$\in_0$ ensures that these are actually bounded assertions.  These statements can be framed in the language of the target model with unbounded quantifiers, but unwinding the definitions
 reveals that we actually only need to consider $y$ and $z$ which actually appear in the domain of $x$, because anything which is seen under a condition to belong to the pseudo-extension of a set $x$ is also seen under that very condition to be identified with a domain element of $x$.
 
 Define $x \in_1 y$ as $x \in_0 y \wedge {\tt set}(y)$.   We view items whose pseudo-extension does not respect identity as atoms, but we continue to use the pseudo-extension to provide identity criteria for atoms.
 
-There is stuff to be inserted here.  One needs to put in the technical stuff which says that logic works correctly (that is in no way original here).  One needs
+There is stuff to be inserted here.  One needs to put in the technical stuff which says that logic works correctly (that is in no way original here) [this is added above, at least in intention].  One needs
 to verify that the target model satisfies the axioms of Mac Lane set theory with atoms.  The implementation of $\{x \in_1 A:\phi(x)\}$ should be the function
 taking elements $x$ of the domain of $A$ to $\phi(x)$.
+
+We want to show, where $\phi$ is a formula in which $A$ and $S$ are not bound, that $p \in (\exists S:(\forall x:x\in S \leftrightarrow x \in A \wedge \phi(x)))$.
+
+Let $A$ be a name.  The witness we use for $S$ is the name $(x \in {\tt dom}(A)\mapsto A(x) \wedge \phi(x))$.  Note that for this to be a set the predicate $\phi(x)$ has to respect pseudo-extension in some sense.
 
 This technique does not use recursion on membership.  This is why it ends up being adaptable to NFU and ultimately to NF.  Recursion on membership actually cannot be used in Mac Lane set theory, either, so this might have some appeal even here.
 
