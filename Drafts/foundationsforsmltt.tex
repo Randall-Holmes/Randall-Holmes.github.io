@@ -1,0 +1,119 @@
+\documentclass[12pt]{article}
+
+\title{Foundations for stratified Martin-L\"of type theory}
+
+\author{Lavinia Randall Holmes}
+
+\usepackage{amssymb}
+
+\begin{document}
+
+\maketitle
+
+\subsection{Version notes:}
+
+\begin{description}
+
+\item[9/2/2026:]  This version goes up to an exposition of a version of MLTT in TSTU.  Some errors and some things I skated over in the previous version are fixed.
+
+\end{description}
+
+\section{Introduction}
+
+The purpose of this essay is to provide foundations for a stratified version of Martin-L\"of type theory with universes (by which I mean a version in which the universes are all the same, and paradox is averted by a stratification condition as in New Foundations).
+
+I will start by presenting classical foundations of considerable strength in which Martin-L\"of type theory can be presented, and the collapse of the universes can be carried out using the usual technology for constructing models of
+NFU, ultimately due to Boffa (and clearly motivated by Jensen's original consistency proof for NFU).  
+
+After presenting the foundations, which enclose the interpreted Martin-L\"of type theory in a lot of scaffolding,
+and carrying out the move to a single universe, I'll try to remove the scaffolding and present a formalization of 
+stratified Martin-L\"of type theory.
+
+\section{TSTU}
+
+The foundational scheme is a very strong version of TSTU (simple typed set theory of sets with urelements in each type).
+The base theory TSTU is a sorted first order theory with sorts indexed by the natural numbers, which we call Types, with equality, membership, and empty sets as primitive notions.  Each variable (in fact each term $t$) is supposed to have a Type, for which we have the notation ${\tt type}(t)$.  If we supply a variable with a numeral subscript, this indicates its Type, but variables do not have to have such subscripts.  Atomic formulas must follow
+the Type rules:  in $x \in y$ we have ${\tt type}(x)+1 = {\tt type}(y)$, and in $x=y$ we have ${\tt type}(x)={\tt type}(y)$.  These rules hold for terms of any kind, not just variables.
+Empty set constants exist in each Type (we do have a use for the empty set of Type 0).
+
+The axioms of the theory are
+
+\begin{description}
+
+\item[empty set:]  $(\forall x^i:x^i \not\in \emptyset^{i+1})$
+
+\item[extensionality scheme:]  All formulas of the shape $$(\forall xyz:z \in x \wedge (\forall w:x \in x \leftrightarrow w \in y) \rightarrow x=y)$$ are axioms.
+
+\item[comprehension scheme:]  All formulas of the shape $$(\exists A:(\forall x:x \in A \leftrightarrow \phi))$$ where $A$ does not occur in $\phi$ are axioms.
+
+\end{description}
+
+We can extend our language in various ways.  
+
+The predicate of sethood ${\tt set}(x)$ defined as $(\exists y:y \in x) \vee x = \emptyset^{{\tt type}(x)}$ is convenient.  It could be used as a primitive notion instead of the
+empty set construction, but this would require more modifications of the axioms than the simple introduction of the empty set.  Notice that it is provable that sets with the same extension are equal,
+and that the witness to any comprehension axiom may further be supposed to be a set.
+
+Definite descriptions can be introduced by contextual definition in a way which is logically transparent:  $(\theta x:\phi)$ is introduced as a name for the unique $x$ such that $\phi$, if there is one,
+and otherwise as $\emptyset^{{\tt type}(x)}$, and of course has the same Type as $x$. This is handled logically by defining $\psi[(\theta x:\phi)/x]$ as meaning $$((\exists! x:\phi) \wedge (\exists x:\phi \wedge \psi)) \vee ((\neg(\exists!x:\phi) ) \wedge \psi[\emptyset^{{\tt type}(x)}/x]$$
+
+This definition, unlike the original one due to Russell, completely preserves the rules of logic, and the expansion presented clearly respects the Typing rules of the language.
+
+We can then introduce set abstract notation:  $\{x:\phi\}$ is defined as $$(\theta A:{\tt set}(A) \wedge (\forall x:x \in A \leftrightarrow \phi)),$$ where $A$ is a variable not appearing in $\{x:\phi\}$.
+
+Thus far we have a standard presentation of TSTU, which is not a very strong theory.
+
+We introduce a Type level ordered pair construction:  $(x,y)$ is a term of the same Type as $x$ and $y$, and we provide the axiom $$(\forall xyzw:(x,y) = (z,w) \rightarrow x=z \wedge y=w).$$  Adding this construction is inessentially stronger than adding the axiom of infinity to TSTU.
+
+We can then define relations and functions in TSTU in the usual manner, and define  equinumerousness:  $A \sim B$ iff there is a bijection from $A$ to $B$.
+
+If $A$ is a set in a given Type, we define $V_A$ as $\{x:x \in A \vee x \not\in A\}$ (the universal set of the same Type as $A$).  We say that a set $A$ is small iff $\neg A \sim V_A$.
+
+\section{Function abstraction in each type and implementation of MLTT operations}
+
+We now add the construction which makes our TSTU terrifically strong.  We introduce a notion of application distinct from the application operation of TSTU (which we will not explicitly use except in defining
+$A \sim B$, so we feel free to use $f(x)$ for this primitive notion of application).  In $y=f(x)$, $x,y,f$ are all of the same Type, which may be any Type.  
+
+For any $f$, the set ${\tt dom}(f) = \{x:f(x) \neq \emptyset^{{\tt type}(x)}\}$ is small.  We say $f:A \rightarrow B$ iff $({\tt dom}(f) \subseteq A \wedge (\forall x \in A:f(x)\in B))$.  For any small $A$ and $B$,
+$\{f:(f:A \rightarrow B)\}$ is small (this assertion corresponds to the power set axiom of ZFC).
+
+We then provide an axiom of abstraction:
+$$A \not\sim V_A \rightarrow (\forall a \in A:(\lambda x \in A:T)(a) = T[a/x]),$$ where $(\lambda x\in A:T)$ has $x$ and $T$ of the same Type and $A$ one Type higher and ${\tt dom}(\lambda x \in A:T) \subseteq A$.  This corresponds to replacement in ZFC.
+
+At this point, we have arranged for the cardinality of each Type to be quite large, if we make the technical stipulation that there are at least two objects in Type 0.
+
+This is certainly not a model of Martin-L\"of type theory.  However, it conveniently supports an interpretation of Martin-L\"of type theory with properties technically convenient for the project of collapsing the universes.
+
+We first present a general notion of type (notice the lack of capitalization:  this is an implementation of the notion of type proper to Martin-L\"of type theory).  We choose a two element set $\{0,1\}$ in each Type:
+0 can be the empty set and 1 the universal set in each Type other than type 0, where we need to choose a 1 arbitrarily).  With any small set $A$, we can associate a characteristic function mapping elements of $A$ to 1
+and all other objects to 0:  $\chi_A = (\lambda x \in A:1)$.  This is one type lower.  We can then associate $A$ with a type $\tau_A$ which is $\{(a,\chi_A):a \in A\}$.  In this way we have specified a type associated with each set.
+The types are the same size and at the same Type as the associated sets, and they are pairwise disjoint.  Notice that a typed object (an element of a type) is formally recognizable, being a pair whose second projection is a characteristic function which maps the first projection to 1.
+
+Now the constructions of Martin-L\"of type theory can simply be shown to work (with one more axiomatic stipulation).  We begin with the dependent product.
+
+Suppose we have a type $A$ and a function $B(a)$ from $A$ to types (of the same Type as $A$).  Full stop:  our framework does not actually allow use to have a function $B(a)$ taking elements of $A$ to types of the same type as $A$. However, it
+does allow us to have a function $B$ taking singletons of elements of $A$ to types of the same Type as $A$.  We formalize this in a way which harmonizes with our type theory (lower case).  By $\iota``A$ we mean $\{\{a\}:a \in A\}$.  With any type $A$,
+we associate a type $A^+ = \tau_{\iota``A}$, and we use the notation $a^+$ for $(\{a\},\chi_{\iota``A})$ for each $a \in A$.  This is a more elaborate Type raising operation than TSTU requires but it is more in tune
+with the type theory.  So, we start over.  Suppose we have a type $A$ and a function $B$ from $A^+$ to types (of course of the same Type as $A$).   We consider the collection $F$ of functions $f$ such that for each
+$a \in A$, $f(a) \in B(a^+)$.  We stipulate (our final foundational axiom) that this set is in every case small:  this completes our arrangement for the cardinality of each Type to be inaccessible.  We define the dependent product $\Pi(B)$ as $\tau(F)$.   The internal application operation of MLTT is defined by $(f,\chi_F)[a] = f(a)$.
+
+The axiomatic stipulation corresponds to the axiom of union of ZFC.  We can see that elements of $F$ are functions from $A$ to the union of the small collection of types which is the range of $B$ (but be careful:  strictly speaking, $B$ is the projection upward in Type of a small set one type lower:  this is a stronger kind of smallness than simply being a small set of the Type of the range of $B$).  A precise statement of what is required is that any collection of small sets
+which is the same size as the collection of singletons of elements of a small set is small.  This statement implies that
+the collection of $B(a^+)$'s for $a \in A$ is small, which implies that $F$ is small in the presence of our other assumptions.
+
+The dependent sum is handled similarly.  Suppose we have a type $A$ and a function $B$ from $A^+$ to types (of course of the same Type as $A$).  The collection $P$ of ordered pairs $(a,b)$ such that $a \in A$
+and $b \in B(a^+)$ is straightforwardly seen to be small (it is itself the union of a collection of small sets which is the same size as the image of a small set under the singleton operation) and $\Sigma B$ can be defined as $\tau_P$.  The internal projection operators are defined by $\pi_i[((a_1,a_2),\chi_P)] = a_i$ for $i=1,2$.
+
+Disjoint unions, finite types, and the type of natural numbers require no special comment.  They are all clearly obtainable by a suitable set construction followed by packaging a set into a type.   Esoteric further constructions should all work if they work in any usual presentation of the type theory (recursion constructions, for example).
+
+In any positive Type, there is a type $V$ definable as $\tau_T$ where $T$ is the set of types in the preceding Type.
+
+At this point I have presented an implementation of Martin-L\"of adapted to a strong version of TSTU.  It is then fairly straightforward to collapse this structure to an untyped structure with stratification restrictions on comprehension,
+in which the Typed sets $V$ of all types in the Type just below will become, unnervingly, the type of all types.
+
+\section{The rest...}
+
+It remains to do this, then to extract a description of the stratified version of Martin-L\"of type theory which is thereby implemented, and then to investigate such things as why Girard's paradox does not work in this formulation.  [I know roughly speaking why it doesn't, but a formulation in the language of MLTT will be very instructive for me].
+
+
+\end{document}
