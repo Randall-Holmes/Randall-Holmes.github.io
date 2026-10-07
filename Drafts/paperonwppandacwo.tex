@@ -1,0 +1,520 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb}
+
+\title{Well-ordered choice and the weak partition principle fail in New Foundations}
+
+\author{Elliott Glazer and Lavinia Randall Holmes\footnote{The second author is the same person as the Randall Holmes, M. Randall Holmes, or M.R. Holmes mentioned in the bibliography}}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+Specker showed in 1954 (\cite{speckernotac}) that the Axiom of Choice is false in Quine's set theory New Foundations (introduced in the paper \cite{nf}).  It has been unclear ever since how or whether this result could be extended.  This paper reports substantial progress:  the axiom of well-ordered choices (each well-ordered partition has a choice set) and the weak partition principle (and so of course the partition principle proper) are inconsistent with NF.  The paper also contains a proof of Infinity in NF which does not use ordered pairs, demonstrating that the type level ordered pair commonly used in NF, whose properties depend on Infinity holding, can be shown to work without preliminary use of the usual Kuratowski pair definition:  this fixes an ugliness in the usual exposition of basic concepts in NF.
+
+\end{abstract}
+
+\subsection{Version notes}
+
+\begin{description}
+
+\item[10/7/2026:]  This copy is intended to replace strict inequality with non-strict inequality in the Henson section, with correlated effects on inequalities used.
+
+Also, the version notes are in the right place :-)
+
+Also, some inequalities in the Henson argument seem to have been reversed:  I believe I have corrected them.
+
+\item[10/7/2026:]  Inserted an ordered-pair-free proof of Infinity, which seems relevant to the project at hand [one needs Infinity to justify the Quine pair which rationalizes the exponents on T's in the proof].
+Also, though this is not brought out in the current text explicitly, the closing moves of the proof of Infinity are another example of Henson's maneuver.  It might be that Henson's maneuver should appear earlier,
+or the relevance to the proof of Infinity could be brought out retrospectively.  I do not think a proof of Infinity which does not use pairing has appeared before, though I would have to check.  If it is thought too cumbersome, note that the role of section 2.1 in this draft is entirely as an extended comment on the paragraph immediately before the section.
+
+I added more commentary to clarify the place of section 2.1 in the development, and an indication of why the proof in section 2.1 is of the same kind as the arguments in the later section, in the Henson section.  I think I was to rewrite the Henson section using $F(T(\alpha)) \geq \alpha$ rather than $F(T(\alpha)) > \alpha$;  I believe this is straightforward, and the maneuvers I use to make the inequality strict are artificial, and obscure matters a little in the comparison with the proof of Infinity.
+
+\item[10/6/2026, 1:14 pm Boise time:]  The first release of a draft.  This contains pointers to citations but no citations:  these are to be filled in later.  Do we want to add a further discussion of Specker trees, or
+discussion of the original Glazer inequality?  Mostly this says, I am actually working on it :-)
+
+
+
+\end{description}
+
+\subsection{Statement about the use of artificial intelligence in the background of this paper, and about the contributions of the human authors}
+
+No part of this paper was written using AI, nor are any of the main results of the paper due to artificial intelligence.  However, the convenient form of the disproof of the Partition Principle found in section 4 of this paper was found by ChatGPT Sol.  This result was originally proved using a different inequality found by the first author whose proof involved elaborate forcing technology.  The second author was convinced by the simple form of the statement of the original inequality that it ought to have an elementary proof not involving forcing techniques.  The first author asked ChatGPT Sol to find such a proof.   ChatGPT Sol did not find an elementary proof
+of the first author's identity.  Instead, it formulated a different inequality which would serve the same purpose, proved it by elementary methods, and pointed out that it would serve the purpose.  The proof as presented in this paper was written by hand by the second author, but the role of AI here is of considerable interest.
+
+The first result of the paper (the disproof of well-ordered choice) was completely carried out by the first author, though not in the form presented here.  The first author proved that the weak partition principle fails in NF plus the Axiom of Counting (the assertion that the set of natural numbers is strongly cantorian, formulated by Rosser in \cite{rosserbook}).  The second author adapted methods of C Ward Henson (\cite{hensontheorem}) ultimately derived from contemplation of Specker's disproof of the Axiom of Choice (\cite{speckernotac}) to simplify the disproof of well-ordered choice and complete the disproof of the weak partition principle in NF.   The technical difficulty of this paper was greatly reduced by ChatGPT Sol's observation that the first author's inequality used to disprove the weak partition principle could be replaced by the one used here, as noted above.
+
+\section{The theory of types and New Foundations}
+
+Quine's set theory New Foundations (NF), so called after the title of the paper \cite{nf} in which it was proposed in 1937, is most efficiently defined and motivated by first defining an extremely streamlined typed theory of sets which we call TST.  The history of TST is confusing:  a description of TST is often incorrectly given as a description of the far more complicated type theory of the {\em Principia Mathematica\/} of Russell and Whitehead.  Norbert Wiener seems to have first observed the possibility of a theory like TST in \cite{wienerpair}, 1914:  the crucial simplification of Russell's theory was the possibility of defining an ordered pair in terms of sets.  An actual formal description of TST (looking very different from this one) seems to have been given first by Tarski in \cite{tarskitst} in 1930, only seven years before the definition of New Foundations.
+
+The modern definition of TST follows.  It is a sorted first order theory with equality and membership as primitive relations.  The sorts are indexed by the natural numbers.   We do not require that our variables be adorned with type superscripts:  we denote the type of a variable $x$ by ${\tt type}(x)$.  The condition for well-formedness of a formula $x=y$ is that ${\tt type}(x)={\tt type}(y)$.  The condition for well-formedness of a formula $x \in y$
+is that ${\tt type}(x)+1={\tt type}(y)$.  The axiom schemes of the theory are extensionality [every formula of the shape $(\forall xy:x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z \in y))$ is an axiom] and comprehension
+[every formula of the shape $(\exists A:(\forall x:x \in A \leftrightarrow \phi))$, where $A$ does not appear in $\phi$, is an axiom:  the unique witness to this formula may be denoted by $\{x\mid \phi\}$.].  An interesting thing to note is that these are exactly the axioms of naive set theory, with the inconsistencies averted by the restrictions on formation of formulas imposed by the typing scheme.
+
+What Quine noticed in 1937 (following observations of Russell about his much more complicated type theory) is that TST has a symmetry property which suggests a simplification of the theory.
+If we postulate an injective map on variables , whose restriction to variables of each type $i$ is a bijection onto variables of type $i+1$, and denote the image of a variable $x$ under this map by $x^+$, we can conveniently define $\phi^+$ for each formula $\phi$ in the language of TST as the result of replacing each variable $u$ appearing in $\phi$ with $u^+$.  This clearly preserves well-formedness.  Quine's observation can be summed up as pointing out that, for any formula $\phi$, if we can prove $\phi$, we can also prove $\phi^+$ [the converse is not true] and any object we can defined as a set abstract $\{x\mid \phi\}$ has a precisely analogous object $\{x^+\mid \phi^+\}$ in the next higher type.  Quine made the leap of suggesting that we can in fact simply identify the types.
+
+The theory NF is a single-sorted theory with equality and membership as primitive relations.   Its axioms are $(\forall xy:x=y \leftrightarrow (\forall z:z \in x \leftrightarrow z \in y))$ [a single extensionality axiom]
+and every formula of the shape $$(\exists A:(\forall x:x \in A \leftrightarrow \phi)),$$ where $A$ does not appear in $\phi$, and where there is a function $\sigma$ from variables to natural numbers such that
+in each atomic subformula $u=v$ of $\phi$ we have $\sigma(u)=\sigma(v)$ and in each atomic subformula $u \in v$ of $\phi$ we have $\sigma(u)+1=\sigma(v)$.  A formula $\phi$ for which there is such a function $\sigma$ is said to be {\em stratified\/} with stratification $\sigma$, and this axiom scheme is called {\em stratified comprehension\/}.  The intended effect here is that the axioms of NF are exactly the axioms stated in single sorted
+language which are the result of dropping type distinctions between variables in an axiom of TST without introducing any identifications of variables.   The axiom of stratified comprehension is often dismissed as
+a ``syntactical trick''.  This impression can be dispelled by observing that stratified comprehension is finitely axiomatizable, so the theory can be presented without even indirect reference to the language of TST.
+
+We note [contra those who think there is some technical difficulty with term constructions in NF] that while the language of NF, like that of ZF, does not contain any term constructions as primitive, term constructions are readily handled, and moreover, readily handled relative to the stratification criterion.  A discussion of this is found in the original paper.  Basically, the theory of definite descriptions handles this efficiently.
+We define $(\theta x:\phi)$ as the unique object $x$ such that $\phi$, if there is one, and otherwise as the unique object [of the same type as $x$, in the TST context] $\emptyset$ with no elements.  In NF or TST, this works straightforwardly:  any occurrence
+of $(\theta x:\phi)$ can be eliminated as if defined contextually, following Russell (the refinement of providing a default value when the description would otherwise be undefined is due to Rosser).  In TST, $(\theta x:\phi)$ is assigned the same type as $x$, and the typing rules for atomic formulas generalize in the obvious way.
+In NF, $(\theta x:\phi)$ is to be assigned the same value as $x$ by a stratification, and if $\phi$ is stratified, contextual expansion of $(\theta x:\phi)$ is easily seen to preserve stratification.  We define $\{x\mid \phi\}$
+as $(\iota A:(\forall x:x \in A \leftrightarrow \phi))$, where $A$ does not occur in $\phi$, and that is all that needs to be said about term constructions.
+
+Specker showed in \cite{speckeramb}, 1962, that Quine's leap of faith to identification of the types is at least partially justified.  A more cautious conjecture to make on the basis of the symmetry of TST described above
+is to adopt the axiom scheme $\phi \leftrightarrow \phi^+$ for each closed formula $\phi$, which is called the Ambiguity Scheme.  Specker showed that TST + Ambiguity is equiconsistent with NF.
+
+But Specker had already showed, in \cite{speckernotac}, 1954, that the Axiom of Choice is false in NF.  This was surprising and alarming, and had the corollary that NF is significantly stronger than TST.  It is provable in TST that every finite set is well-orderable, so of course this is provable in NF, so from $\neg$AC we can conclude that the universe is not well-orderable [if it were, every partition of the universe would obviously have a choice set] and so infinite.   TST does not prove Infinity, so NF is essentially stronger.
+
+We will not need to give Specker's disproof of Choice here, as we can prove the stronger result in a subsequent section that the axiom of well-ordered choice is false in NF.
+
+It has proved remarkably difficult to extend Specker's result or conversely to determine what weakenings of Choice might be consistent with NF.  This paper is the first significant extension of Specker's original results of 1954 in a negative direction.
+
+
+\section{Preliminaries on the mathematics of relations, functions, and cardinality in TST and NF}
+
+In this section, we will give a brief description of how mathematics is done in TST and NF, focussing in particular on definitions which will be unfamiliar to those working in ZF or ZFC.
+
+We begin by defining the natural numbers.  The basic idea (following Frege) is that the natural number $n$ is the collection of all sets with $n$ elements, which appears circular.  We demonstrate that it is not.
+
+We define $\emptyset$ as $\{x\mid \neg x=x\}$.  We define $V$ as $\{x\mid x=x\}$.
+
+We define $\iota(x)$ or $\{x\}$ as $\{y\mid y=x\}$.
+
+We define $A \cup B$ as $\{x\mid x \in A \vee x \in B\}$.
+
+For any term $T(x_1,\ldots,x_n)$ containing just those free variables, we define $\{T(x_1,\ldots,x_n\mid \phi\}$ as $\{x\mid (\exists x_1,\ldots,x_n:x=T(x_1,\ldots,x_n) \wedge \phi\}$.
+
+For any term construction $F(x)$ with one free variable, define $F``A$ as $\{F(a)\mid a \in A\}$.
+
+For any set $A$, we define $\bigcup A$ as $\{x\mid (\exists a \in A:x \in a)\}$ and $\bigcap A$ as $\{x:(\forall a\in A:x \in a)\}$.
+
+We define 0 as $\{\emptyset\}$.  Notice that this is the collection of all sets with zero elements.
+
+For any set $A$, we define $\sigma(A)$ as $\{a \cup \{x\}:a \in A \wedge x \not\in a\}$.  Notice that if $A$ were the set of all sets with $n$ elements, $\sigma(A)$ would be the set of all sets with $n+1$ elements.
+
+We define $\cal I$ as $\{A:0 \in A \wedge (\forall x:x \in A \rightarrow \sigma(x)\in A)\}$.  This is the collection of inductive sets.
+
+We define $\mathbb N$ as $\{n:(\forall I \in {\cal I}:n \in I\}$, the intersection $\bigcap \cal I$ of all inductive sets.
+
+These definitions can be construed in two different ways.  In NF, they work exactly as written (note that all of them are stratified).  In TST, we must be aware that each of these is a definition scheme which defines objects in each sufficiently high type.
+$\emptyset$ for example is defined in each type $i+1$.  0 is definable in each type $i+2$.  $\sigma(A)$ is defined and of type $i+2$ for each $A$ of type $i+2$.  $\cal I$ is defined in each type $i+4$ and
+$\mathbb N$ is defined in each type $i+3$.  In general, we will give definitions in the more convenient single sorted way allowed by NF, but all of our definitions will be stratified and  usable with care in TST.
+
+We define $\mathbb F$, the collection of finite sets, as $\bigcup \mathbb N$.
+
+We state the Axiom of Infinity, which must be adjoined to TST as an additional axiom scheme, but which is actually a difficult theorem of NF, as $V \not\in \cal F$.
+
+\subsection{From arithmetic to infinity in NF, without talking out of turn about ordered pairs}
+
+
+\maketitle
+
+In this section we explain how to avoid the rhetorical inconvenience of starting out with the Kuratowski pair then
+switching to the Quine pair once we have established Infinity, which commonly occurs in pedagogy about NF(U).  In fact, the proof of Infinity works fine without any use of ordered pairs.  Some definitions which appeared in the preamble are repeated.  This section can also serve as partial reassurance that the natural numbers we have defined in NF really have the expected properties of the natural numbers.  In terms of the structure of the paper, this subsection can be regarded as an extended exposition of the statement in the last paragraph preceding it.  We also remark subsequently that the closing maneuvers of this proof exemplify a feature found in the refutations of choice principles which we present.
+
+\begin{description}
+
+\item[Definition:]  We define 0 as $\{\emptyset\}$.  Notice that this is the collection of all sets with zero elements.
+
+\item[Definition:]  For any set $A$ we define $\sigma(A)$ as $\{a \cup \{x\}\mid a \in A \wedge x \not\in a\}$.
+Notice that if we have realized the set of all sets with $n$ elements as $N$, then we will realize the set of all sets with $n+1$ elements as $\sigma(N)$. 
+
+\item[Definition:]  We define 1 as $\sigma(0)$, 2 as $\sigma(1)$, and so on through the standard numerals.
+
+\item[Definition:]  We define the set $\cal I$ of inductive sets as $$\{I:0 \in I \wedge (\forall x:x \in I \rightarrow \sigma(x) \in I)\}.$$ We define the set $\mathbb N$ of natural numbers as $\{n:(\forall I \in {\cal I}:n \in I)\}$.  We define
+the set $\mathbb F$ of finite sets as $\bigcup \mathbb N$.
+
+\item[Theorem:]  $\mathbb N$ is inductive.
+
+\item[Proof:]  0 obviously belongs to every inductive set.   Suppose $n$ belongs to every inductive set.
+Then for each inductive set $A$, $n \in A$, so $\sigma(n) \in A$ [because $A$ is inductive] and we see that $\sigma(n)$ belongs to every inductive set.  Thus $\mathbb N$, the set of all objects which belong to every inductive set, is inductive itself.
+
+\item[Definition:]  When $n$ is a natural number, we refer to $\sigma(n)$ as the successor of $n$.
+
+\item[Theorem:]  Every natural number is either 0 or the successor of a natural number.
+
+\item[Proof:]  Let $S$ be the set of natural numbers $n$ which are either 0 or a successor.  $0 \in S$ is obvious.
+If $n \in S$, then $n$ is a natural number, so $\sigma(n)$ is a natural number, and then $\sigma(n) \in S$ is obvious.  So $S$ is inductive and includes all natural numbers.
+
+\item[Theorem:]  For each natural number $n$, for each $m \in \sigma(n)$ and $x \in m$, $m \setminus \{x\} \in n$.
+
+Let $S$ be the set of natural numbers for which this is true.  We show that it is inductive.
+
+Each element of $\sigma(0)$ is of the form $\{x\}$, and $\{x\} \setminus \{x\} \in 0$.  So $0 \in S$.
+
+Suppose that $n \in S$.  Suppose that $x \in \sigma(\sigma(n))$ and $u \not\in x$.  We have $x = y \cup \{v\}$
+where $y \in \sigma(n)$ and $v \not\in y$.   Now $$x \setminus \{u\} =(y \cup \{v\} )\setminus \{u\}=(y \setminus \{u\}) \cup \{v\}$$
+and $y \setminus \{u\}$ belongs to $n$ because $n \in S$, so $x \setminus \{u\} \in \sigma(n)$, so $\sigma(n) \in S$.
+
+\item[Theorem:]  If  $\sigma(m)$ and $\sigma(n)$ are nonempty then $m=n$.  This is a paraphrase of the previous result, and a limited form of Peano's fourth axiom.  The qualification is that we cannot rule out the possibility
+that $\sigma(m)$ is empty, which would happen only if $m=\{V\}$.  In this case (which we hope to exclude)
+$\{V\}$ and $\emptyset$ would be distinct natural numbers with $\emptyset$ as their common successor.
+
+\item[Theorem:]  Any two distinct natural numbers are disjoint.
+
+\item[Proof:]  Let $S$ be the set of all natural numbers $n$ such that for all natural numbers $m$ distinct from $n$,
+$m$ and $n$ are disjoint.  We prove that $S$ is inductive.
+
+We show that $0 \in S$.  The only element of 0 is $\emptyset$, which has no elements.  A natural number $n$ distinct from 0 is $\sigma(m)$ for some natural number $m$, so all of its elements are of the form $a \cup \{x\}$ for $a \in m$ and $x \not\in a$, so nonempty, so distinct from $\emptyset$, so 0 and $n$ are disjoint.
+
+Suppose that $n \in S$.  We show that $\sigma(n) \in S$.  Suppose that $m$ is a natural number and
+$x \in m$ and $x \in \sigma(n)$.  Then $m=\sigma(p)$, $x = y \cup \{u\}$ for $y \in p$ and $u \not\in y$,
+but then $y = x \setminus \{u\}$ is in $n$ by the previous theorem, so $p=n$ because $n$ and $p$ meet
+and $n \in S$, so $m = \sigma(n)$ and we have shown $\sigma(n) \in S$.
+
+\item[Definition:]  For every $n \in \cal F$, define $|n|$ as the unique natural number which contains $n$.  This definition is the key point in this development.  We can talk about cardinalities of finite sets quite naturally without talking about bijections, and so without needing a prior treatment of the ordered pair.
+
+\item[Theorem:]  If $A$ is a finite set, and $B \subseteq A$, then $B$ is a finite set.
+
+\item[Proof:]  Let $S$ be the set of all natural numbers $n$ such that for any $B \subseteq A \in n$, $B$ is finite.
+We show that $S$ is inductive.
+
+If $B \subseteq A \in 0$ then $B=\emptyset\in 0$, so $0 \in S$.
+
+Suppose $n \in S$.  Suppose $B \subseteq A \in \sigma(n)$.  If $B$ is empty it is finite.  Otherwise, let $x \in B$,
+and we have $B \setminus \{x\} \subseteq A \setminus \{x\} \in n$, so $B \setminus \{x\}$ is finite, so $B$ is finite.
+
+\item[Theorem:]  For any natural numbers $m$, $n$, if some element of $m$ has an element of $n$ as a subset,
+then every element of $m$ has an element of $n$ as a subset.
+
+\item[Proof:]  Let $S$ be the set of natural numbers $m$ such that for every natural number $n$, if $A \in m$
+has a subset $B \in n$, then every $A\in m$ has a subset $B \in n$.
+
+If $A \in 0$ has a subset $B \in n$ then $B = \emptyset \in 0$ and of course every element of 0 has a subset in 0.   So $0 \in S$.
+
+Suppose $m \in S$.  Suppose $A \in \sigma(m)$ has a subset $B \in n$.   If $n=0$, of course every element of
+$m$ has a subset in 0.  Otherwise $n=\sigma(p)$ for some natural number $p$ and we can choose $x \in B$.
+$A \setminus \{x\} \in m$ has subset $B \setminus \{x\} \in p$, so every element of $m$ has a subset of size $p$,
+so every element of $\sigma(m)$, being obtained by adding a new element $y$ to an element $C$ of $m$,
+has a subset $E$ belonging to $\sigma(p)=n$, obtained by adding the same new element $y$ to a subset $D$ of size $p$ included in the element $C$ of $m$.   So $\sigma(m) \in S$, $S$ is inductive and the theorem is proved.
+
+\item[Definition:]  For natural numbers $m$, $n$, we define $m \leq n$ as holding iff
+each element of $n$ has a subset which is an element of $m$.
+
+\item[Theorem:]  For all natural numbers $n$, no element of $n$ has a proper subset which is an element of $n$.
+
+\item[Proof:]  Let $S$ be the set of all natural numbers $n$ such that no element of $n$ is a proper subset of an element of $n$.
+
+$0 \in S$ because no element of 0 has a proper subset.
+
+Suppose $n \in S$.  Suppose $A$ and $B$ are elements of $\sigma(n)$ and $A$ is a proper subset of $B$.
+Suppose $x \in A$.  Then $A \setminus\{x\}$ is a proper subset of $B \setminus \{x\}$ and both belong to $n$, which is a contradiction.  So $\sigma(n)\in S$,  $S$ is inductive, and the theorem holds.
+
+\item[Corollary:]  If $V$ is finite then $|V|=\{V\}$ and $\sigma(|V|)=\emptyset$.
+
+\item[Theorem:]  $\leq$ is a well-ordering of $\mathbb N$.
+
+$\leq$ is obviously reflexive by definition.
+
+$\leq$ is antisymmetric:  suppose $m \leq n$ and $n \leq m$.  If $A \in m$ we have $A \subseteq B \in n$ and $B \subseteq C \in n$.  But then by the previous theorem $A=C$ so $A = B = C$, so $m=n$ because distinct natural numbers are disjoint.
+
+$\leq$ is total.  Let $S$ be the set of all natural numbers $m$ such that for every natural number $n$, either $m \leq n$ or $n \leq m$.  $0 \in S$ because $0 \leq n$ for every natural number $n$.  Suppose $m \in S$.  We want to show that for each $n$, either $\sigma(m) \leq n$ or $n \leq \sigma(m)$.  We have either $m \leq n$ or $n \leq m$.  If $n \leq m$ we have $n \leq m \leq \sigma(m)$, so we have what we need by transitivity.  Suppose $m \leq n$.  If $n=m$ we have $n=m \leq \sigma (m)$.  If $n \neq m$, then any element of $n$ has an element of $m$ as a proper subset, so has an element of $\sigma(m)$ as a subset, so $\sigma(m) \leq n$.
+
+$\leq$ is transitive.  Suppose $m \leq n$ and $n \leq p$.  Then for every $C \in p$ we have $C \supseteq B  \in n$
+and $B \supseteq A \in m$, but then we have $C \supseteq A \in m$, so $m \leq p$.
+
+Now suppose that $\cal A$ is a nonempty set of natural numbers with no $\leq$-minimal element.
+We show by induction that no natural number has a subset which belongs to an element of $\cal A$,
+which is a contradiction.  Let $S$ be the set of all natural numbers $n$ such that no element of $n$ has a subset belonging to an element of $\cal A$.   Clearly $0 \in S$, because if an element of 0 had a subset in an element of $\cal A$, we would have
+$0 \in \cal A$, and 0 would then be $\leq$-minimal in $\cal A$.  Suppose $n \in S$ and suppose that
+some subset $A$ of an element $B$ of $\sigma(n)$ belongs to an element of $\cal A$.  Suppose $x \in B$.  $B \setminus \{x\}$ belongs to $n$ and so can have no subset belonging to an element of $\cal A$.   Thus in fact $A=B$:  any subset of an element of $\sigma(n)$ which belongs to an element of $\cal A$ is in fact
+an element of $\sigma(n)$.  But this means that $\sigma(n)$ is $\leq$-minimal in $\cal A$ which is a contradiction.  So $S$ is inductive and in fact $\cal A$ cannot be nonempty.
+
+\item[Theorem:]  If $A$ and $B$ are finite sets, then $A \cup B$ is finite.
+
+\item[Proof:]  We let $S$ be the set of natural numbers $n$ such that the union of any finite set with an element of $n$  is finite.  We show that $S$ is inductive.
+
+That $0 \in S$ is obvious.
+
+Suppose $n \in S$.  Suppose $A$ is a finite set.  Suppose $B \in \sigma(n)$.  If all elements of $B$ are in $A$ the result is obvious.  Otherwise, let $x \in B \setminus A$.  $b = C \cup \{x\}$ for some $C \in n$, and $A \cup B = (A \cup C) \cup \{x\}$ is an element of $\sigma(|A \cup C|)$ and so finite.
+
+\item[Theorem:]  If $A$ and $B$ are disjoint finite sets, then the value of $|A \cup B|$ is exactly determined
+by the values $|A|$ and $|B|$.
+
+\item[Proof:]  Let $S$ be the set of natural numbers $n$ such that for any elements $C,D$ of $n$
+and sets $A,B$ which belong to the same natural number and are disjoint from $C,D$, respectively, $|A \cup C|=|B\cup D|$.
+
+We show that $0 \in S$.  If $A,B \in n$, then $|A \cup \emptyset|=n=|B \cup \emptyset|$.
+
+Suppose $n \in S$.  Suppose that  $C,D$ belong to $\sigma(n)$ and $A,B$ belong to the same natural number $m$
+and are disjoint from $C,D$ respectively.  Suppose $x \in C$ and $y \in D$.  Then $|A\cup C| = \sigma(|A \cup (C \setminus\{x\})|)$ which is equal to $\sigma(|B \cup (D \setminus\{y\})|)$ because $C \setminus\{x\}=D \setminus\{y\}\in n \in S$, and $\sigma(|B \cup (D \setminus\{y\})|)$ is equal to $|B \cup D|$.
+
+\item[Definition:]  For finite disjoint sets $A,B$, we define $|A|+|B|$ as $|A \cup B|$.  This appears to be the usual operation of addition.
+
+\item[Theorem:]  For any natural number $n$, there is a natural number $m$ such that for all $A \in n$,
+${\cal P}(A) \in m$.
+
+\item[Proof:] Let $S$ be the set of natural numbers for which this is true.
+
+ If $A \in 0$, then ${\cal P}(A) = \{\emptyset\} \in 1$.  So $0 \in S$.
+ 
+ Suppose $n \in S$ and the power set of any element of $n$ belongs to $m$.  Let $A \in \sigma(n)$.  For some $B \in n$ and $x \not\in B$, $A = B \cup \{x\}$.
+ ${\cal P}(A)$ is the union of ${\cal P}(B)$ and $\{b \cup \{x\}:b \subseteq B\}$.  The two sets are disjoint.
+ ${\cal P}(B)$ belongs to $m$.  If we can show that $\{b \cup \{x\}:b \subseteq B\}$ belongs to $m$ as well
+ we have shown that the power set of $A$ belongs to $m+m$ for each $A \in \sigma(n)$, so we have shown $\sigma(n) \in S$.
+ 
+ We consider the set $T$ of all natural numbers $n$ such that for any $A \in n$, and any $x$ which belongs to no element of $A$, $\{a \cup \{x\}\mid a \in A\} \in n$.  $0\in T$ because for any $A \in 0$, $\{a \cup \{x\}\mid a \in A\}$ is the empty set and belongs to 0.  Suppose that $n \in T$ and $A \in \sigma(n)$, and $x$ belongs to no element of $A$.
+ $A = B \cup \{y\}$ for some $B \in n$ and $y \not\in B$, and $\{a \cup \{x\}\mid a \in A\} = \{a \cup \{x\}\mid a \in B\}\cup \{y \cup \{x\}\}$, which belongs to $\sigma(n)$ because  $\{a \cup \{x\}\mid a \in B\}$ belongs to $n$ ($n$ being in $S$) and $y \cup \{x\}$ does not belong to $\{a \cup \{x\}\mid a \in B\}$.  So $T$ is inductive and contains all natural numbers, and this can be applied to show that $\{b \cup \{x\}:b \subseteq B\}$ belongs to $m$ in the previous paragraph, completing the proof.
+ 
+ \item[Theorem:]  For every natural number $n$ there is a natural number $m$ such that for any set $A$, $A \in n$ iff  $\iota``A \in m$.
+ 
+ Let $S$ be the set of natural numbers for which this is the case.
+ 
+ If $A \in 0$, then $\iota``A \in 0$, and vice versa.  So $0 \in S$.
+ 
+ Suppose $S$ belongs to the natural number $n$ and we have a natural number $m$ such that for every $C $, $C \in n$ iff $\iota``C \in m$.   Suppose $A \in \sigma(n)$.  $A$ can be expressed as $B \cup \{x\}$ where $B \in n$ and $x \not\in B$.   $\iota``A$ is $\iota``B \cup \{\{x\}\}$.  It follows that $\iota``A \in \sigma(m)$, because $\iota``B \in m$ and $\{\{x\}\} \not\in \iota``B$.  Suppose $\iota``A \in \sigma(m)$.  Again, express $A$ as $B \cup \{x\}$ where $B \in n$ and $x \not\in B$, and $\iota``A$ as $\iota``B \cup \{\{x\}\}$.   We see that $\iota``B \in m$, since it is produced by taking one element out of a set of size $\sigma(m)$, so $B \in n$ because $n \in S$, and $B \cup \{x\} \in \sigma(n)$, completing the argument that $\sigma(n)\in S$.
+ 
+ \item[Definition:]  Define $T(|A|)$ as $|\iota``A|$ for each finite set $A$.  If $T(m)=n$, we define $T^{-1}(n)$ as $m$.
+ 
+ \item[Definition:]  We define $\exp(|A|)$ as $T^{-1}(|{\cal P}(A)|)$.
+ 
+ \item[Theorem:]  For all natural numbers $m,n$, $m \leq n \leftrightarrow T(m) \leq T(n)$.
+ 
+ \item[Proof:]  Let $S$ be the set of all natural numbers $n$ for which for all natural numbers $m$, $m \leq n \leftrightarrow T(m) \leq T(n)$.
+ 
+ \item[Proof:]  If for every $A\in n$ we have $B \in m$ such that $B \subseteq A$, then for every $A \in n$ we
+ have $\iota``A \in T(n)$ with $\iota``B$ a subset of $\iota``A$ and an element of $T(m)$, so $T(m) \leq T(n)$.
+ 
+ Now suppose $T(m) \leq T(n)$ and $\neg m \leq n$.  It follows that $n \leq m$, so $T(n) \leq T(m)$, so $T(m)=T(n)$ and $m=n$, which is a contradiction.
+ 
+ \item[Theorem:]  For all natural numbers $n$, $n<\exp(n)$ if $\exp(n)$ is defined.
+ 
+ \item[Proof:]  Let $A \in n$.  $\iota``A$ is a proper subset of ${\cal P}(A)$, so $T(|A|) < |{\cal P}(A)| = T(\exp(|A|)$,
+ so the result follows by the previous theorem.
+ 
+ \item[Theorem:]  For any natural numbers $m$ and $n$, if $A \in m$ and $B \in n$ and $|{\cal P}(A)| = |{\cal P}(B)|$,
+ then $m=n$.
+ 
+ \item[Proof:]  Let $S$ be the set of all natural numbers $n$ such that for any natural number $m$, if $A \in m$ and $B \in n$ and $|{\cal P}(A)| = |{\cal P}(B)|$,
+ then $m=n$.
+ 
+ We show that $0 \in S$.  Suppose that $A \in 0$ (so $A=\emptyset$) $B \in n \in \mathbb N$, and $|{\cal P}(A)| = |{\cal P}(B)|$.  ${\cal P}(\emptyset) \in 1$, so ${\cal P}(B) \in 1$, but if $B$ has any element $x$ then ${\cal P}(B)$ has at least two elements, $\{x\}$ and $\emptyset$.  It follows that $\emptyset = B \in 0$, so $0 \in S$.
+ 
+ Suppose $n \in S$.  We show that $\sigma(n)\in S$.  Suppose $A \in \sigma(n)$ and $B \in m$ and $|{\cal P}(A)|=|{\cal P}(B)|$.  It is evident that $m$ cannot be 0, so it is a successor $\sigma(p)$.  If $A = C \cup \{x\}$ with $C \in n$ and $B = D \cup \{y\}$ with $D \in p$, earlier work shows that $|{\cal P}(C)| + |{\cal P}(C)| = |{\cal P}(A)|=|{\cal P}(B)| = |{\cal P}(D)|+|{\cal P}(D)|$.  If we can show that for nonempty natural numbers $q,r$, $q+q=r+r\rightarrow q=r$, then we can show that
+ $|{\cal P}(C)| = |{\cal P}(D)|$ whence $n=|C|=|D|=p$ (because $n \in S$), which establishes that $\sigma(n)=\sigma(p)=m$.
+ 
+ So, suppose $T$ is the set of all natural numbers $n$ such that for all natural numbers $m$, $n+n=m+m \rightarrow m=n$ if $n+n$ is nonempty.  We show that $T$ is inductive.  If $0+0=m+m$ it is clear that $m=0$.  Suppose $n \in T$.
+ Suppose $\sigma(n)+\sigma(n) = m+m$ (and both of these are nonempty).  Clearly $m$ is a successor $\sigma(p)$.  Now $\sigma(\sigma(n+n)) = \sigma(m)+\sigma(m)=\sigma(p)+\sigma(p)=\sigma(\sigma(p+p))$ so $n=n=p+p$ so because $n \in S$, $n=p$, so $\sigma(n)=\sigma(p)=m$.  This completes the proof of the main result.
+ 
+ \item[Theorem:]  For all natural numbers $m,n$, $\exp(m)=\exp(n)$ implies $m=n$.
+ 
+ \item[Proof:]  $\exp(|A|)=\exp(|B|)$ means $T^{-1}(|{\cal P}(A)|) = T^{-1}(|{\cal P}(B)|)$ which implies $|{\cal P}(A)|=|{\cal P}(B)|$ which implies $|A|=|B|$.
+ 
+ \item[Definition:]  We define $H(n)$, the hierarchy to $n$, as the intersection of all sets of natural numbers $I$
+ such that $n\in I$ and $$(\forall m \in \mathbb N:\exp(m)\in I \rightarrow m \in I).$$  This last condition we express briefly by saying that $I$ is closed under $\exp^{-1}$.
+ 
+ \item[Theorem:]  For each natural number $n$, $H(n)$ is finite.
+ 
+ This is best proved by using the fact that $\leq$ is a well-ordering.  Clearly $H(0)$ is finite.  Suppose that $H(m)$
+ is finite for each $m\leq n$.  Either $\sigma(n)$ is not an image under $\exp$, in which case $H(\sigma(n)) = \{\sigma(n)\}$, which is finite, or $\sigma(n)=\exp(p)$ for a unique $p\leq n$ and $H(\sigma(n)) = H(p) \cup \{\sigma(n)\}$, which is finite.
+ 
+ \item[Theorem:]  For each natural number $n$, $|H(T(n))|=T(|H(n)|)$.
+ 
+ Prove that $T(\exp(n))=\exp(T(n))$ if $\exp(n)$ exists.  $A$ and $B$ are disjoint iff $\iota``A$ and $\iota``B$ are disjoint and $\iota``(A \cup B) = \iota``A \cup \iota``B$, from which it follows that $T(|A|)+T(|B|)=T(|A|+|B|)$.
+ Then certainly $T(\exp(0)) = T(1) = 1 = \exp(0) = \exp(T(0))$ and if $T(\exp(n))=\exp(T(n))$ we have
+ $$T(\exp(\sigma(n)))= T(\exp(n)+\exp(n)) = T(\exp(n))+T(\exp(n))$$ $$= \exp(T(n))+\exp(T(n))=\exp(\sigma(T(n))=\exp(T(\sigma(n))),$$ and we have the equation by induction.
+ 
+ We also have $\exp(T(q)) = T(r)$ implies $\exp(q)=r$.   It is evident that if $\exp(q)$ is anything (say $R$) then $\exp(T(q))=T(R)$ so $R=r$.  If $\exp(q)$ is undefined, this means that the power set of $A\in q$
+ is of size greater than $T(n)$ for any $n$, and so the power set of $\iota``A$ (which is of size $T(\exp(T(q)))$) is of size greater than $T^2(n)$ for any $n$, and so $\exp(T(q))$ is greater than $T(n)$ for any $n$, which contradicts our hypothesis.
+ 
+ Suppose that $m$ belongs to every set $S$ which contains $n$ and is closed under $\exp^{-1}$ [meaning that for any $p \in S$, if $\exp(q)=p$ then $q \in S$].
+ 
+ For any set of natural numbers $N$, define $T``N$ as the set of natural numbers $T(n)$ such that $n \in N$.
+ We argue that for each natural number $n$ and each set of natural numbers $N \in n$, $T``N \in T(n)$.
+ Consider the set $S$ of all $n$ for which this is the case (the core of the proof is the fact that the definition of $S$ is stratified).  Clearly $0 \in S$:  if $N$ is empty and so belongs to 0, $T``N$ is empty and so belongs to 0 = T(0).  If $n \in S$, suppose that $M \in \sigma(n)$ is a set of natural numbers.  Let $x \in M$.  The $M \setminus \{x\} \in n$ and $T``M \setminus \{T(x)\} = T``(M \setminus \{x\})$ belongs to $T(n)$ because $n \in S$, and so
+ $T``M$ belongs to $\sigma(T(n)) = T(\sigma(n))$, completing the proof of the claim.
+
+ We now argue that $H(T(n))=T``H(n)$.  From this and the result of the previous paragraph, the theorem follows.
+ 
+ Suppose $m \in H(n)$.  This means that $m$ belongs to every set $S$ which contains $m$ and is closed under $\exp^{-1}$.  We want to show that $T(m) \in H(T(n))$.  Suppose that $S$ is a set which contains $T(n)$ and is closed under $\exp^{-1}$ .  Every element of $S$ will be an image under $T$, so there is a set $S'$ such that
+ $T``S'=S$.  This set contains $n$ and is closed under $\exp^{-1}$ [if $p \in S'$ and $\exp(q)=p$, then $T(p) \in S$ and $\exp(T(q))= T(p)$, so $T(q) \in S$, so $q \in S'$] so it contains $m$.  It follows that $S$ contains $T(m)$, so $T(m)\in H(T(n))$, and we have shown $H(T(n)) \supseteq T``H(n)$.
+ 
+ The set $T``H(n)$ contains $T(n)$ and is closed under $\exp^{-1}$ itself [because $H(n)$ itself is so closed:  if $T(p) \in T``H(n)$ and $\exp(q) = T(p)$, we have $q=T(r)$ for some $r$, and we will have $\exp(r)=p$ so $r \in H(n)$, so $q \in T``H(n)$]  so $T``H(n) \supseteq H(T(n))$.
+ 
+ So the entire result is shown.
+ 
+ 
+ 
+ \item[Definition:]  We define the set of even numbers as the smallest set containing 0 and closed under $\sigma^2$.  We define the set of odd numbers as the set of numbers which are not even.
+ 
+ \item[Theorem:]  For each $n$, $n$ is even if and only if $\sigma(n)$  is odd.
+ 
+ \item[Proof:]  Each even number is either 0 or an image under $\sigma^2$, obviously.  1 is not an image under $\sigma^2$, so 1 is odd. Thus 0 is even iff 1 is odd.   We then observe that $n$ is even iff $\sigma^2(n)$ is even.  To show this, it is enough to show that if $\sigma^2(n)$ is even, so is $n$.  Suppose that $n$ is odd.
+ Let $N$ be the intersection of all sets which contain $n$ and are closed under $\sigma^2$.  If $E$ is the set of even numbers, $E\setminus N$ still contains 0 and is closed under $\sigma^2$:  any element of $N$ either
+ has its inverse image under $\sigma^2$ in $N$ or is the odd number $n$ (because the set of such objects
+ certainly contains $n$ and is closed under $\sigma^2$) and this is enough to see that $E \setminus N$ is closed under $\sigma^2$:  if $e \in E \setminus N$, $\sigma^2(e)$ is in $E$ and cannot be in $N$ because its inverse image under $\sigma^2$ is not in $N$.   Now suppose that $m$ is even iff $\sigma(m)$ is odd.  $m$ is even iff $\sigma^2(m)$ is even by the previous discussion, so $\sigma(m)$ is odd iff $\sigma^2(m)$ is even, which is logically equivalent to the assertion that $\sigma(m)$ is even iff $\sigma^2(m)$ is odd, which completes the proof by induction of the theorem.
+ 
+ \item[Theorem:]  For each $n$, $n$ is even iff $T(n)$ is even.
+ 
+ \item[Proof:]  Since $T(0)=0$ this is evident for $n=0$.  Suppose $m$ is even iff $T(m)$ is even.
+ It follows by the result above that $\sigma(m)$ is even iff $\sigma(T(m)) = T(\sigma(m))$ is even.
+ 
+ 
+ \item[Theorem:]  $V$ is not finite.
+ 
+ \item[Proof:]  Suppose $V$ is finite.  Note that $\exp(T(|V|))=|V|$.  From this it follows that
+ $H(|V|) = H(T|V|) \cup \{|V|\}$ so $|H(|V|)| = \sigma(|H(T(|V|))|)$.  But also $H(T(|V|))=T(|H(|V|)|)$.  This is impossible
+ because we see that the two cardinals must both have different parity (even or odd) and the same parity.
+ 
+
+
+
+
+\end{description}
+
+\subsection{The ordered pair introduced}
+
+
+We then use the natural numbers to define the ordered pair.  The usual definition of $(x,y)$ as $\{\{x\},\{x,y\}\}$ can be used in TST (with or without Infinity) or NF, but is formally inconvenient because $(x,y)$ is then two types higher than $x$ or $y$.
+
+Instead, we give the following definitions (following Quine in \cite{quinepair}:  the use of this pair has been customary in NF since it was proposed) .  Define $\sigma^*(x)$ as $\sigma(x)$ if $x \in \mathbb N$ and as $x$ otherwise.  It is a theorem that $\sigma^*$ is an injection.  Note that $\sigma$ itself is not an injection on sets generally (we leave this as an exercise).   Define $\sigma_1(A)$ as $\sigma^*``A$ and $\sigma_2(A)$ as $(\sigma^*``A) \cup \{0\}$.  Then define $(A,B)$ as $\sigma_1``A \cup \sigma_2``B$.  This is an ordered pair,
+because $\sigma_1$ and $\sigma_2$ are injective with disjoint ranges, and $(A,B)$ is of the same type as $A$ and $B$.  It is further entertaining though we will not make any use of it that every set is an ordered pair under this definition.  We may in our subsequent development comment in passing on ways the development would differ (in being somewhat more inconvenient) if the Kuratowski pair were used.
+
+Once we are in possession of the ordered pair, we can define basic concepts of the theories of relations and functions just as usual.  It is particularly worthy of note that $A \times B = \{(a,b):a \in A \wedge b \in B\}$ is a set
+(which it would be if we used the Kuratowski pair as well) but further is a set of the same type as the common type of $A$ and $B$, which would not be the case if the Kuratowski pair were used, which makes the definitions
+of cardinal addition and multiplication much easier to state.
+
+We define the cardinality $|A|$ of a set $A$ as $\{B\mid A \sim B\}$, where $A \sim B$ is defined as usual as asserting the existence of a bijection from $A$ to $B$.  Notice that $|A|$ is one type higher than $A$.
+
+An operation which is unfamiliar in ordinary set theory:  $T(|X|)$ is defined as $|\iota``X|$.  In the context of TST, this might be thought of as sending a cardinal to ``the same'' cardinal one type up.   But in NF it is a nontrivial operation, and not a set function, as we will show in the next paragraph.  It is straightforward to show that $T$ commutes with all relations and operations of cardinal arithmetic.  $T$ is injective, so the notation
+$T^{-1}(|X|)$ makes sense, but we will see below that the $T^{-1}$ operation is partial.
+
+As usual, we say that $|X| \leq |Y|$ iff there is $Z$ such that $Y \supseteq Z \sim X$.  The Schr\"oder-Bernstein theorem $|X| \leq |Y| \wedge |Y| \leq |X| \rightarrow |X| = |Y|$ admits the standard proof
+in TST and so in NF.  The Cantor theorem as transliterated from ordinary set theory, $|X| < |{\cal P}(X)|$, does not make sense in TST and is false in NF (certainly $|V| < |{\cal P}(V)|$ does not hold), but this is due to a misreading.  The correct form of the Cantor theorem is $T(|X|) = |\iota``X| < |{\cal P}(X)|$, and the proof is basically standard.  In NF, we find that $T(|V|) = |\iota``V| < |{\cal P}(V)| = |V|$, from which we see that the singleton operation is not a set function and the $T$ operation is nontrivial.  $T^{-1}(|V|)$ is seen not to exist.  It is fairly direct to show further that the $T$ operation on cardinals is not a set function.  Considerations in this paragraph
+motivate the definition $\exp(|X|) = T^{-1}(|{\cal P}(|X|)|)$ of the (partial) set function of exponentiation of cardinals [this definition is repeated below], and $|X| < \exp(|X|)$ is shown to hold where the right side of the inequality is defined.
+
+We define the order type ${\tt ot}(W)$ of a well-ordering $W$ [it should be noted that we construe well-orderings as reflexive relations:  otherwise we would be unable to distinguish the ordinals 0 and 1] as $\{W'\mid W \approx W'\}$, where $W \approx W'$ asserts that $W$ and $W'$ are isomorphic binary relations (and of course implies that $W'$ is also a well-ordering).
+
+If $W$ is a binary relation, $W^\iota$ is defined as $\{(\{x\},\{y\}):(x,y)\in W\}$.  If $W$ is a well-ordering, so is $W^\iota$, and we define $T({\tt ot}(W))$ as ${\tt ot}(W^\iota)$.  Like the $T$ operation on cardinals, the $T$ operation on ordinals amounts to projecting an ordinal upward one type.  We will immediately show that the $T$ operation on ordinals is nontrivial.
+
+We can define ${\tt ot}(W) \leq_{\tt ord} {\tt ot}(W')$ as holding exactly if there is $W''$ such that $W' \supseteq W'' \approx W$.  This is the natural well-ordering on the ordinals (the proof that it is a well-ordering
+we leave as an exercise).   Define $\Omega$ as ${\tt ot}(\leq_{\tt ord})$.
+
+We observe that the order type of the restriction of $\leq_{\tt ord}$ to ordinals $\beta <_{\tt ord} \alpha$ is $T^2(\alpha)$.  Examination of types in the definitions reveals this.   So the order type
+of the restriction of $\leq_{\tt ord}$ to the set of ordinals less than $\Omega$ is $T^2(\Omega)$, and we see that $T^2(\Omega) <_{\tt ord} \Omega$.  Did the reader think we were about to fall afoul of the Burali-Forti paradox?  This shows that the T operation on ordinals is nontrivial, and also that it is not a set function (as otherwise it would be an isomorphism between a well-ordering and a proper initial segment of that well-ordering).  It has the model theoretic consequence that the ordinals of a model of NF are never well-ordered by the natural order from the standpoint of the metatheory.   It is worth noting that the crucial statement 
+$T^2(\Omega) <_{\tt ord} \Omega$, which is weird and wonderful in the NF context, makes the much more sensible assertion in TST that the sequence of ordinals in any type is shorter than the sequence of ordinals two types up.
+
+We prove Hartog's theorem in a version appropriate TST or NF (a generalization of what we showed in the previous paragraph).  Let $X$ be a set and consider the collection $Y$ of all ${\tt ot}(W)$ for $W$ such that
+${\tt dom}(W) \subseteq X$.  Let $\Omega_X$ be the order type of the natural order on the ordinals restricted to this collection.  $\Omega_X$ is two types higher than the ${\tt ot}(W)$'s in the collection.   From this we observe that $T^{-2}(\Omega(X))$ is the supremum of the ordinals in $Y$, if it exists, and greater than any ordinal in $Y$.  Further, the domain of an element of $T^{-2}(\Omega(X))$ cannot be smaller than or the same size as $X$,
+as otherwise $T^{-2}(\Omega(X))$ would belong to $Y$.   The size of the domain of an element of $T^{-2}(\Omega(X))$ is $T^{-2}``|Y|$, for which we introduce the convenient notation $\aleph(|X|)$ [this definition is repeated below] and we have shown that $\aleph(|X|)$ (if defined) is not less than or equal to $|X|$.
+
+We remind the reader that a cardinal or ordinal is referred to as {\em cantorian\/} iff it is a fixed point of the appropriate T operation.
+
+\section{Refuting choice from well-ordered partitions}
+
+The axiom of well-ordered choice (AC$_{\tt wo}$) is the assertion that every well-ordered partition has a choice set.
+Given an arbitrary ordinal indexed sequence of sets $X_\alpha$, we can construct a sequence of disjoint
+sets $Y_{T^3\alpha}=\iota^3``X_\alpha \times \{\alpha\}$ (if $s$ is a well-ordering, we define $s_{\alpha}$ as the item in the well-ordering with segment before it of order type $\alpha$: $s_\alpha$ is of type one lower than that of the segment, which is of type one lower than the ordinal index $\alpha$:  it is useful to note that in the NF context (or the context of stratified set theory generally) an ordinal indexing is not a function).
+A choice set from the well-ordered partition obtained by dropping empty sets from the range of this sequence readily gives us a well-orderable set which meets each nonempty set in the original sequence in a single element.
+
+For any cardinal $\kappa$ and $X \in \kappa$, we define $\exp(\kappa)$ as $T^{-1}(|{\cal P}(X)|)$, so we have $T(\exp(|X|) = |{\cal P}(X)|$:  of course, this does not depend on the choice of $X \in \kappa$.  Note that this will  fail to be defined if ${\cal P}(X)$ is not at least as small as the set of singletons.   
+
+We define $\aleph(\kappa)$, where $\kappa$ is a cardinal and $X \in \kappa$,  as $$T^{-2}(|\{{\tt ot}(W):{\tt dom}(W) \subseteq X\}|),$$ so that $T^2(\aleph(|X|)) = |\{{\tt ot}(W):{\tt dom}(W) \subseteq X\}|$:  this again does not depend on the choice of $X \in \kappa$ and may fail to be defined if the collection of order types of well-orderings of subsets of $X$  is not sufficiently small.  These are precise analogues of cardinal operations in ordinary set theory and have familiar properties mod stratification considerations.  We remind the reader that we are using a type level ordered pair:  otherwise the exponent in the definition of $\aleph$ would be different.
+
+We also define $\aleph^*(\kappa)$ [not needed until the section after next] as $$T^{-3}(|\{{\tt ot}(W):{\tt dom}(W)\subseteq {\cal P}(X) \wedge \emptyset \not\in {\tt dom}(W) \wedge (\forall AB \in {\tt dom}(W):A \cap B = \emptyset)\})|):$$  this is the set of order types of well-orderings of partitions of any $X \in \kappa$, suitably type shifted.  Again this can be undefined if the set of order types is insufficiently small.
+
+We compute a bound on $\aleph(\exp(\kappa))$ for any cardinal $\kappa$.   Suppose that $X \in \kappa$.
+Let $Y \subseteq {\cal P}(X)$ have a well-ordering.   Then $Y \times Y$ has a well-ordering.  Let $C_\alpha = (A_\alpha,B_\alpha)$ be an ordinal indexing of $Y\times Y$.  From this derive an ordinal indexing $D$ of the set
+$\{A-B:A \in Y \wedge B\in Y$ defined as $$D=\{(A-B,G-H):{\tt min}\{\alpha:A\setminus B = A_\alpha-B_\alpha\} \leq {\tt min}\{\alpha:G\setminus H=G_\alpha-H_\alpha\}\}.$$  We can use AC$_{\tt wo}$ to select a set $E$ which is a well-orderable subset of $X$ meeting each nonempty $D_\alpha$ in a single element.  The well-ordering is $F=\{(e,f):\exists AB \in {\tt dom}(D):e \in A \wedge f \in B \wedge (A,B) \in D)\}$ The map $(A \in Y \mapsto A \cap E)$ is an injection, because if $A$ and $B$ are distinct elements of $Y$, there is an element of $A \Delta B$ in $E$ by construction.  We see that any well-ordering of a set of subsets of $X$ is isomorphic to a well-ordering of subsets of a well-ordered subset $E$ of $X$:
+So we have $\{{\tt ot}(W):W \subseteq {\cal P}(X)\} \subseteq \{{\tt ot}(W):W \subseteq {\cal P}(E)\}$ 
+so $T^2(\aleph(T(\exp(\kappa)))) \leq T^2(\aleph(T(\exp(|E|))))$.  Now $T^2(|E|)$ is the cardinality of the set
+of order types of initial segments of $F$, which is less than $T^2(\aleph(|E|))$ which is in its turn less than $T^2(\aleph(|X|))$, so we can complete the computation:  moving $T$'s about on both sides of the previous inequality, $T^2(\aleph(T(\exp(|X|)))) = \aleph(\exp(T^3(|X|))) \leq \aleph(\exp(T^3(|E|)) \leq \aleph(\exp(T^3(\aleph(|X|))))$, and from this we can see $\aleph(\exp(|X|)) \leq \aleph(\exp(\aleph(|X|)))$ (if both sides exist).
+
+%This implies further that $\aleph(\exp(\kappa)) < \aleph(\aleph(\exp(\aleph(\kappa))))$.  
+
+\subsection{The refutation in NF completed using Henson's method}
+
+For sufficiently large concrete $n$ (large enough that all computations on both sides succeed) we have 
+
+$\aleph(T^{n-1}(|V|))=\aleph(\exp(T^n(|V|))) \leq \aleph(\exp(\aleph(T^n(|V|))))$. 
+
+And this is impossible, for reasons which can be stated in very general terms.
+
+Define a special function on cardinals of well-ordered sets as a function $F$ which commutes with $T$ [for all $\beta$, $F(T(\beta))=T(F(\beta))$], is nondecreasing, and satisfies $F(\alpha)\geq \alpha$ for all $\alpha$.
+
+For no special function can we have $F(T(\alpha)) \geq \alpha$, if $T(\alpha)<\alpha$ and $\alpha$ is not dominated by a cantorian $\beta=T(\beta)$.
+
+We prove this.  Suppose otherwise for a particular special $F$ and cardinal $\alpha$ of a well-ordered set.
+
+Let $\gamma$ be smallest such that for some $n$, $F^n(\gamma) \geq \alpha$.
+
+Note that $T(\gamma)$ is smallest such that for some $n$, $F^n(T(\gamma)) \geq T(\alpha)$, and by hypothesis this is the same cardinal:
+clearly $F^{n+1}(T(\gamma)) \geq \alpha$ so $T(\gamma)\geq \gamma$, and we have $m$ such that $F^m(\gamma) \geq \alpha > T(\alpha)$, so $T(\gamma) \leq \gamma$.   That is, $\gamma$ is cantorian.
+
+Now let $N$ be smallest such that $F^N(\gamma)\geq \alpha$.  $N >0$ since $F^0(\gamma) = \gamma$, being cantorian, is certainly less than $\alpha$.
+
+Certainly $T(N)$ is smallest such that $F^{T(N)}(\gamma) \geq T(\alpha)$.
+
+We have $F^{N-1}(\gamma)<\alpha$ and $F^N(\gamma) \geq \alpha$.
+
+We have $F^{T(N)-1}(\gamma)<T(\alpha)<\alpha$, $F^{T(N)}(\gamma) \geq T(\alpha)$, and by hypothesis $F^{T(N)+1}(\gamma) \geq \alpha$.
+
+But this means that $N$ must be either $T(N)$ or $T(N)+1$.
+
+We cannot have $N=T(N)$ because this would make $F^{T(N)}(\gamma) = F^N(\gamma)$ cantorian and greater than $\alpha$.
+
+We cannot have $N=T(N)+1$ because $N$ and $T(N)$ must have the same parity (odd or even).
+
+$F(\alpha) = \aleph(\exp(\alpha))$ is a special function on cardinals of well-ordered sets.
+
+$\alpha = \aleph(T^{n-1}(|V|))$ satisfies $T(\alpha)<\alpha$ and is not dominated by any cantorian cardinal of well-ordered sets.
+
+So we have arrived at a contradiction.  So our original assumption of choice from well-ordered partitions is inconsistent with NF.
+
+Note that this is a disproof of the Axiom of Choice itself, and might reveal more about what is really going on than the original proof.
+
+Also notice that our proof of Infinity above is an example of application of these methods.   $\exp$ is a special function.  If the universe is finite, $\alpha = |V|$ is a well-ordered cardinal not dominated by any cantorian well-ordered cardinal,
+and $\exp(T(\alpha)) = \exp(T|V|) = |V|  \geq \alpha$.   The parity argument for Infinity which we give explicitly above is in essence an instance of the parity argument justifying Henson's method:  this is basically the same kind of proof.
+
+\section{Refuting the weak partition principle}
+
+We refine the strategy of the first argument to refute the Weak Partition Principle in NF.
+
+Let $X$ be a set.  Let $Y$ be a well-orderable subset of ${\cal P}(X)$.  Let $Z_\alpha$ be an indexing of $Y$. 
+
+For each $x,y \in X$ such that some set in $Y$ contains one but not the other, let $R_{x,y}$ be the first $Z_\alpha$ such that $\neg(x \in Z_\alpha \leftrightarrow y \in Z_\alpha)$, the first set which treats $x$ and $y$ distinctly.  Note that $R_{x,y}=R_{y,x}$.  Let $W$ be a well-ordering of the $R_{x,y}$'s (determined by restricting $Z$):  $$W = \{(A,B) \in Z:(\exists xyuv:A=R_{x,y} \wedge B=R_{u,v})\}.$$
+
+There is a map from $\iota``X^2$ onto the set of $R_{x,y}$'s, sending $\{(u,v)\}$ to $W_0$ if $R_{u,v}$ is not defined, and otherwise sending $\{(u,v)\}$ to $R_{u,v}$.  $W$ is seen to be the order type of a partition $P$ of $X^2$:  for each $\alpha>1$, $P_\alpha$ is $\{(x,y):R_{x,y} = Z_\alpha\}$; $P_0$ contains all other elements of $X^2$.   $T^2(|{\tt dom}(W)|)$ is the cardinality of the set
+of order types of initial segments of this partition of $X^2$, so we see that $T^2(|{\tt dom}(W)|)\leq T^3(\aleph^*(|X^2|))$, so $|{\tt dom}(W)| \leq T(\aleph^*(|X|^2)$.
+
+Consider for
+each $x \in X$, the set $\chi(\iota^2(x))$ of all $W_\alpha$ such that $x \in W_\alpha$.  Notice that if $x$ and $y$ belong to different
+sets in $Y$, $\chi(\iota^2(x))$ and $\chi(\iota^2(y))$ will be different, because the first set which contains one and does not contain the other
+will be $R_{x,y}$, a $W_\alpha$.   
+
+Now for each set $A \in Y$, define $\xi(\iota^2(A))$ as the set of $\chi(\iota^2(x))$ such that
+$x \in A$.  $\xi$ is clearly an injection:  any element which separates two elements of $Y$ has an analogue via $\chi$ and will separate the analogues of these sets via $\xi$.  
+
+The range of $\xi$ inherits a well-ordering $Q$ from $Y$.  This is a well-ordering of sets of sets of elements of
+${\tt dom}(W)$.   $Q = \{(\xi(\iota^2(Z_\alpha)),\xi(\iota^2(Z_\beta))):\alpha \leq \beta\}$ has order type ${\tt ot}(Q) = T^2({\tt ot}(Z))$.
+
+This tells us that any order type of a well-ordering of subsets of $X$ has image under $T^2$ which is the order type of a well-ordering of sets of sets of elements of a well-ordered partition $P$ of $X^2$.
+
+So we have $\{{\tt ot}(W^{\iota^2}):{\tt dom}(W) \subseteq {\cal P}(X)\} \subseteq \{{\tt ot}(Q): {\tt dom}(Q) \subseteq {\cal P}^2(P)\}$
+
+The left side of this inequality has cardinality $T^4(\aleph(T(\exp(|X|))))$ = $\aleph(\exp(T^5(|X|)))$.
+
+The right side of the inequality has cardinality $T^2(\aleph(T(\exp(T(\exp(|P|))))))$ = $\aleph(\exp^2(T^4(|P|)))$.  .   $T^2(|P|)$ is the cardinality of the set of order types of initial segments of the given well-ordering of $P$ which is less than $T^3(\aleph^*(|X|^2))$, the cardinality of the set of all order types of well-orderings of partitions of $X^2$, so we have $|P|<T(\aleph^*(|X|^2))$, and further $$\aleph(\exp^2(T^4(|P|)))\leq \aleph(\exp^2(T^5(\aleph^*(|X|^2)))) = \aleph(\exp^2(\aleph^*((T^5(|X|)^2)))).$$
+
+When the stratification dust settles, we find that $\aleph(\exp(|X|))$ (the cardinal bound associated with the order type of the well ordering on $Y$, projected down to cardinals at the level of $|X|$) is less than or equal to $\aleph(\exp^2(\aleph^*(|X|^2)))$, the cardinal bound associated with the order type of a well-ordered collection of sets of sets of elements of a well-ordered partition of $X^2$, again all projected down to cardinals at the level of $|X|$.  We have shown all the supporting calculations above:  this is the kind of discipline which would be required in the imaginary community of mathematical researchers who take NF as the ultimate foundation.
+$\aleph(\exp(|X|)) \leq \aleph(\exp^2(\aleph^*(|X|^2)))$ is the inequality discovered and proved by ChatGPT Sol.
+
+Now we apply Henson's technique as above.
+
+This then tells us that for any large enough concrete $n$ that all computations can be carried out, $\aleph(\exp(T^n(|V|))) \leq \aleph(\exp^2(\aleph^*(|T^n(|V|)^2)))$.
+
+But then if we assume the Weak Partition Principle $$\aleph(T^{n-1}(|V|)) = \aleph(\exp(T^n(|V|))) \leq \aleph(\exp^2(\aleph^*(|T^n(|V|^2)))) = $$ $$\aleph(\exp^2(\aleph^*(|T^n(|V|)))) \leq \aleph(\exp^2(\aleph(T^n(|V|))))$$
+and we have the same contradiction as above with $\alpha = \aleph(T^{n-1}(|V|))$ and $f(\alpha)$ defined as $\aleph(\exp^2(\alpha))$.
+
+
+
+\end{document}
