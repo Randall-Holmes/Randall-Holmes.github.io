@@ -50,6 +50,8 @@
 
 <p>
 
+<LI>  11/20/2026 Working on relaxation of the explicit comma rules for constructions starting with name markers.  This will involve flagging certain classes as requiring immediately following hard pauses.
+
 <LI> 7/18/2026:  added freemods of forms like "baifi", which are mentioned as possible in Loglan 1 (1989) (these are, as it were, paragraph headings, like "nefi").  In addition,
 a technical fix to class NI which allows "nemuedain, fi" to be a freemod of the same kind as "nefi".  This is just a fix to the innards,
 not a serious issue.
@@ -654,6 +656,8 @@ not a serious issue.
 
 <LI> Grammar classes:  Names starting with at least three lower case letters (anything may follow) are grammar classes.  Ones the speaker should be aware of will not usually be followed by digits. <p>
 
+<LI> 11/20/2026  Any class whose name ends in THENPAUSE is followed by a hard pause, whether a comma appears or not.  This phonetic reading rule allows relaxation of the explicit comma rules for constructions starting with name markers.  A problem with this is that these classes may actually be hidden in explicit parses, because the action is on the phonetic layer.
+
 <p>
 
 <p>
@@ -1042,6 +1046,8 @@ Character <- (Letter/Juncture)
 <p>
 
 <LI> a comma followed by whitespace, or whitespace.
+
+<p>
 
 Comma0 <- [,]? sp2
 
@@ -1597,7 +1603,15 @@ Comma1 <- [,] sp2
 
 <p>
 
-NAMEWORD <- (((&caprule MarkedName)/(Comma1 !FalseMarked &caprule PRENAME)/(&Vo1 !FalseMarked &caprule PRENAME)/(&caprule (((LAname Juncture?)/(HOIname Juncture?)/(HUEname Juncture?)/(CIname Juncture? &(Comma0))/(LIUname Juncture?)/(MUEname Juncture?)/(GAOname Juncture?)) !Vo1 Comma0? &caprule PRENAME))) ((Comma0 !FalseMarked &caprule PRENAME)/(Comma0 &([Cc] [Ii]) NAMEWORD))* &((sp2? [Cc] [Ii] predunit)/(&((Comma1)/Terminal/[\")]/!.) .)/!.))
+# NAMEWORD <- (((&caprule MarkedName)/(Comma1 !FalseMarked &caprule PRENAME)/(&Vo1 !FalseMarked &caprule PRENAME)/(&caprule (((LAname Juncture?)/(HOIname Juncture?)/(HUEname Juncture?)/(CIname Juncture? &(Comma0))/(LIUname Juncture?)/(MUEname Juncture?)/(GAOname Juncture?)) !Vo1 Comma0? &caprule PRENAME))) ((Comma0 !FalseMarked &caprule PRENAME)/(Comma0 &([Cc] [Ii]) NAMEWORD))* &((sp2? [Cc] [Ii] predunit)/(&((Comma1)/Terminal/[\")]/!.) .)/!.))
+
+<p>
+
+# 11/20/2026 allowing omission of commas after names.  This was proposed in both L1 and L3 as a relaxation of the rules.  The hard pause before an unmarked name word still must be an explicit comma.
+
+<p>
+
+NAMEWORD <- (((&caprule MarkedName)/(Comma1 !FalseMarked &caprule PRENAME)/(&Vo1 !FalseMarked &caprule PRENAME)/(&caprule (((LAname Juncture?)/(HOIname Juncture?)/(HUEname Juncture?)/(CIname Juncture? &(Comma0))/(LIUname Juncture?)/(MUEname Juncture?)/(GAOname Juncture?)) !Vo1 Comma0? &caprule PRENAME))) ((Comma0 !FalseMarked &caprule PRENAME)/(Comma0 &([Cc] [Ii]) NAMEWORD))* &((sp2? [Cc] [Ii] predunit)/(&((Comma0)/Terminal/[\")]/!.) .)/!.))
 
 <p>
 
@@ -1639,7 +1653,7 @@ Namemarker <- ((([Ll] [Aa] Juncture?)/([Hh] [Oo] [Ii] Juncture?)/([Hh] [Uu] Junc
 <p>
 # Badnamemarker <- (Namemarker !Vo1 [, ]? sp? BadPreName)
 <p>
-Badnamemarker <- (Namemarker !Vo1 Comma0? (Syllable &Syllable)* MaybePauseSyllable)
+# Badnamemarker <- (Namemarker !Vo1 Comma0? (Syllable &Syllable)* MaybePauseSyllable)
 
 <LI>we test for the bad name marker condition at the beginning of each stream of cmapua,
 
@@ -1857,7 +1871,13 @@ Likie <- (([Ll] [Ii] Juncture? !Vo1)/([Ki] [Ii] Juncture? [Ee] Juncture? !Vo1))
 
 <p>
 
-Cmapua <- (&caprule !Badnamemarker ((!Predstart (Vv/([Ii] [Yy])/([Uu] [Yy])) !(Stress2 sp? &Co1 Predstart) Juncture? NOI0)/(!Predstart [Nn] [Oo] Juncture? !Predstart (Vv/([Ii] [Yy])/([Uu] [Yy])) !(Stress2 sp? &Co1 Predstart) Juncture?)/((!Predstart (Vv/([Ii] [Yy])/([Uu] [Yy])) !(Stress2 sp? &Co1 Predstart) Juncture?)+/(((!Predstart Vo1 !(Stress2 sp? &Co1 Predstart) Juncture?)/(!Predstart CmapuaUnit)) (!Namemarker !Alienmarker !Likie !Predstart CmapuaUnit)*))/(!Predstart Vo2 !(Stress2 sp? &Co1 Predstart) Juncture?)) !Vo1 !(Co1+ Juncture) !(sp? Connective))
+#  Cmapua <- (&caprule !Badnamemarker ((!Predstart (Vv/([Ii] [Yy])/([Uu] [Yy])) !(Stress2 sp? &Co1 Predstart) Juncture? NOI0)/(!Predstart [Nn] [Oo] Juncture? !Predstart (Vv/([Ii] [Yy])/([Uu] [Yy])) !(Stress2 sp? &Co1 Predstart) Juncture?)/((!Predstart (Vv/([Ii] [Yy])/([Uu] [Yy])) !(Stress2 sp? &Co1 Predstart) Juncture?)+/(((!Predstart Vo1 !(Stress2 sp? &Co1 Predstart) Juncture?)/(!Predstart CmapuaUnit)) (!Namemarker !Alienmarker !Likie !Predstart CmapuaUnit)*))/(!Predstart Vo2 !(Stress2 sp? &Co1 Predstart) Juncture?)) !Vo1 !(Co1+ Juncture) !(sp? Connective))
+
+<p>  11/20/2026  removed the bad name marker test
+
+<p>
+
+Cmapua <- (&caprule ((!Predstart (Vv/([Ii] [Yy])/([Uu] [Yy])) !(Stress2 sp? &Co1 Predstart) Juncture? NOI0)/(!Predstart [Nn] [Oo] Juncture? !Predstart (Vv/([Ii] [Yy])/([Uu] [Yy])) !(Stress2 sp? &Co1 Predstart) Juncture?)/((!Predstart (Vv/([Ii] [Yy])/([Uu] [Yy])) !(Stress2 sp? &Co1 Predstart) Juncture?)+/(((!Predstart Vo1 !(Stress2 sp? &Co1 Predstart) Juncture?)/(!Predstart CmapuaUnit)) (!Namemarker !Alienmarker !Likie !Predstart CmapuaUnit)*))/(!Predstart Vo2 !(Stress2 sp? &Co1 Predstart) Juncture?)) !Vo1 !(Co1+ Juncture) !(sp? Connective))
 
 <p>
 
